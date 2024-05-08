@@ -750,87 +750,89 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowStream?.removeListener('end', originalEnd);
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
-      rowStreamUnpipe(rowStream, userStream);
-      userCanceled = true;
-      if (activeRequestStream) {
-        activeRequestStream.abort();
-      }
-      return originalEnd(chunk, encoding, cb);
-    };
-    const chunkTransformer: ChunkTransformer = new ChunkTransformer({
-      decode: options.decode,
-    } as any);
-
-    const strategy = new ReadRowsResumptionStrategy(
-      chunkTransformer,
-      options,
-      Object.assign(
-        {tableName: this.name},
-        this.bigtable.appProfileId
-          ? {appProfileId: this.bigtable.appProfileId}
-          : {}
-      )
-    );
-
-    // TODO: Consider removing populateAttemptHeader.
-    const gaxOpts = populateAttemptHeader(0, options.gaxOptions);
-
-    // Attach retry options to gax if they are not provided in the function call.
-    gaxOpts.retry = strategy.toRetryOptions(gaxOpts);
-    if (gaxOpts.maxRetries === undefined) {
-      gaxOpts.maxRetries = maxRetries;
-    }
-
-    const reqOpts = strategy.getResumeRequest();
-    const requestStream = this.bigtable.request({
-      client: 'BigtableClient',
-      method: 'readRows',
-      reqOpts,
-      gaxOpts,
-    });
-
-    activeRequestStream = requestStream!;
-
-    const toRowStream = new Transform({
-      transform: (rowData, _, next) => {
-        if (
-          userCanceled ||
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (userStream as any)._writableState.ended
-        ) {
-          return next();
-        }
-        strategy.rowsRead++;
-        const row = this.row(rowData.key);
-        row.data = rowData.data;
-        next(null, row);
-      },
-      objectMode: true,
-    });
-
-    const rowStream: Duplex = pumpify.obj([
-      requestStream,
-      chunkTransformer,
-      toRowStream,
-    ]);
-    rowStream
-      .on('error', (error: ServiceError) => {
+    (() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
         rowStreamUnpipe(rowStream, userStream);
-        activeRequestStream = null;
-        if (IGNORED_STATUS_CODES.has(error.code)) {
-          // We ignore the `cancelled` "error", since we are the ones who cause
-          // it when the user calls `.abort()`.
-          userStream.end();
-          return;
+        userCanceled = true;
+        if (activeRequestStream) {
+          activeRequestStream.abort();
         }
-        userStream.emit('error', error);
-      })
-      .on('end', () => {
-        activeRequestStream = null;
+        return originalEnd(chunk, encoding, cb);
+      };
+      const chunkTransformer: ChunkTransformer = new ChunkTransformer({
+        decode: options.decode,
+      } as any);
+
+      const strategy = new ReadRowsResumptionStrategy(
+        chunkTransformer,
+        options,
+        Object.assign(
+          {tableName: this.name},
+          this.bigtable.appProfileId
+            ? {appProfileId: this.bigtable.appProfileId}
+            : {}
+        )
+      );
+
+      // TODO: Consider removing populateAttemptHeader.
+      const gaxOpts = populateAttemptHeader(0, options.gaxOptions);
+
+      // Attach retry options to gax if they are not provided in the function call.
+      gaxOpts.retry = strategy.toRetryOptions(gaxOpts);
+      if (gaxOpts.maxRetries === undefined) {
+        gaxOpts.maxRetries = maxRetries;
+      }
+
+      const reqOpts = strategy.getResumeRequest();
+      const requestStream = this.bigtable.request({
+        client: 'BigtableClient',
+        method: 'readRows',
+        reqOpts,
+        gaxOpts,
       });
-    rowStreamPipe(rowStream, userStream);
+
+      activeRequestStream = requestStream!;
+
+      const toRowStream = new Transform({
+        transform: (rowData, _, next) => {
+          if (
+            userCanceled ||
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (userStream as any)._writableState.ended
+          ) {
+            return next();
+          }
+          strategy.rowsRead++;
+          const row = this.row(rowData.key);
+          row.data = rowData.data;
+          next(null, row);
+        },
+        objectMode: true,
+      });
+
+      const rowStream: Duplex = pumpify.obj([
+        requestStream,
+        chunkTransformer,
+        toRowStream,
+      ]);
+      rowStream
+        .on('error', (error: ServiceError) => {
+          rowStreamUnpipe(rowStream, userStream);
+          activeRequestStream = null;
+          if (IGNORED_STATUS_CODES.has(error.code)) {
+            // We ignore the `cancelled` "error", since we are the ones who cause
+            // it when the user calls `.abort()`.
+            userStream.end();
+            return;
+          }
+          userStream.emit('error', error);
+        })
+        .on('end', () => {
+          activeRequestStream = null;
+        });
+      rowStreamPipe(rowStream, userStream);
+    })();
     return userStream;
   }
 
