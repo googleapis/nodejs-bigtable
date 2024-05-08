@@ -1437,16 +1437,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           : entryBatch.map(Mutation.parse),
       };
 
-      const retryOpts = {
-        currentRetryAttempt: numRequestsMade,
-        // Handling retries in this client. Specify the retry options to
-        // make sure nothing is retried in retry-request.
-        noResponseRetries: 0,
-        shouldRetryFn: (_: any) => {
-          return false;
-        },
-      };
-
       options.gaxOptions = populateAttemptHeader(
         numRequestsMade,
         options.gaxOptions
@@ -1458,7 +1448,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           method: 'mutateRows',
           reqOpts,
           gaxOpts: options.gaxOptions,
-          retryOpts,
         })
         .on('error', (err: ServiceError) => {
           onBatchResponse(err);

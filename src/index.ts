@@ -69,7 +69,6 @@ export interface RequestOptions {
     | 'BigtableTableAdminClient'
     | 'BigtableClient';
   reqOpts?: {};
-  retryOpts?: {};
   gaxOpts?: {};
   method?: string;
 }
