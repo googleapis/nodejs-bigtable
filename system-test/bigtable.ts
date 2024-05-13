@@ -1421,7 +1421,7 @@ describe('Bigtable', () => {
 
       Object.keys(policy).forEach(key => assert(key in updatedPolicy));
     });
-    describe.only('copying backups', () => {
+    describe('copying backups', () => {
       // The server requires the source backup time to be sufficiently ahead
       // of the current time to avoid an error.
       // The server requires the copy backup time to be sufficiently ahead of
