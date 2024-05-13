@@ -227,8 +227,6 @@ describe('Bigtable/Backup', () => {
 
   describe('copy', () => {
     beforeEach(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       backup.bigtable.request = (
         config: RequestOptions,
         callback: (err: ServiceError | null, res: RequestOptions) => void
