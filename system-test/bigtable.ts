@@ -1421,7 +1421,11 @@ describe('Bigtable', () => {
 
       Object.keys(policy).forEach(key => assert(key in updatedPolicy));
     });
-    describe('copying backups', () => {
+    describe.only('copying backups', () => {
+      // The server requires the source backup time to be sufficiently ahead
+      // of the current time to avoid an error.
+      // The server requires the copy backup time to be sufficiently ahead of
+      // the create backup time to avoid an error.
       const sourceExpireTimeMilliseconds =
         PreciseDate.now() + (8 + 300) * 60 * 60 * 1000;
       const sourceExpireTime = new PreciseDate(sourceExpireTimeMilliseconds);
