@@ -1428,6 +1428,7 @@ describe('Bigtable', () => {
       const sourceExpireTimeMilliseconds =
         PreciseDate.now() + (8 + 300) * 60 * 60 * 1000;
       const sourceExpireTime = new PreciseDate(sourceExpireTimeMilliseconds);
+      // 608 hours ahead of now, 300 hours ahead of sourceExpireTimeMilliseconds
       const copyExpireTimeMilliseconds =
         PreciseDate.now() + (8 + 600) * 60 * 60 * 1000;
       const copyExpireTime = new PreciseDate(copyExpireTimeMilliseconds);
