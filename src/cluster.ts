@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {PreciseDate} from '@google-cloud/precise-date';
 import {promisifyAll} from '@google-cloud/promisify';
 import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 
@@ -314,11 +313,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       },
     };
 
-    if (reqOpts.backup.expireTime instanceof Date) {
-      reqOpts.backup.expireTime = new PreciseDate(
-        reqOpts.backup.expireTime
-      ).toStruct();
-    }
+    ClusterUtils.formatBackupExpiryTime(reqOpts.backup);
 
     delete reqOpts.backup.table;
     delete reqOpts.backup.gaxOptions;
