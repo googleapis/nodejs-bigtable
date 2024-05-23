@@ -149,7 +149,7 @@
           { "startKeyClosed": "a", "endKeyClosed": "c" },
           { "startKeyClosed": "x", "endKeyClosed": "z" }
         ] },
-        { "rowKeys": [],
+        { "rowKeys": [], 
           "rowRanges": [ { "startKeyClosed": "x", "endKeyClosed": "z" } ] }
       ],
       "responses": [
