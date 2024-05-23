@@ -224,7 +224,7 @@ describe('Bigtable/Table', () => {
 });
 
 /*
-TODO: Add this test case to the read-rows-retry-test.json file
+TODO: Add this test case to the read-rows-retry-test.json file when a gax fix is available
 {
       "name": "should not retry over maxRetries",
       "createReadStream_options": {
