@@ -26,7 +26,6 @@ import {BigtableClientMockService} from '../src/util/mock-servers/service-implem
 import {ServerWritableStream} from '@grpc/grpc-js';
 
 const {grpc} = new GrpcClient();
-const fs = require('fs');
 
 function rowResponseFromServer(rowKey: string) {
   return {
@@ -130,7 +129,6 @@ describe('Bigtable/Table', () => {
   });
 
   describe.only('createReadStream using mock server', () => {
-    const timeResults: any[] = [];
     let server: MockServer;
     let service: MockService;
     let bigtable = new Bigtable();
@@ -149,11 +147,6 @@ describe('Bigtable/Table', () => {
 
     after(async () => {
       server.shutdown(() => {});
-      fs.writeFileSync(
-        './latency-results.json',
-        JSON.stringify(timeResults),
-        'utf8'
-      );
     });
 
     tests.forEach(test => {
@@ -166,15 +159,7 @@ describe('Bigtable/Table', () => {
         const rowKeysRead: string[][] = [];
         let endCalled = false;
         let error: ServiceError | null = null;
-        const testTime = Date.now();
-        const requestedOptionsWithTime: any[] = [];
         function checkResults() {
-          timeResults.push(
-            Object.assign(
-              {requestedOptionsWithTime: requestedOptionsWithTime},
-              test
-            )
-          );
           if (test.error) {
             assert(!endCalled, ".on('end') should not have been invoked");
             assert.strictEqual(error!.code, test.error);
@@ -204,12 +189,6 @@ describe('Bigtable/Table', () => {
             assert(response);
             rowKeysRead.push([]);
             requestedOptions.push(getRequestOptions(stream.request));
-            requestedOptionsWithTime.push(
-              Object.assign(
-                {time: Date.now() - testTime},
-                getRequestOptions(stream.request)
-              )
-            );
             if (response.row_keys) {
               stream.write({
                 chunks: response.row_keys.map(rowResponseFromServer),
