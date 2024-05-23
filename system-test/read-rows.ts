@@ -128,7 +128,7 @@ describe('Bigtable/Table', () => {
     });
   });
 
-  describe.only('createReadStream using mock server', () => {
+  describe('createReadStream using mock server', () => {
     let server: MockServer;
     let service: MockService;
     let bigtable = new Bigtable();
@@ -224,7 +224,7 @@ describe('Bigtable/Table', () => {
 });
 
 /*
-TODO: Add this test case to the read-rows-retry-test.json file
+Don't forget this test case
 {
       "name": "should not retry over maxRetries",
       "createReadStream_options": {
