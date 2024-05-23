@@ -60,7 +60,7 @@
         }
       ],
       "responses": [
-        { "row_keys": [], "end_with_error": 4 },
+        { "end_with_error": 4 },
         { "end_with_error": 4 },
         { "end_with_error": 4 },
         { "end_with_error": 4 }
