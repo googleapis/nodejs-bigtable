@@ -12532,6 +12532,9 @@ export namespace google {
                     /** Type bytesType */
                     bytesType?: (google.bigtable.admin.v2.Type.IBytes|null);
 
+                    /** Type stringType */
+                    stringType?: (google.bigtable.admin.v2.Type.IString|null);
+
                     /** Type int64Type */
                     int64Type?: (google.bigtable.admin.v2.Type.IInt64|null);
 
@@ -12551,6 +12554,9 @@ export namespace google {
                     /** Type bytesType. */
                     public bytesType?: (google.bigtable.admin.v2.Type.IBytes|null);
 
+                    /** Type stringType. */
+                    public stringType?: (google.bigtable.admin.v2.Type.IString|null);
+
                     /** Type int64Type. */
                     public int64Type?: (google.bigtable.admin.v2.Type.IInt64|null);
 
@@ -12558,7 +12564,7 @@ export namespace google {
                     public aggregateType?: (google.bigtable.admin.v2.Type.IAggregate|null);
 
                     /** Type kind. */
-                    public kind?: ("bytesType"|"int64Type"|"aggregateType");
+                    public kind?: ("bytesType"|"stringType"|"int64Type"|"aggregateType");
 
                     /**
                      * Creates a new Type instance using the specified properties.
@@ -12926,6 +12932,300 @@ export namespace google {
 
                                 /**
                                  * Gets the default type url for Raw
+                                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                                 * @returns The default type url
+                                 */
+                                public static getTypeUrl(typeUrlPrefix?: string): string;
+                            }
+                        }
+                    }
+
+                    /** Properties of a String. */
+                    interface IString {
+
+                        /** String encoding */
+                        encoding?: (google.bigtable.admin.v2.Type.String.IEncoding|null);
+                    }
+
+                    /** Represents a String. */
+                    class String implements IString {
+
+                        /**
+                         * Constructs a new String.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: google.bigtable.admin.v2.Type.IString);
+
+                        /** String encoding. */
+                        public encoding?: (google.bigtable.admin.v2.Type.String.IEncoding|null);
+
+                        /**
+                         * Creates a new String instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns String instance
+                         */
+                        public static create(properties?: google.bigtable.admin.v2.Type.IString): google.bigtable.admin.v2.Type.String;
+
+                        /**
+                         * Encodes the specified String message. Does not implicitly {@link google.bigtable.admin.v2.Type.String.verify|verify} messages.
+                         * @param message String message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: google.bigtable.admin.v2.Type.IString, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified String message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Type.String.verify|verify} messages.
+                         * @param message String message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: google.bigtable.admin.v2.Type.IString, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a String message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns String
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.Type.String;
+
+                        /**
+                         * Decodes a String message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns String
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.Type.String;
+
+                        /**
+                         * Verifies a String message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates a String message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns String
+                         */
+                        public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.Type.String;
+
+                        /**
+                         * Creates a plain object from a String message. Also converts values to other types if specified.
+                         * @param message String
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: google.bigtable.admin.v2.Type.String, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this String to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+
+                        /**
+                         * Gets the default type url for String
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    namespace String {
+
+                        /** Properties of an Encoding. */
+                        interface IEncoding {
+
+                            /** Encoding utf8Raw */
+                            utf8Raw?: (google.bigtable.admin.v2.Type.String.Encoding.IUtf8Raw|null);
+                        }
+
+                        /** Represents an Encoding. */
+                        class Encoding implements IEncoding {
+
+                            /**
+                             * Constructs a new Encoding.
+                             * @param [properties] Properties to set
+                             */
+                            constructor(properties?: google.bigtable.admin.v2.Type.String.IEncoding);
+
+                            /** Encoding utf8Raw. */
+                            public utf8Raw?: (google.bigtable.admin.v2.Type.String.Encoding.IUtf8Raw|null);
+
+                            /** Encoding encoding. */
+                            public encoding?: "utf8Raw";
+
+                            /**
+                             * Creates a new Encoding instance using the specified properties.
+                             * @param [properties] Properties to set
+                             * @returns Encoding instance
+                             */
+                            public static create(properties?: google.bigtable.admin.v2.Type.String.IEncoding): google.bigtable.admin.v2.Type.String.Encoding;
+
+                            /**
+                             * Encodes the specified Encoding message. Does not implicitly {@link google.bigtable.admin.v2.Type.String.Encoding.verify|verify} messages.
+                             * @param message Encoding message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encode(message: google.bigtable.admin.v2.Type.String.IEncoding, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Encodes the specified Encoding message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Type.String.Encoding.verify|verify} messages.
+                             * @param message Encoding message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encodeDelimited(message: google.bigtable.admin.v2.Type.String.IEncoding, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Decodes an Encoding message from the specified reader or buffer.
+                             * @param reader Reader or buffer to decode from
+                             * @param [length] Message length if known beforehand
+                             * @returns Encoding
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.Type.String.Encoding;
+
+                            /**
+                             * Decodes an Encoding message from the specified reader or buffer, length delimited.
+                             * @param reader Reader or buffer to decode from
+                             * @returns Encoding
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.Type.String.Encoding;
+
+                            /**
+                             * Verifies an Encoding message.
+                             * @param message Plain object to verify
+                             * @returns `null` if valid, otherwise the reason why it is not
+                             */
+                            public static verify(message: { [k: string]: any }): (string|null);
+
+                            /**
+                             * Creates an Encoding message from a plain object. Also converts values to their respective internal types.
+                             * @param object Plain object
+                             * @returns Encoding
+                             */
+                            public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.Type.String.Encoding;
+
+                            /**
+                             * Creates a plain object from an Encoding message. Also converts values to other types if specified.
+                             * @param message Encoding
+                             * @param [options] Conversion options
+                             * @returns Plain object
+                             */
+                            public static toObject(message: google.bigtable.admin.v2.Type.String.Encoding, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                            /**
+                             * Converts this Encoding to JSON.
+                             * @returns JSON object
+                             */
+                            public toJSON(): { [k: string]: any };
+
+                            /**
+                             * Gets the default type url for Encoding
+                             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                             * @returns The default type url
+                             */
+                            public static getTypeUrl(typeUrlPrefix?: string): string;
+                        }
+
+                        namespace Encoding {
+
+                            /** Properties of an Utf8Raw. */
+                            interface IUtf8Raw {
+                            }
+
+                            /** Represents an Utf8Raw. */
+                            class Utf8Raw implements IUtf8Raw {
+
+                                /**
+                                 * Constructs a new Utf8Raw.
+                                 * @param [properties] Properties to set
+                                 */
+                                constructor(properties?: google.bigtable.admin.v2.Type.String.Encoding.IUtf8Raw);
+
+                                /**
+                                 * Creates a new Utf8Raw instance using the specified properties.
+                                 * @param [properties] Properties to set
+                                 * @returns Utf8Raw instance
+                                 */
+                                public static create(properties?: google.bigtable.admin.v2.Type.String.Encoding.IUtf8Raw): google.bigtable.admin.v2.Type.String.Encoding.Utf8Raw;
+
+                                /**
+                                 * Encodes the specified Utf8Raw message. Does not implicitly {@link google.bigtable.admin.v2.Type.String.Encoding.Utf8Raw.verify|verify} messages.
+                                 * @param message Utf8Raw message or plain object to encode
+                                 * @param [writer] Writer to encode to
+                                 * @returns Writer
+                                 */
+                                public static encode(message: google.bigtable.admin.v2.Type.String.Encoding.IUtf8Raw, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                                /**
+                                 * Encodes the specified Utf8Raw message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Type.String.Encoding.Utf8Raw.verify|verify} messages.
+                                 * @param message Utf8Raw message or plain object to encode
+                                 * @param [writer] Writer to encode to
+                                 * @returns Writer
+                                 */
+                                public static encodeDelimited(message: google.bigtable.admin.v2.Type.String.Encoding.IUtf8Raw, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                                /**
+                                 * Decodes an Utf8Raw message from the specified reader or buffer.
+                                 * @param reader Reader or buffer to decode from
+                                 * @param [length] Message length if known beforehand
+                                 * @returns Utf8Raw
+                                 * @throws {Error} If the payload is not a reader or valid buffer
+                                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                 */
+                                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.Type.String.Encoding.Utf8Raw;
+
+                                /**
+                                 * Decodes an Utf8Raw message from the specified reader or buffer, length delimited.
+                                 * @param reader Reader or buffer to decode from
+                                 * @returns Utf8Raw
+                                 * @throws {Error} If the payload is not a reader or valid buffer
+                                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                 */
+                                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.Type.String.Encoding.Utf8Raw;
+
+                                /**
+                                 * Verifies an Utf8Raw message.
+                                 * @param message Plain object to verify
+                                 * @returns `null` if valid, otherwise the reason why it is not
+                                 */
+                                public static verify(message: { [k: string]: any }): (string|null);
+
+                                /**
+                                 * Creates an Utf8Raw message from a plain object. Also converts values to their respective internal types.
+                                 * @param object Plain object
+                                 * @returns Utf8Raw
+                                 */
+                                public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.Type.String.Encoding.Utf8Raw;
+
+                                /**
+                                 * Creates a plain object from an Utf8Raw message. Also converts values to other types if specified.
+                                 * @param message Utf8Raw
+                                 * @param [options] Conversion options
+                                 * @returns Plain object
+                                 */
+                                public static toObject(message: google.bigtable.admin.v2.Type.String.Encoding.Utf8Raw, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                                /**
+                                 * Converts this Utf8Raw to JSON.
+                                 * @returns JSON object
+                                 */
+                                public toJSON(): { [k: string]: any };
+
+                                /**
+                                 * Gets the default type url for Utf8Raw
                                  * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                                  * @returns The default type url
                                  */
