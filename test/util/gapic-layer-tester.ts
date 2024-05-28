@@ -24,7 +24,32 @@ import {ReadRowsResumptionStrategy} from '../../src/utils/read-rows-resumption';
 import {RequestType} from 'google-gax/build/src/apitypes';
 import {DEFAULT_BACKOFF_SETTINGS} from '../../src/utils/retry-options';
 
-// TODO: Add comments to this tester
+/**
+ * Create an GapicLayerTester object used for ensuring the right data reaches the Gapic layer.
+ *
+ * @param {Bigtable} An instance of the Bigtable client
+ *
+ * @example
+ * ```
+ * const bigtable = new Bigtable({
+ *   projectId: 'fake-project-id',
+ * });
+ * const tester = new GapicLayerTester(bigtable);
+ * const table: Table = bigtable.instance('fake-instance').table('fake-table');
+ * tester.testReadRowsGapicCall( // Mocks out the readRows function
+ *   done,
+ *   {
+ *     rows: {
+ *       rowKeys: [],
+ *       rowRanges: [{}],
+ *     },
+ *     tableName,
+ *   },
+ *   {}
+ * );
+ * table.createReadStream();
+ * ```
+ */
 export class GapicLayerTester {
   private gapicClient: v2.BigtableClient;
   constructor(bigtable: Bigtable) {
@@ -33,6 +58,14 @@ export class GapicLayerTester {
     bigtable.api['BigtableClient'] = this.gapicClient;
   }
 
+  /**
+   * Returns gax options that contain a retry options object containing the
+   * usual retry conditions and the usual resumption strategy.
+   *
+   * @param {string} tableName The formatted table name
+   * @param {GetRowsOptions} options Options provided to createreadstream used for
+   * customizing the readRows call.
+   */
   buildReadRowsGaxOptions(
     tableName: string,
     options: GetRowsOptions
@@ -67,6 +100,18 @@ export class GapicLayerTester {
     };
   }
 
+  /**
+   * Mocks out the ReadRows function in the Gapic layer with a function that
+   * ensures the data being received in the Gapic layer is correct.
+   *
+   * @param {mocha.Done} [done] This is the function that is called when the
+   * mocha test is completed.
+   * @param {protos.google.bigtable.v2.IReadRowsRequest} [expectedRequest] The
+   * request expected in the call to readrows in the Gapic layer
+   * @param {CallOptions} expectedOptions The gax options expected in the call
+   * to the readrows function in the Gapic layer.
+   *
+   */
   testReadRowsGapicCall(
     done: mocha.Done,
     expectedRequest: protos.google.bigtable.v2.IReadRowsRequest,
