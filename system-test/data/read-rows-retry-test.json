@@ -149,7 +149,7 @@
           { "startKeyClosed": "a", "endKeyClosed": "c" },
           { "startKeyClosed": "x", "endKeyClosed": "z" }
         ] },
-        { "rowKeys": [], 
+        { "rowKeys": [],
           "rowRanges": [ { "startKeyClosed": "x", "endKeyClosed": "z" } ] }
       ],
       "responses": [
@@ -584,7 +584,8 @@
       "responses": [
         { "row_keys": [],"end_with_error": 4 }
       ],
-      "row_keys_read": [[]]
+      "row_keys_read": [[]],
+      "error": 4
     }
   ]
 }
