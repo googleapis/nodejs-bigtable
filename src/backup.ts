@@ -37,6 +37,15 @@ import {
 } from './cluster';
 import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 import {Instance} from './instance';
+import {ClusterUtils} from './utils/cluster';
+
+export type CopyBackupResponse = GenericBackupPromise<Operation>;
+export type CopyBackupCallback = GenericBackupCallback<Operation>;
+export interface CopyBackupConfig extends ModifiableBackupFields {
+  cluster: Cluster;
+  gaxOptions?: CallOptions;
+  id: string;
+}
 
 type IEmpty = google.protobuf.IEmpty;
 export type IBackup = google.bigtable.admin.v2.IBackup;
@@ -59,6 +68,7 @@ export interface GenericBackupCallback<T> {
     apiResponse?: T | null
   ): void;
 }
+export type GenericBackupPromise<T> = [Backup, T];
 
 export type DeleteBackupCallback = (
   err: ServiceError | null,
@@ -241,6 +251,50 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
       seconds: this.metadata.startTime.seconds!,
       nanos: this.metadata.startTime.nanos!,
     });
+  }
+
+  /**
+   * When this backup object represents a backup that has already been created,
+   * copy will copy this created backup to the location and with the settings
+   * specified by the config parameter. After running this function the original
+   * backup will exist as well as a second backup matching the parameters given
+   * by the config argument.
+   *
+   * @param {CopyBackupConfig} [config] The config that specifies all of the
+   * information about the destination backup which is the new backup that gets
+   * created as a result of calling copy.
+   * @param {CopyBackupCallback} [callback] The callback function that passes an
+   * error or results back to the user.
+   */
+  copy(config: CopyBackupConfig, callback: CopyBackupCallback): void;
+  copy(config: CopyBackupConfig): Promise<CopyBackupResponse>;
+  copy(
+    config: CopyBackupConfig,
+    callback?: CopyBackupCallback
+  ): void | Promise<CopyBackupResponse> {
+    const reqOpts = {
+      parent: config.cluster.name,
+      backupId: config.id,
+      sourceBackup: `${this.cluster.name}/backups/${this.id}`,
+      expireTime: config?.expireTime,
+    };
+    ClusterUtils.formatBackupExpiryTime(reqOpts);
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'copyBackup',
+        reqOpts,
+        gaxOpts: config.gaxOptions,
+      },
+      (err, ...args) => {
+        if (err) {
+          callback!(err, undefined, ...args);
+          return;
+        }
+        // Second argument is a backup for the new backup id
+        callback!(null, config.cluster.backup(config.id), ...args);
+      }
+    );
   }
 
   create(config: CreateBackupConfig, callback?: CreateBackupCallback): void;
