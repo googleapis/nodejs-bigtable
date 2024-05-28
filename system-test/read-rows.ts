@@ -27,6 +27,14 @@ import {ServerWritableStream} from '@grpc/grpc-js';
 
 const {grpc} = new GrpcClient();
 
+/**
+ * The read-rows-retry-test.json file contains row key data that represents
+ * data that the mock server should send back. This function converts this test
+ * data into responses that the mock server actually sends which match the
+ * format readrows responses should have.
+ *
+ * @param {string} rowKey The row key from read-rows-retry-test.json.
+ */
 function rowResponseFromServer(rowKey: string) {
   return {
     rowKey: Buffer.from(rowKey).toString('base64'),
@@ -37,6 +45,15 @@ function rowResponseFromServer(rowKey: string) {
   };
 }
 
+/**
+ * This function accepts a typical readrows request passed into the mock server
+ * and converts it into a format that matches the format of the expected results
+ * for comparison using an assert statement.
+ *
+ * @param {protos.google.bigtable.v2.IReadRowsRequest} getRequestOptions The
+ * readrows request sent to the mock server.
+ *
+ */
 function getRequestOptions(
   request: protos.google.bigtable.v2.IReadRowsRequest
 ): CreateReadStreamRequest {
