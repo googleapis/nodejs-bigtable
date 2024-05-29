@@ -16,7 +16,7 @@ import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {RetryOptions, ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
-import {PassThrough, Transform} from 'stream';
+import {PassThrough, Transform, TransformOptions} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
@@ -761,7 +761,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
       const chunkTransformer: ChunkTransformer = new ChunkTransformer({
         decode: options.decode,
-      } as any);
+      } as TransformOptions);
 
       const strategy = new ReadRowsResumptionStrategy(
         chunkTransformer,
