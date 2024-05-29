@@ -251,9 +251,7 @@ export class ReadRowsResumptionStrategy {
     const canResume = (error: GoogleError) => {
       return this.canResume(error);
     };
-    const getResumeRequest = (
-      request?: protos.google.bigtable.v2.IReadRowsRequest
-    ) => {
+    const getResumeRequest = () => {
       return this.getResumeRequest() as RequestType;
     };
     // On individual calls, the user can override any of the default
