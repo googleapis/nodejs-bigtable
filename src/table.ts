@@ -31,7 +31,7 @@ import {
   CreateFamilyResponse,
   IColumnFamily,
 } from './family';
-import {Filter, BoundData, RawFilter} from './filter';
+import {BoundData, RawFilter} from './filter';
 import {Mutation} from './mutation';
 import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
