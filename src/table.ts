@@ -750,17 +750,17 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
 
     (() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      userStream.end = <T extends BufferEncoding | (() => void)>(
+      userStream.end = (
         chunkOrCb: () => void | Row,
-        encodingOrCb?: T,
-        cb?: T extends BufferEncoding ? () => void : undefined
+        encodingOrCb?: BufferEncoding | (() => void),
+        cb?: () => void
       ) => {
         rowStreamUnpipe(rowStream, userStream);
         userCanceled = true;
         if (activeRequestStream) {
           activeRequestStream.abort();
         }
+        originalEnd();
         function isEncoding(
           e: BufferEncoding | (() => void)
         ): e is BufferEncoding {
@@ -773,7 +773,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             return originalEnd(chunkOrCb, encodingOrCb);
           }
         } else {
-          return originalEnd(chunkOrCb);
+          return originalEnd(chunkOrCb); // In practice, this code path is used.
         }
       };
       const chunkTransformer: ChunkTransformer = new ChunkTransformer({
