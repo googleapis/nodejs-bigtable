@@ -774,7 +774,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         )
       );
 
-      // TODO: Consider removing populateAttemptHeader.
       const gaxOpts = populateAttemptHeader(0, options.gaxOptions);
 
       // Attach retry options to gax if they are not provided in the function call.

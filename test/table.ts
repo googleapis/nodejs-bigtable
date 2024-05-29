@@ -1126,16 +1126,6 @@ describe('Bigtable/Table', () => {
     });
 
     describe('createReadStream mocking out the gapic layer', () => {
-      // TODO: Add true/false checker for the canResume function.
-      // TODO: Add checker for return value of the resumption function.
-
-      // TODO: Consider moving this to unit tests.
-      // TODO: Write tests to ensure options reaching Gapic layer are
-      // TODO: Future tests
-      // 1. Provide more gax options
-      // 2. Override the retry function
-      // 3. Anything with retryRequestOptions?
-      // unchanged for other streaming calls
       const bigtable = new Bigtable({
         projectId: 'fake-project-id',
       });

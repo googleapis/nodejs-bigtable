@@ -127,7 +127,6 @@ export class ReadRowsResumptionStrategy {
     this.rowsLimit = options.limit || 0;
     this.hasLimit = this.rowsLimit !== 0;
     this.rowsRead = 0;
-    // TODO: Create a case class for these two objects:
     this.tableStrategyInfo = tableStrategyInfo;
     // If rowKeys and ranges are both empty, the request is a full table scan.
     // Add an empty range to simplify the resumption logic.
