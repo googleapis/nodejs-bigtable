@@ -19,7 +19,7 @@ const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
 import * as assert from 'assert';
 import {describe, it, before} from 'mocha';
 import {CreateReadStreamRequest, ReadRowsTest} from './testTypes';
-import {ServiceError, GrpcClient, CallOptions} from 'google-gax';
+import {ServiceError, GrpcClient, CallOptions, GoogleError} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
@@ -45,23 +45,40 @@ function rowResponseFromServer(rowKey: string) {
   };
 }
 
-/**
- * This function accepts a typical readrows request passed into the mock server
- * and converts it into a format that matches the format of the expected results
- * for comparison using an assert statement.
- *
- * @param {protos.google.bigtable.v2.IReadRowsRequest} getRequestOptions The
- * readrows request sent to the mock server.
- *
- */
-function getRequestOptions(
-  request: protos.google.bigtable.v2.IReadRowsRequest
-): CreateReadStreamRequest {
+function isRowKeysWithFunction(array: unknown): array is RowKeysWithFunction {
+  return (array as RowKeysWithFunction).asciiSlice !== undefined;
+}
+
+function isRowKeysWithFunctionArray(
+  array: unknown[]
+): array is RowKeysWithFunction[] {
+  return array.every((element: unknown) => {
+    return isRowKeysWithFunction(element);
+  });
+}
+
+interface TestRowRange {
+  startKey?: 'startKeyClosed' | 'startKeyOpen';
+  endKey?: 'endKeyOpen' | 'endKeyClosed';
+  startKeyClosed?: Uint8Array | string | null;
+  startKeyOpen?: Uint8Array | string | null;
+  endKeyOpen?: Uint8Array | string | null;
+  endKeyClosed?: Uint8Array | string | null;
+}
+interface RowKeysWithFunction {
+  asciiSlice: () => string;
+}
+function getRequestOptions(request: {
+  rows?: {
+    rowRanges?: TestRowRange[] | null;
+    rowKeys?: Uint8Array[] | null;
+  } | null;
+  rowsLimit?: string | number | Long | null | undefined;
+}): CreateReadStreamRequest {
   const requestOptions = {} as CreateReadStreamRequest;
   if (request.rows && request.rows.rowRanges) {
     requestOptions.rowRanges = request.rows.rowRanges.map(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (range: any) => {
+      (range: TestRowRange) => {
         const convertedRowRange = {} as {[index: string]: string};
         {
           // startKey and endKey get filled in during the grpc request.
@@ -74,17 +91,20 @@ function getRequestOptions(
             delete range.endKey;
           }
         }
-        Object.keys(range).forEach(
-          key => (convertedRowRange[key] = range[key].asciiSlice())
+        Object.entries(range).forEach(
+          ([key, value]) => (convertedRowRange[key] = value.asciiSlice())
         );
         return convertedRowRange;
       }
     );
   }
-  if (request.rows && request.rows.rowKeys) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    requestOptions.rowKeys = request.rows.rowKeys.map((rowKeys: any) =>
-      rowKeys.asciiSlice()
+  if (
+    request.rows &&
+    request.rows.rowKeys &&
+    isRowKeysWithFunctionArray(request.rows.rowKeys)
+  ) {
+    requestOptions.rowKeys = request.rows.rowKeys.map(
+      (rowKeys: RowKeysWithFunction) => rowKeys.asciiSlice()
     );
   }
   // The grpc protocol sets rowsLimit to '0' if rowsLimit is not provided in the
@@ -93,9 +113,12 @@ function getRequestOptions(
   // Do not append rowsLimit to collection of request options if received grpc
   // rows limit is '0' so that test data in read-rows-retry-test.json remains
   // shorter.
-  if (request.rowsLimit && request.rowsLimit !== '0') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    requestOptions.rowsLimit = parseInt(request.rowsLimit as string);
+  if (
+    request.rowsLimit &&
+    request.rowsLimit !== '0' &&
+    typeof request.rowsLimit === 'string'
+  ) {
+    requestOptions.rowsLimit = parseInt(request.rowsLimit);
   }
   return requestOptions;
 }
@@ -212,8 +235,7 @@ describe('Bigtable/Table', () => {
               });
             }
             if (response.end_with_error) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const error: any = new Error();
+              const error: GoogleError = new GoogleError();
               if (response.error_message) {
                 error.message = response.error_message;
               }
