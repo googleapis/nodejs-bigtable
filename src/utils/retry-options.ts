@@ -14,7 +14,6 @@
 
 import {BackoffSettings} from 'google-gax/build/src/gax';
 
-// See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
 export const RETRYABLE_STATUS_CODES = new Set([4, 8, 10, 14]);
 export const DEFAULT_BACKOFF_SETTINGS: BackoffSettings = {
