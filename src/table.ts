@@ -750,6 +750,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
 
     (() => {
+      /*
+      This end function was redefined in a fix to a data loss issue with streams
+      to allow the user to cancel the stream and instantly stop receiving more
+      data in the stream.
+       */
       userStream.end = (
         chunkOrCb: () => void | Row,
         encodingOrCb?: BufferEncoding | (() => void),
@@ -776,10 +781,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           return originalEnd(chunkOrCb); // In practice, this code path is used.
         }
       };
+      // The chunk transformer is used for transforming raw readrows data from
+      // the server into data that can be consumed by the user.
       const chunkTransformer: ChunkTransformer = new ChunkTransformer({
         decode: options.decode,
       } as TransformOptions);
 
+      // This defines a strategy object which is used for deciding if the client
+      // will retry and for deciding what request to retry with.
       const strategy = new ReadRowsResumptionStrategy(
         chunkTransformer,
         options,
@@ -799,6 +808,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         gaxOpts.maxRetries = maxRetries;
       }
 
+      // This gets the first request to send to the readRows endpoint.
       const reqOpts = strategy.getResumeRequest();
       const requestStream = this.bigtable.request({
         client: 'BigtableClient',
@@ -809,6 +819,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       activeRequestStream = requestStream!;
 
+      // After readrows data has been transformed by the chunk transformer, this
+      // transform can be used to prepare the data into row objects for the user
+      // or block more data from being emitted if the stream has been cancelled.
       const toRowStream = new Transform({
         transform: (rowData, _, next) => {
           if (
@@ -826,13 +839,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         objectMode: true,
       });
 
+      // This creates a row stream which is three streams connected in a series.
+      // Data and errors from the requestStream feed into the chunkTransformer
+      // and data/errors from the chunk transformer feed into toRowStream.
       const rowStream: Duplex = pumpify.obj([
         requestStream,
         chunkTransformer,
         toRowStream,
       ]);
+      // This code attaches handlers to the row stream to deal with special
+      // cases when data is received or errors are emitted.
       rowStream
         .on('error', (error: ServiceError) => {
+          // This ends the stream for errors that should be ignored. For other
+          // errors it sends the error to the user.
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
@@ -846,6 +866,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on('end', () => {
           activeRequestStream = null;
         });
+      // rowStreamPipe sends errors and data emitted by the rowStream to the
+      // userStream.
       rowStreamPipe(rowStream, userStream);
     })();
     return userStream;
