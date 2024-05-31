@@ -444,6 +444,10 @@ export class Bigtable {
       {},
       baseOptions,
       {
+        // Setting gaxServerStreamingRetries to true ensures that for readrows,
+        // sampleRowKeys, mutateRows, generateInitialChangeStreamPartitions and
+        // readChangeStream calls in the data client that the new streaming
+        // retries functionality will be used.
         gaxServerStreamingRetries: true,
         servicePath: customEndpointBaseUrl || defaultBaseUrl,
         'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
