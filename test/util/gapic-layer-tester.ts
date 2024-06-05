@@ -25,7 +25,7 @@ import {RequestType} from 'google-gax/build/src/apitypes';
 import {DEFAULT_BACKOFF_SETTINGS} from '../../src/utils/retry-options';
 
 /**
- * Create an GapicLayerTester object used for ensuring the right data reaches the Gapic layer.
+ * Create an MockGapicLayer object used for ensuring the right data reaches the Gapic layer when we are testing the handwritten layer. 
  *
  * @param {Bigtable} An instance of the Bigtable client
  *
@@ -34,7 +34,7 @@ import {DEFAULT_BACKOFF_SETTINGS} from '../../src/utils/retry-options';
  * const bigtable = new Bigtable({
  *   projectId: 'fake-project-id',
  * });
- * const tester = new GapicLayerTester(bigtable);
+ * const tester = new MockGapicLayer(bigtable);
  * const table: Table = bigtable.instance('fake-instance').table('fake-table');
  * tester.testReadRowsGapicCall( // Mocks out the readRows function
  *   done,
