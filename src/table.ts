@@ -45,6 +45,7 @@ import {Duplex} from 'stream';
 import {TableUtils} from './utils/table';
 import {
   DEFAULT_BACKOFF_SETTINGS,
+  DEFAULT_RETRY_COUNT,
   RETRYABLE_STATUS_CODES,
 } from './utils/retry-options';
 import {ReadRowsResumptionStrategy} from './utils/read-rows-resumption';
@@ -376,8 +377,6 @@ export interface PrefixRange {
 export interface CreateBackupConfig extends ModifiableBackupFields {
   gaxOptions?: CallOptions;
 }
-
-const DEFAULT_RETRY_COUNT = 10;
 
 /**
  * Create a Table object to interact with a Cloud Bigtable table.

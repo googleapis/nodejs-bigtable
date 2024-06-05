@@ -21,3 +21,4 @@ export const DEFAULT_BACKOFF_SETTINGS: BackoffSettings = {
   retryDelayMultiplier: 2,
   maxRetryDelayMillis: 60000,
 };
+export const DEFAULT_RETRY_COUNT = 10;
