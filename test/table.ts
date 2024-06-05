@@ -31,7 +31,7 @@ import {Bigtable, RequestOptions} from '../src';
 import {EventEmitter} from 'events';
 import {TableUtils} from '../src/utils/table';
 import {ReadRowsResumptionStrategy} from '../src/utils/read-rows-resumption';
-import {MockGapicLayer} from './util/gapic-layer-tester';
+import {MockGapicLayer} from './util/mock-gapic-layer';
 import {Table} from '../src/table';
 import {RequestType} from 'google-gax/build/src/apitypes';
 
