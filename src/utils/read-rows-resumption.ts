@@ -22,7 +22,7 @@ import {Mutation} from '../mutation';
 import {BoundData, Filter} from '../filter';
 import {RequestType} from 'google-gax/build/src/apitypes';
 import {
-  DEFAULT_BACKOFF_SETTINGS,
+  DEFAULT_BACKOFF_SETTINGS, isRstStreamError,
   RETRYABLE_STATUS_CODES,
 } from './retry-options';
 import * as is from 'is';
@@ -213,18 +213,6 @@ export class ReadRowsResumptionStrategy {
     if (this.hasLimit && this.rowsLimit === this.rowsRead) {
       return false;
     }
-    const isRstStreamError = (error: GoogleError | ServiceError): boolean => {
-      // Retry on "received rst stream" errors
-      if (error.code === 13 && error.message) {
-        const error_message = (error.message || '').toLowerCase();
-        return (
-          error.code === 13 &&
-          (error_message.includes('rst_stream') ||
-            error_message.includes('rst stream'))
-        );
-      }
-      return false;
-    };
     if (
       error.code &&
       (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))

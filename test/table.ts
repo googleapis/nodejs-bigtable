@@ -31,7 +31,7 @@ import {Bigtable, RequestOptions} from '../src';
 import {EventEmitter} from 'events';
 import {TableUtils} from '../src/utils/table';
 import {ReadRowsResumptionStrategy} from '../src/utils/read-rows-resumption';
-import {GapicLayerTester} from './util/gapic-layer-tester';
+import {MockGapicLayer} from './util/gapic-layer-tester';
 import {Table} from '../src/table';
 import {RequestType} from 'google-gax/build/src/apitypes';
 
@@ -1129,7 +1129,7 @@ describe('Bigtable/Table', () => {
       const bigtable = new Bigtable({
         projectId: 'fake-project-id',
       });
-      const tester = new GapicLayerTester(bigtable);
+      const tester = new MockGapicLayer(bigtable);
       const table: Table = bigtable
         .instance('fake-instance')
         .table('fake-table');

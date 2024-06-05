@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import {BackoffSettings} from 'google-gax/build/src/gax';
+import {GoogleError, ServiceError} from 'google-gax';
 
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
 export const RETRYABLE_STATUS_CODES = new Set([4, 8, 10, 14]);
@@ -22,3 +23,17 @@ export const DEFAULT_BACKOFF_SETTINGS: BackoffSettings = {
   maxRetryDelayMillis: 60000,
 };
 export const DEFAULT_RETRY_COUNT = 10;
+export const isRstStreamError = (
+  error: GoogleError | ServiceError
+): boolean => {
+  // Retry on "received rst stream" errors
+  if (error.code === 13 && error.message) {
+    const error_message = (error.message || '').toLowerCase();
+    return (
+      error.code === 13 &&
+      (error_message.includes('rst_stream') ||
+        error_message.includes('rst stream'))
+    );
+  }
+  return false;
+};
