@@ -377,6 +377,8 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
   gaxOptions?: CallOptions;
 }
 
+const DEFAULT_RETRY_COUNT = 10;
+
 /**
  * Create a Table object to interact with a Cloud Bigtable table.
  *
@@ -716,7 +718,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    */
   createReadStream(opts?: GetRowsOptions) {
     const options: GetRowsOptions = opts || {};
-    const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
+    const maxRetries = is.number(this.maxRetries)
+      ? this.maxRetries!
+      : DEFAULT_RETRY_COUNT;
     let activeRequestStream: AbortableDuplex | null;
 
     let userCanceled = false;
