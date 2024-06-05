@@ -22,7 +22,8 @@ import {Mutation} from '../mutation';
 import {BoundData, Filter} from '../filter';
 import {RequestType} from 'google-gax/build/src/apitypes';
 import {
-  DEFAULT_BACKOFF_SETTINGS, isRstStreamError,
+  DEFAULT_BACKOFF_SETTINGS,
+  isRstStreamError,
   RETRYABLE_STATUS_CODES,
 } from './retry-options';
 import * as is from 'is';
