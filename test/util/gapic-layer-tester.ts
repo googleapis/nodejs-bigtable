@@ -34,7 +34,7 @@ import {DEFAULT_BACKOFF_SETTINGS} from '../../src/utils/retry-options';
  * const bigtable = new Bigtable({
  *   projectId: 'fake-project-id',
  * });
- * const tester = new GapicLayerTester(bigtable);
+ * const tester = new MockGapicLayer(bigtable);
  * const table: Table = bigtable.instance('fake-instance').table('fake-table');
  * tester.testReadRowsGapicCall( // Mocks out the readRows function
  *   done,
