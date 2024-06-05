@@ -50,7 +50,7 @@ import {DEFAULT_BACKOFF_SETTINGS} from '../../src/utils/retry-options';
  * table.createReadStream();
  * ```
  */
-export class GapicLayerTester {
+export class MockGapicLayer {
   private gapicClient: v2.BigtableClient;
   constructor(bigtable: Bigtable) {
     const clientOptions = bigtable.options.BigtableClient;
