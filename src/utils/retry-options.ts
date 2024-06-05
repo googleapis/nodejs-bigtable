@@ -32,7 +32,10 @@ export const isRstStreamError = (
     return (
       error.code === 13 &&
       (error_message.includes('rst_stream') ||
-        error_message.includes('rst stream'))
+        error_message.includes('rst stream') ||
+        error_message.includes(
+          'Received unexpected EOS on DATA frame from server'
+        ))
     );
   }
   return false;
