@@ -202,7 +202,9 @@ export class ReadRowsResumptionStrategy {
       spliceRanges(this.ranges, lastRowKey);
       this.rowKeys = getRowKeys(this.rowKeys, lastRowKey);
     }
-
+    if (error.statusDetails === 'RetryInfo') {
+      return true;
+    }
     // If all the row keys and ranges are read, end the stream
     // and do not retry.
     if (this.rowKeys.length === 0 && this.ranges.length === 0) {
