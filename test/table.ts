@@ -1218,7 +1218,7 @@ describe('Bigtable/Table', () => {
           },
         });
       });
-      it('should pass the right information to the gapic layer in a complex example', done => {
+      it('should pass gax options and readrows request data to the gapic layer in a complex example', done => {
         const gaxOptions = {
           timeout: 734,
           autoPaginate: true,
