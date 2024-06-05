@@ -208,8 +208,8 @@ export class ReadRowsResumptionStrategy {
       return false;
     }
     // If there was a row limit in the original request and
-    // we've already read all the rows, end the stream and
-    // do not retry.
+    // we've already read all the rows and met/exceeded that limit, end the
+    // stream and do not retry.
     if (this.hasLimit && this.rowsLimit === this.rowsRead) {
       return false;
     }
