@@ -107,7 +107,7 @@ function getRequestOptions(request: {
       (rowKeys: RowKeysWithFunction) => rowKeys.asciiSlice()
     );
   }
-  // The grpc protocol sets rowsLimit to '0' if rowsLimit is not provided in the
+  // rowsLimit is set to '0' if rowsLimit is not provided in the
   // grpc request.
   //
   // Do not append rowsLimit to collection of request options if received grpc
