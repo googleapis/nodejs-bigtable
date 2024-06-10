@@ -59,17 +59,17 @@ function spliceRanges(
     const startValue = is.object(range.start)
       ? (range.start as BoundData).value
       : range.start;
-    const endValue = is.object(range.end)
-      ? (range.end as BoundData).value
-      : range.end;
     const startKeyIsRead =
       !startValue ||
       TableUtils.lessThanOrEqualTo(startValue as string, lastRowKey as string);
-    const endKeyIsNotRead =
-      !endValue ||
-      (endValue as Buffer).length === 0 ||
-      TableUtils.lessThan(lastRowKey as string, endValue as string);
     if (startKeyIsRead) {
+      const endValue = is.object(range.end)
+        ? (range.end as BoundData).value
+        : range.end;
+      const endKeyIsNotRead =
+        !endValue ||
+        (endValue as Buffer).length === 0 ||
+        TableUtils.lessThan(lastRowKey as string, endValue as string);
       if (endKeyIsNotRead) {
         // EndKey is not read, reset the range to start from lastRowKey open
         range.start = {
