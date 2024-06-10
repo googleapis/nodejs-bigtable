@@ -157,7 +157,7 @@ export class ReadRowsResumptionStrategy {
     // Create the new reqOpts
     reqOpts.rows = {};
 
-    // TODO: preprocess all the keys and ranges to Bytes
+    // Preprocess all the keys and ranges to Bytes
     reqOpts.rows.rowKeys = this.rowKeys.map(
       Mutation.convertToBytes
     ) as {} as Uint8Array[];
