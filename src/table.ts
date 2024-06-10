@@ -758,31 +758,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       to allow the user to cancel the stream and instantly stop receiving more
       data in the stream.
        */
-      userStream.end = (
-        chunkOrCb: () => void | Row,
-        encodingOrCb?: BufferEncoding | (() => void),
-        cb?: () => void
-      ) => {
+      userStream.end = (chunkOrCb: () => void | Row) => {
         rowStreamUnpipe(rowStream, userStream);
         userCanceled = true;
         if (activeRequestStream) {
           activeRequestStream.abort();
         }
         originalEnd();
-        function isEncoding(
-          e: BufferEncoding | (() => void)
-        ): e is BufferEncoding {
-          return true;
-        }
-        if (encodingOrCb) {
-          if (encodingOrCb && isEncoding(encodingOrCb)) {
-            return originalEnd(chunkOrCb, encodingOrCb, cb);
-          } else {
-            return originalEnd(chunkOrCb, encodingOrCb);
-          }
-        } else {
-          return originalEnd(chunkOrCb); // In practice, this code path is used.
-        }
+        return originalEnd(chunkOrCb); // In practice, this code path is used.
       };
       // The chunk transformer is used for transforming raw readrows data from
       // the server into data that can be consumed by the user.
