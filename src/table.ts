@@ -752,110 +752,109 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowStream?.removeListener('end', originalEnd);
     };
 
-    (() => {
-      /*
-      This end function was redefined in a fix to a data loss issue with streams
-      to allow the user to cancel the stream and instantly stop receiving more
-      data in the stream.
-       */
-      userStream.end = (chunkOrCb: () => void | Row) => {
-        rowStreamUnpipe(rowStream, userStream);
-        userCanceled = true;
-        if (activeRequestStream) {
-          activeRequestStream.abort();
-        }
-        originalEnd();
-        return originalEnd(chunkOrCb); // In practice, this code path is used.
-      };
-      // The chunk transformer is used for transforming raw readrows data from
-      // the server into data that can be consumed by the user.
-      const chunkTransformer: ChunkTransformer = new ChunkTransformer({
-        decode: options.decode,
-      } as TransformOptions);
-
-      // This defines a strategy object which is used for deciding if the client
-      // will retry and for deciding what request to retry with.
-      const strategy = new ReadRowsResumptionStrategy(
-        chunkTransformer,
-        options,
-        Object.assign(
-          {tableName: this.name},
-          this.bigtable.appProfileId
-            ? {appProfileId: this.bigtable.appProfileId}
-            : {}
-        )
-      );
-
-      const gaxOpts = populateAttemptHeader(0, options.gaxOptions);
-
-      // Attach retry options to gax if they are not provided in the function call.
-      gaxOpts.retry = strategy.toRetryOptions(gaxOpts);
-      if (gaxOpts.maxRetries === undefined) {
-        gaxOpts.maxRetries = maxRetries;
+    /*
+    This end function was redefined in a fix to a data loss issue with streams
+    to allow the user to cancel the stream and instantly stop receiving more
+    data in the stream.
+     */
+    userStream.end = (chunkOrCb: () => void | Row) => {
+      rowStreamUnpipe(rowStream, userStream);
+      userCanceled = true;
+      if (activeRequestStream) {
+        activeRequestStream.abort();
       }
+      originalEnd();
+      return originalEnd(chunkOrCb); // In practice, this code path is used.
+    };
+    // The chunk transformer is used for transforming raw readrows data from
+    // the server into data that can be consumed by the user.
+    const chunkTransformer: ChunkTransformer = new ChunkTransformer({
+      decode: options.decode,
+    } as TransformOptions);
 
-      // This gets the first request to send to the readRows endpoint.
-      const reqOpts = strategy.getResumeRequest();
-      const requestStream = this.bigtable.request({
-        client: 'BigtableClient',
-        method: 'readRows',
-        reqOpts,
-        gaxOpts,
+    // This defines a strategy object which is used for deciding if the client
+    // will retry and for deciding what request to retry with.
+    const strategy = new ReadRowsResumptionStrategy(
+      chunkTransformer,
+      options,
+      Object.assign(
+        {tableName: this.name},
+        this.bigtable.appProfileId
+          ? {appProfileId: this.bigtable.appProfileId}
+          : {}
+      )
+    );
+
+    const gaxOpts = populateAttemptHeader(0, options.gaxOptions);
+
+    // Attach retry options to gax if they are not provided in the function call.
+    gaxOpts.retry = strategy.toRetryOptions(gaxOpts);
+    if (gaxOpts.maxRetries === undefined) {
+      gaxOpts.maxRetries = maxRetries;
+    }
+
+    // This gets the first request to send to the readRows endpoint.
+    const reqOpts = strategy.getResumeRequest();
+    const requestStream = this.bigtable.request({
+      client: 'BigtableClient',
+      method: 'readRows',
+      reqOpts,
+      gaxOpts,
+    });
+
+    activeRequestStream = requestStream!;
+
+    // After readrows data has been transformed by the chunk transformer, this
+    // transform can be used to prepare the data into row objects for the user
+    // or block more data from being emitted if the stream has been cancelled.
+    const toRowStream = new Transform({
+      transform: (rowData, _, next) => {
+        if (
+          userCanceled ||
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (userStream as any)._writableState.ended
+        ) {
+          return next();
+        }
+        strategy.rowsRead++;
+        const row = this.row(rowData.key);
+        row.data = rowData.data;
+        next(null, row);
+      },
+      objectMode: true,
+    });
+
+    // This creates a row stream which is three streams connected in a series.
+    // Data and errors from the requestStream feed into the chunkTransformer
+    // and data/errors from the chunk transformer feed into toRowStream.
+    const rowStream: Duplex = pumpify.obj([
+      requestStream,
+      chunkTransformer,
+      toRowStream,
+    ]);
+    // This code attaches handlers to the row stream to deal with special
+    // cases when data is received or errors are emitted.
+    rowStream
+      .on('error', (error: ServiceError) => {
+        // This ends the stream for errors that should be ignored. For other
+        // errors it sends the error to the user.
+        rowStreamUnpipe(rowStream, userStream);
+        activeRequestStream = null;
+        if (IGNORED_STATUS_CODES.has(error.code)) {
+          // We ignore the `cancelled` "error", since we are the ones who cause
+          // it when the user calls `.abort()`.
+          userStream.end();
+          return;
+        }
+        userStream.emit('error', error);
+      })
+      .on('end', () => {
+        activeRequestStream = null;
       });
+    // rowStreamPipe sends errors and data emitted by the rowStream to the
+    // userStream.
+    rowStreamPipe(rowStream, userStream);
 
-      activeRequestStream = requestStream!;
-
-      // After readrows data has been transformed by the chunk transformer, this
-      // transform can be used to prepare the data into row objects for the user
-      // or block more data from being emitted if the stream has been cancelled.
-      const toRowStream = new Transform({
-        transform: (rowData, _, next) => {
-          if (
-            userCanceled ||
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (userStream as any)._writableState.ended
-          ) {
-            return next();
-          }
-          strategy.rowsRead++;
-          const row = this.row(rowData.key);
-          row.data = rowData.data;
-          next(null, row);
-        },
-        objectMode: true,
-      });
-
-      // This creates a row stream which is three streams connected in a series.
-      // Data and errors from the requestStream feed into the chunkTransformer
-      // and data/errors from the chunk transformer feed into toRowStream.
-      const rowStream: Duplex = pumpify.obj([
-        requestStream,
-        chunkTransformer,
-        toRowStream,
-      ]);
-      // This code attaches handlers to the row stream to deal with special
-      // cases when data is received or errors are emitted.
-      rowStream
-        .on('error', (error: ServiceError) => {
-          // This ends the stream for errors that should be ignored. For other
-          // errors it sends the error to the user.
-          rowStreamUnpipe(rowStream, userStream);
-          activeRequestStream = null;
-          if (IGNORED_STATUS_CODES.has(error.code)) {
-            // We ignore the `cancelled` "error", since we are the ones who cause
-            // it when the user calls `.abort()`.
-            userStream.end();
-            return;
-          }
-          userStream.emit('error', error);
-        })
-        .on('end', () => {
-          activeRequestStream = null;
-        });
-      // rowStreamPipe sends errors and data emitted by the rowStream to the
-      // userStream.
-      rowStreamPipe(rowStream, userStream);
-    })();
     return userStream;
   }
 
