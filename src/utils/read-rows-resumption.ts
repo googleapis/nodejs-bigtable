@@ -34,7 +34,8 @@ interface TableStrategyInfo {
   appProfileId?: string;
 }
 
-// Gets the row keys for a readrows request.
+// Gets the row keys for a readrows request by filtering out row keys that have
+// already been read.
 function getRowKeys(
   rowKeys: string[],
   lastRowKey: string | number | true | Uint8Array
