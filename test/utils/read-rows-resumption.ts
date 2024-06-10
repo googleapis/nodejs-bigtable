@@ -148,6 +148,27 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
       },
       lastRowKey: 'c',
     },
+    {
+      name: 'should generate the right resumption request without any filtering',
+      expectedResumeRequest: {
+        rows: {
+          rowKeys: ['c', 'd', 'e'].map(key => Buffer.from(key)),
+          rowRanges: [
+            {startKeyClosed: Buffer.from('d'), endKeyClosed: Buffer.from('f')},
+            {startKeyClosed: Buffer.from('g'), endKeyClosed: Buffer.from('h')},
+          ],
+        },
+        tableName,
+      },
+      options: {
+        keys: ['c', 'd', 'e'],
+        ranges: [
+          {start: 'd', end: 'f'},
+          {start: 'g', end: 'h'},
+        ],
+      },
+      lastRowKey: 'b',
+    },
   ].forEach(test => {
     it(test.name, () => {
       const chunkTransformer = new ChunkTransformer({
