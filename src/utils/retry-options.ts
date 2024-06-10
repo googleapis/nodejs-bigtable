@@ -13,10 +13,13 @@
 // limitations under the License.
 
 import {BackoffSettings} from 'google-gax/build/src/gax';
-import {GoogleError, ServiceError} from 'google-gax';
+import {GoogleError, grpc, ServiceError} from 'google-gax';
 
-// (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
-export const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
+export const RETRYABLE_STATUS_CODES = new Set([
+  grpc.status.DEADLINE_EXCEEDED.valueOf(),
+  grpc.status.ABORTED.valueOf(),
+  grpc.status.UNAVAILABLE.valueOf(),
+]);
 export const DEFAULT_BACKOFF_SETTINGS: BackoffSettings = {
   initialRetryDelayMillis: 10,
   retryDelayMultiplier: 2,
