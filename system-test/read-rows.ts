@@ -157,7 +157,8 @@ describe('Bigtable/Table', () => {
         assert.fail(
           'An error should have been thrown because the client is closed'
         );
-      } catch (err: any) {
+      } catch (err) {
+        assert(err instanceof GoogleError);
         assert.strictEqual(err.message, 'The client has already been closed.');
       }
     });
