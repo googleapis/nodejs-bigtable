@@ -178,7 +178,7 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
       lastRowKey: 'b',
     },
     {
-      name: 'not retry again if the last row key exceeds all the row keys requested',
+      name: 'should not retry again if the last row key exceeds all the row keys requested',
       shouldRetry: false,
       options: {
         keys: ['a', 'b', 'c'],
