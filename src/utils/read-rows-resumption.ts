@@ -27,6 +27,7 @@ import {
   RETRYABLE_STATUS_CODES,
 } from './retry-options';
 import * as is from 'is';
+import arrify = require('arrify');
 
 // This interface contains the information that will be used in a request.
 interface TableStrategyInfo {
@@ -231,7 +232,11 @@ export class ReadRowsResumptionStrategy {
     }
     if (
       error.code &&
-      (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
+      ((
+        this?.options?.gaxOptions?.retry?.retryCodes ||
+        arrify(RETRYABLE_STATUS_CODES)
+      ).includes(error.code) ||
+        isRstStreamError(error))
     ) {
       return true;
     }
@@ -261,16 +266,12 @@ export class ReadRowsResumptionStrategy {
     const getResumeRequest = () => {
       return this.getResumeRequest() as RequestType;
     };
-    // TODO: Only use canResume if all of retryCodes, backoffSettings and shouldRetryFn are not provided.
-    // TODO: Explain gax behaviour
-    const shouldRetryFn =
-      gaxOpts?.retry?.shouldRetryFn || gaxOpts?.retry?.retryCodes
-        ? gaxOpts?.retry?.shouldRetryFn
-        : canResume;
+    // In RetryOptions, the retryCodes are ignored if a shouldRetryFn is provided.
+    // The 3rd parameter, the shouldRetryFn will determine if the client should retry.
     return new RetryOptions(
-      gaxOpts?.retry?.retryCodes || [],
+      [],
       gaxOpts?.retry?.backoffSettings || DEFAULT_BACKOFF_SETTINGS,
-      shouldRetryFn,
+      gaxOpts?.retry?.shouldRetryFn || canResume,
       gaxOpts?.retry?.getResumptionRequestFn || getResumeRequest
     );
   }
