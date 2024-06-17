@@ -593,7 +593,7 @@
         "keys": ["a", "b", "c"],
         "gaxOptions": {
           "retry" : {
-            "retryCodes": [14]
+            "retryCodes": [14, 13]
           }
         }
       },
@@ -605,13 +605,18 @@
         {
           "rowKeys": ["b", "c"],
           "rowRanges": []
+        },
+        {
+          "rowKeys": ["b", "c"],
+          "rowRanges": []
         }
       ],
       "responses": [
         { "row_keys": ["a"], "end_with_error": 14},
+        { "row_keys": [], "end_with_error": 13},
         { "row_keys": ["b"], "end_with_error": 4}
       ],
-      "row_keys_read": [["a"], ["b"]],
+      "row_keys_read": [["a"], [], ["b"]],
       "error": 4
     }
   ]
