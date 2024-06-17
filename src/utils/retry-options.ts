@@ -30,10 +30,10 @@ export const isRstStreamError = (
   error: GoogleError | ServiceError
 ): boolean => {
   // Retry on "received rst stream" errors
-  if (error.code === 13 && error.message) {
+  if (error.code === grpc.status.INTERNAL && error.message) {
     const error_message = (error.message || '').toLowerCase();
     return (
-      error.code === 13 &&
+      error.code === grpc.status.INTERNAL &&
       (error_message.includes('rst_stream') ||
         error_message.includes('rst stream') ||
         error_message.includes(
