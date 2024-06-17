@@ -138,6 +138,23 @@ export class ReadRowsResumptionStrategy {
   }
 
   /**
+    This function updates the row keys and row ranges based on the lastRowKey
+    value in the chunk transformer. This idempotent function is called in
+    canResume, but since canResume is only used when a retry function is not
+    provided, we need to also call it in getResumeRequest so that it is
+    guaranteed to be called before an outgoing request is made.
+   */
+  private updateKeysAndRanges() {
+    const lastRowKey = this.chunkTransformer
+      ? this.chunkTransformer.lastRowKey
+      : '';
+    if (lastRowKey) {
+      spliceRanges(this.ranges, lastRowKey);
+      this.rowKeys = getRowKeys(this.rowKeys, lastRowKey);
+    }
+  }
+
+  /**
    * Gets the next readrows request.
    *
    * This function computes the next readRows request that will be sent to the
@@ -151,6 +168,7 @@ export class ReadRowsResumptionStrategy {
    * for the next readrows request.
    */
   getResumeRequest(): protos.google.bigtable.v2.IReadRowsRequest {
+    this.updateKeysAndRanges();
     const reqOpts = this
       .tableStrategyInfo as google.bigtable.v2.IReadRowsRequest;
 
@@ -196,13 +214,7 @@ export class ReadRowsResumptionStrategy {
    */
   canResume(error: GoogleError): boolean {
     // First update the row keys and the row ranges based on the last row key.
-    const lastRowKey = this.chunkTransformer
-      ? this.chunkTransformer.lastRowKey
-      : '';
-    if (lastRowKey) {
-      spliceRanges(this.ranges, lastRowKey);
-      this.rowKeys = getRowKeys(this.rowKeys, lastRowKey);
-    }
+    this.updateKeysAndRanges();
     if (error.statusDetails === 'RetryInfo') {
       return true;
     }
@@ -240,19 +252,25 @@ export class ReadRowsResumptionStrategy {
    *
    */
   toRetryOptions(gaxOpts: CallOptions): RetryOptions {
+    // On individual calls, the user can override any of the default
+    // retry options. Overrides can be done on the retryCodes, backoffSettings,
+    // shouldRetryFn or getResumptionRequestFn.
     const canResume = (error: GoogleError) => {
       return this.canResume(error);
     };
     const getResumeRequest = () => {
       return this.getResumeRequest() as RequestType;
     };
-    // On individual calls, the user can override any of the default
-    // retry options. Overrides can be done on the retryCodes, backoffSettings,
-    // shouldRetryFn or getResumptionRequestFn.
+    // TODO: Only use canResume if all of retryCodes, backoffSettings and shouldRetryFn are not provided.
+    // TODO: Explain gax behaviour
+    const shouldRetryFn =
+      gaxOpts?.retry?.shouldRetryFn || gaxOpts?.retry?.retryCodes
+        ? gaxOpts?.retry?.shouldRetryFn
+        : canResume;
     return new RetryOptions(
       gaxOpts?.retry?.retryCodes || [],
       gaxOpts?.retry?.backoffSettings || DEFAULT_BACKOFF_SETTINGS,
-      gaxOpts?.retry?.shouldRetryFn || canResume,
+      shouldRetryFn,
       gaxOpts?.retry?.getResumptionRequestFn || getResumeRequest
     );
   }
