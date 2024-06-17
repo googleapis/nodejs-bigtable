@@ -1185,7 +1185,7 @@ describe('Bigtable/Table', () => {
           return {fakeProperty: 19};
         };
         const retry = new RetryOptions(
-          customRetryCodes,
+          [],
           customBackOffSettings,
           customCanResume,
           customGetResumptionRequestFn
