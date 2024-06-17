@@ -117,6 +117,7 @@ export class ReadRowsResumptionStrategy {
   private hasLimit: boolean;
   private options: GetRowsOptions;
   private tableStrategyInfo: TableStrategyInfo;
+  private retryCodes;
   rowsRead = 0;
   constructor(
     chunkTransformer: ChunkTransformer,
@@ -130,6 +131,11 @@ export class ReadRowsResumptionStrategy {
     this.rowsLimit = options.limit || 0;
     this.hasLimit = this.rowsLimit !== 0;
     this.rowsRead = 0;
+    if (this?.options?.gaxOptions?.retry?.retryCodes) {
+      // Clone the retry codes
+      this.retryCodes = this?.options?.gaxOptions?.retry?.retryCodes.slice(0);
+    }
+
     this.tableStrategyInfo = tableStrategyInfo;
     // If rowKeys and ranges are both empty, the request is a full table scan.
     // Add an empty range to simplify the resumption logic.
@@ -230,13 +236,12 @@ export class ReadRowsResumptionStrategy {
     if (this.hasLimit && this.rowsLimit === this.rowsRead) {
       return false;
     }
+    const retryCodesUsed = this.retryCodes
+      ? this.retryCodes
+      : arrify(RETRYABLE_STATUS_CODES);
     if (
       error.code &&
-      ((
-        this?.options?.gaxOptions?.retry?.retryCodes ||
-        arrify(RETRYABLE_STATUS_CODES)
-      ).includes(error.code) ||
-        isRstStreamError(error))
+      (retryCodesUsed.includes(error.code) || isRstStreamError(error))
     ) {
       return true;
     }
