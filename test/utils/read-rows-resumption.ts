@@ -23,6 +23,7 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
   [
     {
       name: 'should generate the right resumption request with no options each time',
+      shouldRetry: true,
       expectedResumeRequest: {
         rows: {
           rowKeys: [],
@@ -34,6 +35,7 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
     },
     {
       name: 'should generate the right resumption requests with a last row key',
+      shouldRetry: true,
       expectedResumeRequest: {
         rows: {
           rowKeys: ['c'].map(key => Buffer.from(key)),
@@ -48,6 +50,7 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
     },
     {
       name: 'should generate the right resumption request with the lastrow key in a row range',
+      shouldRetry: true,
       expectedResumeRequest: {
         rows: {
           rowKeys: [],
@@ -68,6 +71,7 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
     },
     {
       name: 'should generate the right resumption request with the lastrow key at the end of a row range',
+      shouldRetry: true,
       expectedResumeRequest: {
         rows: {
           rowKeys: [],
@@ -87,6 +91,7 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
     },
     {
       name: 'should generate the right resumption request with start and end',
+      shouldRetry: true,
       expectedResumeRequest: {
         rows: {
           rowKeys: [],
@@ -107,6 +112,7 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
     },
     {
       name: 'should generate the right resumption request with prefixes',
+      shouldRetry: true,
       expectedResumeRequest: {
         rows: {
           rowKeys: [],
@@ -130,6 +136,7 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
     },
     {
       name: 'should generate the right resumption request with row ranges and row keys',
+      shouldRetry: true,
       expectedResumeRequest: {
         rows: {
           rowKeys: ['d'].map(key => Buffer.from(key)),
@@ -150,6 +157,7 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
     },
     {
       name: 'should generate the right resumption request without any filtering',
+      shouldRetry: true,
       expectedResumeRequest: {
         rows: {
           rowKeys: ['c', 'd', 'e'].map(key => Buffer.from(key)),
@@ -184,16 +192,21 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
           tableName,
         }
       );
-      strategy.canResume(new GoogleError()); // Updates strategy state.
+      const error = new GoogleError();
+      error.code = 4;
+      const willRetry = strategy.canResume(error); // Updates strategy state.
       // Do this check 2 times to make sure getResumeRequest is idempotent.
-      assert.deepStrictEqual(
-        strategy.getResumeRequest(),
-        test.expectedResumeRequest
-      );
-      assert.deepStrictEqual(
-        strategy.getResumeRequest(),
-        test.expectedResumeRequest
-      );
+      assert.strictEqual(willRetry, test.shouldRetry);
+      if (willRetry) {
+        assert.deepStrictEqual(
+          strategy.getResumeRequest(),
+          test.expectedResumeRequest
+        );
+        assert.deepStrictEqual(
+          strategy.getResumeRequest(),
+          test.expectedResumeRequest
+        );
+      }
     });
   });
   it('should generate the right resumption request with the limit', () => {
