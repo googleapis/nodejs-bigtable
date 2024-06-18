@@ -99,15 +99,6 @@ function spliceRanges(
  * @param {TableStrategyInfo} tableStrategyInfo Data passed about the table
  * that is necessary for the readRows request.
  *
- * @example
- * ```
- * const strategy = new ReadRowsResumptionStrategy(
- *   chunkTransformer,
- *   options,
- *   {tableName: 'projects/my-project/instances/my-instance/tables/my-table'}
- * )
- * gaxOpts.retry = strategy.toRetryOptions(gaxOpts);
- * ```
  */
 export class ReadRowsResumptionStrategy {
   private chunkTransformer: ChunkTransformer;
