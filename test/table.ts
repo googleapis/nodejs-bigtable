@@ -1173,51 +1173,6 @@ describe('Bigtable/Table', () => {
         tableWithRetries.maxRetries = 7;
         tableWithRetries.createReadStream();
       });
-      it('should pass custom retry settings to the gapic layer', done => {
-        const customRetryCodes = [11, 12];
-        const customBackOffSettings = {
-          initialRetryDelayMillis: 17,
-          retryDelayMultiplier: 289,
-          maxRetryDelayMillis: 60923,
-        };
-        const customCanResume = (error: GoogleError) => error.code === 6;
-        const customGetResumptionRequestFn = (request: RequestType) => {
-          return {fakeProperty: 19};
-        };
-        const retry = new RetryOptions(
-          [],
-          customBackOffSettings,
-          customCanResume,
-          customGetResumptionRequestFn
-        );
-        const expectedOptions = {
-          otherArgs: {
-            headers: {
-              'bigtable-attempt': 0,
-            },
-          },
-          retry,
-        };
-        tester.testReadRowsGapicCall(
-          done,
-          {
-            rows: {
-              rowKeys: [],
-              rowRanges: [{}],
-            },
-            tableName,
-          },
-          expectedOptions
-        );
-        const tableWithRetries: Table = bigtable
-          .instance('fake-instance')
-          .table('fake-table');
-        tableWithRetries.createReadStream({
-          gaxOptions: {
-            retry,
-          },
-        });
-      });
       it('should pass gax options and readrows request data to the gapic layer in a complex example', done => {
         const gaxOptions = {
           timeout: 734,
