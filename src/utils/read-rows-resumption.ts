@@ -262,13 +262,14 @@ export class ReadRowsResumptionStrategy {
     const getResumeRequest = () => {
       return this.getResumeRequest() as RequestType;
     };
-    // In RetryOptions, the retryCodes are ignored if a shouldRetryFn is provided.
+    // In RetryOptions, the 1st parameter, the retryCodes are ignored if a
+    // shouldRetryFn is provided.
     // The 3rd parameter, the shouldRetryFn will determine if the client should retry.
     return new RetryOptions(
       [],
       gaxOpts?.retry?.backoffSettings || DEFAULT_BACKOFF_SETTINGS,
-      gaxOpts?.retry?.shouldRetryFn || canResume,
-      gaxOpts?.retry?.getResumptionRequestFn || getResumeRequest
+      canResume,
+      getResumeRequest
     );
   }
 }
