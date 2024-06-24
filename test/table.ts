@@ -18,8 +18,8 @@ import {afterEach, before, beforeEach, describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as pumpify from 'pumpify';
 import * as sinon from 'sinon';
-import {PassThrough, Writable, Duplex} from 'stream';
-import {ServiceError} from 'google-gax';
+import {PassThrough, Writable} from 'stream';
+import {GoogleError, RetryOptions, ServiceError} from 'google-gax';
 
 import * as inst from '../src/instance';
 import {ChunkTransformer} from '../src/chunktransformer.js';
@@ -30,6 +30,10 @@ import * as tblTypes from '../src/table';
 import {Bigtable, RequestOptions} from '../src';
 import {EventEmitter} from 'events';
 import {TableUtils} from '../src/utils/table';
+import {ReadRowsResumptionStrategy} from '../src/utils/read-rows-resumption';
+import {MockGapicLayer} from './util/mock-gapic-layer';
+import {Table} from '../src/table';
+import {RequestType} from 'google-gax/build/src/apitypes';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
@@ -110,12 +114,22 @@ describe('Bigtable/Table', () => {
   let table: any;
 
   before(() => {
+    const FakeReadRowsResumptionStrategy: ReadRowsResumptionStrategy =
+      proxyquire('../src/utils/read-rows-resumption', {
+        '../family.js': {Family: FakeFamily},
+        '../mutation.js': {Mutation: FakeMutation},
+        '../filter.js': {Filter: FakeFilter},
+        '../row.js': {Row: FakeRow},
+      }).ReadRowsResumptionStrategy;
     Table = proxyquire('../src/table.js', {
       '@google-cloud/promisify': fakePromisify,
       './family.js': {Family: FakeFamily},
       './mutation.js': {Mutation: FakeMutation},
       './filter.js': {Filter: FakeFilter},
       pumpify,
+      './utils/read-rows-resumption': {
+        ReadRowsResumptionStrategy: FakeReadRowsResumptionStrategy,
+      },
       './row.js': {Row: FakeRow},
       './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
     }).Table;
@@ -547,6 +561,8 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(config.reqOpts.appProfileId, undefined);
         assert.deepStrictEqual(config.gaxOpts, {
           otherArgs: {headers: {'bigtable-attempt': 0}},
+          retry: config.gaxOpts.retry,
+          maxRetries: 10,
         });
         done();
       };
@@ -1109,350 +1125,109 @@ describe('Bigtable/Table', () => {
       });
     });
 
-    describe('retries', () => {
-      let callCreateReadStream: Function;
-      let emitters: EventEmitter[] | null; // = [((stream: Writable) => { stream.push([{ key: 'a' }]);
-      // stream.end(); }, ...];
-      let makeRetryableError: Function;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let reqOptsCalls: any[];
-      let setTimeoutSpy: sinon.SinonSpy;
+    describe('createReadStream mocking out the gapic layer', () => {
+      const bigtable = new Bigtable({
+        projectId: 'fake-project-id',
+      });
+      const tester = new MockGapicLayer(bigtable);
+      const table: Table = bigtable
+        .instance('fake-instance')
+        .table('fake-table');
+      const tableName =
+        'projects/fake-project-id/instances/fake-instance/tables/fake-table';
 
-      beforeEach(() => {
-        FakeChunkTransformer.prototype._transform = function (
-          rows: Row[],
-          enc: {},
-          next: Function
-        ) {
-          rows.forEach(row => this.push(row));
-          this.lastRowKey = rows[rows.length - 1].key;
-          next();
-        };
-
-        FakeChunkTransformer.prototype._flush = (cb: Function) => {
-          cb();
-        };
-
-        callCreateReadStream = (options: {}, verify: Function) => {
-          table.createReadStream(options).on('end', verify).resume(); // The stream starts paused unless it has a `.data()`
-          // callback.
-        };
-
-        emitters = null; // This needs to be assigned in each test case.
-
-        makeRetryableError = () => {
-          const error = new Error('retry me!') as ServiceError;
-          error.code = 4;
-          return error;
-        };
-
-        (sandbox.stub(FakeFilter, 'createRange') as sinon.SinonStub).callsFake(
-          (start, end) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const range: any = {};
-            if (start) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              range.start = (start as any).value || start;
-              range.startInclusive =
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                typeof start === 'object' ? (start as any).inclusive : true;
-            }
-            if (end) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              range.end = (end as any).value || end;
-            }
-            return range;
-          }
+      it('should pass the right retry configuration to the gapic layer', done => {
+        const expectedOptions = tester.buildReadRowsGaxOptions(tableName, {});
+        tester.testReadRowsGapicCall(
+          done,
+          {
+            rows: {
+              rowKeys: [],
+              rowRanges: [{}],
+            },
+            tableName,
+          },
+          expectedOptions
         );
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (FakeMutation as any).convertToBytes = (value: string) => {
-          return Buffer.from(value);
+        table.createReadStream();
+      });
+      it('should pass maxRetries to the gapic layer', done => {
+        const expectedOptions = Object.assign(
+          {maxRetries: 7},
+          tester.buildReadRowsGaxOptions(tableName, {})
+        );
+        tester.testReadRowsGapicCall(
+          done,
+          {
+            rows: {
+              rowKeys: [],
+              rowRanges: [{}],
+            },
+            tableName,
+          },
+          expectedOptions
+        );
+        const tableWithRetries: Table = bigtable
+          .instance('fake-instance')
+          .table('fake-table');
+        tableWithRetries.maxRetries = 7;
+        tableWithRetries.createReadStream();
+      });
+      it('should pass gax options and readrows request data to the gapic layer in a complex example', done => {
+        const gaxOptions = {
+          timeout: 734,
+          autoPaginate: true,
+          maxResults: 565,
+          maxRetries: 477,
         };
-
-        reqOptsCalls = [];
-
-        setTimeoutSpy = sandbox
-          .stub(global, 'setTimeout')
-          .callsFake(fn => (fn as Function)());
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        table.bigtable.request = (config: any) => {
-          reqOptsCalls.push(config.reqOpts);
-
-          const stream = new PassThrough({
-            objectMode: true,
-          });
-
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (stream as any).abort = () => {};
-
-          setImmediate(() => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (emitters!.shift() as any)(stream);
-          });
-          return stream;
-        };
-      });
-
-      afterEach(() => {
-        if (setTimeoutSpy) {
-          setTimeoutSpy.restore();
-        }
-      });
-
-      it('should do a retry the stream is interrupted', done => {
-        emitters = [
-          ((stream: Writable) => {
-            stream.emit('error', makeRetryableError());
-            stream.end();
-          }) as {} as EventEmitter,
-          ((stream: Writable) => {
-            stream.end();
-          }) as {} as EventEmitter,
-        ];
-        callCreateReadStream(null, () => {
-          assert.strictEqual(reqOptsCalls.length, 2);
-          done();
-        });
-      });
-
-      it('should not retry CANCELLED errors', done => {
-        emitters = [
-          ((stream: Writable) => {
-            const cancelledError = new Error(
-              'do not retry me!'
-            ) as ServiceError;
-            cancelledError.code = 1;
-            stream.emit('error', cancelledError);
-            stream.end();
-          }) as {} as EventEmitter,
-        ];
-        callCreateReadStream(null, () => {
-          assert.strictEqual(reqOptsCalls.length, 1);
-          done();
-        });
-      });
-
-      it('should not retry over maxRetries', done => {
-        const error = new Error('retry me!') as ServiceError;
-        error.code = 4;
-
-        emitters = [
-          ((stream: Writable) => {
-            stream.emit('error', error);
-            stream.end();
-          }) as {} as EventEmitter,
-        ];
-
-        table.maxRetries = 0;
-        table
-          .createReadStream()
-          .on('error', (err: ServiceError) => {
-            assert.strictEqual(err, error);
-            assert.strictEqual(reqOptsCalls.length, 1);
-            done();
-          })
-          .on('end', done)
-          .resume();
-      });
-
-      it('should have a range which starts after the last read key', done => {
-        emitters = [
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ((stream: any) => {
-            stream.push([{key: 'a'}]);
-            stream.emit('error', makeRetryableError());
-          }) as {} as EventEmitter,
-          ((stream: Writable) => {
-            stream.end();
-          }) as {} as EventEmitter,
-        ];
-
-        const fullScan = {rowKeys: [], rowRanges: [{}]};
-
-        callCreateReadStream(null, () => {
-          assert.deepStrictEqual(reqOptsCalls[0].rows, fullScan);
-          assert.deepStrictEqual(reqOptsCalls[1].rows, {
-            rowKeys: [],
-            rowRanges: [{start: 'a', startInclusive: false}],
-          });
-          done();
-        });
-      });
-
-      it('should move the active range start to after the last read key', done => {
-        emitters = [
-          ((stream: Duplex) => {
-            stream.push([{key: 'a'}]);
-            stream.emit('error', makeRetryableError());
-          }) as {} as EventEmitter,
-          ((stream: Writable) => {
-            stream.end();
-          }) as {} as EventEmitter,
-        ];
-
-        callCreateReadStream({ranges: [{start: 'a'}]}, () => {
-          assert.deepStrictEqual(reqOptsCalls[0].rows, {
-            rowKeys: [],
-            rowRanges: [{start: 'a', startInclusive: true}],
-          });
-          assert.deepStrictEqual(reqOptsCalls[1].rows, {
-            rowKeys: [],
-            rowRanges: [{start: 'a', startInclusive: false}],
-          });
-          done();
-        });
-      });
-
-      it('should remove ranges which were already read', done => {
-        emitters = [
-          ((stream: Duplex) => {
-            stream.push([{key: 'a'}]);
-            stream.push([{key: 'b'}]);
-            stream.emit('error', makeRetryableError());
-          }) as {} as EventEmitter,
-          ((stream: Duplex) => {
-            stream.push([{key: 'c'}]);
-            stream.end();
-          }) as {} as EventEmitter,
-        ];
-
         const options = {
-          ranges: [{start: 'a', end: 'b'}, {start: 'c'}],
+          filter: {
+            row: 'cn',
+          },
+          gaxOptions,
+          keys: ['ey', 'gh'],
+          limit: 98,
+          ranges: [
+            {start: 'cc', end: 'ef'},
+            {
+              start: {inclusive: false, value: 'pq'},
+              end: {inclusive: true, value: 'rt'},
+            },
+          ],
         };
-
-        callCreateReadStream(options, () => {
-          const allRanges = [
-            {start: 'a', end: 'b', startInclusive: true},
-            {start: 'c', startInclusive: true},
-          ];
-          assert.deepStrictEqual(reqOptsCalls[0].rows, {
-            rowKeys: [],
-            rowRanges: allRanges,
-          });
-          assert.deepStrictEqual(reqOptsCalls[1].rows, {
-            rowKeys: [],
-            rowRanges: allRanges.slice(1),
-          });
-          done();
-        });
-      });
-
-      it('should remove the keys which were already read', done => {
-        emitters = [
-          ((stream: Duplex) => {
-            stream.push([{key: 'a'}]);
-            stream.emit('error', makeRetryableError());
-          }) as {} as EventEmitter,
-          ((stream: Duplex) => {
-            stream.end([{key: 'c'}]);
-          }) as {} as EventEmitter,
-        ];
-
-        callCreateReadStream({keys: ['a', 'b']}, () => {
-          assert.strictEqual(reqOptsCalls[0].rows.rowKeys.length, 2);
-          assert.strictEqual(reqOptsCalls[1].rows.rowKeys.length, 1);
-          done();
-        });
-      });
-
-      it('should not retry if limit is reached', done => {
-        emitters = [
-          ((stream: Duplex) => {
-            stream.push([{key: 'a'}]);
-            stream.push([{key: 'b'}]);
-            stream.emit('error', makeRetryableError());
-          }) as {} as EventEmitter,
-        ];
-
-        const options = {
-          ranges: [{start: 'a', end: 'c'}],
-          limit: 2,
-        };
-
-        callCreateReadStream(options, () => {
-          assert.strictEqual(reqOptsCalls.length, 1);
-          done();
-        });
-      });
-
-      it('should not retry if all the keys are read', done => {
-        emitters = [
-          ((stream: Duplex) => {
-            stream.push([{key: 'a'}]);
-            stream.emit('error', makeRetryableError());
-          }) as {} as EventEmitter,
-        ];
-
-        callCreateReadStream({keys: ['a']}, () => {
-          assert.strictEqual(reqOptsCalls.length, 1);
-          done();
-        });
-      });
-
-      it('shouldn not retry if all the ranges are read', done => {
-        emitters = [
-          ((stream: Duplex) => {
-            stream.push([{key: 'c'}]);
-            stream.emit('error', makeRetryableError());
-          }) as {} as EventEmitter,
-        ];
-
-        const options = {
-          ranges: [{start: 'a', end: 'c', endInclusive: true}],
-        };
-
-        callCreateReadStream(options, () => {
-          assert.strictEqual(reqOptsCalls.length, 1);
-          assert.deepStrictEqual(reqOptsCalls[0].rows, {
-            rowKeys: [],
-            rowRanges: [{start: 'a', end: 'c', startInclusive: true}],
-          });
-          done();
-        });
-      });
-
-      it('shouldn not retry with keys and ranges that are read', done => {
-        emitters = [
-          ((stream: Duplex) => {
-            stream.push([{key: 'a1'}]);
-            stream.push([{key: 'd'}]);
-            stream.emit('error', makeRetryableError());
-          }) as {} as EventEmitter,
-        ];
-
-        const options = {
-          ranges: [{start: 'a', end: 'b'}],
-          keys: ['c', 'd'],
-        };
-
-        callCreateReadStream(options, () => {
-          assert.strictEqual(reqOptsCalls.length, 1);
-          done();
-        });
-      });
-
-      it('should retry received rst stream errors', done => {
-        const rstStreamError = new Error('Received Rst_stream') as ServiceError;
-        rstStreamError.code = 13;
-        emitters = [
-          ((stream: Duplex) => {
-            stream.emit('error', rstStreamError);
-          }) as {} as EventEmitter,
-          ((stream: Duplex) => {
-            stream.end([{key: 'a'}]);
-          }) as {} as EventEmitter,
-        ];
-
-        const options = {
-          keys: ['a'],
-        };
-
-        callCreateReadStream(options, () => {
-          assert.strictEqual(reqOptsCalls.length, 2);
-          done();
-        });
+        const expectedOptions = Object.assign(
+          gaxOptions,
+          tester.buildReadRowsGaxOptions(tableName, {})
+        );
+        tester.testReadRowsGapicCall(
+          done,
+          {
+            rows: {
+              rowKeys: ['ey', 'gh'].map(key => Buffer.from(key)),
+              rowRanges: [
+                {
+                  startKeyClosed: Buffer.from('cc'),
+                  endKeyClosed: Buffer.from('ef'),
+                },
+                {
+                  startKeyOpen: Buffer.from('pq'),
+                  endKeyClosed: Buffer.from('rt'),
+                },
+              ],
+            },
+            tableName,
+            filter: {
+              rowKeyRegexFilter: Buffer.from('cn'),
+            },
+            rowsLimit: 98,
+          },
+          expectedOptions
+        );
+        const tableWithRetries: Table = bigtable
+          .instance('fake-instance')
+          .table('fake-table');
+        tableWithRetries.maxRetries = 7;
+        tableWithRetries.createReadStream(options);
       });
     });
   });

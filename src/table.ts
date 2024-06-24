@@ -14,9 +14,9 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-import {ServiceError} from 'google-gax';
+import {RetryOptions, ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
-import {PassThrough, Transform} from 'stream';
+import {PassThrough, Transform, TransformOptions} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
@@ -31,7 +31,7 @@ import {
   CreateFamilyResponse,
   IColumnFamily,
 } from './family';
-import {Filter, BoundData, RawFilter} from './filter';
+import {BoundData, RawFilter} from './filter';
 import {Mutation} from './mutation';
 import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
@@ -43,18 +43,15 @@ import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
 import {TableUtils} from './utils/table';
+import {
+  DEFAULT_BACKOFF_SETTINGS,
+  DEFAULT_RETRY_COUNT,
+  RETRYABLE_STATUS_CODES,
+} from './utils/retry-options';
+import {ReadRowsResumptionStrategy} from './utils/read-rows-resumption';
 
-// See protos/google/rpc/code.proto
-// (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
-const RETRYABLE_STATUS_CODES = new Set([4, 8, 10, 14]);
 // (1=CANCELLED)
 const IGNORED_STATUS_CODES = new Set([1]);
-
-const DEFAULT_BACKOFF_SETTINGS: BackoffSettings = {
-  initialRetryDelayMillis: 10,
-  retryDelayMultiplier: 2,
-  maxRetryDelayMillis: 60000,
-};
 
 /**
  * @typedef {object} Policy
@@ -719,34 +716,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * region_tag:bigtable_api_table_readstream
    */
   createReadStream(opts?: GetRowsOptions) {
-    const options = opts || {};
-    const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
+    const options: GetRowsOptions = opts || {};
+    const maxRetries = is.number(this.maxRetries)
+      ? this.maxRetries!
+      : DEFAULT_RETRY_COUNT;
     let activeRequestStream: AbortableDuplex | null;
-    let rowKeys: string[];
-    let filter: {} | null;
-    const rowsLimit = options.limit || 0;
-    const hasLimit = rowsLimit !== 0;
-    let rowsRead = 0;
-    let numConsecutiveErrors = 0;
-    let numRequestsMade = 0;
-    let retryTimer: NodeJS.Timeout | null;
-
-    rowKeys = options.keys || [];
-
-    const ranges = TableUtils.getRanges(options);
-
-    // If rowKeys and ranges are both empty, the request is a full table scan.
-    // Add an empty range to simplify the resumption logic.
-    if (rowKeys.length === 0 && ranges.length === 0) {
-      ranges.push({});
-    }
-
-    if (options.filter) {
-      filter = Filter.parse(options.filter);
-    }
-
-    let chunkTransformer: ChunkTransformer;
-    let rowStream: Duplex;
 
     let userCanceled = false;
     const userStream = new PassThrough({
@@ -778,209 +752,109 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowStream?.removeListener('end', originalEnd);
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
+    /*
+    This end function was redefined in a fix to a data loss issue with streams
+    to allow the user to cancel the stream and instantly stop receiving more
+    data in the stream.
+     */
+    userStream.end = (chunkOrCb: () => void | Row) => {
       rowStreamUnpipe(rowStream, userStream);
       userCanceled = true;
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
-      if (retryTimer) {
-        clearTimeout(retryTimer);
-      }
-      return originalEnd(chunk, encoding, cb);
+      originalEnd();
+      return originalEnd(chunkOrCb); // In practice, this code path is used.
     };
+    // The chunk transformer is used for transforming raw readrows data from
+    // the server into data that can be consumed by the user.
+    const chunkTransformer: ChunkTransformer = new ChunkTransformer({
+      decode: options.decode,
+    } as TransformOptions);
 
-    const makeNewRequest = () => {
-      // Avoid cancelling an expired timer if user
-      // cancelled the stream in the middle of a retry
-      retryTimer = null;
+    // This defines a strategy object which is used for deciding if the client
+    // will retry and for deciding what request to retry with.
+    const strategy = new ReadRowsResumptionStrategy(
+      chunkTransformer,
+      options,
+      Object.assign(
+        {tableName: this.name},
+        this.bigtable.appProfileId
+          ? {appProfileId: this.bigtable.appProfileId}
+          : {}
+      )
+    );
 
-      const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
+    const gaxOpts = populateAttemptHeader(0, options.gaxOptions);
 
-      const reqOpts = {
-        tableName: this.name,
-        appProfileId: this.bigtable.appProfileId,
-      } as google.bigtable.v2.IReadRowsRequest;
+    // Attach retry options to gax if they are not provided in the function call.
+    gaxOpts.retry = strategy.toRetryOptions(gaxOpts);
+    if (gaxOpts.maxRetries === undefined) {
+      gaxOpts.maxRetries = maxRetries;
+    }
 
-      const retryOpts = {
-        currentRetryAttempt: 0, // was numConsecutiveErrors
-        // Handling retries in this client. Specify the retry options to
-        // make sure nothing is retried in retry-request.
-        noResponseRetries: 0,
-        shouldRetryFn: (_: any) => {
-          return false;
-        },
-      };
+    // This gets the first request to send to the readRows endpoint.
+    const reqOpts = strategy.getResumeRequest();
+    const requestStream = this.bigtable.request({
+      client: 'BigtableClient',
+      method: 'readRows',
+      reqOpts,
+      gaxOpts,
+    });
 
-      if (lastRowKey) {
-        // Readjust and/or remove ranges based on previous valid row reads.
-        // Iterate backward since items may need to be removed.
-        for (let index = ranges.length - 1; index >= 0; index--) {
-          const range = ranges[index];
-          const startValue = is.object(range.start)
-            ? (range.start as BoundData).value
-            : range.start;
-          const endValue = is.object(range.end)
-            ? (range.end as BoundData).value
-            : range.end;
-          const startKeyIsRead =
-            !startValue ||
-            TableUtils.lessThanOrEqualTo(
-              startValue as string,
-              lastRowKey as string
-            );
-          const endKeyIsNotRead =
-            !endValue ||
-            (endValue as Buffer).length === 0 ||
-            TableUtils.lessThan(lastRowKey as string, endValue as string);
-          if (startKeyIsRead) {
-            if (endKeyIsNotRead) {
-              // EndKey is not read, reset the range to start from lastRowKey open
-              range.start = {
-                value: lastRowKey,
-                inclusive: false,
-              };
-            } else {
-              // EndKey is read, remove this range
-              ranges.splice(index, 1);
-            }
-          }
+    activeRequestStream = requestStream!;
+
+    // After readrows data has been transformed by the chunk transformer, this
+    // transform can be used to prepare the data into row objects for the user
+    // or block more data from being emitted if the stream has been cancelled.
+    const toRowStream = new Transform({
+      transform: (rowData, _, next) => {
+        if (
+          userCanceled ||
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (userStream as any)._writableState.ended
+        ) {
+          return next();
         }
+        strategy.rowsRead++;
+        const row = this.row(rowData.key);
+        row.data = rowData.data;
+        next(null, row);
+      },
+      objectMode: true,
+    });
 
-        // Remove rowKeys already read.
-        rowKeys = rowKeys.filter(rowKey =>
-          TableUtils.greaterThan(rowKey, lastRowKey as string)
-        );
-
-        // If there was a row limit in the original request and
-        // we've already read all the rows, end the stream and
-        // do not retry.
-        if (hasLimit && rowsLimit === rowsRead) {
+    // This creates a row stream which is three streams connected in a series.
+    // Data and errors from the requestStream feed into the chunkTransformer
+    // and data/errors from the chunk transformer feed into toRowStream.
+    const rowStream: Duplex = pumpify.obj([
+      requestStream,
+      chunkTransformer,
+      toRowStream,
+    ]);
+    // This code attaches handlers to the row stream to deal with special
+    // cases when data is received or errors are emitted.
+    rowStream
+      .on('error', (error: ServiceError) => {
+        // This ends the stream for errors that should be ignored. For other
+        // errors it sends the error to the user.
+        rowStreamUnpipe(rowStream, userStream);
+        activeRequestStream = null;
+        if (IGNORED_STATUS_CODES.has(error.code)) {
+          // We ignore the `cancelled` "error", since we are the ones who cause
+          // it when the user calls `.abort()`.
           userStream.end();
           return;
         }
-        // If all the row keys and ranges are read, end the stream
-        // and do not retry.
-        if (rowKeys.length === 0 && ranges.length === 0) {
-          userStream.end();
-          return;
-        }
-      }
-
-      // Create the new reqOpts
-      reqOpts.rows = {};
-
-      // TODO: preprocess all the keys and ranges to Bytes
-      reqOpts.rows.rowKeys = rowKeys.map(
-        Mutation.convertToBytes
-      ) as {} as Uint8Array[];
-
-      reqOpts.rows.rowRanges = ranges.map(range =>
-        Filter.createRange(
-          range.start as BoundData,
-          range.end as BoundData,
-          'Key'
-        )
-      );
-
-      if (filter) {
-        reqOpts.filter = filter;
-      }
-
-      if (hasLimit) {
-        reqOpts.rowsLimit = rowsLimit - rowsRead;
-      }
-
-      const gaxOpts = populateAttemptHeader(
-        numRequestsMade,
-        options.gaxOptions
-      );
-
-      const requestStream = this.bigtable.request({
-        client: 'BigtableClient',
-        method: 'readRows',
-        reqOpts,
-        gaxOpts,
-        retryOpts,
+        userStream.emit('error', error);
+      })
+      .on('end', () => {
+        activeRequestStream = null;
       });
+    // rowStreamPipe sends errors and data emitted by the rowStream to the
+    // userStream.
+    rowStreamPipe(rowStream, userStream);
 
-      activeRequestStream = requestStream!;
-
-      const toRowStream = new Transform({
-        transform: (rowData, _, next) => {
-          if (
-            userCanceled ||
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (userStream as any)._writableState.ended
-          ) {
-            return next();
-          }
-          rowsRead++;
-          const row = this.row(rowData.key);
-          row.data = rowData.data;
-          next(null, row);
-        },
-        objectMode: true,
-      });
-
-      rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
-
-      // Retry on "received rst stream" errors
-      const isRstStreamError = (error: ServiceError): boolean => {
-        if (error.code === 13 && error.message) {
-          const error_message = (error.message || '').toLowerCase();
-          return (
-            error.code === 13 &&
-            (error_message.includes('rst_stream') ||
-              error_message.includes('rst stream'))
-          );
-        }
-        return false;
-      };
-
-      rowStream
-        .on('error', (error: ServiceError) => {
-          rowStreamUnpipe(rowStream, userStream);
-          activeRequestStream = null;
-          if (IGNORED_STATUS_CODES.has(error.code)) {
-            // We ignore the `cancelled` "error", since we are the ones who cause
-            // it when the user calls `.abort()`.
-            userStream.end();
-            return;
-          }
-          numConsecutiveErrors++;
-          numRequestsMade++;
-          if (
-            numConsecutiveErrors <= maxRetries &&
-            (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
-          ) {
-            const backOffSettings =
-              options.gaxOptions?.retry?.backoffSettings ||
-              DEFAULT_BACKOFF_SETTINGS;
-            const nextRetryDelay = getNextDelay(
-              numConsecutiveErrors,
-              backOffSettings
-            );
-            retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
-          } else {
-            userStream.emit('error', error);
-          }
-        })
-        .on('data', _ => {
-          // Reset error count after a successful read so the backoff
-          // time won't keep increasing when as stream had multiple errors
-          numConsecutiveErrors = 0;
-        })
-        .on('end', () => {
-          activeRequestStream = null;
-        });
-      rowStreamPipe(rowStream, userStream);
-    };
-
-    makeNewRequest();
     return userStream;
   }
 
@@ -1587,20 +1461,25 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           : entryBatch.map(Mutation.parse),
       };
 
-      const retryOpts = {
-        currentRetryAttempt: numRequestsMade,
-        // Handling retries in this client. Specify the retry options to
-        // make sure nothing is retried in retry-request.
-        noResponseRetries: 0,
-        shouldRetryFn: (_: any) => {
-          return false;
-        },
-      };
-
       options.gaxOptions = populateAttemptHeader(
         numRequestsMade,
         options.gaxOptions
       );
+      if (
+        options.gaxOptions?.retry === undefined &&
+        options.gaxOptions?.retryRequestOptions === undefined
+      ) {
+        // For now gax will not do any retries for table.mutate unless
+        // the user specifically provides retry or retryRequestOptions in the
+        // call.
+        // Moving retries to gax for table.mutate will be done in a
+        // separate scope of work.
+        options.gaxOptions.retry = new RetryOptions(
+          [],
+          DEFAULT_BACKOFF_SETTINGS,
+          () => false
+        );
+      }
 
       this.bigtable
         .request<google.bigtable.v2.MutateRowsResponse>({
@@ -1608,7 +1487,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           method: 'mutateRows',
           reqOpts,
           gaxOpts: options.gaxOptions,
-          retryOpts,
         })
         .on('error', (err: ServiceError) => {
           onBatchResponse(err);
@@ -1685,6 +1563,21 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    if (
+      gaxOptions?.retry === undefined &&
+      gaxOptions?.retryRequestOptions === undefined
+    ) {
+      // For now gax will not do any retries for table.sampleRowKeys unless
+      // the user specifically provides retry or retryRequestOptions in the
+      // call.
+      // Moving retries to gax for table.sampleRowKeys will be done in a
+      // separate scope of work.
+      gaxOptions.retry = new RetryOptions(
+        [],
+        DEFAULT_BACKOFF_SETTINGS,
+        () => false
+      );
+    }
     this.sampleRowKeysStream(gaxOptions)
       .on('error', callback)
       .pipe(
