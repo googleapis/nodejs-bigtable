@@ -317,6 +317,51 @@ describe('Bigtable/ReadRows', () => {
     });
   });
 
+  it.only('should return row data in the right order', done => {
+    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
+    const keyFrom = 0;
+    const keyTo = 150;
+    // the server will error after sending this chunk (not row)
+    const errorAfterChunkNo = 100;
+    const dataResults = [];
+
+    service.setService({
+      ReadRows: readRowsImpl(keyFrom, keyTo, errorAfterChunkNo) as any,
+    });
+    const sleep = (ms: any) => {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    };
+    (async () => {
+      try {
+        // Setup
+        // const bigtableClient = new Bigtable();
+        // const instance = bigtableClient.instance(INSTANCE_ID);
+        // const table = await prepareTable({instance: instance, N: 150});
+
+        // console.log('read rows');
+        const stream = table.createReadStream({
+          start: '00000000',
+          end: '00000150',
+        });
+
+        for await (const row of stream) {
+          dataResults.push(row.id);
+          console.log(row.id, row.data);
+          await sleep(50);
+        }
+        const expectedResults = Array.from(Array(150).keys())
+          .map(i => '00000000' + i.toString())
+          .map(i => i.slice(-8));
+        assert.deepStrictEqual(dataResults, expectedResults);
+        console.log('No more data in the stream');
+        done();
+      } catch (error) {
+        console.error('Something went wrong:', error);
+        done(error);
+      }
+    })();
+  });
+
   after(async () => {
     server.shutdown(() => {});
   });
