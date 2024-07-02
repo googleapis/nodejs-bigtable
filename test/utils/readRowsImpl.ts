@@ -16,10 +16,10 @@ import {ServerWritableStream} from '@grpc/grpc-js';
 import {protos} from '../../src';
 import {GoogleError, Status} from 'google-gax';
 
-const VALUE_SIZE = 1024 * 1024;
+const VALUE_SIZE = 1;
 // we want each row to be splitted into 2 chunks of different sizes
-const CHUNK_SIZE = 1023 * 1024 - 1;
-const CHUNK_PER_RESPONSE = 10;
+const CHUNK_SIZE = 1;
+const CHUNK_PER_RESPONSE = 1;
 
 const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
 
@@ -220,7 +220,15 @@ export function readRowsImpl(
     });
 
     let chunksSent = 0;
-    const chunks = generateChunks(keyFrom, keyTo);
+    const keyFromRequest = stream?.request?.rows?.rowRanges
+      ?.at(0)
+      ?.startKeyClosed?.toString();
+    const keyToRequest = stream?.request?.rows?.rowRanges
+      ?.at(0)
+      ?.endKeyClosed?.toString();
+    const keyFromUsed = keyFrom || parseInt(keyFromRequest as string);
+    const keyToUsed = keyTo || parseInt(keyToRequest as string);
+    const chunks = generateChunks(keyFromUsed, keyToUsed);
     let lastScannedRowKey: string | undefined;
     let currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] =
       [];
