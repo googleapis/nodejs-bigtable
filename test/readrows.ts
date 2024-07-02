@@ -319,8 +319,8 @@ describe('Bigtable/ReadRows', () => {
 
   it.only('should return row data in the right order', done => {
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
-    const keyFrom = 0;
-    const keyTo = 150;
+    const keyFrom = undefined;
+    const keyTo = undefined;
     // the server will error after sending this chunk (not row)
     const errorAfterChunkNo = 100;
     const dataResults = [];
