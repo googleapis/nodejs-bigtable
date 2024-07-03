@@ -135,6 +135,11 @@ export class ChunkTransformer extends Transform {
    * @param {callback} next callback will be called once data is processed, with error if any error in processing
    */
   _transform(data: Data, _encoding: string, next: Function): void {
+    if (data.chunks[0].rowKey) {
+      console.log(
+        `Chunk transformer data: ${data.chunks[0].rowKey.toString()}`
+      );
+    }
     for (const chunk of data.chunks!) {
       switch (this.state) {
         case RowStateEnum.NEW_ROW:
