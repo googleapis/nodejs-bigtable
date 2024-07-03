@@ -37,6 +37,7 @@ export class MockServer {
       `localhost:${this.port}`,
       grpc.ServerCredentials.createInsecure(),
       () => {
+        server.start();
         callback ? callback(portString) : undefined;
       }
     );

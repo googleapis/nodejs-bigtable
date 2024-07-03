@@ -14,7 +14,6 @@
 
 import {ServiceError} from 'google-gax';
 import {GetRowsOptions} from '../src/table';
-import {google} from '../protos/protos';
 
 export interface Test {
   name: string;
@@ -46,25 +45,4 @@ export interface Test {
   request_options: {};
   row_keys_read: {};
   createReadStream_options: GetRowsOptions;
-}
-
-interface CreateReadStreamResponse {
-  row_keys?: string[];
-  end_with_error?: number;
-  error_message?: string;
-}
-
-export interface CreateReadStreamRequest {
-  rowKeys: string[];
-  rowRanges: google.bigtable.v2.IRowRange[];
-  rowsLimit?: number;
-}
-export interface ReadRowsTest {
-  createReadStream_options?: GetRowsOptions;
-  max_retries: number;
-  responses: CreateReadStreamResponse[];
-  request_options: CreateReadStreamRequest[];
-  error: number;
-  row_keys_read: string[][];
-  name: string;
 }
