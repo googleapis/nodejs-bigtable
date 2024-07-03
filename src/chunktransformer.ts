@@ -153,6 +153,11 @@ export class ChunkTransformer extends Transform {
           break;
       }
       if (this._destroyed) {
+        if (chunk) {
+          console.log(
+            `Chunk transformer after destroyed: ${chunk.rowKey?.toString}`
+          );
+        }
         next();
         return;
       }
@@ -163,6 +168,11 @@ export class ChunkTransformer extends Transform {
         {
           userOptions: this.options,
         }
+      );
+    }
+    if (data.chunks[0].rowKey) {
+      console.log(
+        `End of chunk transformer data: ${data.chunks[0].rowKey.toString()}`
       );
     }
     next();
