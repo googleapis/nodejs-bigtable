@@ -23,6 +23,7 @@ import {BigtableClientMockService} from '../src/util/mock-servers/service-implem
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {debugLog, readRowsImpl} from './utils/readRowsImpl';
 import {UntypedHandleCall} from '@grpc/grpc-js';
+import {readRowsImpl2} from './utils/readRowsImpl2';
 
 describe('Bigtable/ReadRows', () => {
   let server: MockServer;
@@ -326,7 +327,7 @@ describe('Bigtable/ReadRows', () => {
     const dataResults = [];
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo, errorAfterChunkNo) as any,
+      ReadRows: readRowsImpl2(keyFrom, keyTo, errorAfterChunkNo) as any,
     });
     const sleep = (ms: any) => {
       return new Promise(resolve => setTimeout(resolve, ms));
