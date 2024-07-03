@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [5.1.1](https://github.com/googleapis/nodejs-bigtable/compare/v5.1.0...v5.1.1) (2024-07-03)
+
+
+### Bug Fixes
+
+* Remove custom readrows retry logic and rely on gax for retries ([#1422](https://github.com/googleapis/nodejs-bigtable/issues/1422)) ([3e0a46e](https://github.com/googleapis/nodejs-bigtable/commit/3e0a46e1a9bf68ac8f4b74f9a202291d00681074))
+
 ## [5.1.0](https://github.com/googleapis/nodejs-bigtable/compare/v5.0.0...v5.1.0) (2024-05-28)
 
 
