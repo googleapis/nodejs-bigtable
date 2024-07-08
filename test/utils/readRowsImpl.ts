@@ -16,10 +16,10 @@ import {ServerWritableStream} from '@grpc/grpc-js';
 import {protos} from '../../src';
 import {GoogleError, Status} from 'google-gax';
 
-const VALUE_SIZE = 1;
+const VALUE_SIZE = 1024 * 1024;
 // we want each row to be splitted into 2 chunks of different sizes
-const CHUNK_SIZE = 1;
-const CHUNK_PER_RESPONSE = 1;
+const CHUNK_SIZE = 1023 * 1024 - 1;
+const CHUNK_PER_RESPONSE = 10;
 
 const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
 
@@ -158,8 +158,8 @@ function isKeyInRowSet(
 // monotonically increasing zero padded rows in the range [keyFrom, keyTo).
 // The returned implementation can be passed to gRPC server.
 export function readRowsImpl(
-  keyFrom?: number,
-  keyTo?: number,
+  keyFrom: number,
+  keyTo: number,
   errorAfterChunkNo?: number
 ): (
   stream: ServerWritableStream<
@@ -220,29 +220,7 @@ export function readRowsImpl(
     });
 
     let chunksSent = 0;
-    const keyFromRequestClosed = stream?.request?.rows?.rowRanges
-      ?.at(0)
-      ?.startKeyClosed?.toString();
-    const keyFromRequestOpen = stream?.request?.rows?.rowRanges
-      ?.at(0)
-      ?.startKeyOpen?.toString();
-    const keyToRequestClosed = stream?.request?.rows?.rowRanges
-      ?.at(0)
-      ?.endKeyClosed?.toString();
-    const keyToRequestOpen = stream?.request?.rows?.rowRanges
-      ?.at(0)
-      ?.endKeyClosed?.toString();
-    const keyFromUsed = keyFrom
-      ? keyFrom
-      : keyFromRequestClosed
-        ? parseInt(keyFromRequestClosed as string)
-        : parseInt(keyFromRequestOpen as string) + 1;
-    const keyToUsed = keyTo
-      ? keyTo
-      : keyToRequestClosed
-        ? parseInt(keyToRequestClosed as string)
-        : parseInt(keyToRequestOpen as string) + 1;
-    const chunks = generateChunks(keyFromUsed, keyToUsed);
+    const chunks = generateChunks(keyFrom, keyTo);
     let lastScannedRowKey: string | undefined;
     let currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] =
       [];
