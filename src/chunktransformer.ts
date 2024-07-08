@@ -133,7 +133,7 @@ export class ChunkTransformer extends Transform {
    * @param {callback} next callback will be called once data is processed, with error if any error in processing
    */
   _transform(data: Data, _encoding: string, next: Function): void {
-    if (data.chunks[0].rowKey) {
+    if (data.chunks[0] && data.chunks[0].rowKey) {
       console.log(
         `Chunk transformer data: ${data.chunks[0].rowKey.toString()}`
       );
@@ -170,7 +170,7 @@ export class ChunkTransformer extends Transform {
         }
       );
     }
-    if (data.chunks[0].rowKey) {
+    if (data.chunks[0] && data.chunks[0].rowKey) {
       console.log(
         `End of chunk transformer data: ${data.chunks[0].rowKey.toString()}`
       );
