@@ -32,9 +32,10 @@ import {
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
-import {PassThrough, Duplex} from 'stream';
+import {PassThrough, Duplex, Transform} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
+import {TransformCallback} from 'node:stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -100,6 +101,34 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
    * Internal only.
    */
   BigtableTableAdminClient?: gax.ClientOptions;
+}
+
+class MiddlewareStream extends Transform {
+  constructor() {
+    super({objectMode: true});
+  }
+  write(chunk: any, encoding: any, cb?: any): boolean {
+    console.log('middlewareStream.write', chunk);
+    return super.write(chunk, encoding, cb);
+  }
+
+  _transform(
+    chunk: any,
+    encoding: BufferEncoding,
+    callback: TransformCallback
+  ) {
+    console.log('middlewareStream', chunk);
+    this.push(chunk);
+    callback();
+  }
+  emit(event: string | symbol, ...args: any[]): boolean {
+    console.log(
+      '> middlewareStream.emit',
+      event,
+      event === 'data' ? args[0] : null
+    );
+    return super.emit(event, ...args);
+  }
 }
 
 /**
@@ -819,7 +848,7 @@ export class Bigtable {
     };
 
     if (isStreamMode) {
-      stream = streamEvents(new PassThrough({objectMode: true}));
+      stream = streamEvents(new MiddlewareStream());
       stream.abort = () => {
         if (gaxStream && gaxStream.cancel) {
           gaxStream.cancel();

@@ -1062,6 +1062,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           }
         })
         .on('data', _ => {
+          console.log('data event reaches rowStream');
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
