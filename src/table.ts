@@ -43,6 +43,7 @@ import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
 import {TableUtils} from './utils/table';
+import {TransformCallback} from 'node:stream';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -692,6 +693,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
   }
 
+  // @ts-ignore
+  // @ts-ignore
+  // @ts-ignore
+  // @ts-ignore
+  // @ts-ignore
+  // @ts-ignore
   /**
    * Get {@link Row} objects for the rows currently in your table as a
    * readable object stream.
@@ -718,6 +725,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
    * region_tag:bigtable_api_table_readstream
    */
+  // eslint-disable-next-line @typescript-eslint/no-this-alias,@typescript-eslint/ban-ts-comment
+  // @ts-ignore
   createReadStream(opts?: GetRowsOptions) {
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
@@ -730,6 +739,47 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let numConsecutiveErrors = 0;
     let numRequestsMade = 0;
     let retryTimer: NodeJS.Timeout | null;
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const thisTable = this;
+
+    class RowStreamTransformer extends Transform {
+      constructor() {
+        super({
+          objectMode: true,
+          transform: (rowData, _, next) => {
+            console.log(`in toRowStream ${rowData.key}`);
+            if (
+              userCanceled ||
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (userStream as any)._writableState.ended
+            ) {
+              console.log('has been cancelled');
+              return next();
+            }
+            console.log('has not been cancelled');
+            const row = thisTable.row(rowData.key);
+            row.data = rowData.data;
+            next(null, row);
+          },
+        });
+      }
+
+      emit(event: string | symbol, ...args: any[]): boolean {
+        console.log(
+          '> rowStream.emit',
+          event,
+          event === 'data' ? args[0] : null
+        );
+        if (event === 'data' && args[0] === '1b') {
+          //debugger;
+        }
+        return super.emit(event, ...args);
+      }
+      _destroy(error: Error | null, callback: (error?: Error | null) => void) {
+        console.log('rowStream.destroy');
+        super._destroy(error, callback);
+      }
+    }
 
     rowKeys = options.keys || [];
 
@@ -749,12 +799,60 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let rowStream: Duplex;
 
     let userCanceled = false;
-    // The key of the last row that was emitted by the per attempt pipeline
-    // Note: this must be updated from the operation level userStream to avoid referencing buffered rows that will be
-    // discarded in the per attempt subpipeline (rowStream)
     let lastRowKey = '';
     let rowsRead = 0;
-    const userStream = new PassThrough({
+    class UserStream extends Transform {
+      constructor() {
+        super({
+          objectMode: true,
+          readableHighWaterMark: 0,
+          writableHighWaterMark: 0,
+          transform(
+            row: any,
+            _encoding: any,
+            callback: (a?: any, b?: any) => void
+          ) {
+            /*
+            if (userCanceled) {
+              callback();
+              return;
+            }
+             */
+            lastRowKey = row.id;
+            rowsRead++;
+            callback(null, row);
+          },
+        });
+      }
+      write(chunk: any, encoding: any, cb?: any): boolean {
+        console.log('userstream.write', chunk);
+        return super.write(chunk, encoding, cb);
+      }
+
+      /*
+      _transform(
+        chunk: any,
+        encoding: BufferEncoding,
+        callback: TransformCallback
+      ) {
+        console.log('userStream', chunk);
+        this.push(chunk);
+        callback();
+      }
+       */
+
+      emit(event: string | symbol, ...args: any[]): boolean {
+        console.log(
+          '> userStream.emit',
+          event,
+          event === 'data' ? args[0] : null
+        );
+        return super.emit(event, ...args);
+      }
+    }
+    const userStream = new UserStream();
+    /*
+    new PassThrough({
       objectMode: true,
       readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
       writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
@@ -768,6 +866,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         callback(null, row);
       },
     });
+
+     */
 
     // The caller should be able to call userStream.end() to stop receiving
     // more rows and cancel the stream prematurely. But also, the 'end' event
@@ -916,21 +1016,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       activeRequestStream = requestStream!;
 
-      const toRowStream = new Transform({
-        transform: (rowData, _, next) => {
-          if (
-            userCanceled ||
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (userStream as any)._writableState.ended
-          ) {
-            return next();
-          }
-          const row = this.row(rowData.key);
-          row.data = rowData.data;
-          next(null, row);
-        },
-        objectMode: true,
-      });
+      const toRowStream = new RowStreamTransformer();
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
