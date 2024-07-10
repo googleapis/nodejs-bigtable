@@ -757,6 +757,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const userStream = new PassThrough({
       objectMode: true,
       readableHighWaterMark: 0,
+      writableHighWaterMark: 0,
       transform(row, _encoding, callback) {
         if (userCanceled) {
           callback();
@@ -804,7 +805,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       retryTimer = null;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
+      chunkTransformer = new ChunkTransformer({
+        decode: options.decode,
+        readableHighWaterMark: 0,
+        writableHighWaterMark: 0,
+      } as any);
 
       const reqOpts = {
         tableName: this.name,
@@ -929,6 +934,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           next(null, row);
         },
         objectMode: true,
+        readableHighWaterMark: 0,
+        writableHighWaterMark: 0,
       });
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
