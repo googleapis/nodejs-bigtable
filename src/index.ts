@@ -819,13 +819,7 @@ export class Bigtable {
     };
 
     if (isStreamMode) {
-      stream = streamEvents(
-        new PassThrough({
-          objectMode: true,
-          readableHighWaterMark: 0,
-          writableHighWaterMark: 0,
-        })
-      );
+      stream = streamEvents(new PassThrough({objectMode: true}));
       stream.abort = () => {
         if (gaxStream && gaxStream.cancel) {
           gaxStream.cancel();
