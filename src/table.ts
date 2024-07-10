@@ -719,7 +719,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * region_tag:bigtable_api_table_readstream
    */
   createReadStream(opts?: GetRowsOptions) {
-    console.log('in createReadStream');
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
     let activeRequestStream: AbortableDuplex | null;
@@ -918,13 +917,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       const toRowStream = new Transform({
         transform: (rowData, _, next) => {
-          console.log(`in toRowStream ${rowData.key}`);
           if (
             userCanceled ||
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (userStream as any)._writableState.ended
           ) {
-            console.log('has been cancelled');
             return next();
           }
           const row = this.row(rowData.key);
