@@ -1262,7 +1262,9 @@ describe('Bigtable/Table', () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ((stream: any) => {
             stream.push([{key: 'a'}]);
-            stream.emit('error', makeRetryableError());
+            setImmediate(() => {
+              stream.emit('error', makeRetryableError());
+            });
           }) as {} as EventEmitter,
           ((stream: Writable) => {
             stream.end();
@@ -1285,7 +1287,9 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
-            stream.emit('error', makeRetryableError());
+            setImmediate(() => {
+              stream.emit('error', makeRetryableError());
+            });
           }) as {} as EventEmitter,
           ((stream: Writable) => {
             stream.end();
@@ -1310,7 +1314,9 @@ describe('Bigtable/Table', () => {
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.push([{key: 'b'}]);
-            stream.emit('error', makeRetryableError());
+            setImmediate(() => {
+              stream.emit('error', makeRetryableError());
+            });
           }) as {} as EventEmitter,
           ((stream: Duplex) => {
             stream.push([{key: 'c'}]);
@@ -1343,7 +1349,9 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
-            stream.emit('error', makeRetryableError());
+            setImmediate(() => {
+              stream.emit('error', makeRetryableError());
+            });
           }) as {} as EventEmitter,
           ((stream: Duplex) => {
             stream.end([{key: 'c'}]);
@@ -1362,7 +1370,9 @@ describe('Bigtable/Table', () => {
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.push([{key: 'b'}]);
-            stream.emit('error', makeRetryableError());
+            setImmediate(() => {
+              stream.emit('error', makeRetryableError());
+            });
           }) as {} as EventEmitter,
         ];
 
@@ -1381,7 +1391,9 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
-            stream.emit('error', makeRetryableError());
+            setImmediate(() => {
+              stream.emit('error', makeRetryableError());
+            });
           }) as {} as EventEmitter,
         ];
 
@@ -1395,7 +1407,9 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'c'}]);
-            stream.emit('error', makeRetryableError());
+            setImmediate(() => {
+              stream.emit('error', makeRetryableError());
+            });
           }) as {} as EventEmitter,
         ];
 
@@ -1418,7 +1432,9 @@ describe('Bigtable/Table', () => {
           ((stream: Duplex) => {
             stream.push([{key: 'a1'}]);
             stream.push([{key: 'd'}]);
-            stream.emit('error', makeRetryableError());
+            setImmediate(() => {
+              stream.emit('error', makeRetryableError());
+            });
           }) as {} as EventEmitter,
         ];
 
