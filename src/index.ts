@@ -822,8 +822,6 @@ export class Bigtable {
       stream = streamEvents(
         new PassThrough({
           objectMode: true,
-          readableHighWaterMark: 0,
-          writableHighWaterMark: 0,
         })
       );
       stream.abort = () => {

@@ -807,8 +807,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({
         decode: options.decode,
-        readableHighWaterMark: 0,
-        writableHighWaterMark: 0,
       } as any);
 
       const reqOpts = {
@@ -934,8 +932,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           next(null, row);
         },
         objectMode: true,
-        readableHighWaterMark: 0,
-        writableHighWaterMark: 0,
       });
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
