@@ -209,18 +209,42 @@ export function readRowsImpl2(
     };
 
     let chunksSent = 0;
-    const keyFromRequestClosed = stream?.request?.rows?.rowRanges
-      ?.at(0)
-      ?.startKeyClosed?.toString();
-    const keyFromRequestOpen = stream?.request?.rows?.rowRanges
-      ?.at(0)
-      ?.startKeyOpen?.toString();
-    const keyToRequestClosed = stream?.request?.rows?.rowRanges
-      ?.at(0)
-      ?.endKeyClosed?.toString();
-    const keyToRequestOpen = stream?.request?.rows?.rowRanges
-      ?.at(0)
-      ?.endKeyClosed?.toString();
+    let keyFromRequestClosed: any;
+    if (
+      stream?.request?.rows?.rowRanges &&
+      stream?.request?.rows?.rowRanges[0] &&
+      stream?.request?.rows?.rowRanges[0]?.startKeyClosed?.toString()
+    ) {
+      keyFromRequestClosed =
+        stream?.request?.rows?.rowRanges[0]?.startKeyClosed?.toString();
+    }
+    let keyFromRequestOpen: any;
+    if (
+      stream?.request?.rows?.rowRanges &&
+      stream?.request?.rows?.rowRanges[0] &&
+      stream?.request?.rows?.rowRanges[0]?.startKeyOpen?.toString()
+    ) {
+      keyFromRequestOpen =
+        stream?.request?.rows?.rowRanges[0]?.startKeyOpen?.toString();
+    }
+    let keyToRequestClosed: any;
+    if (
+      stream?.request?.rows?.rowRanges &&
+      stream?.request?.rows?.rowRanges[0] &&
+      stream?.request?.rows?.rowRanges[0]?.endKeyClosed?.toString()
+    ) {
+      keyToRequestClosed =
+        stream?.request?.rows?.rowRanges[0]?.endKeyClosed?.toString();
+    }
+    let keyToRequestOpen;
+    if (
+      stream?.request?.rows?.rowRanges &&
+      stream?.request?.rows?.rowRanges[0] &&
+      stream?.request?.rows?.rowRanges[0]?.endKeyOpen?.toString()
+    ) {
+      keyToRequestOpen =
+        stream?.request?.rows?.rowRanges[0]?.endKeyOpen?.toString();
+    }
     const keyFromUsed = keyFrom
       ? keyFrom
       : keyFromRequestClosed
