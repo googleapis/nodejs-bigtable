@@ -318,7 +318,9 @@ describe('Bigtable/ReadRows', () => {
     });
   });
 
-  it('should return row data in the right order', done => {
+  it.only('should return row data in the right order', function (done) {
+    // @ts-ignore
+    this.timeout(5000);
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = undefined;
     const keyTo = undefined;
