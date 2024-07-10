@@ -72,6 +72,8 @@ export enum RowStateEnum {
   CELL_IN_PROGRESS = 3,
 }
 
+
+
 /**
  * ChunkTransformer formats all incoming chunks in to row
  * keeps all intermediate state until end of stream.
@@ -461,5 +463,26 @@ export class ChunkTransformer extends Transform {
       (this.qualifier!.value as string) += chunkQualifierValue;
     }
     this.moveToNextState(chunk);
+  }
+}
+
+export class ChunkTransformerLogger extends ChunkTransformer {
+  constructor() {
+    // Normally decode is set here
+    super({} as any);
+  }
+
+  write(chunk: any, encoding: any, cb?: any): boolean {
+    console.log('middlewareStream.write', chunk);
+    return super.write(chunk, encoding, cb);
+  }
+
+  emit(event: string | symbol, ...args: any[]): boolean {
+    console.log(
+      '> chunkTransformerEmit.emit',
+      event,
+      event === 'data' ? args[0] : null
+    );
+    return super.emit(event, ...args);
   }
 }

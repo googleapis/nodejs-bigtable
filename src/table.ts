@@ -34,7 +34,7 @@ import {
 import {Filter, BoundData, RawFilter} from './filter';
 import {Mutation} from './mutation';
 import {Row} from './row';
-import {ChunkTransformer} from './chunktransformer';
+import {ChunkTransformer, ChunkTransformerLogger} from './chunktransformer';
 import {CallOptions} from 'google-gax';
 import {Bigtable, AbortableDuplex} from '.';
 import {Instance} from './instance';
@@ -905,7 +905,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       retryTimer = null;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
+      chunkTransformer = new ChunkTransformerLogger();
 
       const reqOpts = {
         tableName: this.name,
