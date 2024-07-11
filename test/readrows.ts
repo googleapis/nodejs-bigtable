@@ -326,6 +326,7 @@ describe('Bigtable/ReadRows', () => {
     const errorAfterChunkNo = 100;
     const dataResults = [];
 
+    // TODO: Do not use `any` here, make it a more specific type and address downstream implications on the mock server.
     service.setService({
       ReadRows: readRowsImpl2(keyFrom, keyTo, errorAfterChunkNo) as any,
     });
