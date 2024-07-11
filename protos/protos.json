@@ -5322,6 +5322,15 @@
                     }
                   }
                 },
+                "ProtoRows": {
+                  "fields": {
+                    "values": {
+                      "rule": "repeated",
+                      "type": "Value",
+                      "id": 2
+                    }
+                  }
+                },
                 "ProtoRowsBatch": {
                   "fields": {
                     "batchData": {
