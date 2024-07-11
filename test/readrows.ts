@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {before, describe, it} from 'mocha';
-import {Bigtable, Row, Table} from '../src';
+import {Bigtable, protos, Row, Table} from '../src';
 import * as assert from 'assert';
 import {Transform, PassThrough, pipeline} from 'stream';
 
@@ -22,8 +22,18 @@ import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {debugLog, readRowsImpl} from './utils/readRowsImpl';
-import {UntypedHandleCall} from '@grpc/grpc-js';
+import {ServerWritableStream, UntypedHandleCall} from '@grpc/grpc-js';
 import {readRowsImpl2} from './utils/readRowsImpl2';
+
+type PromiseVoid = Promise<void>;
+interface ServerImplementationInterface {
+  (
+    server: ServerWritableStream<
+      protos.google.bigtable.v2.IReadRowsRequest,
+      protos.google.bigtable.v2.IReadRowsResponse
+    >
+  ): PromiseVoid;
+}
 
 describe('Bigtable/ReadRows', () => {
   let server: MockServer;
@@ -328,7 +338,11 @@ describe('Bigtable/ReadRows', () => {
 
     // TODO: Do not use `any` here, make it a more specific type and address downstream implications on the mock server.
     service.setService({
-      ReadRows: readRowsImpl2(keyFrom, keyTo, errorAfterChunkNo) as any,
+      ReadRows: readRowsImpl2(
+        keyFrom,
+        keyTo,
+        errorAfterChunkNo
+      ) as ServerImplementationInterface,
     });
     const sleep = (ms: number) => {
       return new Promise(resolve => setTimeout(resolve, ms));
