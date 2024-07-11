@@ -1117,6 +1117,12 @@ describe('Bigtable/Table', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let reqOptsCalls: any[];
       let setTimeoutSpy: sinon.SinonSpy;
+      
+      function emitRetriableError(stream: Duplex) {
+        setImmediate(() => {
+          stream.emit('error', makeRetryableError());
+        });
+      }
 
       beforeEach(() => {
         FakeChunkTransformer.prototype._transform = function (
@@ -1262,9 +1268,7 @@ describe('Bigtable/Table', () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ((stream: any) => {
             stream.push([{key: 'a'}]);
-            setImmediate(() => {
-              stream.emit('error', makeRetryableError());
-            });
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
           ((stream: Writable) => {
             stream.end();
@@ -1287,9 +1291,7 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
-            setImmediate(() => {
-              stream.emit('error', makeRetryableError());
-            });
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
           ((stream: Writable) => {
             stream.end();
@@ -1314,9 +1316,7 @@ describe('Bigtable/Table', () => {
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.push([{key: 'b'}]);
-            setImmediate(() => {
-              stream.emit('error', makeRetryableError());
-            });
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
           ((stream: Duplex) => {
             stream.push([{key: 'c'}]);
@@ -1349,9 +1349,7 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
-            setImmediate(() => {
-              stream.emit('error', makeRetryableError());
-            });
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
           ((stream: Duplex) => {
             stream.end([{key: 'c'}]);
@@ -1370,9 +1368,7 @@ describe('Bigtable/Table', () => {
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.push([{key: 'b'}]);
-            setImmediate(() => {
-              stream.emit('error', makeRetryableError());
-            });
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
         ];
 
@@ -1391,9 +1387,7 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
-            setImmediate(() => {
-              stream.emit('error', makeRetryableError());
-            });
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
         ];
 
@@ -1407,9 +1401,7 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'c'}]);
-            setImmediate(() => {
-              stream.emit('error', makeRetryableError());
-            });
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
         ];
 
@@ -1432,9 +1424,7 @@ describe('Bigtable/Table', () => {
           ((stream: Duplex) => {
             stream.push([{key: 'a1'}]);
             stream.push([{key: 'd'}]);
-            setImmediate(() => {
-              stream.emit('error', makeRetryableError());
-            });
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
         ];
 
