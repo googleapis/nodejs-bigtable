@@ -1118,6 +1118,14 @@ describe('Bigtable/Table', () => {
       let reqOptsCalls: any[];
       let setTimeoutSpy: sinon.SinonSpy;
 
+      /*
+        setImmediate is required here to correctly mock events as they will
+        come in from the request function. It is required for tests to pass,
+        but it is not a problem that it is required because we never expect
+        a single Node event to emit data and then emit an error. That is,
+        a mock without setImmediate around the last error represents a scenario
+        that will never happen.
+       */
       function emitRetriableError(stream: Duplex) {
         setImmediate(() => {
           stream.emit('error', makeRetryableError());
