@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {before, describe, it} from 'mocha';
-import {Bigtable, Row, Table} from '../src';
+import {Bigtable, protos, Row, Table} from '../src';
 import * as assert from 'assert';
 import {Transform, PassThrough, pipeline} from 'stream';
 
@@ -22,7 +22,18 @@ import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {debugLog, readRowsImpl} from './utils/readRowsImpl';
-import {UntypedHandleCall} from '@grpc/grpc-js';
+import {ServerWritableStream, UntypedHandleCall} from '@grpc/grpc-js';
+import {readRowsImpl2} from './utils/readRowsImpl2';
+
+type PromiseVoid = Promise<void>;
+interface ServerImplementationInterface {
+  (
+    server: ServerWritableStream<
+      protos.google.bigtable.v2.IReadRowsRequest,
+      protos.google.bigtable.v2.IReadRowsResponse
+    >
+  ): PromiseVoid;
+}
 
 describe('Bigtable/ReadRows', () => {
   let server: MockServer;
@@ -315,6 +326,47 @@ describe('Bigtable/ReadRows', () => {
       assert.strictEqual(lastKeyReceived, keyTo - 1);
       done();
     });
+  });
+
+  it('should return row data in the right order', done => {
+    // 150 rows must be enough to reproduce issues with losing the data and to create backpressure
+    const keyFrom = undefined;
+    const keyTo = undefined;
+    // the server will error after sending this chunk (not row)
+    const errorAfterChunkNo = 100;
+    const dataResults = [];
+
+    // TODO: Do not use `any` here, make it a more specific type and address downstream implications on the mock server.
+    service.setService({
+      ReadRows: readRowsImpl2(
+        keyFrom,
+        keyTo,
+        errorAfterChunkNo
+      ) as ServerImplementationInterface,
+    });
+    const sleep = (ms: number) => {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    };
+    (async () => {
+      try {
+        const stream = table.createReadStream({
+          start: '00000000',
+          end: '00000150',
+        });
+
+        for await (const row of stream) {
+          dataResults.push(row.id);
+          await sleep(50);
+        }
+        const expectedResults = Array.from(Array(150).keys())
+          .map(i => '00000000' + i.toString())
+          .map(i => i.slice(-8));
+        assert.deepStrictEqual(dataResults, expectedResults);
+        done();
+      } catch (error) {
+        done(error);
+      }
+    })();
   });
 
   after(async () => {

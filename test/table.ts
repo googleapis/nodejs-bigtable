@@ -1118,6 +1118,20 @@ describe('Bigtable/Table', () => {
       let reqOptsCalls: any[];
       let setTimeoutSpy: sinon.SinonSpy;
 
+      /*
+        setImmediate is required here to correctly mock events as they will
+        come in from the request function. It is required for tests to pass,
+        but it is not a problem that it is required because we never expect
+        a single Node event to emit data and then emit an error. That is,
+        a mock without setImmediate around the last error represents a scenario
+        that will never happen.
+       */
+      function emitRetriableError(stream: Duplex) {
+        setImmediate(() => {
+          stream.emit('error', makeRetryableError());
+        });
+      }
+
       beforeEach(() => {
         FakeChunkTransformer.prototype._transform = function (
           rows: Row[],
@@ -1262,7 +1276,7 @@ describe('Bigtable/Table', () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ((stream: any) => {
             stream.push([{key: 'a'}]);
-            stream.emit('error', makeRetryableError());
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
           ((stream: Writable) => {
             stream.end();
@@ -1285,7 +1299,7 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
-            stream.emit('error', makeRetryableError());
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
           ((stream: Writable) => {
             stream.end();
@@ -1310,7 +1324,7 @@ describe('Bigtable/Table', () => {
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.push([{key: 'b'}]);
-            stream.emit('error', makeRetryableError());
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
           ((stream: Duplex) => {
             stream.push([{key: 'c'}]);
@@ -1343,7 +1357,7 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
-            stream.emit('error', makeRetryableError());
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
           ((stream: Duplex) => {
             stream.end([{key: 'c'}]);
@@ -1362,7 +1376,7 @@ describe('Bigtable/Table', () => {
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.push([{key: 'b'}]);
-            stream.emit('error', makeRetryableError());
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
         ];
 
@@ -1381,7 +1395,7 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
-            stream.emit('error', makeRetryableError());
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
         ];
 
@@ -1395,7 +1409,7 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'c'}]);
-            stream.emit('error', makeRetryableError());
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
         ];
 
@@ -1418,7 +1432,7 @@ describe('Bigtable/Table', () => {
           ((stream: Duplex) => {
             stream.push([{key: 'a1'}]);
             stream.push([{key: 'd'}]);
-            stream.emit('error', makeRetryableError());
+            emitRetriableError(stream);
           }) as {} as EventEmitter,
         ];
 
