@@ -329,7 +329,7 @@ describe('Bigtable/ReadRows', () => {
     service.setService({
       ReadRows: readRowsImpl2(keyFrom, keyTo, errorAfterChunkNo) as any,
     });
-    const sleep = (ms: any) => {
+    const sleep = (ms: number) => {
       return new Promise(resolve => setTimeout(resolve, ms));
     };
     (async () => {
