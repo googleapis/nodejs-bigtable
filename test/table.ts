@@ -1117,7 +1117,7 @@ describe('Bigtable/Table', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let reqOptsCalls: any[];
       let setTimeoutSpy: sinon.SinonSpy;
-      
+
       function emitRetriableError(stream: Duplex) {
         setImmediate(() => {
           stream.emit('error', makeRetryableError());
