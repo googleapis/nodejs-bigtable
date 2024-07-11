@@ -334,12 +334,6 @@ describe('Bigtable/ReadRows', () => {
     };
     (async () => {
       try {
-        // Setup
-        // const bigtableClient = new Bigtable();
-        // const instance = bigtableClient.instance(INSTANCE_ID);
-        // const table = await prepareTable({instance: instance, N: 150});
-
-        // console.log('read rows');
         const stream = table.createReadStream({
           start: '00000000',
           end: '00000150',
@@ -347,18 +341,14 @@ describe('Bigtable/ReadRows', () => {
 
         for await (const row of stream) {
           dataResults.push(row.id);
-          console.log('logging row');
-          console.log(row.id, row.data);
           await sleep(50);
         }
         const expectedResults = Array.from(Array(150).keys())
           .map(i => '00000000' + i.toString())
           .map(i => i.slice(-8));
         assert.deepStrictEqual(dataResults, expectedResults);
-        console.log('No more data in the stream');
         done();
       } catch (error) {
-        console.error('Something went wrong:', error);
         done(error);
       }
     })();
