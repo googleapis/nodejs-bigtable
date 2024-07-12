@@ -125,7 +125,7 @@ class MiddlewareStream extends Transform {
     console.log(
       '> middlewareStream.emit',
       event,
-      event === 'data' ? args[0] : null
+      event === 'data' ? args[0].id : null
     );
     return super.emit(event, ...args);
   }

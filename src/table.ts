@@ -768,7 +768,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         console.log(
           '> rowStream.emit',
           event,
-          event === 'data' ? args[0] : null
+          event === 'data' ? args[0].id : null
         );
         if (event === 'data' && args[0] === '1b') {
           //debugger;
@@ -825,7 +825,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         });
       }
       write(chunk: any, encoding: any, cb?: any): boolean {
-        console.log('userstream.write', chunk);
+        // console.log('userstream.write', chunk);
         return super.write(chunk, encoding, cb);
       }
 
@@ -845,12 +845,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         console.log(
           '> userStream.emit',
           event,
-          event === 'data' ? args[0] : null
+          event === 'data' ? args[0].id : null
         );
         return super.emit(event, ...args);
       }
     }
-    const userStream = new UserStream();
+    const userStream = new UserStream() as Transform;
     /*
     new PassThrough({
       objectMode: true,

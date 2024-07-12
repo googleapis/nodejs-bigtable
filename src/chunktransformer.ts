@@ -473,7 +473,7 @@ export class ChunkTransformerLogger extends ChunkTransformer {
   }
 
   write(chunk: any, encoding: any, cb?: any): boolean {
-    console.log('middlewareStream.write', chunk);
+    // console.log('middlewareStream.write', chunk);
     return super.write(chunk, encoding, cb);
   }
 
@@ -481,7 +481,7 @@ export class ChunkTransformerLogger extends ChunkTransformer {
     console.log(
       '> chunkTransformerEmit.emit',
       event,
-      event === 'data' ? args[0] : null
+      event === 'data' ? args[0].id : null
     );
     return super.emit(event, ...args);
   }
