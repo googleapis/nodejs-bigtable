@@ -9,7 +9,7 @@
                 "v2": {
                   "options": {
                     "csharp_namespace": "Google.Cloud.Bigtable.Admin.V2",
-                    "go_package": "google.golang.org/genproto/googleapis/bigtable/admin/v2;admin",
+                    "go_package": "cloud.google.com/go/bigtable/admin/apiv2/adminpb;adminpb",
                     "java_multiple_files": true,
                     "java_outer_classname": "TypesProto",
                     "java_package": "com.google.bigtable.admin.v2",
@@ -3595,7 +3595,7 @@
             "v2": {
               "options": {
                 "csharp_namespace": "Google.Cloud.Bigtable.V2",
-                "go_package": "google.golang.org/genproto/googleapis/bigtable/v2;bigtable",
+                "go_package": "cloud.google.com/go/bigtable/apiv2/bigtablepb;bigtablepb",
                 "java_multiple_files": true,
                 "java_outer_classname": "ResponseParamsProto",
                 "java_package": "com.google.bigtable.v2",
