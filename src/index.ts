@@ -108,7 +108,7 @@ class MiddlewareStream extends Transform {
     super({objectMode: true});
   }
   write(chunk: any, encoding: any, cb?: any): boolean {
-    console.log('middlewareStream.write', chunk);
+    // console.log('middlewareStream.write', chunk);
     return super.write(chunk, encoding, cb);
   }
 
@@ -117,7 +117,7 @@ class MiddlewareStream extends Transform {
     encoding: BufferEncoding,
     callback: TransformCallback
   ) {
-    console.log('middlewareStream', chunk);
+    // console.log('middlewareStream', chunk);
     this.push(chunk);
     callback();
   }
