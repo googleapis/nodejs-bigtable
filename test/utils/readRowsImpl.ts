@@ -15,7 +15,10 @@
 import {ServerWritableStream} from '@grpc/grpc-js';
 import {protos} from '../../src';
 import {GoogleError, Status} from 'google-gax';
-import {ReadRowsServiceParameters} from './readRowsServiceParameters';
+import {
+  ChunkGeneratorParameters,
+  ReadRowsServiceParameters,
+} from './readRowsServiceParameters';
 
 const CHUNK_PER_RESPONSE = 10;
 
@@ -75,22 +78,23 @@ export function prettyPrintRequest(
  * The fake table contains monotonically increasing zero padded rows
  * in the range [keyFrom, keyTo).
  */
-function generateChunks(
-  keyFrom: number,
-  keyTo: number,
-  chunkSize: number,
-  valueSize: number
-) {
-  debugLog(`generating chunks from ${keyFrom} to ${keyTo}`);
+function generateChunks(chunkGeneratorParameters: ChunkGeneratorParameters) {
+  debugLog(
+    `generating chunks from ${chunkGeneratorParameters.keyFrom} to ${chunkGeneratorParameters.keyTo}`
+  );
 
   const chunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] = [];
-  for (let key = keyFrom; key < keyTo; ++key) {
+  for (
+    let key = chunkGeneratorParameters.keyFrom;
+    key < chunkGeneratorParameters.keyTo;
+    ++key
+  ) {
     // the keys must be increasing, but we also want to keep them readable,
     // so we'll use keys 00000000, 00000001, 00000002, etc. stored as Buffers
     const binaryKey = Buffer.from(key.toString().padStart(8, '0'));
     debugLog(`generating chunks for ${key}`);
     const rowKey = binaryKey.toString('base64');
-    let remainingBytes = valueSize;
+    let remainingBytes = chunkGeneratorParameters.valueSize;
     let chunkCounter = 0;
     while (remainingBytes > 0) {
       debugLog(`  remaining bytes: ${remainingBytes}`);
@@ -104,7 +108,10 @@ function generateChunks(
           value: Buffer.from('qualifier').toString('base64'),
         };
       }
-      const thisChunkSize = Math.min(chunkSize, remainingBytes);
+      const thisChunkSize = Math.min(
+        chunkGeneratorParameters.chunkSize,
+        remainingBytes
+      );
       remainingBytes -= thisChunkSize;
       const value = Buffer.from('a'.repeat(remainingBytes)).toString('base64');
       chunk.value = value;
@@ -116,7 +123,9 @@ function generateChunks(
       ++chunkCounter;
     }
   }
-  debugLog(`generated ${chunks.length} chunks between ${keyFrom} and ${keyTo}`);
+  debugLog(
+    `generated ${chunks.length} chunks between ${chunkGeneratorParameters.keyFrom} and ${chunkGeneratorParameters.keyTo}`
+  );
   return chunks;
 }
 
@@ -223,12 +232,7 @@ export function readRowsImpl(
     });
 
     let chunksSent = 0;
-    const chunks = generateChunks(
-      serviceParameters.keyFrom,
-      serviceParameters.keyTo,
-      serviceParameters.chunkSize,
-      serviceParameters.valueSize
-    );
+    const chunks = generateChunks(serviceParameters);
     let lastScannedRowKey: string | undefined;
     let currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] =
       [];
