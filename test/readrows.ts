@@ -27,6 +27,7 @@ import {readRowsImpl2} from './utils/readRowsImpl2';
 
 import {ReadRowsServiceParameters} from '../test/utils/readRowsServiceParameters';
 
+// Define parameters for a standard Bigtable Mock service
 const VALUE_SIZE = 1024 * 1024;
 // we want each row to be splitted into 2 chunks of different sizes
 const CHUNK_SIZE = 1023 * 1024 - 1;
@@ -34,7 +35,6 @@ const CHUNKS_PER_RESPONSE = 10;
 const STANDARD_KEY_FROM = 0;
 // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
 const STANDARD_KEY_TO = 1000;
-
 const STANDARD_SERVICE_WITHOUT_ERRORS: ReadRowsServiceParameters = {
   keyFrom: STANDARD_KEY_FROM,
   keyTo: STANDARD_KEY_TO,
