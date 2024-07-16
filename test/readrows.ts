@@ -22,7 +22,7 @@ import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {debugLog, readRowsImpl} from './utils/readRowsImpl';
-import {ServerWritableStream, UntypedHandleCall} from '@grpc/grpc-js';
+import {ServerWritableStream} from '@grpc/grpc-js';
 import {readRowsImpl2} from './utils/readRowsImpl2';
 
 import {ReadRowsServiceParameters} from '../test/utils/readRowsServiceParameters';
