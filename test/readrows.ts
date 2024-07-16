@@ -81,8 +81,6 @@ describe('Bigtable/ReadRows', () => {
 
   it('should create read stream and read synchronously', function (done) {
     this.timeout(60000);
-    const keyFrom = 0;
-    const keyTo = 1000;
 
     service.setService({
       ReadRows: readRowsImpl(STANDARD_SERVICE_WITHOUT_ERRORS) as any,
@@ -105,14 +103,13 @@ describe('Bigtable/ReadRows', () => {
       debugLog(`received row key ${key}`);
     });
     readStream.on('end', () => {
-      assert.strictEqual(receivedRowCount, keyTo - keyFrom);
-      assert.strictEqual(lastKeyReceived, keyTo - 1);
+      assert.strictEqual(receivedRowCount, STANDARD_KEY_TO - STANDARD_KEY_FROM);
+      assert.strictEqual(lastKeyReceived, STANDARD_KEY_TO - 1);
       done();
     });
   });
 
   it('should create read stream and read synchronously using Transform stream', done => {
-    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     service.setService({
       ReadRows: readRowsImpl(STANDARD_SERVICE_WITHOUT_ERRORS) as any,
     });
@@ -161,8 +158,6 @@ describe('Bigtable/ReadRows', () => {
     if (process.platform === 'win32') {
       this.timeout(60000); // it runs much slower on Windows!
     }
-
-    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     service.setService({
       ReadRows: readRowsImpl(STANDARD_SERVICE_WITHOUT_ERRORS) as any,
     });
@@ -210,9 +205,6 @@ describe('Bigtable/ReadRows', () => {
   });
 
   it('should be able to stop reading from the read stream', done => {
-    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
-    const keyFrom = 0;
-    const keyTo = 1000;
     // pick any key to stop after
     const stopAfter = 42;
 
@@ -253,10 +245,6 @@ describe('Bigtable/ReadRows', () => {
     if (process.platform === 'win32') {
       this.timeout(600000); // it runs much slower on Windows!
     }
-
-    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
-    const keyFrom = 0;
-    const keyTo = 1000;
     // pick any key to stop after
     const stopAfter = 420;
 
@@ -313,12 +301,6 @@ describe('Bigtable/ReadRows', () => {
   });
 
   it('should silently resume after server or network error', done => {
-    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
-    const keyFrom = 0;
-    const keyTo = 1000;
-    // the server will error after sending this chunk (not row)
-    const errorAfterChunkNo = 423;
-
     service.setService({
       ReadRows: readRowsImpl(STANDARD_SERVICE_WITH_ERRORS) as any,
     });
@@ -340,8 +322,8 @@ describe('Bigtable/ReadRows', () => {
       debugLog(`received row key ${key}`);
     });
     readStream.on('end', () => {
-      assert.strictEqual(receivedRowCount, keyTo - keyFrom);
-      assert.strictEqual(lastKeyReceived, keyTo - 1);
+      assert.strictEqual(receivedRowCount, STANDARD_KEY_TO - STANDARD_KEY_FROM);
+      assert.strictEqual(lastKeyReceived, STANDARD_KEY_TO - 1);
       done();
     });
   });
