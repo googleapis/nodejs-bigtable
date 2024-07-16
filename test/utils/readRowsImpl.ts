@@ -29,7 +29,8 @@ export function debugLog(text: string) {
   }
 }
 
-function prettyPrintRequest(
+// TODO: Simplify this, perhaps use shared code from readRowsImpl.
+export function prettyPrintRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest
 ) {
   // pretty-printing important parts of the request.

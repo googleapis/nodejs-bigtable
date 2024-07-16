@@ -15,6 +15,7 @@
 import {ServerWritableStream} from '@grpc/grpc-js';
 import {protos} from '../../src';
 import {GoogleError, Status} from 'google-gax';
+import {prettyPrintRequest} from './readRowsImpl';
 
 const VALUE_SIZE = 1;
 // we want each row to be splitted into 2 chunks of different sizes
@@ -27,50 +28,6 @@ export function debugLog(text: string) {
   if (DEBUG) {
     console.log(text);
   }
-}
-
-// TODO: Simplify this, perhaps use shared code from readRowsImpl.
-function prettyPrintRequest(
-  request: protos.google.bigtable.v2.IReadRowsRequest
-) {
-  // pretty-printing important parts of the request.
-  // doing it field by field because we want to apply .toString() to all key fields
-  debugLog('received request: {');
-  debugLog(`  tableName: "${request.tableName}",`);
-  if (request.rows) {
-    debugLog('  rows: {');
-    if (request.rows.rowKeys) {
-      debugLog('    rowKeys: [');
-      for (const key of request.rows.rowKeys) {
-        debugLog(`      "${key.toString()}",`);
-      }
-      debugLog('    ],');
-    }
-    if (request.rows.rowRanges) {
-      debugLog('    rowRanges: [');
-      for (const range of request.rows.rowRanges) {
-        debugLog('      {');
-        if (range.startKeyOpen) {
-          debugLog(`        startKeyOpen: "${range.startKeyOpen.toString()}",`);
-        }
-        if (range.startKeyClosed) {
-          debugLog(
-            `        startKeyClosed: "${range.startKeyClosed.toString()}",`
-          );
-        }
-        if (range.endKeyOpen) {
-          debugLog(`        endKeyOpen: "${range.endKeyOpen.toString()}",`);
-        }
-        if (range.endKeyClosed) {
-          debugLog(`        endKeyClosed: "${range.endKeyClosed.toString()}",`);
-        }
-        debugLog('      },');
-      }
-      debugLog('    ],');
-    }
-    debugLog('  },');
-  }
-  debugLog('}');
 }
 
 /** Generates chunks for rows in a fake table that match the provided RowSet.
