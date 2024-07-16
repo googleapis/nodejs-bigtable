@@ -30,7 +30,6 @@ export function debugLog(text: string) {
   }
 }
 
-// TODO: Simplify this, perhaps use shared code from readRowsImpl.
 export function prettyPrintRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest
 ) {
