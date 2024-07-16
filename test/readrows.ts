@@ -25,6 +25,32 @@ import {debugLog, readRowsImpl} from './utils/readRowsImpl';
 import {ServerWritableStream, UntypedHandleCall} from '@grpc/grpc-js';
 import {readRowsImpl2} from './utils/readRowsImpl2';
 
+import {ReadRowsServiceParameters} from '../test/utils/readRowsServiceParameters';
+
+const VALUE_SIZE = 1024 * 1024;
+// we want each row to be splitted into 2 chunks of different sizes
+const CHUNK_SIZE = 1023 * 1024 - 1;
+const CHUNKS_PER_RESPONSE = 10;
+const STANDARD_KEY_FROM = 0;
+// 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
+const STANDARD_KEY_TO = 1000;
+
+const STANDARD_SERVICE_WITHOUT_ERRORS: ReadRowsServiceParameters = {
+  keyFrom: STANDARD_KEY_FROM,
+  keyTo: STANDARD_KEY_TO,
+  valueSize: VALUE_SIZE,
+  chunkSize: CHUNK_SIZE,
+  chunksPerResponse: CHUNKS_PER_RESPONSE,
+};
+const STANDARD_SERVICE_WITH_ERRORS: ReadRowsServiceParameters = {
+  keyFrom: STANDARD_KEY_FROM,
+  keyTo: STANDARD_KEY_TO,
+  valueSize: VALUE_SIZE,
+  chunkSize: CHUNK_SIZE,
+  chunksPerResponse: CHUNKS_PER_RESPONSE,
+  errorAfterChunkNo: 423,
+};
+
 type PromiseVoid = Promise<void>;
 interface ServerImplementationInterface {
   (
@@ -55,13 +81,11 @@ describe('Bigtable/ReadRows', () => {
 
   it('should create read stream and read synchronously', function (done) {
     this.timeout(60000);
-
-    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
+      ReadRows: readRowsImpl(STANDARD_SERVICE_WITHOUT_ERRORS) as any,
     });
 
     let receivedRowCount = 0;
@@ -89,11 +113,8 @@ describe('Bigtable/ReadRows', () => {
 
   it('should create read stream and read synchronously using Transform stream', done => {
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
-    const keyFrom = 0;
-    const keyTo = 1000;
-
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
+      ReadRows: readRowsImpl(STANDARD_SERVICE_WITHOUT_ERRORS) as any,
     });
 
     let receivedRowCount = 0;
@@ -128,8 +149,8 @@ describe('Bigtable/ReadRows', () => {
       debugLog(`received row key ${key}`);
     });
     passThrough.on('end', () => {
-      assert.strictEqual(receivedRowCount, keyTo - keyFrom);
-      assert.strictEqual(lastKeyReceived, keyTo - 1);
+      assert.strictEqual(receivedRowCount, STANDARD_KEY_TO - STANDARD_KEY_FROM);
+      assert.strictEqual(lastKeyReceived, STANDARD_KEY_TO - 1);
       done();
     });
 
@@ -142,11 +163,8 @@ describe('Bigtable/ReadRows', () => {
     }
 
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
-    const keyFrom = 0;
-    const keyTo = 1000;
-
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
+      ReadRows: readRowsImpl(STANDARD_SERVICE_WITHOUT_ERRORS) as any,
     });
 
     let receivedRowCount = 0;
@@ -183,8 +201,8 @@ describe('Bigtable/ReadRows', () => {
       debugLog(`received row key ${key}`);
     });
     passThrough.on('end', () => {
-      assert.strictEqual(receivedRowCount, keyTo - keyFrom);
-      assert.strictEqual(lastKeyReceived, keyTo - 1);
+      assert.strictEqual(receivedRowCount, STANDARD_KEY_TO - STANDARD_KEY_FROM);
+      assert.strictEqual(lastKeyReceived, STANDARD_KEY_TO - 1);
       done();
     });
 
@@ -199,7 +217,7 @@ describe('Bigtable/ReadRows', () => {
     const stopAfter = 42;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
+      ReadRows: readRowsImpl(STANDARD_SERVICE_WITHOUT_ERRORS) as any,
     });
 
     let receivedRowCount = 0;
@@ -243,7 +261,7 @@ describe('Bigtable/ReadRows', () => {
     const stopAfter = 420;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
+      ReadRows: readRowsImpl(STANDARD_SERVICE_WITHOUT_ERRORS) as any,
     });
 
     let receivedRowCount = 0;
@@ -302,7 +320,7 @@ describe('Bigtable/ReadRows', () => {
     const errorAfterChunkNo = 423;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo, errorAfterChunkNo) as any,
+      ReadRows: readRowsImpl(STANDARD_SERVICE_WITH_ERRORS) as any,
     });
 
     let receivedRowCount = 0;
