@@ -20,8 +20,6 @@ import {
   ReadRowsServiceParameters,
 } from './readRowsServiceParameters';
 
-const CHUNK_PER_RESPONSE = 10;
-
 const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
 
 export function debugLog(text: string) {
@@ -261,7 +259,7 @@ export function readRowsImpl(
         ++chunkIdx;
       }
       if (
-        currentResponseChunks.length === CHUNK_PER_RESPONSE ||
+        currentResponseChunks.length === serviceParameters.chunksPerResponse ||
         chunkIdx === errorAfterChunkNo ||
         // if we skipped a row and set lastScannedRowKey, dump everything and send a separate message with lastScannedRowKey
         lastScannedRowKey
