@@ -79,16 +79,12 @@ export function prettyPrintRequest(
  * in the range [keyFrom, keyTo).
  */
 function generateChunks(chunkGeneratorParameters: ChunkGeneratorParameters) {
-  debugLog(
-    `generating chunks from ${chunkGeneratorParameters.keyFrom} to ${chunkGeneratorParameters.keyTo}`
-  );
+  const keyFrom = chunkGeneratorParameters.keyFrom;
+  const keyTo = chunkGeneratorParameters.keyTo;
+  debugLog(`generating chunks from ${keyFrom} to ${keyTo}`);
 
   const chunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] = [];
-  for (
-    let key = chunkGeneratorParameters.keyFrom;
-    key < chunkGeneratorParameters.keyTo;
-    ++key
-  ) {
+  for (let key = keyFrom; key < keyTo; ++key) {
     // the keys must be increasing, but we also want to keep them readable,
     // so we'll use keys 00000000, 00000001, 00000002, etc. stored as Buffers
     const binaryKey = Buffer.from(key.toString().padStart(8, '0'));
@@ -123,9 +119,7 @@ function generateChunks(chunkGeneratorParameters: ChunkGeneratorParameters) {
       ++chunkCounter;
     }
   }
-  debugLog(
-    `generated ${chunks.length} chunks between ${chunkGeneratorParameters.keyFrom} and ${chunkGeneratorParameters.keyTo}`
-  );
+  debugLog(`generated ${chunks.length} chunks between ${keyFrom} and ${keyTo}`);
   return chunks;
 }
 
