@@ -42,14 +42,6 @@ const STANDARD_SERVICE_WITHOUT_ERRORS: ReadRowsServiceParameters = {
   chunkSize: CHUNK_SIZE,
   chunksPerResponse: CHUNKS_PER_RESPONSE,
 };
-const STANDARD_SERVICE_WITH_ERRORS: ReadRowsServiceParameters = {
-  keyFrom: STANDARD_KEY_FROM,
-  keyTo: STANDARD_KEY_TO,
-  valueSize: VALUE_SIZE,
-  chunkSize: CHUNK_SIZE,
-  chunksPerResponse: CHUNKS_PER_RESPONSE,
-  errorAfterChunkNo: 423,
-};
 
 type PromiseVoid = Promise<void>;
 interface ServerImplementationInterface {
@@ -302,7 +294,14 @@ describe('Bigtable/ReadRows', () => {
 
   it('should silently resume after server or network error', done => {
     service.setService({
-      ReadRows: readRowsImpl(STANDARD_SERVICE_WITH_ERRORS) as any,
+      ReadRows: readRowsImpl({
+        keyFrom: STANDARD_KEY_FROM,
+        keyTo: STANDARD_KEY_TO,
+        valueSize: VALUE_SIZE,
+        chunkSize: CHUNK_SIZE,
+        chunksPerResponse: CHUNKS_PER_RESPONSE,
+        errorAfterChunkNo: 423,
+      }) as any,
     });
 
     let receivedRowCount = 0;
