@@ -327,18 +327,13 @@ describe('Bigtable/ReadRows', () => {
   });
 
   it('should return row data in the right order', done => {
-    const keyFrom = undefined;
-    const keyTo = undefined;
-    // the server will error after sending this chunk (not row)
-    const errorAfterChunkNo = 100;
     const dataResults = [];
 
-    // TODO: Do not use `any` here, make it a more specific type and address downstream implications on the mock server.
+    // keyTo and keyFrom are not provided so they will be determined from
+    // the request that is passed in.
     service.setService({
       ReadRows: readRowsImpl({
-        defaultKeyFrom: keyFrom,
-        defaultKeyTo: keyTo,
-        errorAfterChunkNo,
+        errorAfterChunkNo: 100, // the server will error after sending this chunk (not row)
         valueSize: 1,
         chunkSize: 1,
         chunksPerResponse: 1,
