@@ -207,7 +207,7 @@ export function readRowsImpl2(
         lastScannedRowKey = undefined;
       }
     }
-    if (currentResponseChunks.length > 0) {
+    if (!cancelled && currentResponseChunks.length > 0) {
       const response: protos.google.bigtable.v2.IReadRowsResponse = {
         chunks: currentResponseChunks,
         lastScannedRowKey,
