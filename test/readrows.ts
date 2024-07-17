@@ -75,7 +75,9 @@ describe('Bigtable/ReadRows', () => {
     this.timeout(60000);
 
     service.setService({
-      ReadRows: readRowsImpl(STANDARD_SERVICE_WITHOUT_ERRORS) as any,
+      ReadRows: readRowsImpl(
+        STANDARD_SERVICE_WITHOUT_ERRORS
+      ) as ServerImplementationInterface,
     });
 
     let receivedRowCount = 0;
@@ -103,7 +105,9 @@ describe('Bigtable/ReadRows', () => {
 
   it('should create read stream and read synchronously using Transform stream', done => {
     service.setService({
-      ReadRows: readRowsImpl(STANDARD_SERVICE_WITHOUT_ERRORS) as any,
+      ReadRows: readRowsImpl(
+        STANDARD_SERVICE_WITHOUT_ERRORS
+      ) as ServerImplementationInterface,
     });
 
     let receivedRowCount = 0;
@@ -151,7 +155,9 @@ describe('Bigtable/ReadRows', () => {
       this.timeout(60000); // it runs much slower on Windows!
     }
     service.setService({
-      ReadRows: readRowsImpl(STANDARD_SERVICE_WITHOUT_ERRORS) as any,
+      ReadRows: readRowsImpl(
+        STANDARD_SERVICE_WITHOUT_ERRORS
+      ) as ServerImplementationInterface,
     });
 
     let receivedRowCount = 0;
@@ -201,7 +207,9 @@ describe('Bigtable/ReadRows', () => {
     const stopAfter = 42;
 
     service.setService({
-      ReadRows: readRowsImpl(STANDARD_SERVICE_WITHOUT_ERRORS) as any,
+      ReadRows: readRowsImpl(
+        STANDARD_SERVICE_WITHOUT_ERRORS
+      ) as ServerImplementationInterface,
     });
 
     let receivedRowCount = 0;
@@ -241,7 +249,9 @@ describe('Bigtable/ReadRows', () => {
     const stopAfter = 420;
 
     service.setService({
-      ReadRows: readRowsImpl(STANDARD_SERVICE_WITHOUT_ERRORS) as any,
+      ReadRows: readRowsImpl(
+        STANDARD_SERVICE_WITHOUT_ERRORS
+      ) as ServerImplementationInterface,
     });
 
     let receivedRowCount = 0;
@@ -301,7 +311,7 @@ describe('Bigtable/ReadRows', () => {
         chunkSize: CHUNK_SIZE,
         chunksPerResponse: CHUNKS_PER_RESPONSE,
         errorAfterChunkNo: 423,
-      }) as any,
+      }) as ServerImplementationInterface,
     });
 
     let receivedRowCount = 0;
