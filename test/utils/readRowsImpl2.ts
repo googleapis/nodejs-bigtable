@@ -47,6 +47,7 @@ export function readRowsImpl2(
     prettyPrintRequest(stream.request);
 
     let stopWaiting: () => void = () => {};
+    let cancelled = false;
     // an asynchronous function to write a response object to stream, reused several times below.
     // captures `cancelled` variable
     const sendResponse = async (
@@ -54,6 +55,10 @@ export function readRowsImpl2(
     ): Promise<void> => {
       return new Promise<void>(resolve => {
         setTimeout(async () => {
+          if (cancelled) {
+            resolve();
+            return;
+          }
           const canSendMore = stream.write(response);
           if (response.chunks && response.chunks.length > 0) {
             debugLog(`sent ${response.chunks.length} chunks`);
@@ -77,6 +82,13 @@ export function readRowsImpl2(
         }, 0);
       });
     };
+
+    stream.on('cancelled', () => {
+      debugLog('gRPC server received cancel()');
+      cancelled = true;
+      stopWaiting();
+      stream.emit('error', new Error('Cancelled'));
+    });
 
     let chunksSent = 0;
     let keyFromRequestClosed: any;
@@ -137,6 +149,10 @@ export function readRowsImpl2(
     let chunkIdx = 0;
     let skipThisRow = false;
     for (const chunk of chunks) {
+      if (cancelled) {
+        break;
+      }
+
       if (chunk.rowKey) {
         const binaryKey = Buffer.from(chunk.rowKey as string, 'base64');
         const stringKey = binaryKey.toString();
