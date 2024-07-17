@@ -16,18 +16,19 @@
  * This file contains the parameters for the readRowsService.
  */
 
-export interface ReadRowsServiceParameters {
-  keyFrom: number;
-  keyTo: number;
-  errorAfterChunkNo?: number;
-  chunkSize: number;
-  valueSize: number;
-  chunksPerResponse: number;
+interface SharedReadRowsParameters {
+  chunkSize: number; // The size of each chunk that the server pushes back
+  valueSize: number; // An upper bound on the amount of data included in the chunks
 }
 
-export interface ChunkGeneratorParameters {
-  keyFrom: number;
-  keyTo: number;
-  chunkSize: number;
-  valueSize: number;
+export interface ReadRowsServiceParameters extends SharedReadRowsParameters {
+  keyFrom?: number; // The key the data coming from the service will start from
+  keyTo?: number; // The key the data coming from the service will end at
+  errorAfterChunkNo?: number; // The chunk that the error should come after
+  chunksPerResponse: number; // The total number of chunks the server should send
+}
+
+export interface ChunkGeneratorParameters extends SharedReadRowsParameters {
+  keyFrom: number; // The first row in the generated chunks will start with this key
+  keyTo: number; // The last row in the generated chunks will start with this key
 }
