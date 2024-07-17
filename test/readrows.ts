@@ -23,7 +23,6 @@ import {BigtableClientMockService} from '../src/util/mock-servers/service-implem
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {debugLog, readRowsImpl} from './utils/readRowsImpl';
 import {ServerWritableStream} from '@grpc/grpc-js';
-import {readRowsImpl2} from './utils/readRowsImpl2';
 
 import {ReadRowsServiceParameters} from '../test/utils/readRowsServiceParameters';
 
@@ -337,7 +336,7 @@ describe('Bigtable/ReadRows', () => {
 
     // TODO: Do not use `any` here, make it a more specific type and address downstream implications on the mock server.
     service.setService({
-      ReadRows: readRowsImpl2({
+      ReadRows: readRowsImpl({
         defaultKeyFrom: keyFrom,
         defaultKeyTo: keyTo,
         errorAfterChunkNo,
