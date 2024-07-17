@@ -78,6 +78,7 @@ export function prettyPrintRequest(
 /** Generates chunks for rows in a fake table that match the provided RowSet.
  * The fake table contains monotonically increasing zero padded rows
  * in the range [keyFrom, keyTo).
+ * @param chunkGeneratorParameters The parameters for generating chunks.
  */
 export function generateChunks(
   chunkGeneratorParameters: ChunkGeneratorParameters
