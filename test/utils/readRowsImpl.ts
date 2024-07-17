@@ -75,7 +75,9 @@ export function prettyPrintRequest(
  * The fake table contains monotonically increasing zero padded rows
  * in the range [keyFrom, keyTo).
  */
-function generateChunks(chunkGeneratorParameters: ChunkGeneratorParameters) {
+export function generateChunks(
+  chunkGeneratorParameters: ChunkGeneratorParameters
+) {
   const keyFrom = chunkGeneratorParameters.keyFrom;
   const keyTo = chunkGeneratorParameters.keyTo;
   debugLog(`generating chunks from ${keyFrom} to ${keyTo}`);
@@ -226,7 +228,58 @@ export function readRowsImpl(
     });
 
     let chunksSent = 0;
-    const chunks = generateChunks(serviceParameters);
+    let keyFromRequestClosed: any;
+    if (
+      stream?.request?.rows?.rowRanges &&
+      stream?.request?.rows?.rowRanges[0] &&
+      stream?.request?.rows?.rowRanges[0]?.startKeyClosed?.toString()
+    ) {
+      keyFromRequestClosed =
+        stream?.request?.rows?.rowRanges[0]?.startKeyClosed?.toString();
+    }
+    let keyFromRequestOpen: any;
+    if (
+      stream?.request?.rows?.rowRanges &&
+      stream?.request?.rows?.rowRanges[0] &&
+      stream?.request?.rows?.rowRanges[0]?.startKeyOpen?.toString()
+    ) {
+      keyFromRequestOpen =
+        stream?.request?.rows?.rowRanges[0]?.startKeyOpen?.toString();
+    }
+    let keyToRequestClosed: any;
+    if (
+      stream?.request?.rows?.rowRanges &&
+      stream?.request?.rows?.rowRanges[0] &&
+      stream?.request?.rows?.rowRanges[0]?.endKeyClosed?.toString()
+    ) {
+      keyToRequestClosed =
+        stream?.request?.rows?.rowRanges[0]?.endKeyClosed?.toString();
+    }
+    let keyToRequestOpen;
+    if (
+      stream?.request?.rows?.rowRanges &&
+      stream?.request?.rows?.rowRanges[0] &&
+      stream?.request?.rows?.rowRanges[0]?.endKeyOpen?.toString()
+    ) {
+      keyToRequestOpen =
+        stream?.request?.rows?.rowRanges[0]?.endKeyOpen?.toString();
+    }
+    const keyFromUsed = serviceParameters.defaultKeyFrom
+      ? serviceParameters.defaultKeyFrom
+      : keyFromRequestClosed
+        ? parseInt(keyFromRequestClosed as string)
+        : parseInt(keyFromRequestOpen as string) + 1;
+    const keyToUsed = serviceParameters.defaultKeyTo
+      ? serviceParameters.defaultKeyTo
+      : keyToRequestClosed
+        ? parseInt(keyToRequestClosed as string)
+        : parseInt(keyToRequestOpen as string) + 1;
+    const chunks = generateChunks({
+      keyFrom: keyFromUsed,
+      keyTo: keyToUsed,
+      chunkSize: serviceParameters.chunkSize,
+      valueSize: serviceParameters.valueSize,
+    });
     let lastScannedRowKey: string | undefined;
     let currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] =
       [];

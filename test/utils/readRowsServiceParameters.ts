@@ -13,8 +13,8 @@
 // limitations under the License.
 
 export interface ReadRowsServiceParameters {
-  keyFrom: number;
-  keyTo: number;
+  defaultKeyFrom?: number;
+  defaultKeyTo?: number;
   errorAfterChunkNo?: number;
   chunkSize: number;
   valueSize: number;
