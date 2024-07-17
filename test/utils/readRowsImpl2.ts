@@ -16,19 +16,12 @@ import {ServerWritableStream} from '@grpc/grpc-js';
 import {protos} from '../../src';
 import {GoogleError, Status} from 'google-gax';
 import {
+  debugLog,
   generateChunks,
   isKeyInRowSet,
   prettyPrintRequest,
 } from './readRowsImpl';
 import {ReadRowsServiceParameters} from './readRowsServiceParameters';
-
-const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
-
-export function debugLog(text: string) {
-  if (DEBUG) {
-    console.log(text);
-  }
-}
 
 // Returns an implementation of the server streaming ReadRows call that would return
 // monotonically increasing zero padded rows in the range [keyFrom, keyTo).
