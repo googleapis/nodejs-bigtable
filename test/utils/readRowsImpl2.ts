@@ -16,6 +16,7 @@ import {ServerWritableStream} from '@grpc/grpc-js';
 import {protos} from '../../src';
 import {GoogleError, Status} from 'google-gax';
 import {prettyPrintRequest} from './readRowsImpl';
+import {ReadRowsServiceParameters} from './readRowsServiceParameters';
 
 const VALUE_SIZE = 1;
 // we want each row to be splitted into 2 chunks of different sizes
@@ -119,15 +120,14 @@ function isKeyInRowSet(
 // TODO: Address the excessive number of if statements.
 // TODO: Perhaps group the if statements into classes so that they can be unit tested.
 export function readRowsImpl2(
-  keyFrom?: number,
-  keyTo?: number,
-  errorAfterChunkNo?: number
+  serviceParameters: ReadRowsServiceParameters
 ): (
   stream: ServerWritableStream<
     protos.google.bigtable.v2.IReadRowsRequest,
     protos.google.bigtable.v2.IReadRowsResponse
   >
 ) => Promise<void> {
+  let errorAfterChunkNo = serviceParameters.errorAfterChunkNo;
   return async (
     stream: ServerWritableStream<
       protos.google.bigtable.v2.IReadRowsRequest,
@@ -206,13 +206,13 @@ export function readRowsImpl2(
       keyToRequestOpen =
         stream?.request?.rows?.rowRanges[0]?.endKeyOpen?.toString();
     }
-    const keyFromUsed = keyFrom
-      ? keyFrom
+    const keyFromUsed = serviceParameters.keyFrom
+      ? serviceParameters.keyFrom
       : keyFromRequestClosed
         ? parseInt(keyFromRequestClosed as string)
         : parseInt(keyFromRequestOpen as string) + 1;
-    const keyToUsed = keyTo
-      ? keyTo
+    const keyToUsed = serviceParameters.keyTo
+      ? serviceParameters.keyTo
       : keyToRequestClosed
         ? parseInt(keyToRequestClosed as string)
         : parseInt(keyToRequestOpen as string) + 1;

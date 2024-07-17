@@ -161,6 +161,9 @@ function isKeyInRowSet(
 // Returns an implementation of the server streaming ReadRows call that would return
 // monotonically increasing zero padded rows in the range [keyFrom, keyTo).
 // The returned implementation can be passed to gRPC server.
+// TODO: Remove optional keyFrom, keyTo from the server. No test uses them. Remove them from this test as well.
+// TODO: Address the excessive number of if statements.
+// TODO: Perhaps group the if statements into classes so that they can be unit tested.
 export function readRowsImpl(
   serviceParameters: ReadRowsServiceParameters
 ): (
