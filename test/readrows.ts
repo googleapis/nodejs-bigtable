@@ -302,41 +302,53 @@ describe('Bigtable/ReadRows', () => {
     pipeline(readStream, transform, passThrough, () => {});
   });
 
-  it('should silently resume after server or network error', done => {
-    service.setService({
-      ReadRows: readRowsImpl({
-        keyFrom: STANDARD_KEY_FROM,
-        keyTo: STANDARD_KEY_TO,
-        valueSize: VALUE_SIZE,
-        chunkSize: CHUNK_SIZE,
-        chunksPerResponse: CHUNKS_PER_RESPONSE,
-        errorAfterChunkNo: 423,
-      }) as ServerImplementationInterface,
-    });
+  describe('should silently resume after server or network error', () => {
+    function runTest(done: Mocha.Done, errorAfterChunkNo: number) {
+      service.setService({
+        ReadRows: readRowsImpl({
+          keyFrom: STANDARD_KEY_FROM,
+          keyTo: STANDARD_KEY_TO,
+          valueSize: VALUE_SIZE,
+          chunkSize: CHUNK_SIZE,
+          chunksPerResponse: CHUNKS_PER_RESPONSE,
+          errorAfterChunkNo,
+        }) as ServerImplementationInterface,
+      });
+      let receivedRowCount = 0;
+      let lastKeyReceived: number | undefined;
 
-    let receivedRowCount = 0;
-    let lastKeyReceived: number | undefined;
-
-    const readStream = table.createReadStream();
-    readStream.on('error', (err: GoogleError) => {
-      done(err);
+      const readStream = table.createReadStream();
+      readStream.on('error', (err: GoogleError) => {
+        done(err);
+      });
+      readStream.on('data', (row: Row) => {
+        ++receivedRowCount;
+        const key = parseInt(row.id);
+        if (lastKeyReceived && key <= lastKeyReceived) {
+          done(new Error('Test error: keys are not in order'));
+        }
+        lastKeyReceived = key;
+        debugLog(`received row key ${key}`);
+      });
+      readStream.on('end', () => {
+        assert.strictEqual(
+          receivedRowCount,
+          STANDARD_KEY_TO - STANDARD_KEY_FROM
+        );
+        assert.strictEqual(lastKeyReceived, STANDARD_KEY_TO - 1);
+        done();
+      });
+    }
+    it('with an error at a fixed position', done => {
+      // Emits an error after enough chunks have been pushed to create back pressure
+      runTest(done, 423);
     });
-    readStream.on('data', (row: Row) => {
-      ++receivedRowCount;
-      const key = parseInt(row.id);
-      if (lastKeyReceived && key <= lastKeyReceived) {
-        done(new Error('Test error: keys are not in order'));
-      }
-      lastKeyReceived = key;
-      debugLog(`received row key ${key}`);
-    });
-    readStream.on('end', () => {
-      assert.strictEqual(receivedRowCount, STANDARD_KEY_TO - STANDARD_KEY_FROM);
-      assert.strictEqual(lastKeyReceived, STANDARD_KEY_TO - 1);
-      done();
+    it('with an error at a random position', done => {
+      // Emits an error after a random number of chunks.
+      const errorAfterChunkNo = Math.floor(Math.random() * 1000);
+      runTest(done, errorAfterChunkNo);
     });
   });
-
   it('should return row data in the right order', done => {
     // 150 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = undefined;
