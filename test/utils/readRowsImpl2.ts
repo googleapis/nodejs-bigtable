@@ -15,7 +15,11 @@
 import {ServerWritableStream} from '@grpc/grpc-js';
 import {protos} from '../../src';
 import {GoogleError, Status} from 'google-gax';
-import {generateChunks, prettyPrintRequest} from './readRowsImpl';
+import {
+  generateChunks,
+  isKeyInRowSet,
+  prettyPrintRequest,
+} from './readRowsImpl';
 import {ReadRowsServiceParameters} from './readRowsServiceParameters';
 
 const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
@@ -24,44 +28,6 @@ export function debugLog(text: string) {
   if (DEBUG) {
     console.log(text);
   }
-}
-
-function isKeyInRowSet(
-  stringKey: string,
-  rowSet?: protos.google.bigtable.v2.IRowSet | null
-): boolean {
-  if (!rowSet) {
-    return true;
-  }
-  // primitive support for row ranges
-  if (rowSet.rowRanges || rowSet.rowKeys) {
-    for (const requestKey of rowSet.rowKeys ?? []) {
-      if (stringKey === requestKey.toString()) {
-        return true;
-      }
-    }
-    for (const range of rowSet.rowRanges ?? []) {
-      let startOk = true;
-      let endOk = true;
-      if (range.startKeyOpen && range.startKeyOpen.toString() >= stringKey) {
-        startOk = false;
-      }
-      if (range.startKeyClosed && range.startKeyClosed.toString() > stringKey) {
-        startOk = false;
-      }
-      if (range.endKeyOpen && range.endKeyOpen.toString() <= stringKey) {
-        endOk = false;
-      }
-      if (range.endKeyClosed && range.endKeyClosed.toString() < stringKey) {
-        endOk = false;
-      }
-      if (startOk && endOk) {
-        return true;
-      }
-    }
-    return false;
-  }
-  return true;
 }
 
 // Returns an implementation of the server streaming ReadRows call that would return

@@ -122,7 +122,7 @@ export function generateChunks(
   return chunks;
 }
 
-function isKeyInRowSet(
+export function isKeyInRowSet(
   stringKey: string,
   rowSet?: protos.google.bigtable.v2.IRowSet | null
 ): boolean {
