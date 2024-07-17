@@ -28,6 +28,10 @@ export function debugLog(text: string) {
   }
 }
 
+// Generate documentation for this function
+/** Pretty prints the request object.
+ * @param request The request object to pretty print.
+ */
 export function prettyPrintRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest
 ) {
