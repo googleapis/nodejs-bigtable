@@ -264,16 +264,18 @@ export function readRowsImpl(
       keyToRequestOpen =
         stream?.request?.rows?.rowRanges[0]?.endKeyOpen?.toString();
     }
-    const keyFromUsed = serviceParameters.defaultKeyFrom
-      ? serviceParameters.defaultKeyFrom
-      : keyFromRequestClosed
-        ? parseInt(keyFromRequestClosed as string)
-        : parseInt(keyFromRequestOpen as string) + 1;
-    const keyToUsed = serviceParameters.defaultKeyTo
-      ? serviceParameters.defaultKeyTo
-      : keyToRequestClosed
-        ? parseInt(keyToRequestClosed as string)
-        : parseInt(keyToRequestOpen as string) + 1;
+    const keyFromUsed =
+      serviceParameters.defaultKeyFrom !== undefined
+        ? serviceParameters.defaultKeyFrom
+        : keyFromRequestClosed
+          ? parseInt(keyFromRequestClosed as string)
+          : parseInt(keyFromRequestOpen as string) + 1;
+    const keyToUsed =
+      serviceParameters.defaultKeyTo !== undefined
+        ? serviceParameters.defaultKeyTo
+        : keyToRequestClosed
+          ? parseInt(keyToRequestClosed as string)
+          : parseInt(keyToRequestOpen as string) + 1;
     const chunks = generateChunks({
       keyFrom: keyFromUsed,
       keyTo: keyToUsed,

@@ -44,7 +44,6 @@ export function readRowsImpl2(
       protos.google.bigtable.v2.IReadRowsResponse
     >
   ): Promise<void> => {
-    console.log('Server received request');
     prettyPrintRequest(stream.request);
 
     let stopWaiting: () => void = () => {};
