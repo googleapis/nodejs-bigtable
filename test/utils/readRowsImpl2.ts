@@ -195,6 +195,8 @@ export function readRowsImpl2(
           const error = new GoogleError('Uh oh');
           error.code = Status.ABORTED;
           stream.emit('error', error);
+          cancelled = true;
+          break;
         }
       }
       if (lastScannedRowKey) {
