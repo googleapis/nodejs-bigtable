@@ -767,7 +767,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       emit(event: string | symbol, ...args: any[]): boolean {
         const message = event === 'data' ? args[0].id : null;
         setImmediate(() => {
-          console.log('New event: > toRowStream.emit', event, message);
+          console.log('Event over: > toRowStream.emit', event, message);
         });
         console.log('> toRowStream.emit', event, message);
         if (event === 'data' && args[0] === '1b') {
@@ -844,7 +844,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       emit(event: string | symbol, ...args: any[]): boolean {
         const message = event === 'data' ? args[0].id : null;
         setImmediate(() => {
-          console.log('New Event: > userStream.emit', event, message);
+          console.log('Event over: > userStream.emit', event, message);
         });
         console.log('> userStream.emit', event, message);
         return super.emit(event, ...args);

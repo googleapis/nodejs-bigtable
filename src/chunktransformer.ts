@@ -485,7 +485,7 @@ export class ChunkTransformerLogger extends ChunkTransformer {
   emit(event: string | symbol, ...args: any[]): boolean {
     const message = event === 'data' ? args[0].id : null;
     setImmediate(() => {
-      console.log('Next event > chunkTransformerEmit.emit', event, message);
+      console.log('Event over > chunkTransformerEmit.emit', event, message);
     });
     console.log('> chunkTransformerEmit.emit', event, message);
     return super.emit(event, ...args);

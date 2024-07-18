@@ -122,11 +122,12 @@ class MiddlewareStream extends Transform {
     callback();
   }
   emit(event: string | symbol, ...args: any[]): boolean {
-    console.log(
-      '> middlewareStream.emit',
-      event,
-      event === 'data' ? args[0].id : null
-    );
+    const message =
+      event === 'data' ? args[0].chunks[0].rowKey.toString() : null;
+    setImmediate(() => {
+      console.log('> Event over: middlewareStream.emit', event, message);
+    });
+    console.log('> middlewareStream.emit', event, message);
     return super.emit(event, ...args);
   }
 }
