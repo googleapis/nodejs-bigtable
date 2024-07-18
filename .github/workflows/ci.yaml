@@ -23,6 +23,7 @@ jobs:
       # Clean up the production install, before installing dev/production:
       - run: rm -rf node_modules
       - run: npm install
+      - run: npm ls --depth=10
       - run: npm test
         env:
           MOCHA_THROW_DEPRECATION: false
