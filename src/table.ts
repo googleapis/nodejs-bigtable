@@ -759,7 +759,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
       writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
       transform(row, _encoding, callback) {
-        if (userCanceled) {
+        if (userCanceled || TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
           callback();
           return;
         }
