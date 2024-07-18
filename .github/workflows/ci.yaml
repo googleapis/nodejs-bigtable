@@ -16,7 +16,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: node --version
-      - run: npm ls --depth=10
       # The first installation step ensures that all of our production
       # dependencies work on the given Node.js version, this helps us find
       # dependencies that don't match our engines field:
@@ -24,6 +23,7 @@ jobs:
       # Clean up the production install, before installing dev/production:
       - run: rm -rf node_modules
       - run: npm install
+      - run: npm ls --depth=10
       - run: npm test
         env:
           MOCHA_THROW_DEPRECATION: false
