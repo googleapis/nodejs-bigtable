@@ -767,16 +767,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       emit(event: string | symbol, ...args: any[]): boolean {
         const message = event === 'data' ? args[0].id : null;
         setImmediate(() => {
-          console.log('New event: > rowStream.emit', event, message);
+          console.log('New event: > toRowStream.emit', event, message);
         });
-        console.log('> rowStream.emit', event, message);
+        console.log('> toRowStream.emit', event, message);
         if (event === 'data' && args[0] === '1b') {
           //debugger;
         }
         return super.emit(event, ...args);
       }
       _destroy(error: Error | null, callback: (error?: Error | null) => void) {
-        console.log('rowStream.destroy');
+        console.log('toRowStream.destroy');
         super._destroy(error, callback);
       }
     }
@@ -1020,6 +1020,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
+      /*
+      Error leaks through for some reason
+      const emitFn = rowStream.emit.bind(rowStream);
+      rowStream.emit = (event: string | symbol, ...args: any[]) => {
+        const message = event === 'data' ? args[0].id : null;
+        setImmediate(() => {
+          console.log('Next event > rowStream.emit', event, message);
+        });
+        console.log('> rowStream.emit', event, message);
+        return emitFn(event, args);
+        return false;
+      };
+       */
+
       // Retry on "received rst stream" errors
       const isRstStreamError = (error: ServiceError): boolean => {
         if (error.code === 13 && error.message) {
@@ -1061,8 +1075,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             userStream.emit('error', error);
           }
         })
-        .on('data', _ => {
-          console.log('data event reaches rowStream');
+        .on('data', (...args: [any]) => {
+          console.log(`data event reaches rowStream handler ${args[0].id}`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
