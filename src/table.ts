@@ -765,11 +765,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
 
       emit(event: string | symbol, ...args: any[]): boolean {
-        console.log(
-          '> rowStream.emit',
-          event,
-          event === 'data' ? args[0].id : null
-        );
+        const message = event === 'data' ? args[0].id : null;
+        setImmediate(() => {
+          console.log('New event: > rowStream.emit', event, message);
+        });
+        console.log('> rowStream.emit', event, message);
         if (event === 'data' && args[0] === '1b') {
           //debugger;
         }
@@ -842,11 +842,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
        */
 
       emit(event: string | symbol, ...args: any[]): boolean {
-        console.log(
-          '> userStream.emit',
-          event,
-          event === 'data' ? args[0].id : null
-        );
+        const message = event === 'data' ? args[0].id : null;
+        setImmediate(() => {
+          console.log('New Event: > userStream.emit', event, message);
+        });
+        console.log('> userStream.emit', event, message);
         return super.emit(event, ...args);
       }
     }
