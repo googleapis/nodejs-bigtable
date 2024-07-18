@@ -47,6 +47,7 @@
     "precompile": "gts clean"
   },
   "dependencies": {
+    "@grpc/grpc-js": "1.10.11",
     "@google-cloud/precise-date": "^4.0.0",
     "@google-cloud/projectify": "^4.0.0",
     "@google-cloud/promisify": "^4.0.0",
@@ -65,7 +66,7 @@
     "stream-events": "^1.0.2"
   },
   "devDependencies": {
-    "@grpc/grpc-js": "^1.9.0",
+    "@grpc/grpc-js": "1.10.11",
     "@grpc/proto-loader": "^0.7.3",
     "@types/escape-string-regexp": "^2.0.0",
     "@types/extend": "^3.0.1",
@@ -98,6 +99,11 @@
     "uuid": "^9.0.0",
     "webpack": "^5.0.0",
     "webpack-cli": "^5.0.0"
+  },
+  "overrides": {
+    "google-gax": {
+      "@grpc/grpc-js": "$@grpc/grpc-js"
+    }
   },
   "engines": {
     "node": ">=14.0.0"
