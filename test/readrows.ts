@@ -356,7 +356,7 @@ describe('Bigtable/ReadRows', () => {
 
         for await (const row of stream) {
           dataResults.push(row.id);
-          await sleep(50);
+          await sleep(60);
         }
         const expectedResults = Array.from(Array(150).keys())
           .map(i => '00000000' + i.toString())
