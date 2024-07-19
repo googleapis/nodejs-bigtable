@@ -772,7 +772,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       emit(event: string | symbol, ...args: any[]): boolean {
         const message = event === 'data' ? args[0].id : null;
         if (event === 'data') {
-          this.lastEmitData = args[0];
+          this.lastEmitData = args[0].id;
         }
         setImmediate(() => {
           console.log('Event over: > toRowStream.emit', event, message);
