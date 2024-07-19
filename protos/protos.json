@@ -3437,7 +3437,15 @@
                             "bytesType",
                             "stringType",
                             "int64Type",
-                            "aggregateType"
+                            "float32Type",
+                            "float64Type",
+                            "boolType",
+                            "timestampType",
+                            "dateType",
+                            "aggregateType",
+                            "structType",
+                            "arrayType",
+                            "mapType"
                           ]
                         }
                       },
@@ -3454,9 +3462,41 @@
                           "type": "Int64",
                           "id": 5
                         },
+                        "float32Type": {
+                          "type": "Float32",
+                          "id": 12
+                        },
+                        "float64Type": {
+                          "type": "Float64",
+                          "id": 9
+                        },
+                        "boolType": {
+                          "type": "Bool",
+                          "id": 8
+                        },
+                        "timestampType": {
+                          "type": "Timestamp",
+                          "id": 10
+                        },
+                        "dateType": {
+                          "type": "Date",
+                          "id": 11
+                        },
                         "aggregateType": {
                           "type": "Aggregate",
                           "id": 6
+                        },
+                        "structType": {
+                          "type": "Struct",
+                          "id": 7
+                        },
+                        "arrayType": {
+                          "type": "Array",
+                          "id": 3
+                        },
+                        "mapType": {
+                          "type": "Map",
+                          "id": 4
                         }
                       },
                       "nested": {
@@ -3502,18 +3542,32 @@
                               "oneofs": {
                                 "encoding": {
                                   "oneof": [
-                                    "utf8Raw"
+                                    "utf8Raw",
+                                    "utf8Bytes"
                                   ]
                                 }
                               },
                               "fields": {
                                 "utf8Raw": {
                                   "type": "Utf8Raw",
-                                  "id": 1
+                                  "id": 1,
+                                  "options": {
+                                    "deprecated": true
+                                  }
+                                },
+                                "utf8Bytes": {
+                                  "type": "Utf8Bytes",
+                                  "id": 2
                                 }
                               },
                               "nested": {
                                 "Utf8Raw": {
+                                  "options": {
+                                    "deprecated": true
+                                  },
+                                  "fields": {}
+                                },
+                                "Utf8Bytes": {
                                   "fields": {}
                                 }
                               }
@@ -3555,11 +3609,72 @@
                             }
                           }
                         },
+                        "Bool": {
+                          "fields": {}
+                        },
+                        "Float32": {
+                          "fields": {}
+                        },
+                        "Float64": {
+                          "fields": {}
+                        },
+                        "Timestamp": {
+                          "fields": {}
+                        },
+                        "Date": {
+                          "fields": {}
+                        },
+                        "Struct": {
+                          "fields": {
+                            "fields": {
+                              "rule": "repeated",
+                              "type": "Field",
+                              "id": 1
+                            }
+                          },
+                          "nested": {
+                            "Field": {
+                              "fields": {
+                                "fieldName": {
+                                  "type": "string",
+                                  "id": 1
+                                },
+                                "type": {
+                                  "type": "Type",
+                                  "id": 2
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "Array": {
+                          "fields": {
+                            "elementType": {
+                              "type": "Type",
+                              "id": 1
+                            }
+                          }
+                        },
+                        "Map": {
+                          "fields": {
+                            "keyType": {
+                              "type": "Type",
+                              "id": 1
+                            },
+                            "valueType": {
+                              "type": "Type",
+                              "id": 2
+                            }
+                          }
+                        },
                         "Aggregate": {
                           "oneofs": {
                             "aggregator": {
                               "oneof": [
-                                "sum"
+                                "sum",
+                                "hllppUniqueCount",
+                                "max",
+                                "min"
                               ]
                             }
                           },
@@ -3578,10 +3693,31 @@
                             "sum": {
                               "type": "Sum",
                               "id": 4
+                            },
+                            "hllppUniqueCount": {
+                              "type": "HyperLogLogPlusPlusUniqueCount",
+                              "id": 5
+                            },
+                            "max": {
+                              "type": "Max",
+                              "id": 6
+                            },
+                            "min": {
+                              "type": "Min",
+                              "id": 7
                             }
                           },
                           "nested": {
                             "Sum": {
+                              "fields": {}
+                            },
+                            "Max": {
+                              "fields": {}
+                            },
+                            "Min": {
+                              "fields": {}
+                            },
+                            "HyperLogLogPlusPlusUniqueCount": {
                               "fields": {}
                             }
                           }
