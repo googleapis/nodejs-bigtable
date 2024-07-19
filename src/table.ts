@@ -798,6 +798,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         super._destroy(error, callback);
       }
       reportStatus(): void {
+        //this.()
+        // const head = this.getReadableBuffer() ._readableState.buffer.head.data.id;
         console.log(
           `toRowStream transformer: last write: ${this.lastWriteData}, last emit: ${this.lastEmitData}, last transform: ${this.lastTransformData}`
         );
@@ -1076,20 +1078,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       toRowStream = new RowStreamTransformer();
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
+      console.log('test');
 
-      /*
-      Error leaks through for some reason
+      // Error leaks through for some reason
       const emitFn = rowStream.emit.bind(rowStream);
+      // const oldEmitFn = rowStream.emit;
       rowStream.emit = (event: string | symbol, ...args: any[]) => {
         const message = event === 'data' ? args[0].id : null;
         setImmediate(() => {
           console.log('Next event > rowStream.emit', event, message);
         });
         console.log('> rowStream.emit', event, message);
-        return emitFn(event, args);
-        return false;
+        return emitFn(event, ...args);
+        // return true;
       };
-       */
 
       // Retry on "received rst stream" errors
       const isRstStreamError = (error: ServiceError): boolean => {
