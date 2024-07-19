@@ -823,6 +823,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let chunkTransformer: ChunkTransformer;
     let rowStream: Duplex;
 
+    let rowStreamEmit = '';
+    let rowStreamWrite = '';
     let userCanceled = false;
     let lastRowKey = '';
     let rowsRead = 0;
@@ -934,6 +936,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     function printReport() {
       console.log(`lastRowStreamHandledData ${lastRowStreamHandledData}`);
+      console.log(
+        `row stream emit key: ${rowStreamEmit} row stream write key ${rowStreamWrite}`
+      );
       if (toRowStream) {
         (toRowStream as RowStreamTransformer).reportStatus();
       }
@@ -1081,16 +1086,29 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       console.log('test');
 
       // Error leaks through for some reason
-      const emitFn = rowStream.emit.bind(rowStream);
+      const rowStreamEmitFn = rowStream.emit.bind(rowStream);
       // const oldEmitFn = rowStream.emit;
       rowStream.emit = (event: string | symbol, ...args: any[]) => {
         const message = event === 'data' ? args[0].id : null;
+        if (event === 'data') {
+          rowStreamEmit = args[0].id;
+        }
         setImmediate(() => {
           console.log('Next event > rowStream.emit', event, message);
         });
         console.log('> rowStream.emit', event, message);
-        return emitFn(event, ...args);
+        return rowStreamEmitFn(event, ...args);
         // return true;
+      };
+      const rowStreamWriteFn = rowStream.write.bind(rowStream);
+      rowStream.write = (chunk: any, encoding: any, cb?: any) => {
+        rowStreamWrite = chunk.id;
+        const message = `rowStream.write ${chunk.id}`;
+        setImmediate(() => {
+          console.log(`Event over: ${message}`);
+        });
+        console.log(message);
+        return rowStreamWriteFn(chunk, encoding, cb);
       };
 
       // Retry on "received rst stream" errors
