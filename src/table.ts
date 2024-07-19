@@ -759,7 +759,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
       writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
       transform(row, _encoding, callback) {
-        if (userCanceled || TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
+        if (userCanceled) {
+          callback();
+          return;
+        }
+        if (TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
+          /*
+          Sometimes duplicate rows reach this point. To avoid delivering
+          duplicate rows to the user, rows are thrown away if they don't exceed
+          the last row key. We can expect each row to reach this point so if
+          the last row key equals or exceeds the row id then we know data for
+          this row has already reached this point and been delivered to the user.
+          In this case we want to throw the row away and we do not want to
+          deliver this row to the user again.
+           */
           callback();
           return;
         }
