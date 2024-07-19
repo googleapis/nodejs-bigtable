@@ -843,7 +843,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               return;
             }
              */
-            self.lastTransformKey = row.id;
             const message = `userstream.transform ${row.id}`;
             setImmediate(() => {
               console.log(`Event over: ${message}`);
