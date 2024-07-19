@@ -930,6 +930,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowStream?.removeListener('end', originalEnd);
     };
 
+    function printReport() {
+      console.log(`lastRowStreamHandledData ${lastRowStreamHandledData}`);
+      if (toRowStream) {
+        (toRowStream as RowStreamTransformer).reportStatus();
+      }
+      (userStream as UserStream).reportStatus();
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
       console.log('User stream end');
@@ -947,11 +955,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     const makeNewRequest = () => {
       console.log('making new request');
-      console.log(`lastRowStreamHandledData ${lastRowStreamHandledData}`);
-      if (toRowStream) {
-        (toRowStream as RowStreamTransformer).reportStatus();
-      }
-      (userStream as UserStream).reportStatus();
+      printReport();
+
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
       retryTimer = null;
@@ -1102,6 +1107,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowStream
         .on('error', (error: ServiceError) => {
           console.log('handling error');
+          printReport();
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
