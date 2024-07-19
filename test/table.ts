@@ -997,7 +997,7 @@ describe('Bigtable/Table', () => {
         };
       });
 
-      it.only('should stream Row objects', done => {
+      it('should stream Row objects', done => {
         const rows: Row[] = [];
 
         table
@@ -1018,7 +1018,7 @@ describe('Bigtable/Table', () => {
           });
       });
 
-      it.skip('should allow a stream to end early', done => {
+      it('should allow a stream to end early', done => {
         const rows: Row[] = [];
         const stream = table
           .createReadStream()
