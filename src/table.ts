@@ -741,7 +741,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let retryTimer: NodeJS.Timeout | null;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const thisTable = this;
-    let lastRowStreamHandledData = string;
+    let lastRowStreamHandledData: string;
 
     class RowStreamTransformer extends Transform {
       lastWriteData: any = null;
