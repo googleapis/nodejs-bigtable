@@ -821,7 +821,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let lastRowKey = '';
     let rowsRead = 0;
     class UserStream extends Transform {
+      lastWriteKey: any;
+      lastEmitKey: any;
+      lastTransformKey: any;
       constructor() {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const self = this;
         super({
           objectMode: true,
           readableHighWaterMark: 0,
@@ -837,6 +842,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               return;
             }
              */
+            self.lastTransformKey = row.id;
             const message = `userstream.transform ${row.id}`;
             setImmediate(() => {
               console.log(`Event over: ${message}`);
@@ -849,6 +855,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         });
       }
       write(chunk: any, encoding: any, cb?: any): boolean {
+        this.lastWriteKey = chunk.id;
         const message = `userstream.write ${chunk.id}`;
         setImmediate(() => {
           console.log(`Event over: ${message}`);
@@ -871,11 +878,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       emit(event: string | symbol, ...args: any[]): boolean {
         const message = event === 'data' ? args[0].id : null;
+        if (event === 'data') {
+          this.lastEmitKey = args[0].id;
+        }
         setImmediate(() => {
           console.log('Event over: > userStream.emit', event, message);
         });
         console.log('> userStream.emit', event, message);
         return super.emit(event, ...args);
+      }
+      reportStatus() {
+        console.log(
+          `userStream transformer: last emit: ${this.lastEmitKey} last write: ${this.lastWriteKey} last transform: ${this.lastTransformKey}`
+        );
       }
     }
     const userStream = new UserStream() as Transform;
