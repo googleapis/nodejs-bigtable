@@ -741,6 +741,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let retryTimer: NodeJS.Timeout | null;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const thisTable = this;
+    let lastRowStreamHandledData = string;
 
     class RowStreamTransformer extends Transform {
       lastWriteData: any = null;
@@ -946,6 +947,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     const makeNewRequest = () => {
       console.log('making new request');
+      console.log(`lastRowStreamHandledData ${lastRowStreamHandledData}`);
       if (toRowStream) {
         (toRowStream as RowStreamTransformer).reportStatus();
       }
@@ -1127,6 +1129,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           }
         })
         .on('data', (...args: [any]) => {
+          lastRowStreamHandledData = args[0].id;
           console.log(`data event reaches rowStream handler ${args[0].id}`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
