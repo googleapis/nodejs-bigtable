@@ -745,11 +745,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     class RowStreamTransformer extends Transform {
       lastWriteData: any = null;
       lastEmitData: any = null;
+      lastTransformData: any = null;
       constructor() {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         super({
           objectMode: true,
           transform: (rowData, _, next) => {
-            console.log(`in toRowStream ${rowData.key}`);
+            console.log(`in toRowStream transform ${rowData.key}`);
+            this.lastTransformData = rowData.key;
             if (
               userCanceled ||
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -795,7 +798,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       reportStatus(): void {
         console.log(
-          `toRowStream transformer: last write: ${this.lastWriteData} last emit: ${this.lastEmitData}`
+          `toRowStream transformer: last write: ${this.lastWriteData}, last emit: ${this.lastEmitData}, last transform: ${this.lastTransformData}`
         );
       }
     }
