@@ -163,6 +163,7 @@ export class Row {
   key?: string;
   metadata?: {};
   constructor(table: Table, key: string) {
+    console.log('in row constructor');
     this.bigtable = table.bigtable;
     this.table = table;
     this.id = key;

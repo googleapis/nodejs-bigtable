@@ -30,6 +30,7 @@ import * as tblTypes from '../src/table';
 import {Bigtable, RequestOptions} from '../src';
 import {EventEmitter} from 'events';
 import {TableUtils} from '../src/utils/table';
+import {Table} from '../src/table';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
@@ -53,6 +54,7 @@ function createFake(klass: any) {
     calledWith_: any[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(...args: any[]) {
+      // TODO: Fix: super doesn't actually seem to call klass constructor.
       super(...args);
       this.calledWith_ = args;
     }
@@ -62,7 +64,18 @@ function createFake(klass: any) {
 const FakeFamily = createFake(Family);
 FakeFamily.formatRule_ = sinon.spy(rule => rule);
 
-const FakeRow = createFake(Row);
+class FakeRow extends Row {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  calledWith_: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  constructor(table: Table, key: string) {
+    console.log('in FakeRow constructor');
+    super(table, key);
+    this.calledWith_ = [table, key];
+  }
+}
+
+// const FakeRow = createFake(Row);
 
 FakeRow.formatChunks_ = sinon.spy(chunks => {
   return chunks;
@@ -911,16 +924,29 @@ describe('Bigtable/Table', () => {
     });
 
     describe('success', () => {
+      const fakeData = {
+        family: {
+          qualifier: [
+            {
+              value: '',
+              labels: [0],
+              timestamp: '0',
+            },
+          ],
+        },
+      };
       const fakeChunks = {
         chunks: [
           {
             rowKey: 'a',
+            data: fakeData,
           },
           {
             commitRow: true,
           },
           {
             rowKey: 'b',
+            data: fakeData,
           },
           {
             commitRow: true,
@@ -929,13 +955,18 @@ describe('Bigtable/Table', () => {
       };
 
       const formattedRows = [
-        {key: 'c', data: {}},
-        {key: 'd', data: {}},
+        {key: 'c', data: fakeData},
+        {key: 'd', data: fakeData},
       ];
 
       beforeEach(() => {
-        sinon.stub(table, 'row').callsFake(() => {
-          return {} as Row;
+        sinon.stub(table, 'row').callsFake((...args: unknown[]) => {
+          return {
+            id: args[0] as string,
+            table: table,
+            bigtable: table.bigtable,
+            data: {},
+          } as Row;
         });
         FakeChunkTransformer.prototype._transform = function (
           chunks: Array<{}>,
@@ -966,7 +997,7 @@ describe('Bigtable/Table', () => {
         };
       });
 
-      it.skip('should stream Row objects', done => {
+      it.only('should stream Row objects', done => {
         const rows: Row[] = [];
 
         table
