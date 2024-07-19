@@ -937,7 +937,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     function printReport() {
       console.log(`lastRowStreamHandledData ${lastRowStreamHandledData}`);
       console.log(
-        `row stream emit key: ${rowStreamEmit} row stream write key ${rowStreamWrite}`
+        `row stream emit key: ${rowStreamEmit} row stream write key: ${rowStreamWrite}`
       );
       if (toRowStream) {
         (toRowStream as RowStreamTransformer).reportStatus();
@@ -1094,7 +1094,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           rowStreamEmit = args[0].id;
         }
         setImmediate(() => {
-          console.log('Next event > rowStream.emit', event, message);
+          console.log('Event over > rowStream.emit', event, message);
         });
         console.log('> rowStream.emit', event, message);
         return rowStreamEmitFn(event, ...args);
