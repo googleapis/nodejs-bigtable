@@ -743,6 +743,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const thisTable = this;
 
     class RowStreamTransformer extends Transform {
+      lastWriteData: any = null;
+      lastEmitData: any = null;
       constructor() {
         super({
           objectMode: true,
@@ -766,6 +768,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       emit(event: string | symbol, ...args: any[]): boolean {
         const message = event === 'data' ? args[0].id : null;
+        if (event === 'data') {
+          this.lastEmitData = args[0];
+        }
         setImmediate(() => {
           console.log('Event over: > toRowStream.emit', event, message);
         });
@@ -777,6 +782,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       write(chunk: any, encoding: any, cb?: any): boolean {
         const message = `toRowStream.write ${chunk.key}`;
+        this.lastWriteData = chunk.key;
         setImmediate(() => {
           console.log(`Event over: ${message}`);
         });
@@ -786,6 +792,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       _destroy(error: Error | null, callback: (error?: Error | null) => void) {
         console.log('toRowStream.destroy');
         super._destroy(error, callback);
+      }
+      reportStatus(): void {
+        console.log(
+          `toRowStream transformer: last write: ${this.lastWriteData} last emit: ${this.lastEmitData}`
+        );
       }
     }
 
