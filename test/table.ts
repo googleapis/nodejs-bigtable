@@ -30,7 +30,6 @@ import * as tblTypes from '../src/table';
 import {Bigtable, RequestOptions} from '../src';
 import {EventEmitter} from 'events';
 import {TableUtils} from '../src/utils/table';
-import {Table} from '../src/table';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
