@@ -925,7 +925,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           ) {
             return next();
           }
-          console.log('in toRowStream');
           const row = this.row(rowData.key);
           row.data = rowData.data;
           next(null, row);
@@ -1661,7 +1660,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * ```
    */
   row(key: string): Row {
-    console.log('in row fn');
     if (!key) {
       throw new Error('A row key must be provided.');
     }
