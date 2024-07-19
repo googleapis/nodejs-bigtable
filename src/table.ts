@@ -828,8 +828,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       lastEmitKey: any;
       lastTransformKey: any;
       constructor() {
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        const self = this;
         super({
           objectMode: true,
           readableHighWaterMark: 0,
@@ -945,9 +943,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
+    let toRowStream: RowStreamTransformer;
 
     const makeNewRequest = () => {
       console.log('making new request');
+      if (toRowStream) {
+        (toRowStream as RowStreamTransformer).reportStatus();
+      }
+      (userStream as UserStream).reportStatus();
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
       retryTimer = null;
@@ -1064,7 +1067,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       activeRequestStream = requestStream!;
 
-      const toRowStream = new RowStreamTransformer();
+      toRowStream = new RowStreamTransformer();
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
