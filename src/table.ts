@@ -890,7 +890,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       reportStatus() {
         console.log(
-          `userStream transformer: last emit: ${this.lastEmitKey} last write: ${this.lastWriteKey} last transform: ${this.lastTransformKey}`
+          `userStream transformer: last emit: ${this.lastEmitKey} last write: ${this.lastWriteKey} last transform: ${lastRowKey}`
         );
       }
     }
