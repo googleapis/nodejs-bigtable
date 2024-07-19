@@ -818,6 +818,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               return;
             }
              */
+            const message = `userstream.transform ${row.id}`;
+            setImmediate(() => {
+              console.log(`Event over: ${message}`);
+            });
+            console.log(message);
             lastRowKey = row.id;
             rowsRead++;
             callback(null, row);
@@ -825,7 +830,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         });
       }
       write(chunk: any, encoding: any, cb?: any): boolean {
-        // console.log('userstream.write', chunk);
+        const message = `userstream.write ${chunk.id}`;
+        setImmediate(() => {
+          console.log(`Event over: ${message}`);
+        });
+        console.log(message);
         return super.write(chunk, encoding, cb);
       }
 
