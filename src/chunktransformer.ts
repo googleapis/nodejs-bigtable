@@ -479,11 +479,16 @@ export class ChunkTransformerLogger extends ChunkTransformer {
 
   write(chunk: any, encoding: any, cb?: any): boolean {
     // console.log('middlewareStream.write', chunk);
+    const message = `chunk transformer.write ${chunk.chunks[0].rowKey.toString()}`;
+    setImmediate(() => {
+      console.log(`Event over: ${message}`);
+    });
+    console.log(message);
     return super.write(chunk, encoding, cb);
   }
 
   emit(event: string | symbol, ...args: any[]): boolean {
-    const message = event === 'data' ? args[0].id : null;
+    const message = event === 'data' ? args[0].key : null;
     setImmediate(() => {
       console.log('Event over > chunkTransformerEmit.emit', event, message);
     });

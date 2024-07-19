@@ -775,6 +775,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
         return super.emit(event, ...args);
       }
+      write(chunk: any, encoding: any, cb?: any): boolean {
+        const message = `toRowStream.write ${chunk.key}`;
+        setImmediate(() => {
+          console.log(`Event over: ${message}`);
+        });
+        console.log(message);
+        return super.write(chunk, encoding, cb);
+      }
       _destroy(error: Error | null, callback: (error?: Error | null) => void) {
         console.log('toRowStream.destroy');
         super._destroy(error, callback);
@@ -910,6 +918,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
 
     const makeNewRequest = () => {
+      console.log('making new request');
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
       retryTimer = null;
@@ -1059,6 +1068,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream
         .on('error', (error: ServiceError) => {
+          console.log('handling error');
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
