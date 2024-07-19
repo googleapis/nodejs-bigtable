@@ -5264,6 +5264,7 @@
                       "oneof": [
                         "setCell",
                         "addToCell",
+                        "mergeToCell",
                         "deleteFromColumn",
                         "deleteFromFamily",
                         "deleteFromRow"
@@ -5278,6 +5279,10 @@
                     "addToCell": {
                       "type": "AddToCell",
                       "id": 5
+                    },
+                    "mergeToCell": {
+                      "type": "MergeToCell",
+                      "id": 6
                     },
                     "deleteFromColumn": {
                       "type": "DeleteFromColumn",
@@ -5314,6 +5319,26 @@
                       }
                     },
                     "AddToCell": {
+                      "fields": {
+                        "familyName": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "columnQualifier": {
+                          "type": "Value",
+                          "id": 2
+                        },
+                        "timestamp": {
+                          "type": "Value",
+                          "id": 3
+                        },
+                        "input": {
+                          "type": "Value",
+                          "id": 4
+                        }
+                      }
+                    },
+                    "MergeToCell": {
                       "fields": {
                         "familyName": {
                           "type": "string",
@@ -5610,17 +5635,31 @@
                           "oneofs": {
                             "encoding": {
                               "oneof": [
+                                "utf8Raw",
                                 "utf8Bytes"
                               ]
                             }
                           },
                           "fields": {
+                            "utf8Raw": {
+                              "type": "Utf8Raw",
+                              "id": 1,
+                              "options": {
+                                "deprecated": true
+                              }
+                            },
                             "utf8Bytes": {
                               "type": "Utf8Bytes",
                               "id": 2
                             }
                           },
                           "nested": {
+                            "Utf8Raw": {
+                              "options": {
+                                "deprecated": true
+                              },
+                              "fields": {}
+                            },
                             "Utf8Bytes": {
                               "fields": {}
                             }

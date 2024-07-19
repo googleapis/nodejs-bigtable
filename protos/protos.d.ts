@@ -20328,6 +20328,9 @@ export namespace google {
                 /** Mutation addToCell */
                 addToCell?: (google.bigtable.v2.Mutation.IAddToCell|null);
 
+                /** Mutation mergeToCell */
+                mergeToCell?: (google.bigtable.v2.Mutation.IMergeToCell|null);
+
                 /** Mutation deleteFromColumn */
                 deleteFromColumn?: (google.bigtable.v2.Mutation.IDeleteFromColumn|null);
 
@@ -20353,6 +20356,9 @@ export namespace google {
                 /** Mutation addToCell. */
                 public addToCell?: (google.bigtable.v2.Mutation.IAddToCell|null);
 
+                /** Mutation mergeToCell. */
+                public mergeToCell?: (google.bigtable.v2.Mutation.IMergeToCell|null);
+
                 /** Mutation deleteFromColumn. */
                 public deleteFromColumn?: (google.bigtable.v2.Mutation.IDeleteFromColumn|null);
 
@@ -20363,7 +20369,7 @@ export namespace google {
                 public deleteFromRow?: (google.bigtable.v2.Mutation.IDeleteFromRow|null);
 
                 /** Mutation mutation. */
-                public mutation?: ("setCell"|"addToCell"|"deleteFromColumn"|"deleteFromFamily"|"deleteFromRow");
+                public mutation?: ("setCell"|"addToCell"|"mergeToCell"|"deleteFromColumn"|"deleteFromFamily"|"deleteFromRow");
 
                 /**
                  * Creates a new Mutation instance using the specified properties.
@@ -20669,6 +20675,121 @@ export namespace google {
 
                     /**
                      * Gets the default type url for AddToCell
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a MergeToCell. */
+                interface IMergeToCell {
+
+                    /** MergeToCell familyName */
+                    familyName?: (string|null);
+
+                    /** MergeToCell columnQualifier */
+                    columnQualifier?: (google.bigtable.v2.IValue|null);
+
+                    /** MergeToCell timestamp */
+                    timestamp?: (google.bigtable.v2.IValue|null);
+
+                    /** MergeToCell input */
+                    input?: (google.bigtable.v2.IValue|null);
+                }
+
+                /** Represents a MergeToCell. */
+                class MergeToCell implements IMergeToCell {
+
+                    /**
+                     * Constructs a new MergeToCell.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.v2.Mutation.IMergeToCell);
+
+                    /** MergeToCell familyName. */
+                    public familyName: string;
+
+                    /** MergeToCell columnQualifier. */
+                    public columnQualifier?: (google.bigtable.v2.IValue|null);
+
+                    /** MergeToCell timestamp. */
+                    public timestamp?: (google.bigtable.v2.IValue|null);
+
+                    /** MergeToCell input. */
+                    public input?: (google.bigtable.v2.IValue|null);
+
+                    /**
+                     * Creates a new MergeToCell instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns MergeToCell instance
+                     */
+                    public static create(properties?: google.bigtable.v2.Mutation.IMergeToCell): google.bigtable.v2.Mutation.MergeToCell;
+
+                    /**
+                     * Encodes the specified MergeToCell message. Does not implicitly {@link google.bigtable.v2.Mutation.MergeToCell.verify|verify} messages.
+                     * @param message MergeToCell message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.v2.Mutation.IMergeToCell, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified MergeToCell message, length delimited. Does not implicitly {@link google.bigtable.v2.Mutation.MergeToCell.verify|verify} messages.
+                     * @param message MergeToCell message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.v2.Mutation.IMergeToCell, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a MergeToCell message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns MergeToCell
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.Mutation.MergeToCell;
+
+                    /**
+                     * Decodes a MergeToCell message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns MergeToCell
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.Mutation.MergeToCell;
+
+                    /**
+                     * Verifies a MergeToCell message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a MergeToCell message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns MergeToCell
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.v2.Mutation.MergeToCell;
+
+                    /**
+                     * Creates a plain object from a MergeToCell message. Also converts values to other types if specified.
+                     * @param message MergeToCell
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.v2.Mutation.MergeToCell, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this MergeToCell to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for MergeToCell
                      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns The default type url
                      */
@@ -22649,6 +22770,9 @@ export namespace google {
                     /** Properties of an Encoding. */
                     interface IEncoding {
 
+                        /** Encoding utf8Raw */
+                        utf8Raw?: (google.bigtable.v2.Type.String.Encoding.IUtf8Raw|null);
+
                         /** Encoding utf8Bytes */
                         utf8Bytes?: (google.bigtable.v2.Type.String.Encoding.IUtf8Bytes|null);
                     }
@@ -22662,11 +22786,14 @@ export namespace google {
                          */
                         constructor(properties?: google.bigtable.v2.Type.String.IEncoding);
 
+                        /** Encoding utf8Raw. */
+                        public utf8Raw?: (google.bigtable.v2.Type.String.Encoding.IUtf8Raw|null);
+
                         /** Encoding utf8Bytes. */
                         public utf8Bytes?: (google.bigtable.v2.Type.String.Encoding.IUtf8Bytes|null);
 
                         /** Encoding encoding. */
-                        public encoding?: "utf8Bytes";
+                        public encoding?: ("utf8Raw"|"utf8Bytes");
 
                         /**
                          * Creates a new Encoding instance using the specified properties.
@@ -22747,6 +22874,97 @@ export namespace google {
                     }
 
                     namespace Encoding {
+
+                        /** Properties of an Utf8Raw. */
+                        interface IUtf8Raw {
+                        }
+
+                        /** Represents an Utf8Raw. */
+                        class Utf8Raw implements IUtf8Raw {
+
+                            /**
+                             * Constructs a new Utf8Raw.
+                             * @param [properties] Properties to set
+                             */
+                            constructor(properties?: google.bigtable.v2.Type.String.Encoding.IUtf8Raw);
+
+                            /**
+                             * Creates a new Utf8Raw instance using the specified properties.
+                             * @param [properties] Properties to set
+                             * @returns Utf8Raw instance
+                             */
+                            public static create(properties?: google.bigtable.v2.Type.String.Encoding.IUtf8Raw): google.bigtable.v2.Type.String.Encoding.Utf8Raw;
+
+                            /**
+                             * Encodes the specified Utf8Raw message. Does not implicitly {@link google.bigtable.v2.Type.String.Encoding.Utf8Raw.verify|verify} messages.
+                             * @param message Utf8Raw message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encode(message: google.bigtable.v2.Type.String.Encoding.IUtf8Raw, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Encodes the specified Utf8Raw message, length delimited. Does not implicitly {@link google.bigtable.v2.Type.String.Encoding.Utf8Raw.verify|verify} messages.
+                             * @param message Utf8Raw message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encodeDelimited(message: google.bigtable.v2.Type.String.Encoding.IUtf8Raw, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Decodes an Utf8Raw message from the specified reader or buffer.
+                             * @param reader Reader or buffer to decode from
+                             * @param [length] Message length if known beforehand
+                             * @returns Utf8Raw
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.Type.String.Encoding.Utf8Raw;
+
+                            /**
+                             * Decodes an Utf8Raw message from the specified reader or buffer, length delimited.
+                             * @param reader Reader or buffer to decode from
+                             * @returns Utf8Raw
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.Type.String.Encoding.Utf8Raw;
+
+                            /**
+                             * Verifies an Utf8Raw message.
+                             * @param message Plain object to verify
+                             * @returns `null` if valid, otherwise the reason why it is not
+                             */
+                            public static verify(message: { [k: string]: any }): (string|null);
+
+                            /**
+                             * Creates an Utf8Raw message from a plain object. Also converts values to their respective internal types.
+                             * @param object Plain object
+                             * @returns Utf8Raw
+                             */
+                            public static fromObject(object: { [k: string]: any }): google.bigtable.v2.Type.String.Encoding.Utf8Raw;
+
+                            /**
+                             * Creates a plain object from an Utf8Raw message. Also converts values to other types if specified.
+                             * @param message Utf8Raw
+                             * @param [options] Conversion options
+                             * @returns Plain object
+                             */
+                            public static toObject(message: google.bigtable.v2.Type.String.Encoding.Utf8Raw, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                            /**
+                             * Converts this Utf8Raw to JSON.
+                             * @returns JSON object
+                             */
+                            public toJSON(): { [k: string]: any };
+
+                            /**
+                             * Gets the default type url for Utf8Raw
+                             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                             * @returns The default type url
+                             */
+                            public static getTypeUrl(typeUrlPrefix?: string): string;
+                        }
 
                         /** Properties of an Utf8Bytes. */
                         interface IUtf8Bytes {
