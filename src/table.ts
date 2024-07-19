@@ -897,6 +897,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
+      console.log('User stream end');
       rowStreamUnpipe(rowStream, userStream);
       userCanceled = true;
       if (activeRequestStream) {
