@@ -19,6 +19,8 @@ import {
   ChunkGeneratorParameters,
   ReadRowsServiceParameters,
 } from './readRowsServiceParameters';
+import {google} from '../../protos/protos';
+import IRowRange = google.bigtable.v2.IRowRange;
 
 const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
 
@@ -165,6 +167,28 @@ export function isKeyInRowSet(
   return true;
 }
 
+// TODO: Refactor stream type
+/** Gets the property of the first row range in the request.
+ * @param stream The stream object to get the property from.
+ * @param property The property to get.
+ */
+function getKeyProperty(
+  stream: ServerWritableStream<
+    protos.google.bigtable.v2.IReadRowsRequest,
+    protos.google.bigtable.v2.IReadRowsResponse
+  >,
+  property: keyof IRowRange
+) {
+  if (
+    stream?.request?.rows?.rowRanges &&
+    stream?.request?.rows?.rowRanges[0] &&
+    stream?.request?.rows?.rowRanges[0][property]?.toString()
+  ) {
+    return stream?.request?.rows?.rowRanges[0][property]?.toString();
+  }
+  return undefined;
+}
+
 // Returns an implementation of the server streaming ReadRows call that would return
 // monotonically increasing zero padded rows in the range [keyFrom, keyTo).
 // The returned implementation can be passed to gRPC server.
@@ -233,42 +257,10 @@ export function readRowsImpl(
     });
 
     let chunksSent = 0;
-    let keyFromRequestClosed: any;
-    if (
-      stream?.request?.rows?.rowRanges &&
-      stream?.request?.rows?.rowRanges[0] &&
-      stream?.request?.rows?.rowRanges[0]?.startKeyClosed?.toString()
-    ) {
-      keyFromRequestClosed =
-        stream?.request?.rows?.rowRanges[0]?.startKeyClosed?.toString();
-    }
-    let keyFromRequestOpen: any;
-    if (
-      stream?.request?.rows?.rowRanges &&
-      stream?.request?.rows?.rowRanges[0] &&
-      stream?.request?.rows?.rowRanges[0]?.startKeyOpen?.toString()
-    ) {
-      keyFromRequestOpen =
-        stream?.request?.rows?.rowRanges[0]?.startKeyOpen?.toString();
-    }
-    let keyToRequestClosed: any;
-    if (
-      stream?.request?.rows?.rowRanges &&
-      stream?.request?.rows?.rowRanges[0] &&
-      stream?.request?.rows?.rowRanges[0]?.endKeyClosed?.toString()
-    ) {
-      keyToRequestClosed =
-        stream?.request?.rows?.rowRanges[0]?.endKeyClosed?.toString();
-    }
-    let keyToRequestOpen;
-    if (
-      stream?.request?.rows?.rowRanges &&
-      stream?.request?.rows?.rowRanges[0] &&
-      stream?.request?.rows?.rowRanges[0]?.endKeyOpen?.toString()
-    ) {
-      keyToRequestOpen =
-        stream?.request?.rows?.rowRanges[0]?.endKeyOpen?.toString();
-    }
+    const keyFromRequestClosed = getKeyProperty(stream, 'startKeyClosed');
+    const keyFromRequestOpen = getKeyProperty(stream, 'startKeyOpen');
+    const keyToRequestClosed = getKeyProperty(stream, 'endKeyClosed');
+    const keyToRequestOpen = getKeyProperty(stream, 'endKeyOpen');
     const keyFromUsed =
       serviceParameters.defaultKeyFrom !== undefined
         ? serviceParameters.defaultKeyFrom
