@@ -129,6 +129,12 @@ export function generateChunks(
   return chunks;
 }
 
+// Generate documentation for this function
+/** Checks if the given key is in the provided RowSet.
+ * @param stringKey The key to check.
+ * @param rowSet The RowSet to check against.
+ * @returns {boolean} True if the key is in the RowSet, false otherwise.
+ */
 export function isKeyInRowSet(
   stringKey: string,
   rowSet?: protos.google.bigtable.v2.IRowSet | null
