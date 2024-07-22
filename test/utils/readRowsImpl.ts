@@ -81,6 +81,7 @@ export function prettyPrintRequest(
  * The fake table contains monotonically increasing zero padded rows
  * in the range [keyFrom, keyTo).
  * @param chunkGeneratorParameters The parameters for generating chunks.
+ * @returns {protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]} The generated chunks.
  */
 export function generateChunks(
   chunkGeneratorParameters: ChunkGeneratorParameters
@@ -221,6 +222,33 @@ function getSelectedKey(
       : parseInt(keyRequestOpen as string) + 1;
 }
 
+/** Generates chunks for rows in a fake table that match the provided RowSet.
+ * The fake table contains monotonically increasing zero padded rows
+ * in the range [keyFrom, keyTo).
+ * @param request The request object to generate chunks from.
+ * @param serviceParameters The parameters for generating chunks.
+ * @returns {protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]} The generated chunks.
+ */
+function generateChunksFromRequest(
+  request: protos.google.bigtable.v2.IReadRowsRequest,
+  serviceParameters: ReadRowsServiceParameters
+) {
+  return generateChunks({
+    keyFrom: getSelectedKey(request, {
+      keyOpenProperty: 'startKeyOpen',
+      keyClosedProperty: 'startKeyClosed',
+      defaultKey: serviceParameters.defaultKeyFrom,
+    }),
+    keyTo: getSelectedKey(request, {
+      keyOpenProperty: 'endKeyOpen',
+      keyClosedProperty: 'endKeyClosed',
+      defaultKey: serviceParameters.defaultKeyTo,
+    }),
+    chunkSize: serviceParameters.chunkSize,
+    valueSize: serviceParameters.valueSize,
+  });
+}
+
 // Returns an implementation of the server streaming ReadRows call that would return
 // monotonically increasing zero padded rows in the range [keyFrom, keyTo).
 // The returned implementation can be passed to gRPC server.
@@ -279,20 +307,7 @@ export function readRowsImpl(
     });
 
     let chunksSent = 0;
-    const chunks = generateChunks({
-      keyFrom: getSelectedKey(stream.request, {
-        keyOpenProperty: 'startKeyOpen',
-        keyClosedProperty: 'startKeyClosed',
-        defaultKey: serviceParameters.defaultKeyFrom,
-      }),
-      keyTo: getSelectedKey(stream.request, {
-        keyOpenProperty: 'endKeyOpen',
-        keyClosedProperty: 'endKeyClosed',
-        defaultKey: serviceParameters.defaultKeyTo,
-      }),
-      chunkSize: serviceParameters.chunkSize,
-      valueSize: serviceParameters.valueSize,
-    });
+    const chunks = generateChunksFromRequest(stream.request, serviceParameters);
     let lastScannedRowKey: string | undefined;
     let currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] =
       [];
