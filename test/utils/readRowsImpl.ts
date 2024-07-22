@@ -186,11 +186,11 @@ function getKeyProperty(
   property: keyof IRowRange
 ) {
   if (
-    stream?.request?.rows?.rowRanges &&
-    stream?.request?.rows?.rowRanges[0] &&
-    stream?.request?.rows?.rowRanges[0][property]?.toString()
+    stream.request?.rows?.rowRanges &&
+    stream.request?.rows?.rowRanges[0] &&
+    stream.request?.rows?.rowRanges[0][property]?.toString()
   ) {
-    return stream?.request?.rows?.rowRanges[0][property]?.toString();
+    return stream.request?.rows?.rowRanges[0][property]?.toString();
   }
   return undefined;
 }
