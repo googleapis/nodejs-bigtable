@@ -213,9 +213,9 @@ function getSelectedKey(
     stream,
     keySelectionParameters.keyClosedProperty
   );
-  const defaultKey = keySelectionParameters.keyClosedProperty;
+  const defaultKey = keySelectionParameters.defaultKey;
   return defaultKey !== undefined
-    ? parseInt(defaultKey)
+    ? defaultKey
     : keyRequestClosed
       ? parseInt(keyRequestClosed as string)
       : parseInt(keyRequestOpen as string) + 1;
