@@ -295,19 +295,17 @@ export function readRowsImpl(
     });
 
     let chunksSent = 0;
-    const keyFromUsed = getSelectedKey(stream, {
-      keyOpenProperty: 'startKeyOpen',
-      keyClosedProperty: 'startKeyClosed',
-      defaultKey: serviceParameters.defaultKeyFrom,
-    });
-    const keyToUsed = getSelectedKey(stream, {
-      keyOpenProperty: 'endKeyOpen',
-      keyClosedProperty: 'endKeyClosed',
-      defaultKey: serviceParameters.defaultKeyTo,
-    });
     const chunks = generateChunks({
-      keyFrom: keyFromUsed,
-      keyTo: keyToUsed,
+      keyFrom: getSelectedKey(stream, {
+        keyOpenProperty: 'startKeyOpen',
+        keyClosedProperty: 'startKeyClosed',
+        defaultKey: serviceParameters.defaultKeyFrom,
+      }),
+      keyTo: getSelectedKey(stream, {
+        keyOpenProperty: 'endKeyOpen',
+        keyClosedProperty: 'endKeyClosed',
+        defaultKey: serviceParameters.defaultKeyTo,
+      }),
       chunkSize: serviceParameters.chunkSize,
       valueSize: serviceParameters.valueSize,
     });
