@@ -24,11 +24,14 @@ interface SharedReadRowsParameters {
   valueSize: number; // An upper bound on the amount of data included in the chunks
 }
 
+export type DebugLog = (message: string) => void;
+
 export interface ReadRowsServiceParameters extends SharedReadRowsParameters {
   defaultKeyFrom?: number; // The key the data coming from the service will start from
   defaultKeyTo?: number; // The key the data coming from the service will end at
   errorAfterChunkNo?: number; // The chunk that the error should come after
   chunksPerResponse: number; // The total number of chunks the server should send
+  debugLog: DebugLog;
 }
 
 export interface ChunkGeneratorParameters extends SharedReadRowsParameters {
