@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {ServerWritableStream} from '@grpc/grpc-js';
 import {protos} from '../../src';
 import {GoogleError, Status} from 'google-gax';
 import {
   ChunkGeneratorParameters,
   ReadRowsServiceParameters,
+  ReadRowsWritableStream,
 } from './readRowsServiceParameters';
 import {google} from '../../protos/protos';
 import IRowRange = google.bigtable.v2.IRowRange;
@@ -179,10 +179,7 @@ export function isKeyInRowSet(
  * @param property The property to get.
  */
 function getKeyProperty(
-  stream: ServerWritableStream<
-    protos.google.bigtable.v2.IReadRowsRequest,
-    protos.google.bigtable.v2.IReadRowsResponse
-  >,
+  stream: ReadRowsWritableStream,
   property: keyof IRowRange
 ) {
   if (
@@ -201,10 +198,7 @@ function getKeyProperty(
  * @returns {number} The selected key for generating chunks
  */
 function getSelectedKey(
-  stream: ServerWritableStream<
-    protos.google.bigtable.v2.IReadRowsRequest,
-    protos.google.bigtable.v2.IReadRowsResponse
-  >,
+  stream: ReadRowsWritableStream,
   keySelectionParameters: {
     keyOpenProperty: keyof IRowRange;
     keyClosedProperty: keyof IRowRange;
@@ -235,19 +229,9 @@ function getSelectedKey(
 // TODO: Perhaps group the if statements into classes so that they can be unit tested.
 export function readRowsImpl(
   serviceParameters: ReadRowsServiceParameters
-): (
-  stream: ServerWritableStream<
-    protos.google.bigtable.v2.IReadRowsRequest,
-    protos.google.bigtable.v2.IReadRowsResponse
-  >
-) => Promise<void> {
+): (stream: ReadRowsWritableStream) => Promise<void> {
   let errorAfterChunkNo = serviceParameters.errorAfterChunkNo;
-  return async (
-    stream: ServerWritableStream<
-      protos.google.bigtable.v2.IReadRowsRequest,
-      protos.google.bigtable.v2.IReadRowsResponse
-    >
-  ): Promise<void> => {
+  return async (stream: ReadRowsWritableStream): Promise<void> => {
     prettyPrintRequest(stream.request);
 
     let stopWaiting: () => void = () => {};

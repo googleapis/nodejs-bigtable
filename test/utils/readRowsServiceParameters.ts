@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {ServerWritableStream} from '@grpc/grpc-js';
+import {protos} from '../../src';
+
 /**
  * This file contains the parameters for the readRowsService.
  */
@@ -32,3 +35,8 @@ export interface ChunkGeneratorParameters extends SharedReadRowsParameters {
   keyFrom: number; // The first row in the generated chunks will start with this key
   keyTo: number; // The last row in the generated chunks will start with this key
 }
+
+export type ReadRowsWritableStream = ServerWritableStream<
+  protos.google.bigtable.v2.IReadRowsRequest,
+  protos.google.bigtable.v2.IReadRowsResponse
+>;
