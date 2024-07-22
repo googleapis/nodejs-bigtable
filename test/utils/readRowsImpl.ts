@@ -247,6 +247,13 @@ function generateChunksFromRequest(
   );
 }
 
+// TODO: Use this as the return type for generating the ReadRowsResponseParameters
+interface ReadRowsResponseParameters {
+  cancelled: boolean;
+  currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[];
+  lastScannedRowKey: string | undefined;
+}
+
 // Returns an implementation of the server streaming ReadRows call that would return
 // monotonically increasing zero padded rows in the range [keyFrom, keyTo).
 // The returned implementation can be passed to gRPC server.
@@ -316,6 +323,7 @@ export function readRowsImpl(
       [];
     let chunkIdx = 0;
     let skipThisRow = false;
+    // TODO: Make it clear that this for loop just builds the cell chunks, a cancelled setting and a lastScannedRowKey
     for (const chunk of chunks) {
       if (cancelled) {
         break;
