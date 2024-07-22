@@ -179,15 +179,15 @@ export function isKeyInRowSet(
  * @param property The property to get.
  */
 function getKeyProperty(
-  stream: ReadRowsWritableStream,
+  request: protos.google.bigtable.v2.IReadRowsRequest,
   property: keyof IRowRange
 ) {
   if (
-    stream.request?.rows?.rowRanges &&
-    stream.request?.rows?.rowRanges[0] &&
-    stream.request?.rows?.rowRanges[0][property]?.toString()
+    request?.rows?.rowRanges &&
+    request?.rows?.rowRanges[0] &&
+    request?.rows?.rowRanges[0][property]?.toString()
   ) {
-    return stream.request?.rows?.rowRanges[0][property]?.toString();
+    return request?.rows?.rowRanges[0][property]?.toString();
   }
   return undefined;
 }
@@ -198,7 +198,7 @@ function getKeyProperty(
  * @returns {number} The selected key for generating chunks
  */
 function getSelectedKey(
-  stream: ReadRowsWritableStream,
+  request: protos.google.bigtable.v2.IReadRowsRequest,
   keySelectionParameters: {
     keyOpenProperty: keyof IRowRange;
     keyClosedProperty: keyof IRowRange;
@@ -206,11 +206,11 @@ function getSelectedKey(
   }
 ) {
   const keyRequestOpen = getKeyProperty(
-    stream,
+    request,
     keySelectionParameters.keyOpenProperty
   );
   const keyRequestClosed = getKeyProperty(
-    stream,
+    request,
     keySelectionParameters.keyClosedProperty
   );
   const defaultKey = keySelectionParameters.defaultKey;
@@ -280,12 +280,12 @@ export function readRowsImpl(
 
     let chunksSent = 0;
     const chunks = generateChunks({
-      keyFrom: getSelectedKey(stream, {
+      keyFrom: getSelectedKey(stream.request, {
         keyOpenProperty: 'startKeyOpen',
         keyClosedProperty: 'startKeyClosed',
         defaultKey: serviceParameters.defaultKeyFrom,
       }),
-      keyTo: getSelectedKey(stream, {
+      keyTo: getSelectedKey(stream.request, {
         keyOpenProperty: 'endKeyOpen',
         keyClosedProperty: 'endKeyClosed',
         defaultKey: serviceParameters.defaultKeyTo,
