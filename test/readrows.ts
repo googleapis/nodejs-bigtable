@@ -22,9 +22,11 @@ import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {debugLog, readRowsImpl} from './utils/readRowsImpl';
-import {ServerWritableStream} from '@grpc/grpc-js';
 
-import {ReadRowsServiceParameters} from '../test/utils/readRowsServiceParameters';
+import {
+  ReadRowsServiceParameters,
+  ReadRowsWritableStream,
+} from '../test/utils/readRowsServiceParameters';
 
 // Define parameters for a standard Bigtable Mock service
 const VALUE_SIZE = 1024 * 1024;
@@ -44,12 +46,7 @@ const STANDARD_SERVICE_WITHOUT_ERRORS: ReadRowsServiceParameters = {
 
 type PromiseVoid = Promise<void>;
 interface ServerImplementationInterface {
-  (
-    server: ServerWritableStream<
-      protos.google.bigtable.v2.IReadRowsRequest,
-      protos.google.bigtable.v2.IReadRowsResponse
-    >
-  ): PromiseVoid;
+  (server: ReadRowsWritableStream): PromiseVoid;
 }
 
 describe('Bigtable/ReadRows', () => {
