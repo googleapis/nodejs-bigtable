@@ -189,6 +189,38 @@ function getKeyProperty(
   return undefined;
 }
 
+/** Gets the key from the request object.
+ * @param stream The stream object to get the key from.
+ * @param keySelectionParameters The parameters for selecting the key.
+ * @returns {number} The selected key for generating chunks
+ */
+function getSelectedKey(
+  stream: ServerWritableStream<
+    protos.google.bigtable.v2.IReadRowsRequest,
+    protos.google.bigtable.v2.IReadRowsResponse
+  >,
+  keySelectionParameters: {
+    keyOpenProperty: keyof IRowRange;
+    keyClosedProperty: keyof IRowRange;
+    defaultKey?: number;
+  }
+) {
+  const keyRequestOpen = getKeyProperty(
+    stream,
+    keySelectionParameters.keyOpenProperty
+  );
+  const keyRequestClosed = getKeyProperty(
+    stream,
+    keySelectionParameters.keyClosedProperty
+  );
+  const defaultKey = keySelectionParameters.keyClosedProperty;
+  return defaultKey !== undefined
+    ? parseInt(defaultKey)
+    : keyRequestClosed
+      ? parseInt(keyRequestClosed as string)
+      : parseInt(keyRequestOpen as string) + 1;
+}
+
 // Returns an implementation of the server streaming ReadRows call that would return
 // monotonically increasing zero padded rows in the range [keyFrom, keyTo).
 // The returned implementation can be passed to gRPC server.
@@ -257,22 +289,16 @@ export function readRowsImpl(
     });
 
     let chunksSent = 0;
-    const keyFromRequestClosed = getKeyProperty(stream, 'startKeyClosed');
-    const keyFromRequestOpen = getKeyProperty(stream, 'startKeyOpen');
-    const keyToRequestClosed = getKeyProperty(stream, 'endKeyClosed');
-    const keyToRequestOpen = getKeyProperty(stream, 'endKeyOpen');
-    const keyFromUsed =
-      serviceParameters.defaultKeyFrom !== undefined
-        ? serviceParameters.defaultKeyFrom
-        : keyFromRequestClosed
-          ? parseInt(keyFromRequestClosed as string)
-          : parseInt(keyFromRequestOpen as string) + 1;
-    const keyToUsed =
-      serviceParameters.defaultKeyTo !== undefined
-        ? serviceParameters.defaultKeyTo
-        : keyToRequestClosed
-          ? parseInt(keyToRequestClosed as string)
-          : parseInt(keyToRequestOpen as string) + 1;
+    const keyFromUsed = getSelectedKey(stream, {
+      keyOpenProperty: 'startKeyOpen',
+      keyClosedProperty: 'startKeyClosed',
+      defaultKey: serviceParameters.defaultKeyFrom,
+    });
+    const keyToUsed = getSelectedKey(stream, {
+      keyOpenProperty: 'endKeyOpen',
+      keyClosedProperty: 'endKeyClosed',
+      defaultKey: serviceParameters.defaultKeyTo,
+    });
     const chunks = generateChunks({
       keyFrom: keyFromUsed,
       keyTo: keyToUsed,
