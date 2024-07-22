@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [5.1.2](https://github.com/googleapis/nodejs-bigtable/compare/v5.1.1...v5.1.2) (2024-07-22)
+
+
+### Bug Fixes
+
+* Throw away excess data in order to avoid delivering duplicate data ([#1453](https://github.com/googleapis/nodejs-bigtable/issues/1453)) ([069239d](https://github.com/googleapis/nodejs-bigtable/commit/069239dce83498293e86851d37ad5943b5d919da))
+
 ## [5.1.1](https://github.com/googleapis/nodejs-bigtable/compare/v5.1.0...v5.1.1) (2024-07-11)
 
 
