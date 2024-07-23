@@ -297,6 +297,11 @@ class ReadRowsRequestHandler {
   }
 }
 
+/** Implementation of the server streaming ReadRows call.
+ * The implementation returns monotonically increasing zero padded rows
+ * in the range [keyFrom, keyTo).
+ * @param serviceParameters The parameters for the implementation.
+ */
 class ReadRowsImpl {
   private errorAfterChunkNo?: number;
 
@@ -304,6 +309,9 @@ class ReadRowsImpl {
     this.errorAfterChunkNo = serviceParameters.errorAfterChunkNo;
   }
 
+  /** Handles the ReadRows request.
+   * @param stream The stream object that is passed into the request.
+   */
   async handleRequest(stream: ReadRowsWritableStream) {
     const debugLog = this.serviceParameters.debugLog;
     prettyPrintRequest(stream.request, debugLog);
@@ -322,6 +330,10 @@ class ReadRowsImpl {
     await this.sendAllChunks(readRowsRequestHandler, chunks);
   }
 
+  /** Sends all chunks to the stream.
+   * @param readRowsRequestHandler The handler for the request.
+   * @param chunks The chunks to send.
+   */
   private async sendAllChunks(
     readRowsRequestHandler: ReadRowsRequestHandler,
     chunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]
