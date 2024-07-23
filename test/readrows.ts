@@ -384,6 +384,9 @@ describe('Bigtable/ReadRows', () => {
       ) as ServerImplementationInterface,
     });
     const sleep = (ticks: number) => {
+      // Adds an event to the end of the event loop `ticks` times
+      // This creates a predictable delay using the event loop and
+      // allows the streams to create a predictable amount of back pressure.
       return new Promise(resolve => {
         const nextEventLoop = () => {
           if (ticks > 0) {
