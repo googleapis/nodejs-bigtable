@@ -80,7 +80,7 @@ export function prettyPrintRequest(
 export function generateChunks(
   chunkGeneratorParameters: ChunkGeneratorParameters,
   debugLog: DebugLog
-) {
+): protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] {
   const keyFrom = chunkGeneratorParameters.keyFrom;
   const keyTo = chunkGeneratorParameters.keyTo;
   debugLog(`generating chunks from ${keyFrom} to ${keyTo}`);
@@ -308,20 +308,27 @@ class ReadRowsImpl {
     const debugLog = this.serviceParameters.debugLog;
     prettyPrintRequest(stream.request, debugLog);
     const readRowsRequestHandler = new ReadRowsRequestHandler(stream, debugLog);
-
     stream.on('cancelled', () => {
       debugLog('gRPC server received cancel()');
       readRowsRequestHandler.cancelled = true;
       readRowsRequestHandler.stopWaiting();
       stream.emit('error', new Error('Cancelled'));
     });
-
-    let chunksSent = 0;
     const chunks = generateChunksFromRequest(
       stream.request,
       this.serviceParameters,
       debugLog
     );
+    await this.sendAllChunks(readRowsRequestHandler, chunks);
+  }
+
+  private async sendAllChunks(
+    readRowsRequestHandler: ReadRowsRequestHandler,
+    chunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]
+  ) {
+    const stream = readRowsRequestHandler.stream;
+    const debugLog = readRowsRequestHandler.debugLog;
+    let chunksSent = 0;
     let lastScannedRowKey: string | undefined;
     let currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] =
       [];
