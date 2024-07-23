@@ -26,6 +26,7 @@ import IRowRange = google.bigtable.v2.IRowRange;
 // Generate documentation for this function
 /** Pretty prints the request object.
  * @param request The request object to pretty print.
+ * @param debugLog A function that logs debug messages.
  */
 export function prettyPrintRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest,
@@ -75,6 +76,7 @@ export function prettyPrintRequest(
  * The fake table contains monotonically increasing zero padded rows
  * in the range [keyFrom, keyTo).
  * @param chunkGeneratorParameters The parameters for generating chunks.
+ * @param debugLog A function that logs debug messages.
  * @returns {protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]} The generated chunks.
  */
 export function generateChunks(
@@ -168,7 +170,6 @@ export function isKeyInRowSet(
   return true;
 }
 
-// TODO: Refactor stream type
 /** Gets the property of the first row range in the request.
  * @param stream The stream object to get the property from.
  * @param property The property to get.
@@ -221,6 +222,7 @@ function getSelectedKey(
  * in the range [keyFrom, keyTo).
  * @param request The request object to generate chunks from.
  * @param serviceParameters The parameters for generating chunks.
+ * @param debugLog A function that logs debug messages.
  * @returns {protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]} The generated chunks.
  */
 function generateChunksFromRequest(
@@ -247,6 +249,10 @@ function generateChunksFromRequest(
   );
 }
 
+/** A class that handles the ReadRows request.
+ * @param stream The stream object that is passed into the request.
+ * @param debugLog A function that logs debug messages.
+ */
 class ReadRowsRequestHandler {
   public cancelled: boolean;
   public stopWaiting: () => void;
@@ -258,12 +264,14 @@ class ReadRowsRequestHandler {
     this.stopWaiting = () => {};
   }
 
-  // TODO: Consider making this private if we move everything into the class.
-  // an asynchronous function to write a response object to stream, reused several times below.
-  // captures `cancelled` variable
+  /** Sends the response object to the stream.
+   * @param response The response object to send.
+   */
   async sendResponse(
     response: protos.google.bigtable.v2.IReadRowsResponse
   ): Promise<void> {
+    // an asynchronous function to write a response object to stream, reused several times below.
+    // captures `cancelled` variable
     return new Promise<void>(resolve => {
       const debugLog = this.debugLog;
       const stream = this.stream;
