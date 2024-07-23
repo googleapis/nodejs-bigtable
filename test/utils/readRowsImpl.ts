@@ -268,14 +268,14 @@ export function readRowsImpl(
         stream?.request?.rows?.rowRanges[0]?.endKeyOpen?.toString();
     }
     const keyFromUsed =
-      serviceParameters.defaultKeyFrom !== undefined
-        ? serviceParameters.defaultKeyFrom
+      serviceParameters.keyFrom !== undefined
+        ? serviceParameters.keyFrom
         : keyFromRequestClosed
           ? parseInt(keyFromRequestClosed as string)
           : parseInt(keyFromRequestOpen as string) + 1;
     const keyToUsed =
-      serviceParameters.defaultKeyTo !== undefined
-        ? serviceParameters.defaultKeyTo
+      serviceParameters.keyTo !== undefined
+        ? serviceParameters.keyTo
         : keyToRequestClosed
           ? parseInt(keyToRequestClosed as string)
           : parseInt(keyToRequestOpen as string) + 1;

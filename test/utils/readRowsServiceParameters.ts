@@ -22,8 +22,8 @@ interface SharedReadRowsParameters {
 }
 
 export interface ReadRowsServiceParameters extends SharedReadRowsParameters {
-  defaultKeyFrom?: number; // The key the data coming from the service will start from
-  defaultKeyTo?: number; // The key the data coming from the service will end at
+  keyFrom?: number; // The key the data coming from the service will start from
+  keyTo?: number; // The key the data coming from the service will end at
   errorAfterChunkNo?: number; // The chunk that the error should come after
   chunksPerResponse: number; // The total number of chunks the server should send
 }
