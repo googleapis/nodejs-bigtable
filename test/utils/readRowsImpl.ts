@@ -15,11 +15,10 @@
 import {ServerWritableStream} from '@grpc/grpc-js';
 import {protos} from '../../src';
 import {GoogleError, Status} from 'google-gax';
-
-const VALUE_SIZE = 1024 * 1024;
-// we want each row to be splitted into 2 chunks of different sizes
-const CHUNK_SIZE = 1023 * 1024 - 1;
-const CHUNK_PER_RESPONSE = 10;
+import {
+  ChunkGeneratorParameters,
+  ReadRowsServiceParameters,
+} from './readRowsServiceParameters';
 
 const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
 
@@ -29,7 +28,11 @@ export function debugLog(text: string) {
   }
 }
 
-function prettyPrintRequest(
+// Generate documentation for this function
+/** Pretty prints the request object.
+ * @param request The request object to pretty print.
+ */
+export function prettyPrintRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest
 ) {
   // pretty-printing important parts of the request.
@@ -75,8 +78,11 @@ function prettyPrintRequest(
 /** Generates chunks for rows in a fake table that match the provided RowSet.
  * The fake table contains monotonically increasing zero padded rows
  * in the range [keyFrom, keyTo).
+ * @param chunkGeneratorParameters The parameters for generating chunks.
  */
-function generateChunks(keyFrom: number, keyTo: number) {
+function generateChunks(chunkGeneratorParameters: ChunkGeneratorParameters) {
+  const keyFrom = chunkGeneratorParameters.keyFrom;
+  const keyTo = chunkGeneratorParameters.keyTo;
   debugLog(`generating chunks from ${keyFrom} to ${keyTo}`);
 
   const chunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] = [];
@@ -86,7 +92,7 @@ function generateChunks(keyFrom: number, keyTo: number) {
     const binaryKey = Buffer.from(key.toString().padStart(8, '0'));
     debugLog(`generating chunks for ${key}`);
     const rowKey = binaryKey.toString('base64');
-    let remainingBytes = VALUE_SIZE;
+    let remainingBytes = chunkGeneratorParameters.valueSize;
     let chunkCounter = 0;
     while (remainingBytes > 0) {
       debugLog(`  remaining bytes: ${remainingBytes}`);
@@ -100,7 +106,10 @@ function generateChunks(keyFrom: number, keyTo: number) {
           value: Buffer.from('qualifier').toString('base64'),
         };
       }
-      const thisChunkSize = Math.min(CHUNK_SIZE, remainingBytes);
+      const thisChunkSize = Math.min(
+        chunkGeneratorParameters.chunkSize,
+        remainingBytes
+      );
       remainingBytes -= thisChunkSize;
       const value = Buffer.from('a'.repeat(remainingBytes)).toString('base64');
       chunk.value = value;
@@ -158,15 +167,14 @@ function isKeyInRowSet(
 // monotonically increasing zero padded rows in the range [keyFrom, keyTo).
 // The returned implementation can be passed to gRPC server.
 export function readRowsImpl(
-  keyFrom: number,
-  keyTo: number,
-  errorAfterChunkNo?: number
+  serviceParameters: ReadRowsServiceParameters
 ): (
   stream: ServerWritableStream<
     protos.google.bigtable.v2.IReadRowsRequest,
     protos.google.bigtable.v2.IReadRowsResponse
   >
 ) => Promise<void> {
+  let errorAfterChunkNo = serviceParameters.errorAfterChunkNo;
   return async (
     stream: ServerWritableStream<
       protos.google.bigtable.v2.IReadRowsRequest,
@@ -220,7 +228,7 @@ export function readRowsImpl(
     });
 
     let chunksSent = 0;
-    const chunks = generateChunks(keyFrom, keyTo);
+    const chunks = generateChunks(serviceParameters);
     let lastScannedRowKey: string | undefined;
     let currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] =
       [];
@@ -256,7 +264,7 @@ export function readRowsImpl(
         ++chunkIdx;
       }
       if (
-        currentResponseChunks.length === CHUNK_PER_RESPONSE ||
+        currentResponseChunks.length === serviceParameters.chunksPerResponse ||
         chunkIdx === errorAfterChunkNo ||
         // if we skipped a row and set lastScannedRowKey, dump everything and send a separate message with lastScannedRowKey
         lastScannedRowKey

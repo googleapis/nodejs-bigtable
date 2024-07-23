@@ -22,8 +22,26 @@ import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {debugLog, readRowsImpl} from './utils/readRowsImpl';
-import {ServerWritableStream, UntypedHandleCall} from '@grpc/grpc-js';
+import {ServerWritableStream} from '@grpc/grpc-js';
 import {readRowsImpl2} from './utils/readRowsImpl2';
+
+import {ReadRowsServiceParameters} from '../test/utils/readRowsServiceParameters';
+
+// Define parameters for a standard Bigtable Mock service
+const VALUE_SIZE = 1024 * 1024;
+// we want each row to be split into 2 chunks of different sizes
+const CHUNK_SIZE = 1023 * 1024 - 1;
+const CHUNKS_PER_RESPONSE = 10;
+const STANDARD_KEY_FROM = 0;
+// 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
+const STANDARD_KEY_TO = 1000;
+const STANDARD_SERVICE_WITHOUT_ERRORS: ReadRowsServiceParameters = {
+  keyFrom: STANDARD_KEY_FROM,
+  keyTo: STANDARD_KEY_TO,
+  valueSize: VALUE_SIZE,
+  chunkSize: CHUNK_SIZE,
+  chunksPerResponse: CHUNKS_PER_RESPONSE,
+};
 
 type PromiseVoid = Promise<void>;
 interface ServerImplementationInterface {
@@ -56,12 +74,10 @@ describe('Bigtable/ReadRows', () => {
   it('should create read stream and read synchronously', function (done) {
     this.timeout(60000);
 
-    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
-    const keyFrom = 0;
-    const keyTo = 1000;
-
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
+      ReadRows: readRowsImpl(
+        STANDARD_SERVICE_WITHOUT_ERRORS
+      ) as ServerImplementationInterface,
     });
 
     let receivedRowCount = 0;
@@ -81,19 +97,17 @@ describe('Bigtable/ReadRows', () => {
       debugLog(`received row key ${key}`);
     });
     readStream.on('end', () => {
-      assert.strictEqual(receivedRowCount, keyTo - keyFrom);
-      assert.strictEqual(lastKeyReceived, keyTo - 1);
+      assert.strictEqual(receivedRowCount, STANDARD_KEY_TO - STANDARD_KEY_FROM);
+      assert.strictEqual(lastKeyReceived, STANDARD_KEY_TO - 1);
       done();
     });
   });
 
   it('should create read stream and read synchronously using Transform stream', done => {
-    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
-    const keyFrom = 0;
-    const keyTo = 1000;
-
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
+      ReadRows: readRowsImpl(
+        STANDARD_SERVICE_WITHOUT_ERRORS
+      ) as ServerImplementationInterface,
     });
 
     let receivedRowCount = 0;
@@ -128,8 +142,8 @@ describe('Bigtable/ReadRows', () => {
       debugLog(`received row key ${key}`);
     });
     passThrough.on('end', () => {
-      assert.strictEqual(receivedRowCount, keyTo - keyFrom);
-      assert.strictEqual(lastKeyReceived, keyTo - 1);
+      assert.strictEqual(receivedRowCount, STANDARD_KEY_TO - STANDARD_KEY_FROM);
+      assert.strictEqual(lastKeyReceived, STANDARD_KEY_TO - 1);
       done();
     });
 
@@ -140,13 +154,10 @@ describe('Bigtable/ReadRows', () => {
     if (process.platform === 'win32') {
       this.timeout(60000); // it runs much slower on Windows!
     }
-
-    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
-    const keyFrom = 0;
-    const keyTo = 1000;
-
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
+      ReadRows: readRowsImpl(
+        STANDARD_SERVICE_WITHOUT_ERRORS
+      ) as ServerImplementationInterface,
     });
 
     let receivedRowCount = 0;
@@ -183,8 +194,8 @@ describe('Bigtable/ReadRows', () => {
       debugLog(`received row key ${key}`);
     });
     passThrough.on('end', () => {
-      assert.strictEqual(receivedRowCount, keyTo - keyFrom);
-      assert.strictEqual(lastKeyReceived, keyTo - 1);
+      assert.strictEqual(receivedRowCount, STANDARD_KEY_TO - STANDARD_KEY_FROM);
+      assert.strictEqual(lastKeyReceived, STANDARD_KEY_TO - 1);
       done();
     });
 
@@ -192,14 +203,13 @@ describe('Bigtable/ReadRows', () => {
   });
 
   it('should be able to stop reading from the read stream', done => {
-    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
-    const keyFrom = 0;
-    const keyTo = 1000;
     // pick any key to stop after
     const stopAfter = 42;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
+      ReadRows: readRowsImpl(
+        STANDARD_SERVICE_WITHOUT_ERRORS
+      ) as ServerImplementationInterface,
     });
 
     let receivedRowCount = 0;
@@ -235,15 +245,13 @@ describe('Bigtable/ReadRows', () => {
     if (process.platform === 'win32') {
       this.timeout(600000); // it runs much slower on Windows!
     }
-
-    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
-    const keyFrom = 0;
-    const keyTo = 1000;
     // pick any key to stop after
     const stopAfter = 420;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
+      ReadRows: readRowsImpl(
+        STANDARD_SERVICE_WITHOUT_ERRORS
+      ) as ServerImplementationInterface,
     });
 
     let receivedRowCount = 0;
@@ -294,40 +302,53 @@ describe('Bigtable/ReadRows', () => {
     pipeline(readStream, transform, passThrough, () => {});
   });
 
-  it('should silently resume after server or network error', done => {
-    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
-    const keyFrom = 0;
-    const keyTo = 1000;
-    // the server will error after sending this chunk (not row)
-    const errorAfterChunkNo = 423;
+  describe('should silently resume after server or network error', () => {
+    function runTest(done: Mocha.Done, errorAfterChunkNo: number) {
+      service.setService({
+        ReadRows: readRowsImpl({
+          keyFrom: STANDARD_KEY_FROM,
+          keyTo: STANDARD_KEY_TO,
+          valueSize: VALUE_SIZE,
+          chunkSize: CHUNK_SIZE,
+          chunksPerResponse: CHUNKS_PER_RESPONSE,
+          errorAfterChunkNo,
+        }) as ServerImplementationInterface,
+      });
+      let receivedRowCount = 0;
+      let lastKeyReceived: number | undefined;
 
-    service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo, errorAfterChunkNo) as any,
+      const readStream = table.createReadStream();
+      readStream.on('error', (err: GoogleError) => {
+        done(err);
+      });
+      readStream.on('data', (row: Row) => {
+        ++receivedRowCount;
+        const key = parseInt(row.id);
+        if (lastKeyReceived && key <= lastKeyReceived) {
+          done(new Error('Test error: keys are not in order'));
+        }
+        lastKeyReceived = key;
+        debugLog(`received row key ${key}`);
+      });
+      readStream.on('end', () => {
+        assert.strictEqual(
+          receivedRowCount,
+          STANDARD_KEY_TO - STANDARD_KEY_FROM
+        );
+        assert.strictEqual(lastKeyReceived, STANDARD_KEY_TO - 1);
+        done();
+      });
+    }
+    it('with an error at a fixed position', done => {
+      // Emits an error after enough chunks have been pushed to create back pressure
+      runTest(done, 423);
     });
-
-    let receivedRowCount = 0;
-    let lastKeyReceived: number | undefined;
-
-    const readStream = table.createReadStream();
-    readStream.on('error', (err: GoogleError) => {
-      done(err);
-    });
-    readStream.on('data', (row: Row) => {
-      ++receivedRowCount;
-      const key = parseInt(row.id);
-      if (lastKeyReceived && key <= lastKeyReceived) {
-        done(new Error('Test error: keys are not in order'));
-      }
-      lastKeyReceived = key;
-      debugLog(`received row key ${key}`);
-    });
-    readStream.on('end', () => {
-      assert.strictEqual(receivedRowCount, keyTo - keyFrom);
-      assert.strictEqual(lastKeyReceived, keyTo - 1);
-      done();
+    it('with an error at a random position', done => {
+      // Emits an error after a random number of chunks.
+      const errorAfterChunkNo = Math.floor(Math.random() * 1000);
+      runTest(done, errorAfterChunkNo);
     });
   });
-
   it('should return row data in the right order', done => {
     // 150 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = undefined;
