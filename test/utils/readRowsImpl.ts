@@ -299,7 +299,11 @@ class ReadRowsRequestHandler {
 
 /** Implementation of the server streaming ReadRows call.
  * The implementation returns monotonically increasing zero padded rows
- * in the range [keyFrom, keyTo).
+ * in the range [keyFrom, keyTo) if they are provided. Instances of this object
+ * are used to store data that needs to be shared between multiple requests.
+ * For instance, the service ignores the errorAfterChunkNo value after the
+ * service has already emitted an error.
+ *
  * @param serviceParameters The parameters for the implementation.
  */
 class ReadRowsImpl {
