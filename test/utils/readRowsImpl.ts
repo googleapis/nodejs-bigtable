@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {protos} from '../../src';
+import {Instance, protos} from '../../src';
 import {GoogleError, Status} from 'google-gax';
 import {
   ChunkGeneratorParameters,
@@ -254,6 +254,61 @@ interface ReadRowsResponseParameters {
   lastScannedRowKey: string | undefined;
 }
 
+interface CancelledUtils {
+  stopWaiting: () => void;
+  cancelled: boolean;
+}
+
+class ReadRowsRequestHandler {
+  public cancelled: boolean;
+  public stopWaiting: () => void;
+  constructor(
+    readonly stream: ReadRowsWritableStream,
+    readonly debugLog: DebugLog
+  ) {
+    this.cancelled = false;
+    this.stopWaiting = () => {};
+  }
+
+  // TODO: Consider making this private if we move everything into the class.
+  // an asynchronous function to write a response object to stream, reused several times below.
+  // captures `cancelled` variable
+  async sendResponse(
+    response: protos.google.bigtable.v2.IReadRowsResponse
+  ): Promise<void> {
+    return new Promise<void>(resolve => {
+      const debugLog = this.debugLog;
+      const stream = this.stream;
+      setTimeout(async () => {
+        if (this.cancelled) {
+          resolve();
+          return;
+        }
+        const canSendMore = stream.write(response);
+        if (response.chunks && response.chunks.length > 0) {
+          debugLog(`sent ${response.chunks.length} chunks`);
+        }
+        if (response.lastScannedRowKey) {
+          const binaryKey = Buffer.from(
+            response.lastScannedRowKey as string,
+            'base64'
+          );
+          const stringKey = binaryKey.toString();
+          debugLog(`sent lastScannedRowKey = ${stringKey}`);
+        }
+        if (!canSendMore) {
+          debugLog('awaiting for back pressure');
+          await new Promise<void>(resolve => {
+            this.stopWaiting = resolve;
+            stream.once('drain', resolve);
+          });
+        }
+        resolve();
+      }, 0);
+    });
+  }
+}
+
 // Returns an implementation of the server streaming ReadRows call that would return
 // monotonically increasing zero padded rows in the range [keyFrom, keyTo).
 // The returned implementation can be passed to gRPC server.
@@ -267,48 +322,12 @@ export function readRowsImpl(
   return async (stream: ReadRowsWritableStream): Promise<void> => {
     const debugLog = serviceParameters.debugLog;
     prettyPrintRequest(stream.request, debugLog);
-
-    let stopWaiting: () => void = () => {};
-    let cancelled = false;
-    // an asynchronous function to write a response object to stream, reused several times below.
-    // captures `cancelled` variable
-    const sendResponse = async (
-      response: protos.google.bigtable.v2.IReadRowsResponse
-    ): Promise<void> => {
-      return new Promise<void>(resolve => {
-        setTimeout(async () => {
-          if (cancelled) {
-            resolve();
-            return;
-          }
-          const canSendMore = stream.write(response);
-          if (response.chunks && response.chunks.length > 0) {
-            debugLog(`sent ${response.chunks.length} chunks`);
-          }
-          if (response.lastScannedRowKey) {
-            const binaryKey = Buffer.from(
-              response.lastScannedRowKey as string,
-              'base64'
-            );
-            const stringKey = binaryKey.toString();
-            debugLog(`sent lastScannedRowKey = ${stringKey}`);
-          }
-          if (!canSendMore) {
-            debugLog('awaiting for back pressure');
-            await new Promise<void>(resolve => {
-              stopWaiting = resolve;
-              stream.once('drain', resolve);
-            });
-          }
-          resolve();
-        }, 0);
-      });
-    };
+    const streamRequestHandler = new ReadRowsRequestHandler(stream, debugLog);
 
     stream.on('cancelled', () => {
       debugLog('gRPC server received cancel()');
-      cancelled = true;
-      stopWaiting();
+      streamRequestHandler.cancelled = true;
+      streamRequestHandler.stopWaiting();
       stream.emit('error', new Error('Cancelled'));
     });
 
@@ -325,7 +344,7 @@ export function readRowsImpl(
     let skipThisRow = false;
     // TODO: Make it clear that this for loop just builds the cell chunks, a cancelled setting and a lastScannedRowKey
     for (const chunk of chunks) {
-      if (cancelled) {
+      if (streamRequestHandler.cancelled) {
         break;
       }
 
@@ -363,7 +382,7 @@ export function readRowsImpl(
           chunks: currentResponseChunks,
         };
         chunksSent += currentResponseChunks.length;
-        await sendResponse(response);
+        await streamRequestHandler.sendResponse(response);
         currentResponseChunks = [];
         if (chunkIdx === errorAfterChunkNo) {
           debugLog(`sending error after chunk #${chunkIdx}`);
@@ -371,7 +390,7 @@ export function readRowsImpl(
           const error = new GoogleError('Uh oh');
           error.code = Status.ABORTED;
           stream.emit('error', error);
-          cancelled = true;
+          streamRequestHandler.cancelled = true;
           break;
         }
       }
@@ -379,17 +398,17 @@ export function readRowsImpl(
         const response: protos.google.bigtable.v2.IReadRowsResponse = {
           lastScannedRowKey,
         };
-        await sendResponse(response);
+        await streamRequestHandler.sendResponse(response);
         lastScannedRowKey = undefined;
       }
     }
-    if (!cancelled && currentResponseChunks.length > 0) {
+    if (!streamRequestHandler.cancelled && currentResponseChunks.length > 0) {
       const response: protos.google.bigtable.v2.IReadRowsResponse = {
         chunks: currentResponseChunks,
         lastScannedRowKey,
       };
       chunksSent += currentResponseChunks.length;
-      await sendResponse(response);
+      await streamRequestHandler.sendResponse(response);
     }
     debugLog(`in total, sent ${chunksSent} chunks`);
     stream.end();
