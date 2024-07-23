@@ -247,18 +247,6 @@ function generateChunksFromRequest(
   );
 }
 
-// TODO: Use this as the return type for generating the ReadRowsResponseParameters
-interface ReadRowsResponseParameters {
-  cancelled: boolean;
-  currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[];
-  lastScannedRowKey: string | undefined;
-}
-
-interface CancelledUtils {
-  stopWaiting: () => void;
-  cancelled: boolean;
-}
-
 class ReadRowsRequestHandler {
   public cancelled: boolean;
   public stopWaiting: () => void;
@@ -309,18 +297,15 @@ class ReadRowsRequestHandler {
   }
 }
 
-// Returns an implementation of the server streaming ReadRows call that would return
-// monotonically increasing zero padded rows in the range [keyFrom, keyTo).
-// The returned implementation can be passed to gRPC server.
-// TODO: Remove optional keyFrom, keyTo from the server. No test uses them. Remove them from this test as well.
-// TODO: Address the excessive number of if statements.
-// TODO: Perhaps group the if statements into classes so that they can be unit tested.
-export function readRowsImpl(
-  serviceParameters: ReadRowsServiceParameters
-): (stream: ReadRowsWritableStream) => Promise<void> {
-  let errorAfterChunkNo = serviceParameters.errorAfterChunkNo;
-  return async (stream: ReadRowsWritableStream): Promise<void> => {
-    const debugLog = serviceParameters.debugLog;
+class ReadRowsImpl {
+  private errorAfterChunkNo?: number;
+
+  constructor(readonly serviceParameters: ReadRowsServiceParameters) {
+    this.errorAfterChunkNo = serviceParameters.errorAfterChunkNo;
+  }
+
+  async handleRequest(stream: ReadRowsWritableStream) {
+    const debugLog = this.serviceParameters.debugLog;
     prettyPrintRequest(stream.request, debugLog);
     const streamRequestHandler = new ReadRowsRequestHandler(stream, debugLog);
 
@@ -334,7 +319,7 @@ export function readRowsImpl(
     let chunksSent = 0;
     const chunks = generateChunksFromRequest(
       stream.request,
-      serviceParameters,
+      this.serviceParameters,
       debugLog
     );
     let lastScannedRowKey: string | undefined;
@@ -373,8 +358,9 @@ export function readRowsImpl(
         ++chunkIdx;
       }
       if (
-        currentResponseChunks.length === serviceParameters.chunksPerResponse ||
-        chunkIdx === errorAfterChunkNo ||
+        currentResponseChunks.length ===
+          this.serviceParameters.chunksPerResponse ||
+        chunkIdx === this.errorAfterChunkNo ||
         // if we skipped a row and set lastScannedRowKey, dump everything and send a separate message with lastScannedRowKey
         lastScannedRowKey
       ) {
@@ -384,9 +370,9 @@ export function readRowsImpl(
         chunksSent += currentResponseChunks.length;
         await streamRequestHandler.sendResponse(response);
         currentResponseChunks = [];
-        if (chunkIdx === errorAfterChunkNo) {
+        if (chunkIdx === this.errorAfterChunkNo) {
           debugLog(`sending error after chunk #${chunkIdx}`);
-          errorAfterChunkNo = undefined; // do not send error for the second time
+          this.errorAfterChunkNo = undefined; // do not send error for the second time
           const error = new GoogleError('Uh oh');
           error.code = Status.ABORTED;
           stream.emit('error', error);
@@ -412,5 +398,20 @@ export function readRowsImpl(
     }
     debugLog(`in total, sent ${chunksSent} chunks`);
     stream.end();
+  }
+}
+
+// Returns an implementation of the server streaming ReadRows call that would return
+// monotonically increasing zero padded rows in the range [keyFrom, keyTo).
+// The returned implementation can be passed to gRPC server.
+// TODO: Remove optional keyFrom, keyTo from the server. No test uses them. Remove them from this test as well.
+// TODO: Address the excessive number of if statements.
+// TODO: Perhaps group the if statements into classes so that they can be unit tested.
+export function readRowsImpl(
+  serviceParameters: ReadRowsServiceParameters
+): (stream: ReadRowsWritableStream) => Promise<void> {
+  const readRowsImpl = new ReadRowsImpl(serviceParameters);
+  return async (stream: ReadRowsWritableStream): Promise<void> => {
+    await readRowsImpl.handleRequest(stream);
   };
 }
