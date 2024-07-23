@@ -28,7 +28,7 @@ import {ReadRowsServiceParameters} from '../test/utils/readRowsServiceParameters
 
 // Define parameters for a standard Bigtable Mock service
 const VALUE_SIZE = 1024 * 1024;
-// we want each row to be splitted into 2 chunks of different sizes
+// we want each row to be split into 2 chunks of different sizes
 const CHUNK_SIZE = 1023 * 1024 - 1;
 const CHUNKS_PER_RESPONSE = 10;
 const STANDARD_KEY_FROM = 0;
