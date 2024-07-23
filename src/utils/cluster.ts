@@ -20,6 +20,8 @@ import {
   SetClusterMetadataOptions,
 } from '../cluster';
 import {google} from '../../protos/protos';
+import {ModifiableBackupFields} from '../backup';
+import {PreciseDate} from '@google-cloud/precise-date';
 
 export class ClusterUtils {
   static noConfigError =
@@ -162,5 +164,11 @@ export class ClusterUtils {
       cluster: this.getClusterFromMetadata(metadata, name),
       updateMask: {paths: this.getUpdateMask(metadata)},
     };
+  }
+
+  static formatBackupExpiryTime(backup: ModifiableBackupFields) {
+    if (backup.expireTime instanceof Date) {
+      backup.expireTime = new PreciseDate(backup.expireTime).toStruct();
+    }
   }
 }
