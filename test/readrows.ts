@@ -384,14 +384,14 @@ describe('Bigtable/ReadRows', () => {
         errorAfterChunkNo
       ) as ServerImplementationInterface,
     });
-    const sleep = (ms: number) => {
+    const sleep = (ticks: number) => {
       return new Promise(resolve => {
         const nextEventLoop = () => {
-          if (ms > 0) {
-            ms = ms - 1;
+          if (ticks > 0) {
+            ticks = ticks - 1;
             setImmediate(nextEventLoop);
           } else {
-            resolve(ms);
+            resolve(ticks);
           }
         };
         nextEventLoop();
@@ -406,7 +406,8 @@ describe('Bigtable/ReadRows', () => {
 
         for await (const row of stream) {
           dataResults.push(row.id);
-          await sleep(10000);
+          // sleep parameter needs to be high enough to produce an error.
+          await sleep(4000);
         }
         const expectedResults = Array.from(Array(150).keys())
           .map(i => '00000000' + i.toString())
