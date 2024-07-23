@@ -307,12 +307,12 @@ class ReadRowsImpl {
   async handleRequest(stream: ReadRowsWritableStream) {
     const debugLog = this.serviceParameters.debugLog;
     prettyPrintRequest(stream.request, debugLog);
-    const streamRequestHandler = new ReadRowsRequestHandler(stream, debugLog);
+    const readRowsRequestHandler = new ReadRowsRequestHandler(stream, debugLog);
 
     stream.on('cancelled', () => {
       debugLog('gRPC server received cancel()');
-      streamRequestHandler.cancelled = true;
-      streamRequestHandler.stopWaiting();
+      readRowsRequestHandler.cancelled = true;
+      readRowsRequestHandler.stopWaiting();
       stream.emit('error', new Error('Cancelled'));
     });
 
@@ -329,7 +329,7 @@ class ReadRowsImpl {
     let skipThisRow = false;
     // TODO: Make it clear that this for loop just builds the cell chunks, a cancelled setting and a lastScannedRowKey
     for (const chunk of chunks) {
-      if (streamRequestHandler.cancelled) {
+      if (readRowsRequestHandler.cancelled) {
         break;
       }
 
@@ -368,7 +368,7 @@ class ReadRowsImpl {
           chunks: currentResponseChunks,
         };
         chunksSent += currentResponseChunks.length;
-        await streamRequestHandler.sendResponse(response);
+        await readRowsRequestHandler.sendResponse(response);
         currentResponseChunks = [];
         if (chunkIdx === this.errorAfterChunkNo) {
           debugLog(`sending error after chunk #${chunkIdx}`);
@@ -376,7 +376,7 @@ class ReadRowsImpl {
           const error = new GoogleError('Uh oh');
           error.code = Status.ABORTED;
           stream.emit('error', error);
-          streamRequestHandler.cancelled = true;
+          readRowsRequestHandler.cancelled = true;
           break;
         }
       }
@@ -384,17 +384,17 @@ class ReadRowsImpl {
         const response: protos.google.bigtable.v2.IReadRowsResponse = {
           lastScannedRowKey,
         };
-        await streamRequestHandler.sendResponse(response);
+        await readRowsRequestHandler.sendResponse(response);
         lastScannedRowKey = undefined;
       }
     }
-    if (!streamRequestHandler.cancelled && currentResponseChunks.length > 0) {
+    if (!readRowsRequestHandler.cancelled && currentResponseChunks.length > 0) {
       const response: protos.google.bigtable.v2.IReadRowsResponse = {
         chunks: currentResponseChunks,
         lastScannedRowKey,
       };
       chunksSent += currentResponseChunks.length;
-      await streamRequestHandler.sendResponse(response);
+      await readRowsRequestHandler.sendResponse(response);
     }
     debugLog(`in total, sent ${chunksSent} chunks`);
     stream.end();
