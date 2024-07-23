@@ -125,7 +125,7 @@ function generateChunks(chunkGeneratorParameters: ChunkGeneratorParameters) {
   return chunks;
 }
 
-export function isKeyInRowSet(
+function isKeyInRowSet(
   stringKey: string,
   rowSet?: protos.google.bigtable.v2.IRowSet | null
 ): boolean {
