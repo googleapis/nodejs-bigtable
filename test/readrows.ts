@@ -375,7 +375,7 @@ describe('Bigtable/ReadRows', () => {
     // the server will error after sending this chunk (not row)
     const errorAfterChunkNo = 100;
     const dataResults = [];
-    
+
     service.setService({
       ReadRows: readRowsImpl2(
         keyFrom,
