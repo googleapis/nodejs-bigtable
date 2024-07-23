@@ -368,6 +368,56 @@ describe('Bigtable/ReadRows', () => {
       }
     })();
   });
+  it.only('should return row data in the right order with a predictable sleep function', done => {
+    // 150 rows must be enough to reproduce issues with losing the data and to create backpressure
+    const keyFrom = undefined;
+    const keyTo = undefined;
+    // the server will error after sending this chunk (not row)
+    const errorAfterChunkNo = 100;
+    const dataResults = [];
+
+    // TODO: Do not use `any` here, make it a more specific type and address downstream implications on the mock server.
+    service.setService({
+      ReadRows: readRowsImpl2(
+        keyFrom,
+        keyTo,
+        errorAfterChunkNo
+      ) as ServerImplementationInterface,
+    });
+    const sleep = (ms: number) => {
+      return new Promise(resolve => {
+        const nextEventLoop = () => {
+          if (ms > 0) {
+            ms = ms - 1;
+            setImmediate(nextEventLoop);
+          } else {
+            resolve(ms);
+          }
+        };
+        nextEventLoop();
+      });
+    };
+    (async () => {
+      try {
+        const stream = table.createReadStream({
+          start: '00000000',
+          end: '00000150',
+        });
+
+        for await (const row of stream) {
+          dataResults.push(row.id);
+          await sleep(10000);
+        }
+        const expectedResults = Array.from(Array(150).keys())
+          .map(i => '00000000' + i.toString())
+          .map(i => i.slice(-8));
+        assert.deepStrictEqual(dataResults, expectedResults);
+        done();
+      } catch (error) {
+        done(error);
+      }
+    })();
+  });
 
   after(async () => {
     server.shutdown(() => {});
