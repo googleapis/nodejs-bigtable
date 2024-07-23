@@ -408,7 +408,7 @@ describe('Bigtable/ReadRows', () => {
 
         for await (const row of stream) {
           dataResults.push(row.id);
-          // sleep parameter needs to be high enough to produce an error.
+          // sleep parameter needs to be high enough to produce backpressure.
           await sleep(4000);
         }
         const expectedResults = Array.from(Array(150).keys())
