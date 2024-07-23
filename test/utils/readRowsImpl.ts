@@ -80,9 +80,7 @@ export function prettyPrintRequest(
  * in the range [keyFrom, keyTo).
  * @param chunkGeneratorParameters The parameters for generating chunks.
  */
-export function generateChunks(
-  chunkGeneratorParameters: ChunkGeneratorParameters
-) {
+function generateChunks(chunkGeneratorParameters: ChunkGeneratorParameters) {
   const keyFrom = chunkGeneratorParameters.keyFrom;
   const keyTo = chunkGeneratorParameters.keyTo;
   debugLog(`generating chunks from ${keyFrom} to ${keyTo}`);
