@@ -338,17 +338,26 @@ describe('Bigtable/ReadRows', () => {
         done();
       });
     }
-    it('with an error at a fixed position', done => {
+    it('with an error at a fixed position', function (done) {
+      if (process.platform === 'win32') {
+        this.timeout(60000); // it runs much slower on Windows!
+      }
       // Emits an error after enough chunks have been pushed to create back pressure
       runTest(done, 423);
     });
-    it('with an error at a random position', done => {
+    it('with an error at a random position', function (done) {
+      if (process.platform === 'win32') {
+        this.timeout(60000); // it runs much slower on Windows!
+      }
       // Emits an error after a random number of chunks.
       const errorAfterChunkNo = Math.floor(Math.random() * 1000);
       runTest(done, errorAfterChunkNo);
     });
   });
-  it('should return row data in the right order', done => {
+  it('should return row data in the right order', function (done) {
+    if (process.platform === 'win32') {
+      this.timeout(60000); // it runs much slower on Windows!
+    }
     const dataResults = [];
 
     // keyTo and keyFrom are not provided so they will be determined from
