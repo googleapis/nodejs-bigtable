@@ -554,6 +554,36 @@ describe('Bigtable/Instance', () => {
       instance.createTable(TABLE_ID, assert.ifError);
     });
 
+    describe('table deletion protection', async () => {
+      it('should provide table deletion protection value set to true', done => {
+        const options = {
+          deletionProtection: true,
+        };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (instance.bigtable.request as Function) = (config: any) => {
+          assert.deepStrictEqual(config.reqOpts.table, {
+            granularity: 0,
+            deletionProtection: true,
+          });
+          done();
+        };
+        instance.createTable(TABLE_ID, options, assert.ifError);
+      });
+      it('should provide table deletion protection value set to false', done => {
+        const options = {
+          deletionProtection: false,
+        };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (instance.bigtable.request as Function) = (config: any) => {
+          assert.deepStrictEqual(config.reqOpts.table, {
+            granularity: 0,
+          });
+          done();
+        };
+        instance.createTable(TABLE_ID, options, assert.ifError);
+      });
+    });
+
     it('should accept gaxOptions', done => {
       const options = {
         gaxOptions: {},
