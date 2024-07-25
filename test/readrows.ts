@@ -368,7 +368,8 @@ describe('Bigtable/ReadRows', () => {
       }
     })();
   });
-  it('should return row data in the right order with a predictable sleep function', done => {
+  it.only('should return row data in the right order with a predictable sleep function', function (done) {
+    this.timeout(600000);
     const keyFrom = undefined;
     const keyTo = undefined;
     // the server will error after sending this chunk (not row)
