@@ -368,7 +368,7 @@ describe('Bigtable/ReadRows', () => {
       }
     })();
   });
-  it.only('should return row data in the right order with a predictable sleep function', function (done) {
+  it('should return row data in the right order with a predictable sleep function', function (done) {
     this.timeout(600000);
     const keyFrom = undefined;
     const keyTo = undefined;
