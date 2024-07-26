@@ -772,16 +772,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         });
       }
       write(
-        chunk: any,
-        encoding?: BufferEncoding,
-        cb?: (error: Error | null | undefined) => void
-      ): boolean;
-      write(
-        chunk: any,
-        cb?: (error: Error | null | undefined) => void
-      ): boolean;
-      write(
-        row: any, // TODO: Remove any
+        row: Row,
         encodingOrCb?: BufferEncoding | WriteCallback,
         callback?: WriteCallback
       ) {
