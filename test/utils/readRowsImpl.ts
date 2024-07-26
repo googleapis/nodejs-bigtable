@@ -227,12 +227,12 @@ function generateChunksFromRequest(
     keyFrom: getSelectedKey(request, {
       keyOpenProperty: 'startKeyOpen',
       keyClosedProperty: 'startKeyClosed',
-      defaultKey: serviceParameters.defaultKeyFrom,
+      defaultKey: serviceParameters.keyFrom,
     }),
     keyTo: getSelectedKey(request, {
       keyOpenProperty: 'endKeyOpen',
       keyClosedProperty: 'endKeyClosed',
-      defaultKey: serviceParameters.defaultKeyTo,
+      defaultKey: serviceParameters.keyTo,
     }),
     chunkSize: serviceParameters.chunkSize,
     valueSize: serviceParameters.valueSize,
@@ -307,60 +307,7 @@ export function readRowsImpl(
     });
 
     let chunksSent = 0;
-    let keyFromRequestClosed: any;
-    if (
-      stream?.request?.rows?.rowRanges &&
-      stream?.request?.rows?.rowRanges[0] &&
-      stream?.request?.rows?.rowRanges[0]?.startKeyClosed?.toString()
-    ) {
-      keyFromRequestClosed =
-        stream?.request?.rows?.rowRanges[0]?.startKeyClosed?.toString();
-    }
-    let keyFromRequestOpen: any;
-    if (
-      stream?.request?.rows?.rowRanges &&
-      stream?.request?.rows?.rowRanges[0] &&
-      stream?.request?.rows?.rowRanges[0]?.startKeyOpen?.toString()
-    ) {
-      keyFromRequestOpen =
-        stream?.request?.rows?.rowRanges[0]?.startKeyOpen?.toString();
-    }
-    let keyToRequestClosed: any;
-    if (
-      stream?.request?.rows?.rowRanges &&
-      stream?.request?.rows?.rowRanges[0] &&
-      stream?.request?.rows?.rowRanges[0]?.endKeyClosed?.toString()
-    ) {
-      keyToRequestClosed =
-        stream?.request?.rows?.rowRanges[0]?.endKeyClosed?.toString();
-    }
-    let keyToRequestOpen;
-    if (
-      stream?.request?.rows?.rowRanges &&
-      stream?.request?.rows?.rowRanges[0] &&
-      stream?.request?.rows?.rowRanges[0]?.endKeyOpen?.toString()
-    ) {
-      keyToRequestOpen =
-        stream?.request?.rows?.rowRanges[0]?.endKeyOpen?.toString();
-    }
-    const keyFromUsed =
-      serviceParameters.keyFrom !== undefined
-        ? serviceParameters.keyFrom
-        : keyFromRequestClosed
-          ? parseInt(keyFromRequestClosed as string)
-          : parseInt(keyFromRequestOpen as string) + 1;
-    const keyToUsed =
-      serviceParameters.keyTo !== undefined
-        ? serviceParameters.keyTo
-        : keyToRequestClosed
-          ? parseInt(keyToRequestClosed as string)
-          : parseInt(keyToRequestOpen as string) + 1;
-    const chunks = generateChunks({
-      keyFrom: keyFromUsed,
-      keyTo: keyToUsed,
-      chunkSize: serviceParameters.chunkSize,
-      valueSize: serviceParameters.valueSize,
-    });
+    const chunks = generateChunksFromRequest(stream.request, serviceParameters);
     let lastScannedRowKey: string | undefined;
     let currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] =
       [];
