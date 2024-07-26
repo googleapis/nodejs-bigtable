@@ -785,26 +785,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
     }
     const userStream = new UserStream() as Transform;
-    /*
-    const userStream = new PassThrough({
-      objectMode: true,
-      readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
-      writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
-      transform(row, _encoding, callback) {
-        if (userCanceled) {
-          callback();
-          return;
-        }
-        if (TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
-          callback();
-          return;
-        }
-        lastRowKey = row.id;
-        rowsRead++;
-        callback(null, row);
-      },
-    });
-    */
 
     // The caller should be able to call userStream.end() to stop receiving
     // more rows and cancel the stream prematurely. But also, the 'end' event
