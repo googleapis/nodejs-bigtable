@@ -19,6 +19,8 @@ import {
   ChunkGeneratorParameters,
   ReadRowsServiceParameters,
 } from './readRowsServiceParameters';
+import {google} from '../../protos/protos';
+import IRowRange = google.bigtable.v2.IRowRange;
 
 const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
 
@@ -161,6 +163,80 @@ function isKeyInRowSet(
     return false;
   }
   return true;
+}
+
+/** Gets the property of the first row range in the request.
+ * @param stream The stream object to get the property from.
+ * @param property The property to get.
+ */
+function getKeyProperty(
+  request: protos.google.bigtable.v2.IReadRowsRequest,
+  property: keyof IRowRange
+) {
+  if (
+    request?.rows?.rowRanges &&
+    request?.rows?.rowRanges[0] &&
+    request?.rows?.rowRanges[0][property]?.toString()
+  ) {
+    return request?.rows?.rowRanges[0][property]?.toString();
+  }
+  return undefined;
+}
+
+/** Gets the key from the request object.
+ * @param stream The stream object to get the key from.
+ * @param keySelectionParameters The parameters for selecting the key.
+ * @returns {number} The selected key for generating chunks
+ */
+function getSelectedKey(
+  request: protos.google.bigtable.v2.IReadRowsRequest,
+  keySelectionParameters: {
+    keyOpenProperty: keyof IRowRange;
+    keyClosedProperty: keyof IRowRange;
+    defaultKey?: number;
+  }
+) {
+  const keyRequestOpen = getKeyProperty(
+    request,
+    keySelectionParameters.keyOpenProperty
+  );
+  const keyRequestClosed = getKeyProperty(
+    request,
+    keySelectionParameters.keyClosedProperty
+  );
+  const defaultKey = keySelectionParameters.defaultKey;
+  return defaultKey !== undefined
+    ? defaultKey
+    : keyRequestClosed
+      ? parseInt(keyRequestClosed as string)
+      : parseInt(keyRequestOpen as string) + 1;
+}
+
+/** Generates chunks for rows in a fake table that match the provided RowSet.
+ * The fake table contains monotonically increasing zero padded rows
+ * in the range [keyFrom, keyTo).
+ * @param request The request object to generate chunks from.
+ * @param serviceParameters The parameters for generating chunks.
+ * @returns {protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]} The generated chunks.
+ */
+function generateChunksFromRequest(
+  request: protos.google.bigtable.v2.IReadRowsRequest,
+  serviceParameters: ReadRowsServiceParameters
+) {
+  return generateChunks({
+    keyFrom: getSelectedKey(request, {
+      keyOpenProperty: 'startKeyOpen',
+      keyClosedProperty: 'startKeyClosed',
+      defaultKey: serviceParameters.defaultKeyFrom,
+    }),
+    keyTo: getSelectedKey(request, {
+      keyOpenProperty: 'endKeyOpen',
+      keyClosedProperty: 'endKeyClosed',
+      defaultKey: serviceParameters.defaultKeyTo,
+    }),
+    chunkSize: serviceParameters.chunkSize,
+    valueSize: serviceParameters.valueSize,
+  });
 }
 
 // Returns an implementation of the server streaming ReadRows call that would return
