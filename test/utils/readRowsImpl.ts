@@ -231,7 +231,7 @@ export function readRowsImpl(
     });
 
     let chunksSent = 0;
-    let keyFromRequestClosed: any;
+    let keyFromRequestClosed: string | undefined;
     if (
       stream?.request?.rows?.rowRanges &&
       stream?.request?.rows?.rowRanges[0] &&
@@ -240,7 +240,7 @@ export function readRowsImpl(
       keyFromRequestClosed =
         stream?.request?.rows?.rowRanges[0]?.startKeyClosed?.toString();
     }
-    let keyFromRequestOpen: any;
+    let keyFromRequestOpen: string | undefined;
     if (
       stream?.request?.rows?.rowRanges &&
       stream?.request?.rows?.rowRanges[0] &&
@@ -249,7 +249,7 @@ export function readRowsImpl(
       keyFromRequestOpen =
         stream?.request?.rows?.rowRanges[0]?.startKeyOpen?.toString();
     }
-    let keyToRequestClosed: any;
+    let keyToRequestClosed: string | undefined;
     if (
       stream?.request?.rows?.rowRanges &&
       stream?.request?.rows?.rowRanges[0] &&
@@ -258,7 +258,7 @@ export function readRowsImpl(
       keyToRequestClosed =
         stream?.request?.rows?.rowRanges[0]?.endKeyClosed?.toString();
     }
-    let keyToRequestOpen;
+    let keyToRequestOpen: string | undefined;
     if (
       stream?.request?.rows?.rowRanges &&
       stream?.request?.rows?.rowRanges[0] &&
