@@ -78,7 +78,7 @@ describe('Bigtable/ReadRows', () => {
   }
 
   it('should create read stream and read synchronously', function (done) {
-    setTestTimeout(this);
+    setWindowsTestTimeout(this);
 
     service.setService({
       ReadRows: readRowsImpl(
