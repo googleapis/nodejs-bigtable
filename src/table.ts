@@ -775,6 +775,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         encodingOrCb?: BufferEncoding | ((error?: Error | null) => void),
         callback?: (error?: Error | null) => void
       ) {
+        /*
+        The last row key and rowsRead should be updated here because it is the
+        earliest point in the stream pipeline that a row is guaranteed to reach
+        the user. If this update is done further downstream then there is a
+        chance that a row makes it far enough to reach the user, but is
+        re-requested and causes data duplication because it has not updated the
+        lastRowKey yet. If this update is done further upstream then the
+        lastRowKey might get updated and then the row might get thrown away
+        causing data loss.
+         */
         lastRowKey = row.id;
         rowsRead++;
         if (callback) {
