@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {ServerWritableStream} from '@grpc/grpc-js';
+import {protos} from '../../src';
+
 /**
  * This file contains the parameters for the readRowsService.
  */
@@ -21,14 +24,22 @@ interface SharedReadRowsParameters {
   valueSize: number; // An upper bound on the amount of data included in the chunks
 }
 
+export type DebugLog = (message: string) => void;
+
 export interface ReadRowsServiceParameters extends SharedReadRowsParameters {
   keyFrom?: number; // The key the data coming from the service will start from
   keyTo?: number; // The key the data coming from the service will end at
   errorAfterChunkNo?: number; // The chunk that the error should come after
   chunksPerResponse: number; // The total number of chunks the server should send
+  debugLog: DebugLog;
 }
 
 export interface ChunkGeneratorParameters extends SharedReadRowsParameters {
   keyFrom: number; // The first row in the generated chunks will start with this key
   keyTo: number; // The last row in the generated chunks will start with this key
 }
+
+export type ReadRowsWritableStream = ServerWritableStream<
+  protos.google.bigtable.v2.IReadRowsRequest,
+  protos.google.bigtable.v2.IReadRowsResponse
+>;

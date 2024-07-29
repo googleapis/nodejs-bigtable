@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {before, describe, it} from 'mocha';
-import {Bigtable, protos, Row, Table} from '../src';
+import {Bigtable, Row, Table} from '../src';
 import * as assert from 'assert';
 import {Transform, PassThrough, pipeline} from 'stream';
 
@@ -21,11 +21,21 @@ import {GoogleError} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
-import {debugLog, readRowsImpl} from './utils/readRowsImpl';
-import {ServerWritableStream} from '@grpc/grpc-js';
+import {readRowsImpl} from './utils/readRowsImpl';
 
-import {ReadRowsServiceParameters} from '../test/utils/readRowsServiceParameters';
+import {
+  ReadRowsServiceParameters,
+  ReadRowsWritableStream,
+} from '../test/utils/readRowsServiceParameters';
 import * as mocha from 'mocha';
+
+const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
+
+function debugLog(text: string) {
+  if (DEBUG) {
+    console.log(text);
+  }
+}
 
 // Define parameters for a standard Bigtable Mock service
 const VALUE_SIZE = 1024 * 1024;
@@ -41,16 +51,12 @@ const STANDARD_SERVICE_WITHOUT_ERRORS: ReadRowsServiceParameters = {
   valueSize: VALUE_SIZE,
   chunkSize: CHUNK_SIZE,
   chunksPerResponse: CHUNKS_PER_RESPONSE,
+  debugLog,
 };
 
 type PromiseVoid = Promise<void>;
 interface ServerImplementationInterface {
-  (
-    server: ServerWritableStream<
-      protos.google.bigtable.v2.IReadRowsRequest,
-      protos.google.bigtable.v2.IReadRowsResponse
-    >
-  ): PromiseVoid;
+  (server: ReadRowsWritableStream): PromiseVoid;
 }
 
 describe('Bigtable/ReadRows', () => {
@@ -316,6 +322,7 @@ describe('Bigtable/ReadRows', () => {
           chunkSize: CHUNK_SIZE,
           chunksPerResponse: CHUNKS_PER_RESPONSE,
           errorAfterChunkNo,
+          debugLog,
         }) as ServerImplementationInterface,
       });
       let receivedRowCount = 0;
@@ -367,6 +374,7 @@ describe('Bigtable/ReadRows', () => {
         valueSize: 1,
         chunkSize: 1,
         chunksPerResponse: 1,
+        debugLog,
       }) as ServerImplementationInterface,
     });
     const sleep = (ms: number) => {
