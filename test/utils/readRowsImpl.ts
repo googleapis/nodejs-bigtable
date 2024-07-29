@@ -223,13 +223,11 @@ function getSelectedKey(
  * in the range [keyFrom, keyTo).
  * @param request The request object to generate chunks from.
  * @param serviceParameters The parameters for generating chunks.
- * @param debugLog The logging function for printing test output.
  * @returns {protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]} The generated chunks.
  */
 function generateChunksFromRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest,
   serviceParameters: ReadRowsServiceParameters,
-  debugLog: DebugLog
 ) {
   return generateChunks(
     {
@@ -246,7 +244,7 @@ function generateChunksFromRequest(
       chunkSize: serviceParameters.chunkSize,
       valueSize: serviceParameters.valueSize,
     },
-    debugLog
+    serviceParameters.debugLog
   );
 }
 
@@ -309,11 +307,7 @@ export function readRowsImpl(
     });
 
     let chunksSent = 0;
-    const chunks = generateChunksFromRequest(
-      stream.request,
-      serviceParameters,
-      debugLog
-    );
+    const chunks = generateChunksFromRequest(stream.request, serviceParameters);
     let lastScannedRowKey: string | undefined;
     let currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] =
       [];
