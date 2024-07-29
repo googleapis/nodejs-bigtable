@@ -246,7 +246,7 @@ describe('Bigtable/ReadRows', () => {
 
   // TODO: enable after https://github.com/googleapis/nodejs-bigtable/issues/1286 is fixed
   it('should be able to stop reading from the read stream when reading asynchronously', function (done) {
-    setTestTimeout(this);
+    setWindowsTestTimeout(this);
     // pick any key to stop after
     const stopAfter = 420;
 
