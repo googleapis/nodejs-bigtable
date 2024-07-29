@@ -342,7 +342,7 @@ describe('Bigtable/ReadRows', () => {
       });
     }
     it('with an error at a fixed position', function (done) {
-      setTestTimeout(this);
+      setWindowsTestTimeout(this);
       // Emits an error after enough chunks have been pushed to create back pressure
       runTest(done, 423);
     });
