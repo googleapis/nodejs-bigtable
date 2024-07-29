@@ -77,7 +77,7 @@ export function prettyPrintRequest(
  * @param chunkGeneratorParameters The parameters for generating chunks.
  * @returns {protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]} The generated chunks.
  */
-export function generateChunks(
+function generateChunks(
   chunkGeneratorParameters: ChunkGeneratorParameters,
   debugLog: DebugLog
 ) {
