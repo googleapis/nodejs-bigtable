@@ -170,7 +170,6 @@ function isKeyInRowSet(
   return true;
 }
 
-// TODO: Refactor stream type
 /** Gets the property of the first row range in the request.
  * @param stream The stream object to get the property from.
  * @param property The property to get.
