@@ -227,7 +227,7 @@ function getSelectedKey(
  */
 function generateChunksFromRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest,
-  serviceParameters: ReadRowsServiceParameters,
+  serviceParameters: ReadRowsServiceParameters
 ) {
   return generateChunks(
     {
