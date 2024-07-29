@@ -28,7 +28,7 @@ import IRowRange = google.bigtable.v2.IRowRange;
  * @param request The request object to pretty print.
  * @param debugLog The logging function for printing test output.
  */
-export function prettyPrintRequest(
+function prettyPrintRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest,
   debugLog: DebugLog
 ) {
@@ -132,7 +132,7 @@ function generateChunks(
  * @param rowSet The RowSet to check against.
  * @returns {boolean} True if the key is in the RowSet, false otherwise.
  */
-export function isKeyInRowSet(
+function isKeyInRowSet(
   stringKey: string,
   rowSet?: protos.google.bigtable.v2.IRowSet | null
 ): boolean {
