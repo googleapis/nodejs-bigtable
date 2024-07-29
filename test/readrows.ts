@@ -23,9 +23,9 @@ import {BigtableClientMockService} from '../src/util/mock-servers/service-implem
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {debugLog, readRowsImpl} from './utils/readRowsImpl';
 import {ServerWritableStream} from '@grpc/grpc-js';
-import {readRowsImpl2} from './utils/readRowsImpl2';
 
 import {ReadRowsServiceParameters} from '../test/utils/readRowsServiceParameters';
+import * as mocha from 'mocha';
 
 // Define parameters for a standard Bigtable Mock service
 const VALUE_SIZE = 1024 * 1024;
@@ -71,8 +71,16 @@ describe('Bigtable/ReadRows', () => {
     service = new BigtableClientMockService(server);
   });
 
+  // helper function because some tests run slower
+  // on Windows and need a longer timeout
+  function setWindowsTestTimeout(test: mocha.Context) {
+    if (process.platform === 'win32') {
+      test.timeout(60000); // it runs much slower on Windows!
+    }
+  }
+
   it('should create read stream and read synchronously', function (done) {
-    this.timeout(60000);
+    setWindowsTestTimeout(this);
 
     service.setService({
       ReadRows: readRowsImpl(
@@ -151,9 +159,7 @@ describe('Bigtable/ReadRows', () => {
   });
 
   it('should create read stream and read asynchronously using Transform stream', function (done) {
-    if (process.platform === 'win32') {
-      this.timeout(60000); // it runs much slower on Windows!
-    }
+    setWindowsTestTimeout(this);
     service.setService({
       ReadRows: readRowsImpl(
         STANDARD_SERVICE_WITHOUT_ERRORS
@@ -242,9 +248,7 @@ describe('Bigtable/ReadRows', () => {
 
   // TODO: enable after https://github.com/googleapis/nodejs-bigtable/issues/1286 is fixed
   it('should be able to stop reading from the read stream when reading asynchronously', function (done) {
-    if (process.platform === 'win32') {
-      this.timeout(600000); // it runs much slower on Windows!
-    }
+    setWindowsTestTimeout(this);
     // pick any key to stop after
     const stopAfter = 420;
 
@@ -339,37 +343,38 @@ describe('Bigtable/ReadRows', () => {
         done();
       });
     }
-    it('with an error at a fixed position', done => {
+    it('with an error at a fixed position', function (done) {
+      setWindowsTestTimeout(this);
       // Emits an error after enough chunks have been pushed to create back pressure
       runTest(done, 423);
     });
-    it('with an error at a random position', done => {
+    it('with an error at a random position', function (done) {
+      setWindowsTestTimeout(this);
       // Emits an error after a random number of chunks.
       const errorAfterChunkNo = Math.floor(Math.random() * 1000);
       runTest(done, errorAfterChunkNo);
     });
   });
-  it('should return row data in the right order', done => {
-    // 150 rows must be enough to reproduce issues with losing the data and to create backpressure
-    const keyFrom = undefined;
-    const keyTo = undefined;
-    // the server will error after sending this chunk (not row)
-    const errorAfterChunkNo = 100;
+  it('should return row data in the right order', function (done) {
+    setWindowsTestTimeout(this);
     const dataResults = [];
 
-    // TODO: Do not use `any` here, make it a more specific type and address downstream implications on the mock server.
+    // keyTo and keyFrom are not provided so they will be determined from
+    // the request that is passed in.
     service.setService({
-      ReadRows: readRowsImpl2(
-        keyFrom,
-        keyTo,
-        errorAfterChunkNo
-      ) as ServerImplementationInterface,
+      ReadRows: readRowsImpl({
+        errorAfterChunkNo: 100, // the server will error after sending this chunk (not row)
+        valueSize: 1,
+        chunkSize: 1,
+        chunksPerResponse: 1,
+      }) as ServerImplementationInterface,
     });
     const sleep = (ms: number) => {
       return new Promise(resolve => setTimeout(resolve, ms));
     };
     (async () => {
       try {
+        // 150 rows must be enough to reproduce issues with losing the data and to create backpressure
         const stream = table.createReadStream({
           start: '00000000',
           end: '00000150',

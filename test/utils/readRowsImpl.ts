@@ -166,6 +166,9 @@ function isKeyInRowSet(
 // Returns an implementation of the server streaming ReadRows call that would return
 // monotonically increasing zero padded rows in the range [keyFrom, keyTo).
 // The returned implementation can be passed to gRPC server.
+// TODO: Remove optional keyFrom, keyTo from the server. No test uses them. Remove them from this test as well.
+// TODO: Address the excessive number of if statements.
+// TODO: Perhaps group the if statements into classes so that they can be unit tested.
 export function readRowsImpl(
   serviceParameters: ReadRowsServiceParameters
 ): (
@@ -228,7 +231,60 @@ export function readRowsImpl(
     });
 
     let chunksSent = 0;
-    const chunks = generateChunks(serviceParameters);
+    let keyFromRequestClosed: string | undefined;
+    if (
+      stream?.request?.rows?.rowRanges &&
+      stream?.request?.rows?.rowRanges[0] &&
+      stream?.request?.rows?.rowRanges[0]?.startKeyClosed?.toString()
+    ) {
+      keyFromRequestClosed =
+        stream?.request?.rows?.rowRanges[0]?.startKeyClosed?.toString();
+    }
+    let keyFromRequestOpen: string | undefined;
+    if (
+      stream?.request?.rows?.rowRanges &&
+      stream?.request?.rows?.rowRanges[0] &&
+      stream?.request?.rows?.rowRanges[0]?.startKeyOpen?.toString()
+    ) {
+      keyFromRequestOpen =
+        stream?.request?.rows?.rowRanges[0]?.startKeyOpen?.toString();
+    }
+    let keyToRequestClosed: string | undefined;
+    if (
+      stream?.request?.rows?.rowRanges &&
+      stream?.request?.rows?.rowRanges[0] &&
+      stream?.request?.rows?.rowRanges[0]?.endKeyClosed?.toString()
+    ) {
+      keyToRequestClosed =
+        stream?.request?.rows?.rowRanges[0]?.endKeyClosed?.toString();
+    }
+    let keyToRequestOpen: string | undefined;
+    if (
+      stream?.request?.rows?.rowRanges &&
+      stream?.request?.rows?.rowRanges[0] &&
+      stream?.request?.rows?.rowRanges[0]?.endKeyOpen?.toString()
+    ) {
+      keyToRequestOpen =
+        stream?.request?.rows?.rowRanges[0]?.endKeyOpen?.toString();
+    }
+    const keyFromUsed =
+      serviceParameters.keyFrom !== undefined
+        ? serviceParameters.keyFrom
+        : keyFromRequestClosed
+          ? parseInt(keyFromRequestClosed as string)
+          : parseInt(keyFromRequestOpen as string) + 1;
+    const keyToUsed =
+      serviceParameters.keyTo !== undefined
+        ? serviceParameters.keyTo
+        : keyToRequestClosed
+          ? parseInt(keyToRequestClosed as string)
+          : parseInt(keyToRequestOpen as string) + 1;
+    const chunks = generateChunks({
+      keyFrom: keyFromUsed,
+      keyTo: keyToUsed,
+      chunkSize: serviceParameters.chunkSize,
+      valueSize: serviceParameters.valueSize,
+    });
     let lastScannedRowKey: string | undefined;
     let currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] =
       [];
