@@ -82,7 +82,7 @@ export function prettyPrintRequest(
 function generateChunks(
   chunkGeneratorParameters: ChunkGeneratorParameters,
   debugLog: DebugLog
-) {
+): protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] {
   const keyFrom = chunkGeneratorParameters.keyFrom;
   const keyTo = chunkGeneratorParameters.keyTo;
   debugLog(`generating chunks from ${keyFrom} to ${keyTo}`);
