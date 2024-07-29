@@ -157,7 +157,7 @@ describe('Bigtable/ReadRows', () => {
   });
 
   it('should create read stream and read asynchronously using Transform stream', function (done) {
-    setTestTimeout(this);
+    setWindowsTestTimeout(this);
     service.setService({
       ReadRows: readRowsImpl(
         STANDARD_SERVICE_WITHOUT_ERRORS
