@@ -354,7 +354,7 @@ describe('Bigtable/ReadRows', () => {
     });
   });
   it('should return row data in the right order', function (done) {
-    setTestTimeout(this);
+    setWindowsTestTimeout(this);
     const dataResults = [];
 
     // keyTo and keyFrom are not provided so they will be determined from
