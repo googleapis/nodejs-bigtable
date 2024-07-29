@@ -170,11 +170,12 @@ function isKeyInRowSet(
   return true;
 }
 
-/** Gets the property of the first row range in the request.
- * @param stream The stream object to get the property from.
- * @param property The property to get.
+/** Gets the key value for the given property specified in the request.
+ * @param request The request object to get the key value from.
+ * @param property The property from the request to get the value from.
+ * @returns {string | undefined} The key value from the request.
  */
-function getKeyProperty(
+function getKeyValue(
   request: protos.google.bigtable.v2.IReadRowsRequest,
   property: keyof IRowRange
 ) {
@@ -201,11 +202,11 @@ function getSelectedKey(
     defaultKey?: number;
   }
 ) {
-  const keyRequestOpen = getKeyProperty(
+  const keyRequestOpen = getKeyValue(
     request,
     keySelectionParameters.keyOpenProperty
   );
-  const keyRequestClosed = getKeyProperty(
+  const keyRequestClosed = getKeyValue(
     request,
     keySelectionParameters.keyClosedProperty
   );
