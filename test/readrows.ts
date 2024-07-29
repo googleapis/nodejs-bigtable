@@ -46,8 +46,8 @@ const STANDARD_KEY_FROM = 0;
 // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
 const STANDARD_KEY_TO = 1000;
 const STANDARD_SERVICE_WITHOUT_ERRORS: ReadRowsServiceParameters = {
-  defaultKeyFrom: STANDARD_KEY_FROM,
-  defaultKeyTo: STANDARD_KEY_TO,
+  keyFrom: STANDARD_KEY_FROM,
+  keyTo: STANDARD_KEY_TO,
   valueSize: VALUE_SIZE,
   chunkSize: CHUNK_SIZE,
   chunksPerResponse: CHUNKS_PER_RESPONSE,
@@ -322,6 +322,7 @@ describe('Bigtable/ReadRows', () => {
           chunkSize: CHUNK_SIZE,
           chunksPerResponse: CHUNKS_PER_RESPONSE,
           errorAfterChunkNo,
+          debugLog,
         }) as ServerImplementationInterface,
       });
       let receivedRowCount = 0;

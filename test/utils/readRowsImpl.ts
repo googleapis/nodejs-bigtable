@@ -233,12 +233,12 @@ function generateChunksFromRequest(
       keyFrom: getSelectedKey(request, {
         keyOpenProperty: 'startKeyOpen',
         keyClosedProperty: 'startKeyClosed',
-        defaultKey: serviceParameters.defaultKeyFrom,
+        defaultKey: serviceParameters.keyFrom,
       }),
       keyTo: getSelectedKey(request, {
         keyOpenProperty: 'endKeyOpen',
         keyClosedProperty: 'endKeyClosed',
-        defaultKey: serviceParameters.defaultKeyTo,
+        defaultKey: serviceParameters.keyTo,
       }),
       chunkSize: serviceParameters.chunkSize,
       valueSize: serviceParameters.valueSize,
