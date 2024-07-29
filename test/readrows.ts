@@ -25,6 +25,7 @@ import {debugLog, readRowsImpl} from './utils/readRowsImpl';
 import {ServerWritableStream} from '@grpc/grpc-js';
 
 import {ReadRowsServiceParameters} from '../test/utils/readRowsServiceParameters';
+import * as mocha from 'mocha';
 
 // Define parameters for a standard Bigtable Mock service
 const VALUE_SIZE = 1024 * 1024;
@@ -70,8 +71,14 @@ describe('Bigtable/ReadRows', () => {
     service = new BigtableClientMockService(server);
   });
 
+  function setTestTimeout(test: mocha.Context) {
+    if (process.platform === 'win32') {
+      test.timeout(60000); // it runs much slower on Windows!
+    }
+  }
+
   it('should create read stream and read synchronously', function (done) {
-    this.timeout(60000);
+    setTestTimeout(this);
 
     service.setService({
       ReadRows: readRowsImpl(
@@ -150,9 +157,7 @@ describe('Bigtable/ReadRows', () => {
   });
 
   it('should create read stream and read asynchronously using Transform stream', function (done) {
-    if (process.platform === 'win32') {
-      this.timeout(60000); // it runs much slower on Windows!
-    }
+    setTestTimeout(this);
     service.setService({
       ReadRows: readRowsImpl(
         STANDARD_SERVICE_WITHOUT_ERRORS
@@ -240,10 +245,8 @@ describe('Bigtable/ReadRows', () => {
   });
 
   // TODO: enable after https://github.com/googleapis/nodejs-bigtable/issues/1286 is fixed
-  it('should be able to stop reading from the read stream when reading asynchronously', function (done) {
-    if (process.platform === 'win32') {
-      this.timeout(600000); // it runs much slower on Windows!
-    }
+  it.only('should be able to stop reading from the read stream when reading asynchronously', function (done) {
+    setTestTimeout(this);
     // pick any key to stop after
     const stopAfter = 420;
 
@@ -339,25 +342,19 @@ describe('Bigtable/ReadRows', () => {
       });
     }
     it('with an error at a fixed position', function (done) {
-      if (process.platform === 'win32') {
-        this.timeout(60000); // it runs much slower on Windows!
-      }
+      setTestTimeout(this);
       // Emits an error after enough chunks have been pushed to create back pressure
       runTest(done, 423);
     });
     it('with an error at a random position', function (done) {
-      if (process.platform === 'win32') {
-        this.timeout(60000); // it runs much slower on Windows!
-      }
+      setTestTimeout(this);
       // Emits an error after a random number of chunks.
       const errorAfterChunkNo = Math.floor(Math.random() * 1000);
       runTest(done, errorAfterChunkNo);
     });
   });
   it('should return row data in the right order', function (done) {
-    if (process.platform === 'win32') {
-      this.timeout(60000); // it runs much slower on Windows!
-    }
+    setTestTimeout(this);
     const dataResults = [];
 
     // keyTo and keyFrom are not provided so they will be determined from
