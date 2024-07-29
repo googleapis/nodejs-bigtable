@@ -755,8 +755,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let lastRowKey = '';
     let rowsRead = 0;
 
-    type WriteCallback = (error?: Error | null) => void;
-    class UserStream extends Transform {
+    const userStream = new (class extends Transform {
       constructor() {
         super({
           objectMode: true,
@@ -773,18 +772,17 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       write(
         row: Row,
-        encodingOrCb?: BufferEncoding | WriteCallback,
-        callback?: WriteCallback
+        encodingOrCb?: BufferEncoding | ((error?: Error | null) => void),
+        callback?: (error?: Error | null) => void
       ) {
         lastRowKey = row.id;
         rowsRead++;
         if (callback) {
           return super.write(row, encodingOrCb as BufferEncoding, callback);
         }
-        return super.write(row, encodingOrCb as WriteCallback);
+        return super.write(row, encodingOrCb as (error?: Error | null) => void);
       }
-    }
-    const userStream = new UserStream() as Transform;
+    })() as Transform;
 
     // The caller should be able to call userStream.end() to stop receiving
     // more rows and cancel the stream prematurely. But also, the 'end' event
