@@ -71,7 +71,9 @@ describe('Bigtable/ReadRows', () => {
     service = new BigtableClientMockService(server);
   });
 
-  function setTestTimeout(test: mocha.Context) {
+  // helper function because some tests run slower
+  // on Windows and need a longer timeout
+  function setWindowsTestTimeout(test: mocha.Context) {
     if (process.platform === 'win32') {
       test.timeout(60000); // it runs much slower on Windows!
     }
