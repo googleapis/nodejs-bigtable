@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Instance, protos} from '../../src';
+import {protos} from '../../src';
 import {GoogleError, Status} from 'google-gax';
 import {
   ChunkGeneratorParameters,
@@ -28,7 +28,7 @@ import IRowRange = google.bigtable.v2.IRowRange;
  * @param request The request object to pretty print.
  * @param debugLog A function that logs debug messages.
  */
-export function prettyPrintRequest(
+function prettyPrintRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest,
   debugLog: DebugLog
 ) {
@@ -76,10 +76,10 @@ export function prettyPrintRequest(
  * The fake table contains monotonically increasing zero padded rows
  * in the range [keyFrom, keyTo).
  * @param chunkGeneratorParameters The parameters for generating chunks.
- * @param debugLog A function that logs debug messages.
+ * @param debugLog The logging function for printing test output.
  * @returns {protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]} The generated chunks.
  */
-export function generateChunks(
+function generateChunks(
   chunkGeneratorParameters: ChunkGeneratorParameters,
   debugLog: DebugLog
 ): protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] {
@@ -132,7 +132,7 @@ export function generateChunks(
  * @param rowSet The RowSet to check against.
  * @returns {boolean} True if the key is in the RowSet, false otherwise.
  */
-export function isKeyInRowSet(
+function isKeyInRowSet(
   stringKey: string,
   rowSet?: protos.google.bigtable.v2.IRowSet | null
 ): boolean {
@@ -170,11 +170,12 @@ export function isKeyInRowSet(
   return true;
 }
 
-/** Gets the property of the first row range in the request.
- * @param stream The stream object to get the property from.
- * @param property The property to get.
+/** Gets the key value for the given property specified in the request.
+ * @param request The request object to get the key value from.
+ * @param property The property from the request to get the value from.
+ * @returns {string | undefined} The key value from the request.
  */
-function getKeyProperty(
+function getKeyValue(
   request: protos.google.bigtable.v2.IReadRowsRequest,
   property: keyof IRowRange
 ) {
@@ -201,11 +202,11 @@ function getSelectedKey(
     defaultKey?: number;
   }
 ) {
-  const keyRequestOpen = getKeyProperty(
+  const keyRequestOpen = getKeyValue(
     request,
     keySelectionParameters.keyOpenProperty
   );
-  const keyRequestClosed = getKeyProperty(
+  const keyRequestClosed = getKeyValue(
     request,
     keySelectionParameters.keyClosedProperty
   );
@@ -227,25 +228,24 @@ function getSelectedKey(
  */
 function generateChunksFromRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest,
-  serviceParameters: ReadRowsServiceParameters,
-  debugLog: DebugLog
+  serviceParameters: ReadRowsServiceParameters
 ) {
   return generateChunks(
     {
       keyFrom: getSelectedKey(request, {
         keyOpenProperty: 'startKeyOpen',
         keyClosedProperty: 'startKeyClosed',
-        defaultKey: serviceParameters.defaultKeyFrom,
+        defaultKey: serviceParameters.keyFrom,
       }),
       keyTo: getSelectedKey(request, {
         keyOpenProperty: 'endKeyOpen',
         keyClosedProperty: 'endKeyClosed',
-        defaultKey: serviceParameters.defaultKeyTo,
+        defaultKey: serviceParameters.keyTo,
       }),
       chunkSize: serviceParameters.chunkSize,
       valueSize: serviceParameters.valueSize,
     },
-    debugLog
+    serviceParameters.debugLog
   );
 }
 
@@ -336,8 +336,7 @@ class ReadRowsImpl {
     });
     const chunks = generateChunksFromRequest(
       stream.request,
-      this.serviceParameters,
-      debugLog
+      this.serviceParameters
     );
     await this.sendAllChunks(readRowsRequestHandler, chunks);
   }
