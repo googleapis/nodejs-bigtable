@@ -21,7 +21,7 @@ import {GoogleError} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
-import {readRowsImpl} from './utils/readRowsImpl';
+import {ReadRowsImpl} from './utils/readRowsImpl';
 
 import {
   ReadRowsServiceParameters,
@@ -89,7 +89,7 @@ describe('Bigtable/ReadRows', () => {
     setWindowsTestTimeout(this);
 
     service.setService({
-      ReadRows: readRowsImpl(
+      ReadRows: ReadRowsImpl.createService(
         STANDARD_SERVICE_WITHOUT_ERRORS
       ) as ServerImplementationInterface,
     });
@@ -119,7 +119,7 @@ describe('Bigtable/ReadRows', () => {
 
   it('should create read stream and read synchronously using Transform stream', done => {
     service.setService({
-      ReadRows: readRowsImpl(
+      ReadRows: ReadRowsImpl.createService(
         STANDARD_SERVICE_WITHOUT_ERRORS
       ) as ServerImplementationInterface,
     });
@@ -167,7 +167,7 @@ describe('Bigtable/ReadRows', () => {
   it('should create read stream and read asynchronously using Transform stream', function (done) {
     setWindowsTestTimeout(this);
     service.setService({
-      ReadRows: readRowsImpl(
+      ReadRows: ReadRowsImpl.createService(
         STANDARD_SERVICE_WITHOUT_ERRORS
       ) as ServerImplementationInterface,
     });
@@ -219,7 +219,7 @@ describe('Bigtable/ReadRows', () => {
     const stopAfter = 42;
 
     service.setService({
-      ReadRows: readRowsImpl(
+      ReadRows: ReadRowsImpl.createService(
         STANDARD_SERVICE_WITHOUT_ERRORS
       ) as ServerImplementationInterface,
     });
@@ -259,7 +259,7 @@ describe('Bigtable/ReadRows', () => {
     const stopAfter = 420;
 
     service.setService({
-      ReadRows: readRowsImpl(
+      ReadRows: ReadRowsImpl.createService(
         STANDARD_SERVICE_WITHOUT_ERRORS
       ) as ServerImplementationInterface,
     });
@@ -315,7 +315,7 @@ describe('Bigtable/ReadRows', () => {
   describe('should silently resume after server or network error', () => {
     function runTest(done: Mocha.Done, errorAfterChunkNo: number) {
       service.setService({
-        ReadRows: readRowsImpl({
+        ReadRows: ReadRowsImpl.createService({
           keyFrom: STANDARD_KEY_FROM,
           keyTo: STANDARD_KEY_TO,
           valueSize: VALUE_SIZE,
@@ -369,7 +369,7 @@ describe('Bigtable/ReadRows', () => {
     // keyTo and keyFrom are not provided so they will be determined from
     // the request that is passed in.
     service.setService({
-      ReadRows: readRowsImpl({
+      ReadRows: ReadRowsImpl.createService({
         errorAfterChunkNo: 100, // the server will error after sending this chunk (not row)
         valueSize: 1,
         chunkSize: 1,

@@ -314,17 +314,30 @@ class ReadRowsRequestHandler {
  *
  * @param serviceParameters The parameters for the implementation.
  */
-class ReadRowsImpl {
+export class ReadRowsImpl {
   private errorAfterChunkNo?: number;
 
-  constructor(readonly serviceParameters: ReadRowsServiceParameters) {
+  private constructor(readonly serviceParameters: ReadRowsServiceParameters) {
     this.errorAfterChunkNo = serviceParameters.errorAfterChunkNo;
+  }
+
+  /**
+    Factory method that returns an implementation of the server handling streaming
+    ReadRows calls that would return monotonically increasing zero padded rows
+    in the range [keyFrom, keyTo). The returned implementation can be passed to
+    gRPC server.
+    @param serviceParameters The parameters for creating the service
+  */
+  static createService(serviceParameters: ReadRowsServiceParameters) {
+    return async (stream: ReadRowsWritableStream): Promise<void> => {
+      await new ReadRowsImpl(serviceParameters).handleRequest(stream);
+    };
   }
 
   /** Handles the ReadRows request.
    * @param stream The stream object that is passed into the request.
    */
-  async handleRequest(stream: ReadRowsWritableStream) {
+  private async handleRequest(stream: ReadRowsWritableStream) {
     const debugLog = this.serviceParameters.debugLog;
     prettyPrintRequest(stream.request, debugLog);
     const readRowsRequestHandler = new ReadRowsRequestHandler(stream, debugLog);
@@ -429,19 +442,4 @@ class ReadRowsImpl {
     debugLog(`in total, sent ${chunksSent} chunks`);
     stream.end();
   }
-}
-
-// Returns an implementation of the server streaming ReadRows call that would return
-// monotonically increasing zero padded rows in the range [keyFrom, keyTo).
-// The returned implementation can be passed to gRPC server.
-// TODO: Remove optional keyFrom, keyTo from the server. No test uses them. Remove them from this test as well.
-// TODO: Address the excessive number of if statements.
-// TODO: Perhaps group the if statements into classes so that they can be unit tested.
-export function readRowsImpl(
-  serviceParameters: ReadRowsServiceParameters
-): (stream: ReadRowsWritableStream) => Promise<void> {
-  const readRowsImpl = new ReadRowsImpl(serviceParameters);
-  return async (stream: ReadRowsWritableStream): Promise<void> => {
-    await readRowsImpl.handleRequest(stream);
-  };
 }
