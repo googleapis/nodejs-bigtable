@@ -719,6 +719,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * region_tag:bigtable_api_table_readstream
    */
   createReadStream(opts?: GetRowsOptions) {
+    console.time('before-gapic');
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
     let activeRequestStream: AbortableDuplex | null;
@@ -962,6 +963,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream
         .on('error', (error: ServiceError) => {
+          console.log('some error');
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
@@ -994,6 +996,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           numConsecutiveErrors = 0;
         })
         .on('end', () => {
+          console.timeEnd('to-end');
+          console.time('from-end');
           activeRequestStream = null;
         });
       rowStreamPipe(rowStream, userStream);
@@ -1446,6 +1450,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       .on('error', callback)
       .pipe(
         concat((rows: Row[]) => {
+          console.log(rows);
+          console.timeEnd('receive-time');
           callback(null, rows);
         })
       );
