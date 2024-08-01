@@ -317,6 +317,14 @@ class ReadRowsRequestHandler {
 export class ReadRowsImpl {
   private errorAfterChunkNo?: number;
 
+  /**
+   * Constructor for creating the ReadRows service. Constructor is private to
+   * encourage use of createService with the factory pattern to restrict the
+   * way that the service is created for better encapsulation.
+   *
+   * @param serviceParameters The parameters for creating the service
+   * @private
+   */
   private constructor(readonly serviceParameters: ReadRowsServiceParameters) {
     this.errorAfterChunkNo = serviceParameters.errorAfterChunkNo;
   }
