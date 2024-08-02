@@ -3373,6 +3373,14 @@
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
+                        },
+                        "backupType": {
+                          "type": "BackupType",
+                          "id": 11
+                        },
+                        "hotToStandardTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 12
                         }
                       },
                       "nested": {
@@ -3381,6 +3389,13 @@
                             "STATE_UNSPECIFIED": 0,
                             "CREATING": 1,
                             "READY": 2
+                          }
+                        },
+                        "BackupType": {
+                          "values": {
+                            "BACKUP_TYPE_UNSPECIFIED": 0,
+                            "STANDARD": 1,
+                            "HOT": 2
                           }
                         }
                       }

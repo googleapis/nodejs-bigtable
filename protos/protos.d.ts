@@ -12273,6 +12273,12 @@ export namespace google {
 
                     /** Backup encryptionInfo */
                     encryptionInfo?: (google.bigtable.admin.v2.IEncryptionInfo|null);
+
+                    /** Backup backupType */
+                    backupType?: (google.bigtable.admin.v2.Backup.BackupType|keyof typeof google.bigtable.admin.v2.Backup.BackupType|null);
+
+                    /** Backup hotToStandardTime */
+                    hotToStandardTime?: (google.protobuf.ITimestamp|null);
                 }
 
                 /** Represents a Backup. */
@@ -12310,6 +12316,12 @@ export namespace google {
 
                     /** Backup encryptionInfo. */
                     public encryptionInfo?: (google.bigtable.admin.v2.IEncryptionInfo|null);
+
+                    /** Backup backupType. */
+                    public backupType: (google.bigtable.admin.v2.Backup.BackupType|keyof typeof google.bigtable.admin.v2.Backup.BackupType);
+
+                    /** Backup hotToStandardTime. */
+                    public hotToStandardTime?: (google.protobuf.ITimestamp|null);
 
                     /**
                      * Creates a new Backup instance using the specified properties.
@@ -12396,6 +12408,13 @@ export namespace google {
                         STATE_UNSPECIFIED = 0,
                         CREATING = 1,
                         READY = 2
+                    }
+
+                    /** BackupType enum. */
+                    enum BackupType {
+                        BACKUP_TYPE_UNSPECIFIED = 0,
+                        STANDARD = 1,
+                        HOT = 2
                     }
                 }
 
