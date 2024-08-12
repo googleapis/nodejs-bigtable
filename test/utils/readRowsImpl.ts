@@ -378,7 +378,6 @@ export class ReadRowsImpl {
       [];
     let chunkIdx = 0;
     let skipThisRow = false;
-    // TODO: Make it clear that this for loop just builds the cell chunks, a cancelled setting and a lastScannedRowKey
     for (const chunk of chunks) {
       if (readRowsRequestHandler.cancelled) {
         break;
