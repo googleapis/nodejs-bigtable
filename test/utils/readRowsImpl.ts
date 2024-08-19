@@ -26,7 +26,7 @@ import IRowRange = google.bigtable.v2.IRowRange;
 // Generate documentation for this function
 /** Pretty prints the request object.
  * @param request The request object to pretty print.
- * @param debugLog The logging function for printing test output.
+ * @param debugLog A function that logs debug messages.
  */
 function prettyPrintRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest,
@@ -223,6 +223,7 @@ function getSelectedKey(
  * in the range [keyFrom, keyTo).
  * @param request The request object to generate chunks from.
  * @param serviceParameters The parameters for generating chunks.
+ * @param debugLog A function that logs debug messages.
  * @returns {protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]} The generated chunks.
  */
 function generateChunksFromRequest(
@@ -248,73 +249,137 @@ function generateChunksFromRequest(
   );
 }
 
-// Returns an implementation of the server streaming ReadRows call that would return
-// monotonically increasing zero padded rows in the range [keyFrom, keyTo).
-// The returned implementation can be passed to gRPC server.
-// TODO: Remove optional keyFrom, keyTo from the server. No test uses them. Remove them from this test as well.
-// TODO: Address the excessive number of if statements.
-// TODO: Perhaps group the if statements into classes so that they can be unit tested.
-export function readRowsImpl(
-  serviceParameters: ReadRowsServiceParameters
-): (stream: ReadRowsWritableStream) => Promise<void> {
-  let errorAfterChunkNo = serviceParameters.errorAfterChunkNo;
-  return async (stream: ReadRowsWritableStream): Promise<void> => {
-    const debugLog = serviceParameters.debugLog;
-    prettyPrintRequest(stream.request, debugLog);
+/** A class that handles the ReadRows request.
+ * @param stream The stream object that is passed into the request.
+ * @param debugLog A function that logs debug messages.
+ */
+class ReadRowsRequestHandler {
+  public cancelled: boolean;
+  public stopWaiting: () => void;
+  constructor(
+    readonly stream: ReadRowsWritableStream,
+    readonly debugLog: DebugLog
+  ) {
+    this.cancelled = false;
+    this.stopWaiting = () => {};
+  }
 
-    let stopWaiting: () => void = () => {};
-    let cancelled = false;
+  /** Sends the response object to the stream.
+   * @param response The response object to send.
+   */
+  async sendResponse(
+    response: protos.google.bigtable.v2.IReadRowsResponse
+  ): Promise<void> {
     // an asynchronous function to write a response object to stream, reused several times below.
     // captures `cancelled` variable
-    const sendResponse = async (
-      response: protos.google.bigtable.v2.IReadRowsResponse
-    ): Promise<void> => {
-      return new Promise<void>(resolve => {
-        setTimeout(async () => {
-          if (cancelled) {
-            resolve();
-            return;
-          }
-          const canSendMore = stream.write(response);
-          if (response.chunks && response.chunks.length > 0) {
-            debugLog(`sent ${response.chunks.length} chunks`);
-          }
-          if (response.lastScannedRowKey) {
-            const binaryKey = Buffer.from(
-              response.lastScannedRowKey as string,
-              'base64'
-            );
-            const stringKey = binaryKey.toString();
-            debugLog(`sent lastScannedRowKey = ${stringKey}`);
-          }
-          if (!canSendMore) {
-            debugLog('awaiting for back pressure');
-            await new Promise<void>(resolve => {
-              stopWaiting = resolve;
-              stream.once('drain', resolve);
-            });
-          }
+    return new Promise<void>(resolve => {
+      const debugLog = this.debugLog;
+      const stream = this.stream;
+      setTimeout(async () => {
+        if (this.cancelled) {
           resolve();
-        }, 0);
-      });
-    };
+          return;
+        }
+        const canSendMore = stream.write(response);
+        if (response.chunks && response.chunks.length > 0) {
+          debugLog(`sent ${response.chunks.length} chunks`);
+        }
+        if (response.lastScannedRowKey) {
+          const binaryKey = Buffer.from(
+            response.lastScannedRowKey as string,
+            'base64'
+          );
+          const stringKey = binaryKey.toString();
+          debugLog(`sent lastScannedRowKey = ${stringKey}`);
+        }
+        if (!canSendMore) {
+          debugLog('awaiting for back pressure');
+          await new Promise<void>(resolve => {
+            this.stopWaiting = resolve;
+            stream.once('drain', resolve);
+          });
+        }
+        resolve();
+      }, 0);
+    });
+  }
+}
 
+/** Implementation of the server streaming ReadRows call.
+ * The implementation returns monotonically increasing zero padded rows
+ * in the range [keyFrom, keyTo) if they are provided. Instances of this object
+ * are used to store data that needs to be shared between multiple requests.
+ * For instance, the service ignores the errorAfterChunkNo value after the
+ * service has already emitted an error.
+ *
+ * @param serviceParameters The parameters for the implementation.
+ */
+export class ReadRowsImpl {
+  private errorAfterChunkNo?: number;
+
+  /**
+   * Constructor for creating the ReadRows service. Constructor is private to
+   * encourage use of createService with the factory pattern to restrict the
+   * way that the service is created for better encapsulation.
+   *
+   * @param serviceParameters The parameters for creating the service
+   * @private
+   */
+  private constructor(readonly serviceParameters: ReadRowsServiceParameters) {
+    this.errorAfterChunkNo = serviceParameters.errorAfterChunkNo;
+  }
+
+  /**
+    Factory method that returns an implementation of the server handling streaming
+    ReadRows calls that would return monotonically increasing zero padded rows
+    in the range [keyFrom, keyTo). The returned implementation can be passed to
+    gRPC server.
+    @param serviceParameters The parameters for creating the service
+  */
+  static createService(serviceParameters: ReadRowsServiceParameters) {
+    return async (stream: ReadRowsWritableStream): Promise<void> => {
+      await new ReadRowsImpl(serviceParameters).handleRequest(stream);
+    };
+  }
+
+  /** Handles the ReadRows request.
+   * @param stream The stream object that is passed into the request.
+   */
+  private async handleRequest(stream: ReadRowsWritableStream) {
+    const debugLog = this.serviceParameters.debugLog;
+    prettyPrintRequest(stream.request, debugLog);
+    const readRowsRequestHandler = new ReadRowsRequestHandler(stream, debugLog);
     stream.on('cancelled', () => {
       debugLog('gRPC server received cancel()');
-      cancelled = true;
-      stopWaiting();
+      readRowsRequestHandler.cancelled = true;
+      readRowsRequestHandler.stopWaiting();
       stream.emit('error', new Error('Cancelled'));
     });
+    const chunks = generateChunksFromRequest(
+      stream.request,
+      this.serviceParameters
+    );
+    await this.sendAllChunks(readRowsRequestHandler, chunks);
+  }
 
+  /** Sends all chunks to the stream.
+   * @param readRowsRequestHandler The handler for the request.
+   * @param chunks The chunks to send.
+   */
+  private async sendAllChunks(
+    readRowsRequestHandler: ReadRowsRequestHandler,
+    chunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]
+  ) {
+    const stream = readRowsRequestHandler.stream;
+    const debugLog = readRowsRequestHandler.debugLog;
     let chunksSent = 0;
-    const chunks = generateChunksFromRequest(stream.request, serviceParameters);
     let lastScannedRowKey: string | undefined;
     let currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] =
       [];
     let chunkIdx = 0;
     let skipThisRow = false;
     for (const chunk of chunks) {
-      if (cancelled) {
+      if (readRowsRequestHandler.cancelled) {
         break;
       }
 
@@ -343,8 +408,9 @@ export function readRowsImpl(
         ++chunkIdx;
       }
       if (
-        currentResponseChunks.length === serviceParameters.chunksPerResponse ||
-        chunkIdx === errorAfterChunkNo ||
+        currentResponseChunks.length ===
+          this.serviceParameters.chunksPerResponse ||
+        chunkIdx === this.errorAfterChunkNo ||
         // if we skipped a row and set lastScannedRowKey, dump everything and send a separate message with lastScannedRowKey
         lastScannedRowKey
       ) {
@@ -352,15 +418,15 @@ export function readRowsImpl(
           chunks: currentResponseChunks,
         };
         chunksSent += currentResponseChunks.length;
-        await sendResponse(response);
+        await readRowsRequestHandler.sendResponse(response);
         currentResponseChunks = [];
-        if (chunkIdx === errorAfterChunkNo) {
+        if (chunkIdx === this.errorAfterChunkNo) {
           debugLog(`sending error after chunk #${chunkIdx}`);
-          errorAfterChunkNo = undefined; // do not send error for the second time
+          this.errorAfterChunkNo = undefined; // do not send error for the second time
           const error = new GoogleError('Uh oh');
           error.code = Status.ABORTED;
           stream.emit('error', error);
-          cancelled = true;
+          readRowsRequestHandler.cancelled = true;
           break;
         }
       }
@@ -368,19 +434,19 @@ export function readRowsImpl(
         const response: protos.google.bigtable.v2.IReadRowsResponse = {
           lastScannedRowKey,
         };
-        await sendResponse(response);
+        await readRowsRequestHandler.sendResponse(response);
         lastScannedRowKey = undefined;
       }
     }
-    if (!cancelled && currentResponseChunks.length > 0) {
+    if (!readRowsRequestHandler.cancelled && currentResponseChunks.length > 0) {
       const response: protos.google.bigtable.v2.IReadRowsResponse = {
         chunks: currentResponseChunks,
         lastScannedRowKey,
       };
       chunksSent += currentResponseChunks.length;
-      await sendResponse(response);
+      await readRowsRequestHandler.sendResponse(response);
     }
     debugLog(`in total, sent ${chunksSent} chunks`);
     stream.end();
-  };
+  }
 }
