@@ -43,6 +43,7 @@ import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
 import {TableUtils} from './utils/table';
+import {TabularApiService} from './tabular-api-service';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -396,34 +397,7 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
  * const table = instance.table('prezzy');
  * ```
  */
-export class Table {
-  bigtable: Bigtable;
-  instance: Instance;
-  name: string;
-  id: string;
-  metadata?: google.bigtable.admin.v2.ITable;
-  maxRetries?: number;
-  constructor(instance: Instance, id: string) {
-    this.bigtable = instance.bigtable;
-    this.instance = instance;
-
-    let name;
-
-    if (id.includes('/')) {
-      if (id.startsWith(`${instance.name}/tables/`)) {
-        name = id;
-      } else {
-        throw new Error(`Table id '${id}' is not formatted correctly.
-Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
-      }
-    } else {
-      name = `${instance.name}/tables/${id}`;
-    }
-
-    this.name = name;
-    this.id = name.split('/').pop()!;
-  }
-
+export class Table extends TabularApiService {
   /**
    * Formats the decodes policy etag value to string.
    *
