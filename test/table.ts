@@ -110,6 +110,16 @@ describe('Bigtable/Table', () => {
   let table: any;
 
   before(() => {
+    const FakeTabularApiService = proxyquire('../src/tabular-api-service.js', {
+      '@google-cloud/promisify': fakePromisify,
+      './family.js': {Family: FakeFamily},
+      './mutation.js': {Mutation: FakeMutation},
+      './filter.js': {Filter: FakeFilter},
+      pumpify,
+      './row.js': {Row: FakeRow},
+      './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+    }).TabularApiService;
+    // TODO: Consider removing this proxyquire for Table
     Table = proxyquire('../src/table.js', {
       '@google-cloud/promisify': fakePromisify,
       './family.js': {Family: FakeFamily},
@@ -117,6 +127,7 @@ describe('Bigtable/Table', () => {
       './filter.js': {Filter: FakeFilter},
       pumpify,
       './row.js': {Row: FakeRow},
+      './tabular-api-service': {TabularApiService: FakeTabularApiService},
       './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
     }).Table;
   });

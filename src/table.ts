@@ -43,18 +43,26 @@ import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
 import {TableUtils} from './utils/table';
-import {TabularApiService} from './tabular-api-service';
+import {
+  DEFAULT_BACKOFF_SETTINGS,
+  getNextDelay,
+  IGNORED_STATUS_CODES,
+  populateAttemptHeader,
+  RETRYABLE_STATUS_CODES,
+  TabularApiService,
+  InsertRowsCallback,
+  InsertRowsResponse,
+  MutateCallback,
+  MutateResponse,
+  PartialFailureError,
+} from './tabular-api-service';
 
-// See protos/google/rpc/code.proto
-// (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
-const RETRYABLE_STATUS_CODES = new Set([4, 8, 10, 14]);
-// (1=CANCELLED)
-const IGNORED_STATUS_CODES = new Set([1]);
-
-const DEFAULT_BACKOFF_SETTINGS: BackoffSettings = {
-  initialRetryDelayMillis: 10,
-  retryDelayMultiplier: 2,
-  maxRetryDelayMillis: 60000,
+export {
+  InsertRowsCallback,
+  InsertRowsResponse,
+  MutateCallback,
+  MutateResponse,
+  PartialFailureError,
 };
 
 /**
@@ -362,16 +370,6 @@ export type GetRowsCallback = (
   apiResponse?: google.bigtable.v2.ReadRowsResponse
 ) => void;
 export type GetRowsResponse = [Row[], google.bigtable.v2.ReadRowsResponse];
-export type InsertRowsCallback = (
-  err: ServiceError | PartialFailureError | null,
-  apiResponse?: google.protobuf.Empty
-) => void;
-export type InsertRowsResponse = [google.protobuf.Empty];
-export type MutateCallback = (
-  err: ServiceError | PartialFailureError | null,
-  apiResponse?: google.protobuf.Empty
-) => void;
-export type MutateResponse = [google.protobuf.Empty];
 
 export interface PrefixRange {
   start?: BoundData | string;
@@ -1425,214 +1423,6 @@ export class Table extends TabularApiService {
       );
   }
 
-  insert(
-    entries: Entry | Entry[],
-    gaxOptions?: CallOptions
-  ): Promise<InsertRowsResponse>;
-  insert(
-    entries: Entry | Entry[],
-    gaxOptions: CallOptions,
-    callback: InsertRowsCallback
-  ): void;
-  insert(entries: Entry | Entry[], callback: InsertRowsCallback): void;
-  /**
-   * Insert or update rows in your table. It should be noted that gRPC only allows
-   * you to send payloads that are less than or equal to 4MB. If you're inserting
-   * more than that you may need to send smaller individual requests.
-   *
-   * @param {object|object[]} entries List of entries to be inserted.
-   *     See {@link Table#mutate}.
-   * @param {object} [gaxOptions] Request configuration options, outlined here:
-   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
-   * @param {function} callback The callback function.
-   * @param {?error} callback.err An error returned while making this request.
-   * @param {object[]} callback.err.errors If present, these represent partial
-   *     failures. It's possible for part of your request to be completed
-   *     successfully, while the other part was not.
-   *
-   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
-   * region_tag:bigtable_api_insert_rows
-   */
-  insert(
-    entries: Entry | Entry[],
-    optionsOrCallback?: CallOptions | InsertRowsCallback,
-    cb?: InsertRowsCallback
-  ): void | Promise<InsertRowsResponse> {
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const gaxOptions =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    entries = arrify<Entry>(entries).map((entry: Entry) => {
-      entry.method = Mutation.methods.INSERT;
-      return entry;
-    });
-    return this.mutate(entries, {gaxOptions}, callback);
-  }
-
-  mutate(
-    entries: Entry | Entry[],
-    options?: MutateOptions
-  ): Promise<MutateResponse>;
-  mutate(
-    entries: Entry | Entry[],
-    options: MutateOptions,
-    callback: MutateCallback
-  ): void;
-  mutate(entries: Entry | Entry[], callback: MutateCallback): void;
-  /**
-   * Apply a set of changes to be atomically applied to the specified row(s).
-   * Mutations are applied in order, meaning that earlier mutations can be masked
-   * by later ones.
-   *
-   * @param {object|object[]} entries List of entities to be inserted or
-   *     deleted.
-   * @param {object} [options] Configuration object.
-   * @param {object} [options.gaxOptions] Request configuration options, outlined
-   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
-   * @param {boolean} [options.rawMutation] If set to `true` will treat entries
-   *     as a raw Mutation object. See {@link Mutation#parse}.
-   * @param {function} callback The callback function.
-   * @param {?error} callback.err An error returned while making this request.
-   * @param {object[]} callback.err.errors If present, these represent partial
-   *     failures. It's possible for part of your request to be completed
-   *     successfully, while the other part was not.
-   *
-   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
-   * region_tag:bigtable_api_mutate_rows
-   */
-  mutate(
-    entriesRaw: Entry | Entry[],
-    optionsOrCallback?: MutateOptions | MutateCallback,
-    cb?: MutateCallback
-  ): void | Promise<MutateResponse> {
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const entries: Entry[] = (arrify(entriesRaw) as Entry[]).reduce(
-      (a, b) => a.concat(b),
-      []
-    );
-
-    let numRequestsMade = 0;
-
-    const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
-    const pendingEntryIndices = new Set(
-      entries.map((entry: Entry, index: number) => index)
-    );
-    const entryToIndex = new Map(
-      entries.map((entry: Entry, index: number) => [entry, index])
-    );
-    const mutationErrorsByEntryIndex = new Map();
-
-    const isRetryable = (err: ServiceError | null) => {
-      // Don't retry if there are no more entries or retry attempts
-      if (pendingEntryIndices.size === 0 || numRequestsMade >= maxRetries + 1) {
-        return false;
-      }
-      // If the error is empty but there are still outstanding mutations,
-      // it means that there are retryable errors in the mutate response
-      // even when the RPC succeeded
-      return !err || RETRYABLE_STATUS_CODES.has(err.code);
-    };
-
-    const onBatchResponse = (err: ServiceError | null) => {
-      // Return if the error happened before a request was made
-      if (numRequestsMade === 0) {
-        callback(err);
-        return;
-      }
-
-      if (isRetryable(err)) {
-        const backOffSettings =
-          options.gaxOptions?.retry?.backoffSettings ||
-          DEFAULT_BACKOFF_SETTINGS;
-        const nextDelay = getNextDelay(numRequestsMade, backOffSettings);
-        setTimeout(makeNextBatchRequest, nextDelay);
-        return;
-      }
-
-      // If there's no more pending mutations, set the error
-      // to null
-      if (pendingEntryIndices.size === 0) {
-        err = null;
-      }
-
-      if (mutationErrorsByEntryIndex.size !== 0) {
-        const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
-        callback(new PartialFailureError(mutationErrors, err));
-        return;
-      }
-
-      callback(err);
-    };
-
-    const makeNextBatchRequest = () => {
-      const entryBatch = entries.filter((entry: Entry, index: number) => {
-        return pendingEntryIndices.has(index);
-      });
-
-      const reqOpts = {
-        tableName: this.name,
-        appProfileId: this.bigtable.appProfileId,
-        entries: options.rawMutation
-          ? entryBatch
-          : entryBatch.map(Mutation.parse),
-      };
-
-      const retryOpts = {
-        currentRetryAttempt: numRequestsMade,
-        // Handling retries in this client. Specify the retry options to
-        // make sure nothing is retried in retry-request.
-        noResponseRetries: 0,
-        shouldRetryFn: (_: any) => {
-          return false;
-        },
-      };
-
-      options.gaxOptions = populateAttemptHeader(
-        numRequestsMade,
-        options.gaxOptions
-      );
-
-      this.bigtable
-        .request<google.bigtable.v2.MutateRowsResponse>({
-          client: 'BigtableClient',
-          method: 'mutateRows',
-          reqOpts,
-          gaxOpts: options.gaxOptions,
-          retryOpts,
-        })
-        .on('error', (err: ServiceError) => {
-          onBatchResponse(err);
-        })
-        .on('data', (obj: google.bigtable.v2.IMutateRowsResponse) => {
-          obj.entries!.forEach(entry => {
-            const originalEntry = entryBatch[entry.index as number];
-            const originalEntriesIndex = entryToIndex.get(originalEntry)!;
-
-            // Mutation was successful.
-            if (entry.status!.code === 0) {
-              pendingEntryIndices.delete(originalEntriesIndex);
-              mutationErrorsByEntryIndex.delete(originalEntriesIndex);
-              return;
-            }
-            if (!RETRYABLE_STATUS_CODES.has(entry.status!.code!)) {
-              pendingEntryIndices.delete(originalEntriesIndex);
-            }
-            const errorDetails = entry.status;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (errorDetails as any).entry = originalEntry;
-            mutationErrorsByEntryIndex.set(originalEntriesIndex, errorDetails);
-          });
-        })
-        .on('end', onBatchResponse);
-      numRequestsMade++;
-    };
-
-    makeNextBatchRequest();
-  }
-
   /**
    * Get a reference to a table row.
    *
@@ -1957,47 +1747,7 @@ promisifyAll(Table, {
   exclude: ['family', 'row'],
 });
 
-function getNextDelay(numConsecutiveErrors: number, config: BackoffSettings) {
-  // 0 - 100 ms jitter
-  const jitter = Math.floor(Math.random() * 100);
-  const calculatedNextRetryDelay =
-    config.initialRetryDelayMillis *
-      Math.pow(config.retryDelayMultiplier, numConsecutiveErrors) +
-    jitter;
-
-  return Math.min(calculatedNextRetryDelay, config.maxRetryDelayMillis);
-}
-
-function populateAttemptHeader(attempt: number, gaxOpts?: CallOptions) {
-  gaxOpts = gaxOpts || {};
-  gaxOpts.otherArgs = gaxOpts.otherArgs || {};
-  gaxOpts.otherArgs.headers = gaxOpts.otherArgs.headers || {};
-  gaxOpts.otherArgs.headers['bigtable-attempt'] = attempt;
-  return gaxOpts;
-}
-
 export interface GoogleInnerError {
   reason?: string;
   message?: string;
-}
-
-export class PartialFailureError extends Error {
-  errors?: GoogleInnerError[];
-  constructor(errors: GoogleInnerError[], rpcError?: ServiceError | null) {
-    super();
-    this.errors = errors;
-    this.name = 'PartialFailureError';
-    let messages = errors.map(e => e.message);
-    if (messages.length > 1) {
-      messages = messages.map((message, i) => `    ${i + 1}. ${message}`);
-      messages.unshift(
-        'Multiple errors occurred during the request. Please see the `errors` array for complete details.\n'
-      );
-      messages.push('\n');
-    }
-    this.message = messages.join('\n');
-    if (rpcError) {
-      this.message += 'Request failed with: ' + rpcError.message;
-    }
-  }
 }
