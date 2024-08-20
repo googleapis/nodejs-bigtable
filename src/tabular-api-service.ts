@@ -1,3 +1,4 @@
+import {promisifyAll} from '@google-cloud/promisify';
 import {Instance} from './instance';
 import {Bigtable, SampleRowKeysCallback, SampleRowsKeysResponse} from './index';
 import {google} from '../protos/protos';
@@ -126,3 +127,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     ]);
   }
 }
+
+/*! Developer Documentation
+ *
+ * All async methods (except for streams) will return a Promise in the event
+ * that a callback is omitted.
+ */
+promisifyAll(TabularApiService, {
+  exclude: ['family', 'row'],
+});
