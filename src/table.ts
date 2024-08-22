@@ -23,15 +23,14 @@ import {
   CreateFamilyResponse,
   IColumnFamily,
 } from './family';
-import {BoundData, RawFilter} from './filter';
 import {Mutation} from './mutation';
-import {Row} from './row';
 import {CallOptions} from 'google-gax';
 import {Instance} from './instance';
 import {ModifiableBackupFields} from './backup';
 import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
 import {TableUtils} from './utils/table';
+import * as is from 'is';
 import {
   TabularApiService,
   InsertRowsCallback,
