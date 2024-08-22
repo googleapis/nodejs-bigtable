@@ -3,18 +3,23 @@ import arrify = require('arrify');
 import {Instance} from './instance';
 import {Mutation} from './mutation';
 import {
+  AbortableDuplex,
   Bigtable,
   Entry,
   MutateOptions,
   SampleRowKeysCallback,
   SampleRowsKeysResponse,
 } from './index';
+import {Filter, BoundData, RawFilter} from './filter';
+import {Row} from './row';
+import {ChunkTransformer} from './chunktransformer';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {google} from '../protos/protos';
 import {CallOptions, ServiceError} from 'google-gax';
-import {Transform} from 'stream';
+import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
+import {TableUtils} from './utils/table';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -38,6 +43,75 @@ export type MutateCallback = (
   apiResponse?: google.protobuf.Empty
 ) => void;
 export type MutateResponse = [google.protobuf.Empty];
+
+export interface GetRowsOptions {
+  /**
+   * If set to `false` it will not decode Buffer values returned from Bigtable.
+   */
+  decode?: boolean;
+
+  /**
+   * The encoding to use when converting Buffer values to a string.
+   */
+  encoding?: string;
+
+  /**
+   * End value for key range.
+   */
+  end?: string;
+
+  /**
+   * Row filters allow you to both make advanced queries and format how the data is returned.
+   */
+  filter?: RawFilter;
+
+  /**
+   * Request configuration options, outlined here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   */
+  gaxOptions?: CallOptions;
+
+  /**
+   * A list of row keys.
+   */
+  keys?: string[];
+
+  /**
+   * Maximum number of rows to be returned.
+   */
+  limit?: number;
+
+  /**
+   * Prefix that the row key must match.
+   */
+  prefix?: string;
+
+  /**
+   * List of prefixes that a row key must match.
+   */
+  prefixes?: string[];
+
+  /**
+   * A list of key ranges.
+   */
+  ranges?: PrefixRange[];
+
+  /**
+   * Start value for key range.
+   */
+  start?: string;
+}
+
+export type GetRowsCallback = (
+  err: ServiceError | null,
+  rows?: Row[],
+  apiResponse?: google.bigtable.v2.ReadRowsResponse
+) => void;
+export type GetRowsResponse = [Row[], google.bigtable.v2.ReadRowsResponse];
+
+export interface PrefixRange {
+  start?: BoundData | string;
+  end?: BoundData | string;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
@@ -71,6 +145,355 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     this.name = name;
     this.id = name.split('/').pop()!;
+  }
+
+  /**
+   * Get {@link Row} objects for the rows currently in your table as a
+   * readable object stream.
+   *
+   * @param {object} [options] Configuration object.
+   * @param {boolean} [options.decode=true] If set to `false` it will not decode
+   *     Buffer values returned from Bigtable.
+   * @param {boolean} [options.encoding] The encoding to use when converting
+   *     Buffer values to a string.
+   * @param {string} [options.end] End value for key range.
+   * @param {Filter} [options.filter] Row filters allow you to
+   *     both make advanced queries and format how the data is returned.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {string[]} [options.keys] A list of row keys.
+   * @param {number} [options.limit] Maximum number of rows to be returned.
+   * @param {string} [options.prefix] Prefix that the row key must match.
+   * @param {string[]} [options.prefixes] List of prefixes that a row key must
+   *     match.
+   * @param {object[]} [options.ranges] A list of key ranges.
+   * @param {string} [options.start] Start value for key range.
+   * @returns {stream}
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_table_readstream
+   */
+  createReadStream(opts?: GetRowsOptions) {
+    const options = opts || {};
+    const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
+    let activeRequestStream: AbortableDuplex | null;
+    let rowKeys: string[];
+    let filter: {} | null;
+    const rowsLimit = options.limit || 0;
+    const hasLimit = rowsLimit !== 0;
+
+    let numConsecutiveErrors = 0;
+    let numRequestsMade = 0;
+    let retryTimer: NodeJS.Timeout | null;
+
+    rowKeys = options.keys || [];
+
+    const ranges = TableUtils.getRanges(options);
+
+    // If rowKeys and ranges are both empty, the request is a full table scan.
+    // Add an empty range to simplify the resumption logic.
+    if (rowKeys.length === 0 && ranges.length === 0) {
+      ranges.push({});
+    }
+
+    if (options.filter) {
+      filter = Filter.parse(options.filter);
+    }
+
+    let chunkTransformer: ChunkTransformer;
+    let rowStream: Duplex;
+
+    let userCanceled = false;
+    // The key of the last row that was emitted by the per attempt pipeline
+    // Note: this must be updated from the operation level userStream to avoid referencing buffered rows that will be
+    // discarded in the per attempt subpipeline (rowStream)
+    let lastRowKey = '';
+    let rowsRead = 0;
+    const userStream = new PassThrough({
+      objectMode: true,
+      readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
+      writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
+      transform(row, _encoding, callback) {
+        if (userCanceled) {
+          callback();
+          return;
+        }
+        if (TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
+          /*
+          Sometimes duplicate rows reach this point. To avoid delivering
+          duplicate rows to the user, rows are thrown away if they don't exceed
+          the last row key. We can expect each row to reach this point and rows
+          are delivered in order so if the last row key equals or exceeds the
+          row id then we know data for this row has already reached this point
+          and been delivered to the user. In this case we want to throw the row
+          away and we do not want to deliver this row to the user again.
+           */
+          callback();
+          return;
+        }
+        lastRowKey = row.id;
+        rowsRead++;
+        callback(null, row);
+      },
+    });
+
+    // The caller should be able to call userStream.end() to stop receiving
+    // more rows and cancel the stream prematurely. But also, the 'end' event
+    // will be emitted if the stream ended normally. To tell these two
+    // situations apart, we'll save the "original" end() function, and
+    // will call it on rowStream.on('end').
+    const originalEnd = userStream.end.bind(userStream);
+
+    // Taking care of this extra listener when piping and unpiping userStream:
+    const rowStreamPipe = (rowStream: Duplex, userStream: PassThrough) => {
+      rowStream.pipe(userStream, {end: false});
+      rowStream.on('end', originalEnd);
+    };
+    const rowStreamUnpipe = (rowStream: Duplex, userStream: PassThrough) => {
+      rowStream?.unpipe(userStream);
+      rowStream?.removeListener('end', originalEnd);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
+      rowStreamUnpipe(rowStream, userStream);
+      userCanceled = true;
+      if (activeRequestStream) {
+        activeRequestStream.abort();
+      }
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+      }
+      return originalEnd(chunk, encoding, cb);
+    };
+
+    const makeNewRequest = () => {
+      // Avoid cancelling an expired timer if user
+      // cancelled the stream in the middle of a retry
+      retryTimer = null;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
+
+      const reqOpts = {
+        tableName: this.name,
+        appProfileId: this.bigtable.appProfileId,
+      } as google.bigtable.v2.IReadRowsRequest;
+
+      const retryOpts = {
+        currentRetryAttempt: 0, // was numConsecutiveErrors
+        // Handling retries in this client. Specify the retry options to
+        // make sure nothing is retried in retry-request.
+        noResponseRetries: 0,
+        shouldRetryFn: (_: any) => {
+          return false;
+        },
+      };
+
+      if (lastRowKey) {
+        // Readjust and/or remove ranges based on previous valid row reads.
+        // Iterate backward since items may need to be removed.
+        for (let index = ranges.length - 1; index >= 0; index--) {
+          const range = ranges[index];
+          const startValue = is.object(range.start)
+            ? (range.start as BoundData).value
+            : range.start;
+          const endValue = is.object(range.end)
+            ? (range.end as BoundData).value
+            : range.end;
+          const startKeyIsRead =
+            !startValue ||
+            TableUtils.lessThanOrEqualTo(
+              startValue as string,
+              lastRowKey as string
+            );
+          const endKeyIsNotRead =
+            !endValue ||
+            (endValue as Buffer).length === 0 ||
+            TableUtils.lessThan(lastRowKey as string, endValue as string);
+          if (startKeyIsRead) {
+            if (endKeyIsNotRead) {
+              // EndKey is not read, reset the range to start from lastRowKey open
+              range.start = {
+                value: lastRowKey,
+                inclusive: false,
+              };
+            } else {
+              // EndKey is read, remove this range
+              ranges.splice(index, 1);
+            }
+          }
+        }
+
+        // Remove rowKeys already read.
+        rowKeys = rowKeys.filter(rowKey =>
+          TableUtils.greaterThan(rowKey, lastRowKey as string)
+        );
+
+        // If there was a row limit in the original request and
+        // we've already read all the rows, end the stream and
+        // do not retry.
+        if (hasLimit && rowsLimit === rowsRead) {
+          userStream.end();
+          return;
+        }
+        // If all the row keys and ranges are read, end the stream
+        // and do not retry.
+        if (rowKeys.length === 0 && ranges.length === 0) {
+          userStream.end();
+          return;
+        }
+      }
+
+      // Create the new reqOpts
+      reqOpts.rows = {};
+
+      // TODO: preprocess all the keys and ranges to Bytes
+      reqOpts.rows.rowKeys = rowKeys.map(
+        Mutation.convertToBytes
+      ) as {} as Uint8Array[];
+
+      reqOpts.rows.rowRanges = ranges.map(range =>
+        Filter.createRange(
+          range.start as BoundData,
+          range.end as BoundData,
+          'Key'
+        )
+      );
+
+      if (filter) {
+        reqOpts.filter = filter;
+      }
+
+      if (hasLimit) {
+        reqOpts.rowsLimit = rowsLimit - rowsRead;
+      }
+
+      const gaxOpts = populateAttemptHeader(
+        numRequestsMade,
+        options.gaxOptions
+      );
+
+      const requestStream = this.bigtable.request({
+        client: 'BigtableClient',
+        method: 'readRows',
+        reqOpts,
+        gaxOpts,
+        retryOpts,
+      });
+
+      activeRequestStream = requestStream!;
+
+      const toRowStream = new Transform({
+        transform: (rowData, _, next) => {
+          if (
+            userCanceled ||
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (userStream as any)._writableState.ended
+          ) {
+            return next();
+          }
+          const row = this.row(rowData.key);
+          row.data = rowData.data;
+          next(null, row);
+        },
+        objectMode: true,
+      });
+
+      rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
+
+      // Retry on "received rst stream" errors
+      const isRstStreamError = (error: ServiceError): boolean => {
+        if (error.code === 13 && error.message) {
+          const error_message = (error.message || '').toLowerCase();
+          return (
+            error.code === 13 &&
+            (error_message.includes('rst_stream') ||
+              error_message.includes('rst stream'))
+          );
+        }
+        return false;
+      };
+
+      rowStream
+        .on('error', (error: ServiceError) => {
+          rowStreamUnpipe(rowStream, userStream);
+          activeRequestStream = null;
+          if (IGNORED_STATUS_CODES.has(error.code)) {
+            // We ignore the `cancelled` "error", since we are the ones who cause
+            // it when the user calls `.abort()`.
+            userStream.end();
+            return;
+          }
+          numConsecutiveErrors++;
+          numRequestsMade++;
+          if (
+            numConsecutiveErrors <= maxRetries &&
+            (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
+          ) {
+            const backOffSettings =
+              options.gaxOptions?.retry?.backoffSettings ||
+              DEFAULT_BACKOFF_SETTINGS;
+            const nextRetryDelay = getNextDelay(
+              numConsecutiveErrors,
+              backOffSettings
+            );
+            retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
+          } else {
+            userStream.emit('error', error);
+          }
+        })
+        .on('data', _ => {
+          // Reset error count after a successful read so the backoff
+          // time won't keep increasing when as stream had multiple errors
+          numConsecutiveErrors = 0;
+        })
+        .on('end', () => {
+          activeRequestStream = null;
+        });
+      rowStreamPipe(rowStream, userStream);
+    };
+
+    makeNewRequest();
+    return userStream;
+  }
+
+  getRows(options?: GetRowsOptions): Promise<GetRowsResponse>;
+  getRows(options: GetRowsOptions, callback: GetRowsCallback): void;
+  getRows(callback: GetRowsCallback): void;
+  /**
+   * Get {@link Row} objects for the rows currently in your table.
+   *
+   * This method is not recommended for large datasets as it will buffer all rows
+   * before returning the results. Instead we recommend using the streaming API
+   * via {@link Table#createReadStream}.
+   *
+   * @param {object} [options] Configuration object. See
+   *     {@link Table#createReadStream} for a complete list of options.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Row[]} callback.rows List of Row objects.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_get_rows
+   */
+  getRows(
+    optionsOrCallback?: GetRowsOptions | GetRowsCallback,
+    cb?: GetRowsCallback
+  ): void | Promise<GetRowsResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    this.createReadStream(options)
+      .on('error', callback)
+      .pipe(
+        concat((rows: Row[]) => {
+          callback(null, rows);
+        })
+      );
   }
 
   insert(
@@ -279,6 +702,26 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
 
     makeNextBatchRequest();
+  }
+
+  /**
+   * Get a reference to a table row.
+   *
+   * @throws {error} If a key is not provided.
+   *
+   * @param {string} key The row key.
+   * @returns {Row}
+   *
+   * @example
+   * ```
+   * const row = table.row('lincoln');
+   * ```
+   */
+  row(key: string): Row {
+    if (!key) {
+      throw new Error('A row key must be provided.');
+    }
+    return new Row(this, key);
   }
 
   sampleRowKeys(gaxOptions?: CallOptions): Promise<SampleRowsKeysResponse>;

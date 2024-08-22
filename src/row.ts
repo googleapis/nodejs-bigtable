@@ -31,6 +31,7 @@ import {Chunk} from './chunktransformer';
 import {CallOptions} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
+import {TabularApiService} from './tabular-api-service';
 
 export interface Rule {
   column: string;
@@ -156,13 +157,13 @@ export class RowError extends Error {
  */
 export class Row {
   bigtable: Bigtable;
-  table: Table;
+  table: TabularApiService;
   id: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   key?: string;
   metadata?: {};
-  constructor(table: Table, key: string) {
+  constructor(table: TabularApiService, key: string) {
     this.bigtable = table.bigtable;
     this.table = table;
     this.id = key;
