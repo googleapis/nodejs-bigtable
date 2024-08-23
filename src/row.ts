@@ -622,6 +622,7 @@ export class Row {
     configOrCallback?: FilterConfig | FilterCallback,
     cb?: FilterCallback
   ): void | Promise<FilterResponse> {
+    // TODO: Remove this duplication
     const config = typeof configOrCallback === 'object' ? configOrCallback : {};
     const callback =
       typeof configOrCallback === 'function' ? configOrCallback : cb!;
