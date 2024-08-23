@@ -27,11 +27,12 @@ import {
   MutateOptions,
   PartialFailureError,
 } from './table';
-import {Chunk} from './chunktransformer';
+import {Chunk, Family as ChunkTransformerFamily} from './chunktransformer';
 import {CallOptions} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
 import {TabularApiService} from './tabular-api-service';
+import {filterUtil} from './row-data-utils';
 
 export interface Rule {
   column: string;
@@ -622,42 +623,7 @@ export class Row {
     configOrCallback?: FilterConfig | FilterCallback,
     cb?: FilterCallback
   ): void | Promise<FilterResponse> {
-    // TODO: Remove this duplication
-    const config = typeof configOrCallback === 'object' ? configOrCallback : {};
-    const callback =
-      typeof configOrCallback === 'function' ? configOrCallback : cb!;
-    const reqOpts = {
-      tableName: this.table.name,
-      appProfileId: this.bigtable.appProfileId,
-      rowKey: Mutation.convertToBytes(this.id),
-      predicateFilter: Filter.parse(filter),
-      trueMutations: createFlatMutationsList(config.onMatch!),
-      falseMutations: createFlatMutationsList(config.onNoMatch!),
-    };
-    this.data = {};
-    this.bigtable.request<google.bigtable.v2.ICheckAndMutateRowResponse>(
-      {
-        client: 'BigtableClient',
-        method: 'checkAndMutateRow',
-        reqOpts,
-        gaxOpts: config.gaxOptions,
-      },
-      (err, apiResponse) => {
-        if (err) {
-          callback(err, null, apiResponse);
-          return;
-        }
-
-        callback(null, apiResponse!.predicateMatched, apiResponse);
-      }
-    );
-
-    function createFlatMutationsList(entries: FilterConfigOption[]) {
-      const e2 = arrify(entries).map(
-        entry => Mutation.parse(entry as Mutation).mutations!
-      );
-      return e2.reduce((a, b) => a.concat(b), []);
-    }
+    filterUtil(filter, this, configOrCallback, cb);
   }
 
   get(options?: GetRowOptions): Promise<GetRowResponse<Row>>;

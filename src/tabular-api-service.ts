@@ -19,7 +19,11 @@ import {Mutation} from './mutation';
 import {
   AbortableDuplex,
   Bigtable,
-  Entry, FilterCallback, FilterConfig, FilterConfigOption, FilterResponse,
+  Entry,
+  FilterCallback,
+  FilterConfig,
+  FilterConfigOption,
+  FilterResponse,
   MutateOptions,
   SampleRowKeysCallback,
   SampleRowsKeysResponse,
@@ -129,7 +133,7 @@ export interface PrefixRange {
 
 interface FilterInformation {
   filter: RawFilter;
-  rowId: number;
+  rowId: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -492,43 +496,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     filter: FilterInformation,
     configOrCallback?: FilterConfig | FilterCallback,
     cb?: FilterCallback
-  ): void | Promise<FilterResponse> {
-    const config = typeof configOrCallback === 'object' ? configOrCallback : {};
-    const callback =
-        typeof configOrCallback === 'function' ? configOrCallback : cb!;
-    const reqOpts = {
-      tableName: this.name,
-      appProfileId: this.bigtable.appProfileId,
-      rowKey: Mutation.convertToBytes(this.id),
-      predicateFilter: Filter.parse(filter),
-      trueMutations: createFlatMutationsList(config.onMatch!),
-      falseMutations: createFlatMutationsList(config.onNoMatch!),
-    };
-    this.data = {};
-    this.bigtable.request<google.bigtable.v2.ICheckAndMutateRowResponse>(
-        {
-          client: 'BigtableClient',
-          method: 'checkAndMutateRow',
-          reqOpts,
-          gaxOpts: config.gaxOptions,
-        },
-        (err, apiResponse) => {
-          if (err) {
-            callback(err, null, apiResponse);
-            return;
-          }
-
-          callback(null, apiResponse!.predicateMatched, apiResponse);
-        }
-    );
-
-    function createFlatMutationsList(entries: FilterConfigOption[]) {
-      const e2 = arrify(entries).map(
-          entry => Mutation.parse(entry as Mutation).mutations!
-      );
-      return e2.reduce((a, b) => a.concat(b), []);
-    }
-  }
+  ): void | Promise<FilterResponse> {}
 
   getRows(options?: GetRowsOptions): Promise<GetRowsResponse>;
   getRows(options: GetRowsOptions, callback: GetRowsCallback): void;
