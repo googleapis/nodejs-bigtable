@@ -124,11 +124,8 @@ describe('Bigtable/Table', () => {
       '@google-cloud/promisify': fakePromisify,
       './family.js': {Family: FakeFamily},
       './mutation.js': {Mutation: FakeMutation},
-      './filter.js': {Filter: FakeFilter},
-      pumpify,
       './row.js': {Row: FakeRow},
       './tabular-api-service': {TabularApiService: FakeTabularApiService},
-      './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
     }).Table;
   });
 
