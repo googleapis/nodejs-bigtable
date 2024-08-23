@@ -486,7 +486,7 @@ describe('Bigtable/Mutation', () => {
       convertCalls = [];
     });
 
-    it.only('should encode set cell mutations when method is insert', () => {
+    it('should encode set cell mutations when method is insert', () => {
       const fakeEncoded = [{a: 'a'}];
       const data = {
         key: 'a',

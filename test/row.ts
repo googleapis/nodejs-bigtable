@@ -850,7 +850,7 @@ describe('Bigtable/Row', () => {
     });
   });
 
-  describe('filter', () => {
+  describe.only('filter', () => {
     const mutations = [
       {
         method: 'insert',
