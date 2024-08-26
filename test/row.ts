@@ -1322,15 +1322,17 @@ describe.only('Bigtable/Row', () => {
     let formatFamiliesSpy: sinon.SinonSpy;
 
     beforeEach(() => {
-      formatFamiliesSpy = sandbox.stub(Row, 'formatFamilies_').returns({
-        a: {
-          b: [
-            {
-              value: 10,
-            },
-          ],
-        },
-      });
+      formatFamiliesSpy = sandbox
+        .stub(FakeRowDataUtil, 'formatFamilies_Util')
+        .returns({
+          a: {
+            b: [
+              {
+                value: 10,
+              },
+            ],
+          },
+        });
     });
 
     afterEach(() => {
@@ -1338,14 +1340,6 @@ describe.only('Bigtable/Row', () => {
     });
 
     it('should provide the proper request options', done => {
-      /*
-      const testRow = mockCreateRules((reqOpts: any, gaxOptions: any) => {
-        assert.strictEqual((reqOpts as rw.Rule).column, COLUMN_NAME);
-        assert.strictEqual((reqOpts as rw.Rule).increment, 1);
-        assert.deepStrictEqual(gaxOptions, {});
-        done();
-      });
-      */
       sandbox
         .stub(FakeRowDataUtil, 'createRulesUtil')
         .callsFake((reqOpts, properties, gaxOptions, cb) => {
@@ -1359,7 +1353,7 @@ describe.only('Bigtable/Row', () => {
 
     it('should optionally accept an increment amount', done => {
       const increment = 10;
-      sandbox.stub(row, 'createRules').callsFake(reqOpts => {
+      sandbox.stub(FakeRowDataUtil, 'createRulesUtil').callsFake(reqOpts => {
         assert.strictEqual((reqOpts as rw.Rule).increment, increment);
         done();
       });
@@ -1368,28 +1362,34 @@ describe.only('Bigtable/Row', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      sandbox.stub(row, 'createRules').callsFake((reqOpts, gaxOptions_) => {
-        assert.strictEqual(gaxOptions_, gaxOptions);
-        done();
-      });
+      sandbox
+        .stub(FakeRowDataUtil, 'createRulesUtil')
+        .callsFake((reqOpts, properties, gaxOptions_) => {
+          assert.strictEqual(gaxOptions_, gaxOptions);
+          done();
+        });
       row.increment(COLUMN_NAME, gaxOptions, assert.ifError);
     });
 
     it('should accept increment amount and gaxOptions', done => {
       const increment = 10;
       const gaxOptions = {};
-      sandbox.stub(row, 'createRules').callsFake((reqOpts, gaxOptions_) => {
-        assert.strictEqual((reqOpts as rw.Rule).increment, increment);
-        assert.strictEqual(gaxOptions_, gaxOptions);
-        done();
-      });
+      sandbox
+        .stub(FakeRowDataUtil, 'createRulesUtil')
+        .callsFake((reqOpts, properties, gaxOptions_) => {
+          assert.strictEqual((reqOpts as rw.Rule).increment, increment);
+          assert.strictEqual(gaxOptions_, gaxOptions);
+          done();
+        });
       row.increment(COLUMN_NAME, increment, gaxOptions, assert.ifError);
     });
 
     it('should return an error to the callback', done => {
       const error = new Error('err');
       const response = {};
-      sandbox.stub(row, 'createRules').callsArgWith(2, error, response);
+      sandbox
+        .stub(FakeRowDataUtil, 'createRulesUtil')
+        .callsArgWith(3, error, response);
       row.increment(COLUMN_NAME, (err, value, apiResponse) => {
         assert.strictEqual(err, error);
         assert.strictEqual(value, null);
@@ -1422,7 +1422,9 @@ describe.only('Bigtable/Row', () => {
         },
       };
 
-      sandbox.stub(row, 'createRules').callsArgWith(2, null, response);
+      sandbox
+        .stub(FakeRowDataUtil, 'createRulesUtil')
+        .callsArgWith(3, null, response);
       row.increment(COLUMN_NAME, (err, value, apiResponse) => {
         assert.ifError(err);
         assert.strictEqual(value, fakeValue);
