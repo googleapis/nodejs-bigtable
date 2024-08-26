@@ -74,10 +74,15 @@ describe('Bigtable/Row', () => {
   let row: rw.Row;
 
   before(() => {
+    const FakeRowDataUtil = proxyquire('../src/row-data-utils.js', {
+      './mutation.js': {Mutation: FakeMutation},
+      './filter.js': {Filter: FakeFilter},
+    });
     const Fake = proxyquire('../src/row.js', {
       '@google-cloud/promisify': fakePromisify,
       './mutation.js': {Mutation: FakeMutation},
       './filter.js': {Filter: FakeFilter},
+      './row-data-utils.js': {filterUtil: FakeRowDataUtil.filterUtil},
     });
     Row = Fake.Row;
     RowError = Fake.RowError;
@@ -850,7 +855,7 @@ describe('Bigtable/Row', () => {
     });
   });
 
-  describe.only('filter', () => {
+  describe('filter', () => {
     const mutations = [
       {
         method: 'insert',
