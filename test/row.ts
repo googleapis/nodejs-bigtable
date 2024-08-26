@@ -72,7 +72,7 @@ const FakeFilter = {
 const FakeRowDataUtil = proxyquire('../src/row-data-utils.js', {
   './mutation.js': {Mutation: FakeMutation},
   './filter.js': {Filter: FakeFilter},
-});
+}).RowDataUtils;
 
 describe.only('Bigtable/Row', () => {
   let Row: typeof rw.Row;
@@ -84,7 +84,7 @@ describe.only('Bigtable/Row', () => {
       '@google-cloud/promisify': fakePromisify,
       './mutation.js': {Mutation: FakeMutation},
       './filter.js': {Filter: FakeFilter},
-      './row-data-utils.js': {RowDataUtils: FakeRowDataUtil.RowDataUtils},
+      './row-data-utils.js': {RowDataUtils: FakeRowDataUtil},
     });
     Row = Fake.Row;
     RowError = Fake.RowError;
@@ -1337,24 +1337,6 @@ describe.only('Bigtable/Row', () => {
       formatFamiliesSpy.restore();
     });
 
-    function mockCreateRules(fn: (reqOpts: any, gaxOptions: any) => void) {
-      const FakeRowDataUtils = proxyquire('../src/row-data-utils.js', {
-        './mutation.js': {Mutation: FakeMutation},
-        './filter.js': {Filter: FakeFilter},
-      }).RowDataUtils;
-      FakeRowDataUtils.createRulesUtil = fn;
-      const Fake = proxyquire('../src/row.js', {
-        '@google-cloud/promisify': fakePromisify,
-        './mutation.js': {Mutation: FakeMutation},
-        './filter.js': {Filter: FakeFilter},
-        './row-data-utils.js': {RowDataUtils: FakeRowDataUtils},
-      });
-      Row = Fake.Row;
-      RowError = Fake.RowError;
-      row = new Row(TABLE, ROW_ID);
-      return row;
-    }
-
     it('should provide the proper request options', done => {
       /*
       const testRow = mockCreateRules((reqOpts: any, gaxOptions: any) => {
@@ -1365,7 +1347,7 @@ describe.only('Bigtable/Row', () => {
       });
       */
       sandbox
-        .stub(FakeRowDataUtil.RowDataUtils, 'createRulesUtil')
+        .stub(FakeRowDataUtil, 'createRulesUtil')
         .callsFake((reqOpts, properties, gaxOptions, cb) => {
           assert.strictEqual((reqOpts as rw.Rule).column, COLUMN_NAME);
           assert.strictEqual((reqOpts as rw.Rule).increment, 1);
