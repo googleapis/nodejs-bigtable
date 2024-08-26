@@ -14,7 +14,7 @@
 
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
-import {afterEach, before, beforeEach, describe, it} from 'mocha';
+import {afterEach, beforeEach, describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
 import {Mutation} from '../src/mutation.js';
@@ -22,7 +22,6 @@ import * as rw from '../src/row';
 import {Table, Entry} from '../src/table.js';
 import {Chunk} from '../src/chunktransformer.js';
 import {CallOptions} from 'google-gax';
-import {RowDataUtils} from '../src/row-data-utils';
 
 const sandbox = sinon.createSandbox();
 
@@ -74,7 +73,7 @@ const FakeRowDataUtil = proxyquire('../src/row-data-utils.js', {
   './filter.js': {Filter: FakeFilter},
 }).RowDataUtils;
 
-describe.only('Bigtable/Row', () => {
+describe('Bigtable/Row', () => {
   let Row: typeof rw.Row;
   let RowError: typeof rw.RowError;
   let row: rw.Row;
