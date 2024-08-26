@@ -30,12 +30,7 @@ import {CallOptions} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
 import {TabularApiService} from './tabular-api-service';
-import {
-  createRulesUtil,
-  filterUtil,
-  formatFamilies_Util,
-  incrementUtils,
-} from './row-data-utils';
+import {RowDataUtils} from './row-data-utils';
 
 export interface Rule {
   column: string;
@@ -312,7 +307,7 @@ export class Row {
     families: google.bigtable.v2.IFamily[],
     options?: FormatFamiliesOptions
   ) {
-    return formatFamilies_Util(families, options);
+    return RowDataUtils.formatFamilies_Util(families, options);
   }
 
   create(options?: CreateRowOptions): Promise<CreateRowResponse>;
@@ -394,7 +389,7 @@ export class Row {
     optionsOrCallback?: CallOptions | CreateRulesCallback,
     cb?: CreateRulesCallback
   ): void | Promise<CreateRulesResponse> {
-    createRulesUtil(rules, this, optionsOrCallback, cb);
+    RowDataUtils.createRulesUtil(rules, this, optionsOrCallback, cb);
   }
 
   delete(options?: CallOptions): Promise<MutateResponse>;
@@ -558,7 +553,7 @@ export class Row {
     configOrCallback?: FilterConfig | FilterCallback,
     cb?: FilterCallback
   ): void | Promise<FilterResponse> {
-    filterUtil(filter, this, configOrCallback, cb);
+    RowDataUtils.filterUtil(filter, this, configOrCallback, cb);
   }
 
   get(options?: GetRowOptions): Promise<GetRowResponse<Row>>;
@@ -759,7 +754,7 @@ export class Row {
     optionsOrCallback?: CallOptions | IncrementCallback,
     cb?: IncrementCallback
   ): void | Promise<IncrementResponse> {
-    incrementUtils(
+    RowDataUtils.incrementUtils(
       column,
       this,
       valueOrOptionsOrCallback,

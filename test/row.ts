@@ -22,7 +22,7 @@ import * as rw from '../src/row';
 import {Table, Entry} from '../src/table.js';
 import {Chunk} from '../src/chunktransformer.js';
 import {CallOptions} from 'google-gax';
-import {formatFamilies_Util, incrementUtils} from '../src/row-data-utils';
+import {RowDataUtils} from '../src/row-data-utils';
 
 const sandbox = sinon.createSandbox();
 
@@ -69,32 +69,25 @@ const FakeFilter = {
   }),
 };
 
-describe('Bigtable/Row', () => {
+const FakeRowDataUtil = proxyquire('../src/row-data-utils.js', {
+  './mutation.js': {Mutation: FakeMutation},
+  './filter.js': {Filter: FakeFilter},
+});
+
+describe.only('Bigtable/Row', () => {
   let Row: typeof rw.Row;
   let RowError: typeof rw.RowError;
   let row: rw.Row;
 
-  before(() => {
-    const FakeRowDataUtil = proxyquire('../src/row-data-utils.js', {
-      './mutation.js': {Mutation: FakeMutation},
-      './filter.js': {Filter: FakeFilter},
-    });
+  beforeEach(() => {
     const Fake = proxyquire('../src/row.js', {
       '@google-cloud/promisify': fakePromisify,
       './mutation.js': {Mutation: FakeMutation},
       './filter.js': {Filter: FakeFilter},
-      './row-data-utils.js': {
-        filterUtil: FakeRowDataUtil.filterUtil,
-        createRulesUtil: FakeRowDataUtil.createRulesUtil,
-        incrementUtils: FakeRowDataUtil.incrementUtils,
-        formatFamilies_Util: FakeRowDataUtil.formatFamilies_Util,
-      },
+      './row-data-utils.js': {RowDataUtils: FakeRowDataUtil.RowDataUtils},
     });
     Row = Fake.Row;
     RowError = Fake.RowError;
-  });
-
-  beforeEach(() => {
     row = new Row(TABLE, ROW_ID);
   });
 
@@ -1344,13 +1337,41 @@ describe('Bigtable/Row', () => {
       formatFamiliesSpy.restore();
     });
 
+    function mockCreateRules(fn: (reqOpts: any, gaxOptions: any) => void) {
+      const FakeRowDataUtils = proxyquire('../src/row-data-utils.js', {
+        './mutation.js': {Mutation: FakeMutation},
+        './filter.js': {Filter: FakeFilter},
+      }).RowDataUtils;
+      FakeRowDataUtils.createRulesUtil = fn;
+      const Fake = proxyquire('../src/row.js', {
+        '@google-cloud/promisify': fakePromisify,
+        './mutation.js': {Mutation: FakeMutation},
+        './filter.js': {Filter: FakeFilter},
+        './row-data-utils.js': {RowDataUtils: FakeRowDataUtils},
+      });
+      Row = Fake.Row;
+      RowError = Fake.RowError;
+      row = new Row(TABLE, ROW_ID);
+      return row;
+    }
+
     it('should provide the proper request options', done => {
-      sandbox.stub(row, 'createRules').callsFake((reqOpts, gaxOptions) => {
+      /*
+      const testRow = mockCreateRules((reqOpts: any, gaxOptions: any) => {
         assert.strictEqual((reqOpts as rw.Rule).column, COLUMN_NAME);
         assert.strictEqual((reqOpts as rw.Rule).increment, 1);
         assert.deepStrictEqual(gaxOptions, {});
         done();
       });
+      */
+      sandbox
+        .stub(FakeRowDataUtil.RowDataUtils, 'createRulesUtil')
+        .callsFake((reqOpts, properties, gaxOptions, cb) => {
+          assert.strictEqual((reqOpts as rw.Rule).column, COLUMN_NAME);
+          assert.strictEqual((reqOpts as rw.Rule).increment, 1);
+          assert.deepStrictEqual(gaxOptions, {});
+          done();
+        });
       row.increment(COLUMN_NAME, assert.ifError);
     });
 
