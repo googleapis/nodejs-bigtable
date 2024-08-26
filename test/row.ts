@@ -22,7 +22,7 @@ import * as rw from '../src/row';
 import {Table, Entry} from '../src/table.js';
 import {Chunk} from '../src/chunktransformer.js';
 import {CallOptions} from 'google-gax';
-import {createRulesUtil} from '../src/row-data-utils';
+import {formatFamilies_Util, incrementUtils} from '../src/row-data-utils';
 
 const sandbox = sinon.createSandbox();
 
@@ -86,6 +86,8 @@ describe('Bigtable/Row', () => {
       './row-data-utils.js': {
         filterUtil: FakeRowDataUtil.filterUtil,
         createRulesUtil: FakeRowDataUtil.createRulesUtil,
+        incrementUtils: FakeRowDataUtil.incrementUtils,
+        formatFamilies_Util: FakeRowDataUtil.formatFamilies_Util,
       },
     });
     Row = Fake.Row;

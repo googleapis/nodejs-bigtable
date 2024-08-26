@@ -1,13 +1,16 @@
+const dotProp = require('dot-prop');
 import {Filter, RawFilter} from './filter';
 import {
   CreateRulesCallback,
   FilterCallback,
   FilterConfig,
   FilterConfigOption,
+  FormatFamiliesOptions,
+  IncrementCallback,
   Rule,
 } from './row';
 import {Family} from './chunktransformer';
-import {Mutation} from './mutation';
+import {Bytes, Mutation} from './mutation';
 import {google} from '../protos/protos';
 import {TabularApiService} from './tabular-api-service';
 import arrify = require('arrify');
@@ -64,6 +67,38 @@ export function filterUtil(
   }
 }
 
+export function formatFamilies_Util(
+  families: google.bigtable.v2.IFamily[],
+  options?: FormatFamiliesOptions
+) {
+  const data = {} as {[index: string]: {}};
+  options = options || {};
+  families.forEach(family => {
+    const familyData = (data[family.name!] = {}) as {
+      [index: string]: {};
+    };
+    family.columns!.forEach(column => {
+      const qualifier = Mutation.convertFromBytes(
+        column.qualifier as string
+      ) as string;
+      familyData[qualifier] = column.cells!.map(cell => {
+        let value = cell.value;
+        if (options!.decode !== false) {
+          value = Mutation.convertFromBytes(value as Bytes, {
+            isPossibleNumber: true,
+          }) as string;
+        }
+        return {
+          value,
+          timestamp: cell.timestampMicros,
+          labels: cell.labels,
+        };
+      });
+    });
+  });
+  return data;
+}
+
 export function createRulesUtil(
   rules: Rule | Rule[],
   properties: RowProperties,
@@ -114,4 +149,44 @@ export function createRulesUtil(
     },
     callback
   );
+}
+
+export function incrementUtils(
+  column: string,
+  properties: RowProperties,
+  valueOrOptionsOrCallback?: number | CallOptions | IncrementCallback,
+  optionsOrCallback?: CallOptions | IncrementCallback,
+  cb?: IncrementCallback
+) {
+  const value =
+    typeof valueOrOptionsOrCallback === 'number' ? valueOrOptionsOrCallback : 1;
+  const gaxOptions =
+    typeof valueOrOptionsOrCallback === 'object'
+      ? valueOrOptionsOrCallback
+      : typeof optionsOrCallback === 'object'
+        ? optionsOrCallback
+        : {};
+  const callback =
+    typeof valueOrOptionsOrCallback === 'function'
+      ? valueOrOptionsOrCallback
+      : typeof optionsOrCallback === 'function'
+        ? optionsOrCallback
+        : cb!;
+
+  const reqOpts = {
+    column,
+    increment: value,
+  } as Rule;
+
+  createRulesUtil(reqOpts, properties, gaxOptions, (err, resp) => {
+    if (err) {
+      callback(err, null, resp);
+      return;
+    }
+
+    const data = formatFamilies_Util(resp!.row!.families!);
+    const value = dotProp.get(data, column.replace(':', '.'))[0].value;
+
+    callback(null, value, resp);
+  });
 }

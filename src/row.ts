@@ -14,8 +14,6 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const dotProp = require('dot-prop');
 import {RawFilter} from './filter';
 import {Mutation, ConvertFromBytesUserOptions, Bytes, Data} from './mutation';
 import {Bigtable} from '.';
@@ -32,7 +30,12 @@ import {CallOptions} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
 import {TabularApiService} from './tabular-api-service';
-import {createRulesUtil, filterUtil} from './row-data-utils';
+import {
+  createRulesUtil,
+  filterUtil,
+  formatFamilies_Util,
+  incrementUtils,
+} from './row-data-utils';
 
 export interface Rule {
   column: string;
@@ -309,32 +312,7 @@ export class Row {
     families: google.bigtable.v2.IFamily[],
     options?: FormatFamiliesOptions
   ) {
-    const data = {} as {[index: string]: {}};
-    options = options || {};
-    families.forEach(family => {
-      const familyData = (data[family.name!] = {}) as {
-        [index: string]: {};
-      };
-      family.columns!.forEach(column => {
-        const qualifier = Mutation.convertFromBytes(
-          column.qualifier as string
-        ) as string;
-        familyData[qualifier] = column.cells!.map(cell => {
-          let value = cell.value;
-          if (options!.decode !== false) {
-            value = Mutation.convertFromBytes(value as Bytes, {
-              isPossibleNumber: true,
-            }) as string;
-          }
-          return {
-            value,
-            timestamp: cell.timestampMicros,
-            labels: cell.labels,
-          };
-        });
-      });
-    });
-    return data;
+    return formatFamilies_Util(families, options);
   }
 
   create(options?: CreateRowOptions): Promise<CreateRowResponse>;
@@ -781,39 +759,13 @@ export class Row {
     optionsOrCallback?: CallOptions | IncrementCallback,
     cb?: IncrementCallback
   ): void | Promise<IncrementResponse> {
-    const value =
-      typeof valueOrOptionsOrCallback === 'number'
-        ? valueOrOptionsOrCallback
-        : 1;
-    const gaxOptions =
-      typeof valueOrOptionsOrCallback === 'object'
-        ? valueOrOptionsOrCallback
-        : typeof optionsOrCallback === 'object'
-          ? optionsOrCallback
-          : {};
-    const callback =
-      typeof valueOrOptionsOrCallback === 'function'
-        ? valueOrOptionsOrCallback
-        : typeof optionsOrCallback === 'function'
-          ? optionsOrCallback
-          : cb!;
-
-    const reqOpts = {
+    incrementUtils(
       column,
-      increment: value,
-    } as Rule;
-
-    this.createRules(reqOpts, gaxOptions, (err, resp) => {
-      if (err) {
-        callback(err, null, resp);
-        return;
-      }
-
-      const data = Row.formatFamilies_(resp!.row!.families!);
-      const value = dotProp.get(data, column.replace(':', '.'))[0].value;
-
-      callback(null, value, resp);
-    });
+      this,
+      valueOrOptionsOrCallback,
+      optionsOrCallback,
+      cb
+    );
   }
 
   save(entry: Entry, options?: CallOptions): Promise<MutateResponse>;
