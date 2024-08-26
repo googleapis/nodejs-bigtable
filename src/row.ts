@@ -16,7 +16,7 @@ import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const dotProp = require('dot-prop');
-import {Filter, RawFilter} from './filter';
+import {RawFilter} from './filter';
 import {Mutation, ConvertFromBytesUserOptions, Bytes, Data} from './mutation';
 import {Bigtable} from '.';
 import {
@@ -27,7 +27,7 @@ import {
   MutateOptions,
   PartialFailureError,
 } from './table';
-import {Chunk, Family as ChunkTransformerFamily} from './chunktransformer';
+import {Chunk} from './chunktransformer';
 import {CallOptions} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
