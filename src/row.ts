@@ -32,7 +32,7 @@ import {CallOptions} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
 import {TabularApiService} from './tabular-api-service';
-import {filterUtil} from './row-data-utils';
+import {createRulesUtil, filterUtil} from './row-data-utils';
 
 export interface Rule {
   column: string;
@@ -416,50 +416,7 @@ export class Row {
     optionsOrCallback?: CallOptions | CreateRulesCallback,
     cb?: CreateRulesCallback
   ): void | Promise<CreateRulesResponse> {
-    const gaxOptions =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-
-    if (!rules || (rules as Rule[]).length === 0) {
-      throw new Error('At least one rule must be provided.');
-    }
-
-    rules = arrify(rules).map(rule => {
-      const column = Mutation.parseColumnName(rule.column);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const ruleData: any = {
-        familyName: column.family,
-        columnQualifier: Mutation.convertToBytes(column.qualifier!),
-      };
-
-      if (rule.append) {
-        ruleData.appendValue = Mutation.convertToBytes(rule.append);
-      }
-
-      if (rule.increment) {
-        ruleData.incrementAmount = rule.increment;
-      }
-
-      return ruleData;
-    });
-
-    const reqOpts = {
-      tableName: this.table.name,
-      appProfileId: this.bigtable.appProfileId,
-      rowKey: Mutation.convertToBytes(this.id),
-      rules,
-    };
-    this.data = {};
-    this.bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
-      {
-        client: 'BigtableClient',
-        method: 'readModifyWriteRow',
-        reqOpts,
-        gaxOpts: gaxOptions,
-      },
-      callback
-    );
+    createRulesUtil(rules, this, optionsOrCallback, cb);
   }
 
   delete(options?: CallOptions): Promise<MutateResponse>;
