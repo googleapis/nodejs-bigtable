@@ -19,12 +19,16 @@ import {Mutation} from './mutation';
 import {
   AbortableDuplex,
   Bigtable,
+  CreateRulesCallback,
+  CreateRulesResponse,
   Entry,
   FilterCallback,
   FilterConfig,
-  FilterConfigOption,
   FilterResponse,
+  IncrementCallback,
+  IncrementResponse,
   MutateOptions,
+  Rule,
   SampleRowKeysCallback,
   SampleRowsKeysResponse,
 } from './index';
@@ -38,6 +42,7 @@ import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {TableUtils} from './utils/table';
+import {RowDataUtils} from './row-data-utils';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -136,6 +141,16 @@ interface FilterInformation {
   rowId: string;
 }
 
+interface CreateRulesInformation {
+  rules: Rule | Rule[];
+  rowId: string;
+}
+
+interface IncrementInformation {
+  column: string;
+  rowId: string;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -148,6 +163,7 @@ export class TabularApiService {
   id: string;
   metadata?: google.bigtable.admin.v2.ITable;
   maxRetries?: number;
+  private readonly rowData: {[id: string]: {}};
   //
 
   constructor(instance: Instance, id: string) {
@@ -169,6 +185,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     this.name = name;
     this.id = name.split('/').pop()!;
+    this.rowData = {};
   }
 
   /**
@@ -482,21 +499,66 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     return userStream;
   }
 
+  createRules(
+    createRulesInfo: CreateRulesInformation,
+    options?: CallOptions
+  ): Promise<CreateRulesResponse>;
+  createRules(
+    createRulesInfo: CreateRulesInformation,
+    options: CallOptions,
+    callback: CreateRulesCallback
+  ): void;
+  createRules(
+    createRulesInfo: CreateRulesInformation,
+    callback: CreateRulesCallback
+  ): void;
+  createRules(
+    createRulesInfo: CreateRulesInformation,
+    optionsOrCallback?: CallOptions | CreateRulesCallback,
+    cb?: CreateRulesCallback
+  ): void | Promise<CreateRulesResponse> {
+    this.initializeRow(createRulesInfo.rowId);
+    RowDataUtils.createRulesUtil(
+      createRulesInfo.rules,
+      {
+        data: this.rowData[createRulesInfo.rowId],
+        id: createRulesInfo.rowId,
+        table: this,
+        bigtable: this.bigtable,
+      },
+      optionsOrCallback,
+      cb
+    );
+  }
+
   filter(
-    filter: FilterInformation,
+    filterInfo: FilterInformation,
     config?: FilterConfig
   ): Promise<FilterResponse>;
   filter(
-    filter: FilterInformation,
+    filterInfo: FilterInformation,
     config: FilterConfig,
     callback: FilterCallback
   ): void;
-  filter(filter: FilterInformation, callback: FilterCallback): void;
+  filter(filterInfo: FilterInformation, callback: FilterCallback): void;
   filter(
-    filter: FilterInformation,
+    filterInfo: FilterInformation,
     configOrCallback?: FilterConfig | FilterCallback,
     cb?: FilterCallback
-  ): void | Promise<FilterResponse> {}
+  ): void | Promise<FilterResponse> {
+    this.initializeRow(filterInfo.rowId);
+    RowDataUtils.filterUtil(
+      filterInfo.filter,
+      {
+        data: this.rowData[filterInfo.rowId],
+        id: filterInfo.rowId,
+        table: this,
+        bigtable: this.bigtable,
+      },
+      configOrCallback,
+      cb
+    );
+  }
 
   getRows(options?: GetRowsOptions): Promise<GetRowsResponse>;
   getRows(options: GetRowsOptions, callback: GetRowsCallback): void;
@@ -534,6 +596,66 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           callback(null, rows);
         })
       );
+  }
+
+  increment(
+    columnInfo: IncrementInformation,
+    value?: number
+  ): Promise<IncrementResponse>;
+  increment(
+    columnInfo: IncrementInformation,
+    value: number,
+    options?: CallOptions
+  ): Promise<IncrementResponse>;
+  increment(
+    columnInfo: IncrementInformation,
+    options?: CallOptions
+  ): Promise<IncrementResponse>;
+  increment(
+    columnInfo: IncrementInformation,
+    value: number,
+    options: CallOptions,
+    callback: IncrementCallback
+  ): void;
+  increment(
+    columnInfo: IncrementInformation,
+    value: number,
+    callback: IncrementCallback
+  ): void;
+  increment(
+    columnInfo: IncrementInformation,
+    options: CallOptions,
+    callback: IncrementCallback
+  ): void;
+  increment(
+    columnInfo: IncrementInformation,
+    callback: IncrementCallback
+  ): void;
+  increment(
+    columnInfo: IncrementInformation,
+    valueOrOptionsOrCallback?: number | CallOptions | IncrementCallback,
+    optionsOrCallback?: CallOptions | IncrementCallback,
+    cb?: IncrementCallback
+  ): void | Promise<IncrementResponse> {
+    this.initializeRow(columnInfo.rowId);
+    RowDataUtils.incrementUtils(
+      columnInfo.column,
+      {
+        data: this.rowData[columnInfo.rowId],
+        id: columnInfo.rowId,
+        table: this,
+        bigtable: this.bigtable,
+      },
+      valueOrOptionsOrCallback,
+      optionsOrCallback,
+      cb
+    );
+  }
+
+  private initializeRow(id: string) {
+    if (!this.rowData[id]) {
+      this.rowData[id] = {};
+    }
   }
 
   insert(
