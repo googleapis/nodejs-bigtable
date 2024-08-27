@@ -282,6 +282,7 @@ class ReadRowsRequestHandler {
         if (response.chunks && response.chunks.length > 0) {
           debugLog(`sent ${response.chunks.length} chunks`);
         }
+        // Log a message if the lastScannedRowKey is provided.
         if (response.lastScannedRowKey) {
           const binaryKey = Buffer.from(
             response.lastScannedRowKey as string,
@@ -291,6 +292,7 @@ class ReadRowsRequestHandler {
           debugLog(`sent lastScannedRowKey = ${stringKey}`);
         }
         if (!canSendMore) {
+          // Before doing any more writing with the stream, drain the stream.
           debugLog('awaiting for back pressure');
           await new Promise<void>(resolve => {
             this.stopWaiting = resolve;
