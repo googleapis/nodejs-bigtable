@@ -124,7 +124,7 @@ describe('Bigtable/Table', () => {
       './family.js': {Family: FakeFamily},
       './mutation.js': {Mutation: FakeMutation},
       './row.js': {Row: FakeRow},
-      './tabular-api-surface': {TabularApiService: FakeTabularApiSurface},
+      './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
     }).Table;
   });
 
