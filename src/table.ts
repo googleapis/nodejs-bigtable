@@ -32,7 +32,7 @@ import {google} from '../protos/protos';
 import {TableUtils} from './utils/table';
 import * as is from 'is';
 import {
-  TabularApiService,
+  TabularApiSurface,
   InsertRowsCallback,
   InsertRowsResponse,
   MutateCallback,
@@ -42,7 +42,7 @@ import {
   GetRowsOptions,
   GetRowsCallback,
   GetRowsResponse,
-} from './tabular-api-service';
+} from './tabular-api-surface';
 
 export {
   InsertRowsCallback,
@@ -318,7 +318,7 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
  * const table = instance.table('prezzy');
  * ```
  */
-export class Table extends TabularApiService {
+export class Table extends TabularApiSurface {
   /**
    * Formats the decodes policy etag value to string.
    *
