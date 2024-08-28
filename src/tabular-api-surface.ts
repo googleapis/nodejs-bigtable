@@ -132,7 +132,7 @@ const concat = require('concat-stream');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
 
-export class TabularApiService {
+export class TabularApiSurface {
   bigtable: Bigtable;
   instance: Instance;
   name: string;
@@ -854,7 +854,7 @@ export function populateAttemptHeader(attempt: number, gaxOpts?: CallOptions) {
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
-promisifyAll(TabularApiService, {
+promisifyAll(TabularApiSurface, {
   exclude: ['family', 'row'],
 });
 
