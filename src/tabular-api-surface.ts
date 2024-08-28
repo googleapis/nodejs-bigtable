@@ -526,6 +526,25 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     createRulesInfo: CreateRulesInformation,
     callback: CreateRulesCallback
   ): void;
+  /**
+   * Update a row with rules specifying how the row's contents are to be
+   * transformed into writes. Rules are applied in order, meaning that earlier
+   * rules will affect the results of later ones.
+   *
+   * @throws {error} If no rules are provided.
+   *
+   * @param {CreateRulesInformation} createRulesInfo The rules to apply to a row
+   *    along with the row id of the row to update.
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this
+   *     request.
+   * @param {object} callback.apiResponse The full API response.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_create_rules
+   */
   createRules(
     createRulesInfo: CreateRulesInformation,
     optionsOrCallback?: CallOptions | CreateRulesCallback,
@@ -545,6 +564,28 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
   }
 
+  /**
+   * Mutates a row atomically based on the output of a filter. Depending on
+   * whether or not any results are yielded, either the `onMatch` or `onNoMatch`
+   * callback will be executed.
+   *
+   * @param {FilterInformation} filter Filter to be applied to the contents of
+   * the row along with the row id of the affected row.
+   * @param {object} config Configuration object.
+   * @param {?object[]} config.onMatch A list of entries to be ran if a match is
+   *     found.
+   * @param {object[]} [config.onNoMatch] A list of entries to be ran if no
+   *     matches are found.
+   * @param {object} [config.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this
+   *     request.
+   * @param {boolean} callback.matched Whether a match was found or not.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_row_filter
+   */
   filter(
     filterInfo: FilterInformation,
     config?: FilterConfig
@@ -645,6 +686,24 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     columnInfo: IncrementInformation,
     callback: IncrementCallback
   ): void;
+  /**
+   * Increment a specific column within the row. If the column does not
+   * exist, it is automatically initialized to 0 before being incremented.
+   *
+   * @param {IncrementInformation} columnInfo The column we are incrementing a
+   * value in along with the row id of the affected row.
+   * @param {number} [value] The amount to increment by, defaults to 1.
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this
+   *     request.
+   * @param {number} callback.value The updated value of the column.
+   * @param {object} callback.apiResponse The full API response.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_row_increment
+   */
   increment(
     columnInfo: IncrementInformation,
     valueOrOptionsOrCallback?: number | CallOptions | IncrementCallback,
@@ -666,6 +725,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
   }
 
+  /**
+   * Sets the row data for a particular row to an empty object
+   *
+   * @param {string} id An string with the key of the row to initialize.
+   * @private
+   */
   private initializeRow(id: string) {
     if (!this.rowData[id]) {
       this.rowData[id] = {};
