@@ -12,7 +12,7 @@ import {
 import {Family} from './chunktransformer';
 import {Bytes, Mutation} from './mutation';
 import {google} from '../protos/protos';
-import {TabularApiService} from './tabular-api-service';
+import {TabularApiSurface} from './tabular-api-surface';
 import arrify = require('arrify');
 import {Bigtable} from './index';
 import {CallOptions} from 'google-gax';
@@ -20,7 +20,7 @@ import {CallOptions} from 'google-gax';
 interface RowProperties {
   data?: {[index: string]: Family};
   id: string;
-  table: TabularApiService;
+  table: TabularApiSurface;
   bigtable: Bigtable;
 }
 

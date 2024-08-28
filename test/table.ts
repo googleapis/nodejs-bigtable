@@ -117,7 +117,6 @@ describe('Bigtable/Table', () => {
       './filter.js': {Filter: FakeFilter},
       pumpify,
       './row.js': {Row: FakeRow},
-      './tabular-api-service': {TabularApiService: FakeTabularApiService},
       './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
     }).TabularApiSurface;
     Table = proxyquire('../src/table.js', {
