@@ -319,6 +319,10 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
  * ```
  */
 export class Table extends TabularApiSurface {
+  constructor(instance: Instance, id: string) {
+    super(instance, id);
+  }
+
   /**
    * Formats the decodes policy etag value to string.
    *

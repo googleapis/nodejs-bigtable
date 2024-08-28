@@ -389,7 +389,11 @@ export class Row {
     optionsOrCallback?: CallOptions | CreateRulesCallback,
     cb?: CreateRulesCallback
   ): void | Promise<CreateRulesResponse> {
-    RowDataUtils.createRulesUtil(rules, this, optionsOrCallback, cb);
+    const properties = {
+      reqOpts: {tableName: this.table.name},
+      requestData: this,
+    };
+    RowDataUtils.createRulesUtil(rules, properties, optionsOrCallback, cb);
   }
 
   delete(options?: CallOptions): Promise<MutateResponse>;
@@ -553,7 +557,11 @@ export class Row {
     configOrCallback?: FilterConfig | FilterCallback,
     cb?: FilterCallback
   ): void | Promise<FilterResponse> {
-    RowDataUtils.filterUtil(filter, this, configOrCallback, cb);
+    const properties = {
+      reqOpts: {tableName: this.table.name},
+      requestData: this,
+    };
+    RowDataUtils.filterUtil(filter, properties, configOrCallback, cb);
   }
 
   get(options?: GetRowOptions): Promise<GetRowResponse<Row>>;
@@ -754,9 +762,13 @@ export class Row {
     optionsOrCallback?: CallOptions | IncrementCallback,
     cb?: IncrementCallback
   ): void | Promise<IncrementResponse> {
+    const properties = {
+      reqOpts: {tableName: this.table.name},
+      requestData: this,
+    };
     RowDataUtils.incrementUtils(
       column,
-      this,
+      properties,
       valueOrOptionsOrCallback,
       optionsOrCallback,
       cb

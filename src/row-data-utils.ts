@@ -17,11 +17,19 @@ import arrify = require('arrify');
 import {Bigtable} from './index';
 import {CallOptions} from 'google-gax';
 
+interface TabularApiSurfaceRequest {
+  tableName?: string;
+  authorizedViewName?: string;
+}
+
 interface RowProperties {
-  data?: {[index: string]: Family};
-  id: string;
-  table: TabularApiSurface;
-  bigtable: Bigtable;
+  requestData: {
+    data?: {[index: string]: Family};
+    id: string;
+    table: TabularApiSurface;
+    bigtable: Bigtable;
+  };
+  reqOpts: TabularApiSurfaceRequest;
 }
 
 // A class is required because of the mock
@@ -35,16 +43,18 @@ class RowDataUtils {
     const config = typeof configOrCallback === 'object' ? configOrCallback : {};
     const callback =
       typeof configOrCallback === 'function' ? configOrCallback : cb!;
-    const reqOpts = {
-      tableName: properties.table.name,
-      appProfileId: properties.bigtable.appProfileId,
-      rowKey: Mutation.convertToBytes(properties.id),
-      predicateFilter: Filter.parse(filter),
-      trueMutations: createFlatMutationsList(config.onMatch!),
-      falseMutations: createFlatMutationsList(config.onNoMatch!),
-    };
-    properties.data = {};
-    properties.bigtable.request<google.bigtable.v2.ICheckAndMutateRowResponse>(
+    const reqOpts = Object.assign(
+      {
+        appProfileId: properties.requestData.bigtable.appProfileId,
+        rowKey: Mutation.convertToBytes(properties.requestData.id),
+        predicateFilter: Filter.parse(filter),
+        trueMutations: createFlatMutationsList(config.onMatch!),
+        falseMutations: createFlatMutationsList(config.onNoMatch!),
+      },
+      properties.reqOpts
+    );
+    properties.requestData.data = {};
+    properties.requestData.bigtable.request<google.bigtable.v2.ICheckAndMutateRowResponse>(
       {
         client: 'BigtableClient',
         method: 'checkAndMutateRow',
@@ -135,14 +145,16 @@ class RowDataUtils {
       return ruleData;
     });
 
-    const reqOpts = {
-      tableName: properties.table.name,
-      appProfileId: properties.bigtable.appProfileId,
-      rowKey: Mutation.convertToBytes(properties.id),
-      rules,
-    };
-    properties.data = {};
-    properties.bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
+    const reqOpts = Object.assign(
+      {
+        appProfileId: properties.requestData.bigtable.appProfileId,
+        rowKey: Mutation.convertToBytes(properties.requestData.id),
+        rules,
+      },
+      properties.reqOpts
+    );
+    properties.requestData.data = {};
+    properties.requestData.bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
       {
         client: 'BigtableClient',
         method: 'readModifyWriteRow',

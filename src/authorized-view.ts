@@ -1,0 +1,250 @@
+import {Instance} from './instance';
+import {TabularApiSurface} from './tabular-api-surface';
+import {CallOptions} from 'google-gax';
+import {
+  CreateRulesCallback,
+  CreateRulesResponse,
+  FilterCallback,
+  FilterConfig,
+  FilterResponse,
+  IncrementCallback,
+  IncrementResponse,
+  Rule,
+} from './row';
+import {RowDataUtils} from './row-data-utils';
+import {RawFilter} from './filter';
+
+interface FilterInformation {
+  filter: RawFilter;
+  rowId: string;
+}
+
+interface CreateRulesInformation {
+  rules: Rule | Rule[];
+  rowId: string;
+}
+
+interface IncrementInformation {
+  column: string;
+  rowId: string;
+}
+
+// TODO: Make this work for Authorized Views not table.
+/**
+ * The AuthorizedView class is a class that is available to the user that
+ * contains methods the user can call to work with authorized views.
+ *
+ * @class
+ * @param {Instance} instance Instance Object.
+ * @param {string} id Unique identifier of the table.
+ *
+ */
+class AuthorizedView extends TabularApiSurface {
+  private readonly rowData: {[id: string]: {}};
+
+  constructor(instance: Instance, id: string) {
+    super(instance, id);
+    this.rowData = {};
+  }
+
+  createRules(
+    createRulesInfo: CreateRulesInformation,
+    options?: CallOptions
+  ): Promise<CreateRulesResponse>;
+  createRules(
+    createRulesInfo: CreateRulesInformation,
+    options: CallOptions,
+    callback: CreateRulesCallback
+  ): void;
+  createRules(
+    createRulesInfo: CreateRulesInformation,
+    callback: CreateRulesCallback
+  ): void;
+  /**
+   * Update a row with rules specifying how the row's contents are to be
+   * transformed into writes. Rules are applied in order, meaning that earlier
+   * rules will affect the results of later ones.
+   *
+   * @throws {error} If no rules are provided.
+   *
+   * @param {CreateRulesInformation} createRulesInfo The rules to apply to a row
+   *    along with the row id of the row to update.
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this
+   *     request.
+   * @param {object} callback.apiResponse The full API response.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_create_rules
+   */
+  createRules(
+    createRulesInfo: CreateRulesInformation,
+    optionsOrCallback?: CallOptions | CreateRulesCallback,
+    cb?: CreateRulesCallback
+  ): void | Promise<CreateRulesResponse> {
+    this.initializeRow(createRulesInfo.rowId);
+    RowDataUtils.createRulesUtil(
+      createRulesInfo.rules,
+      {
+        requestData: {
+          data: this.rowData[createRulesInfo.rowId],
+          id: createRulesInfo.rowId,
+          table: this,
+          bigtable: this.bigtable,
+        },
+        reqOpts: {
+          authorizedViewName: this.name + '/authorizedView/' + this.viewName,
+        },
+      },
+      optionsOrCallback,
+      cb
+    );
+  }
+
+  /**
+   * Mutates a row atomically based on the output of a filter. Depending on
+   * whether or not any results are yielded, either the `onMatch` or `onNoMatch`
+   * callback will be executed.
+   *
+   * @param {FilterInformation} filter Filter to be applied to the contents of
+   * the row along with the row id of the affected row.
+   * @param {object} config Configuration object.
+   * @param {?object[]} config.onMatch A list of entries to be ran if a match is
+   *     found.
+   * @param {object[]} [config.onNoMatch] A list of entries to be ran if no
+   *     matches are found.
+   * @param {object} [config.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this
+   *     request.
+   * @param {boolean} callback.matched Whether a match was found or not.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_row_filter
+   */
+  filter(
+    filterInfo: FilterInformation,
+    config?: FilterConfig
+  ): Promise<FilterResponse>;
+  filter(
+    filterInfo: FilterInformation,
+    config: FilterConfig,
+    callback: FilterCallback
+  ): void;
+  filter(filterInfo: FilterInformation, callback: FilterCallback): void;
+  filter(
+    filterInfo: FilterInformation,
+    configOrCallback?: FilterConfig | FilterCallback,
+    cb?: FilterCallback
+  ): void | Promise<FilterResponse> {
+    this.initializeRow(filterInfo.rowId);
+    RowDataUtils.filterUtil(
+      filterInfo.filter,
+      {
+        requestData: {
+          data: this.rowData[filterInfo.rowId],
+          id: filterInfo.rowId,
+          table: this,
+          bigtable: this.bigtable,
+        },
+        reqOpts: {
+          authorizedViewName: this.name + '/authorizedView/' + this.viewName,
+        },
+      },
+      configOrCallback,
+      cb
+    );
+  }
+
+  increment(
+    columnInfo: IncrementInformation,
+    value?: number
+  ): Promise<IncrementResponse>;
+  increment(
+    columnInfo: IncrementInformation,
+    value: number,
+    options?: CallOptions
+  ): Promise<IncrementResponse>;
+  increment(
+    columnInfo: IncrementInformation,
+    options?: CallOptions
+  ): Promise<IncrementResponse>;
+  increment(
+    columnInfo: IncrementInformation,
+    value: number,
+    options: CallOptions,
+    callback: IncrementCallback
+  ): void;
+  increment(
+    columnInfo: IncrementInformation,
+    value: number,
+    callback: IncrementCallback
+  ): void;
+  increment(
+    columnInfo: IncrementInformation,
+    options: CallOptions,
+    callback: IncrementCallback
+  ): void;
+  increment(
+    columnInfo: IncrementInformation,
+    callback: IncrementCallback
+  ): void;
+  /**
+   * Increment a specific column within the row. If the column does not
+   * exist, it is automatically initialized to 0 before being incremented.
+   *
+   * @param {IncrementInformation} columnInfo The column we are incrementing a
+   * value in along with the row id of the affected row.
+   * @param {number} [value] The amount to increment by, defaults to 1.
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this
+   *     request.
+   * @param {number} callback.value The updated value of the column.
+   * @param {object} callback.apiResponse The full API response.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_row_increment
+   */
+  increment(
+    columnInfo: IncrementInformation,
+    valueOrOptionsOrCallback?: number | CallOptions | IncrementCallback,
+    optionsOrCallback?: CallOptions | IncrementCallback,
+    cb?: IncrementCallback
+  ): void | Promise<IncrementResponse> {
+    this.initializeRow(columnInfo.rowId);
+    RowDataUtils.incrementUtils(
+      columnInfo.column,
+      {
+        requestData: {
+          data: this.rowData[columnInfo.rowId],
+          id: columnInfo.rowId,
+          table: this,
+          bigtable: this.bigtable,
+        },
+        reqOpts: {
+          authorizedViewName: this.name + '/authorizedView/' + this.viewName,
+        },
+      },
+      valueOrOptionsOrCallback,
+      optionsOrCallback,
+      cb
+    );
+  }
+
+  /**
+   * Sets the row data for a particular row to an empty object
+   *
+   * @param {string} id An string with the key of the row to initialize.
+   * @private
+   */
+  private initializeRow(id: string) {
+    if (!this.rowData[id]) {
+      this.rowData[id] = {};
+    }
+  }
+}
