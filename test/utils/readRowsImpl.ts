@@ -211,9 +211,11 @@ function getSelectedKey(
     keySelectionParameters.keyClosedProperty
   );
   const defaultKey = keySelectionParameters.defaultKey;
-  return defaultKey || keyRequestClosed
-    ? parseInt(keyRequestClosed as string)
-    : parseInt(keyRequestOpen as string) + 1;
+  return defaultKey === undefined
+    ? keyRequestClosed === undefined
+      ? parseInt(keyRequestOpen as string) + 1
+      : parseInt(keyRequestClosed as string)
+    : defaultKey;
 }
 
 /** Generates chunks for rows in a fake table that match the provided RowSet.
