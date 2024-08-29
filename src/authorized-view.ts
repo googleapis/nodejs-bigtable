@@ -13,6 +13,7 @@ import {
 import {RowDataUtils, RowProperties} from './row-data-utils';
 import {RawFilter} from './filter';
 import {Table} from './table';
+import {Family} from './chunktransformer';
 
 interface FilterInformation {
   filter: RawFilter;
@@ -40,7 +41,7 @@ interface IncrementInformation {
  *
  */
 export class AuthorizedView extends TabularApiSurface {
-  private readonly rowData: {[id: string]: {}};
+  private readonly rowData: {[id: string]: {[index: string]: Family}};
 
   constructor(table: Table, viewName: string) {
     super(table.instance, table.id, viewName);
