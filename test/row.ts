@@ -78,7 +78,7 @@ describe('Bigtable/Row', () => {
   let RowError: typeof rw.RowError;
   let row: rw.Row;
 
-  beforeEach(() => {
+  before(() => {
     const Fake = proxyquire('../src/row.js', {
       '@google-cloud/promisify': fakePromisify,
       './mutation.js': {Mutation: FakeMutation},
@@ -87,6 +87,9 @@ describe('Bigtable/Row', () => {
     });
     Row = Fake.Row;
     RowError = Fake.RowError;
+  });
+
+  beforeEach(() => {
     row = new Row(TABLE, ROW_ID);
   });
 
