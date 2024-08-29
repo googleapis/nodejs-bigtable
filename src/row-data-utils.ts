@@ -46,7 +46,12 @@ export interface RowProperties {
   reqOpts: TabularApiSurfaceRequest;
 }
 
-// A class is required because of the mock
+/**
+ * RowDataUtils is a class containing functionality needed by the Row and
+ * AuthorizedView classes. Its static methods need to be contained in a class
+ * so that they can be mocked out using the sinon library as is conventional
+ * throughout the rest of the client library.
+ */
 class RowDataUtils {
   /**
    * Called by `filter` methods for fulfilling table and authorized view requests.
