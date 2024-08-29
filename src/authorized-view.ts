@@ -87,17 +87,7 @@ class AuthorizedView extends TabularApiSurface {
     this.initializeRow(createRulesInfo.rowId);
     RowDataUtils.createRulesUtil(
       createRulesInfo.rules,
-      {
-        requestData: {
-          data: this.rowData[createRulesInfo.rowId],
-          id: createRulesInfo.rowId,
-          table: this,
-          bigtable: this.bigtable,
-        },
-        reqOpts: {
-          authorizedViewName: this.name + '/authorizedView/' + this.viewName,
-        },
-      },
+      this.generateProperties(createRulesInfo.rowId),
       optionsOrCallback,
       cb
     );
@@ -143,20 +133,31 @@ class AuthorizedView extends TabularApiSurface {
     this.initializeRow(filterInfo.rowId);
     RowDataUtils.filterUtil(
       filterInfo.filter,
-      {
-        requestData: {
-          data: this.rowData[filterInfo.rowId],
-          id: filterInfo.rowId,
-          table: this,
-          bigtable: this.bigtable,
-        },
-        reqOpts: {
-          authorizedViewName: this.name + '/authorizedView/' + this.viewName,
-        },
-      },
+      this.generateProperties(filterInfo.rowId),
       configOrCallback,
       cb
     );
+  }
+
+  /**
+   * Generates request properties necessary for making an rpc call for an
+   * authorized view.
+   *
+   * @param {string} id The row id to generate the properties for.
+   * @private
+   */
+  private generateProperties(id: string) {
+    return {
+      requestData: {
+        data: this.rowData[id],
+        id,
+        table: this,
+        bigtable: this.bigtable,
+      },
+      reqOpts: {
+        authorizedViewName: this.name + '/authorizedViews/' + this.viewName,
+      },
+    };
   }
 
   increment(
@@ -219,17 +220,7 @@ class AuthorizedView extends TabularApiSurface {
     this.initializeRow(columnInfo.rowId);
     RowDataUtils.incrementUtils(
       columnInfo.column,
-      {
-        requestData: {
-          data: this.rowData[columnInfo.rowId],
-          id: columnInfo.rowId,
-          table: this,
-          bigtable: this.bigtable,
-        },
-        reqOpts: {
-          authorizedViewName: this.name + '/authorizedView/' + this.viewName,
-        },
-      },
+      this.generateProperties(columnInfo.rowId),
       valueOrOptionsOrCallback,
       optionsOrCallback,
       cb
