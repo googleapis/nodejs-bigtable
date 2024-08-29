@@ -19,16 +19,8 @@ import {Mutation} from './mutation';
 import {
   AbortableDuplex,
   Bigtable,
-  CreateRulesCallback,
-  CreateRulesResponse,
   Entry,
-  FilterCallback,
-  FilterConfig,
-  FilterResponse,
-  IncrementCallback,
-  IncrementResponse,
   MutateOptions,
-  Rule,
   SampleRowKeysCallback,
   SampleRowsKeysResponse,
 } from './index';
