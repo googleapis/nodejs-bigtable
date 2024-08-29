@@ -35,8 +35,8 @@ interface IncrementInformation {
  * contains methods the user can call to work with authorized views.
  *
  * @class
- * @param {Instance} instance Instance Object.
- * @param {string} id Unique identifier of the table.
+ * @param {Table} table The table that the authorized view exists on.
+ * @param {string} id Unique identifier of the authorized view.
  *
  */
 export class AuthorizedView extends TabularApiSurface {
