@@ -30,7 +30,6 @@ interface IncrementInformation {
   rowId: string;
 }
 
-// TODO: Make this work for Authorized Views not table.
 /**
  * The AuthorizedView class is a class that is available to the user that
  * contains methods the user can call to work with authorized views.
