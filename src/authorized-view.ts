@@ -13,6 +13,7 @@ import {
 } from './row';
 import {RowDataUtils, RowProperties} from './row-data-utils';
 import {RawFilter} from './filter';
+import {Table} from './table';
 
 interface FilterInformation {
   filter: RawFilter;
@@ -39,11 +40,11 @@ interface IncrementInformation {
  * @param {string} id Unique identifier of the table.
  *
  */
-class AuthorizedView extends TabularApiSurface {
+export class AuthorizedView extends TabularApiSurface {
   private readonly rowData: {[id: string]: {}};
 
-  constructor(instance: Instance, id: string) {
-    super(instance, id);
+  constructor(table: Table, viewName: string) {
+    super(table.instance, table.id, viewName);
     this.rowData = {};
   }
 

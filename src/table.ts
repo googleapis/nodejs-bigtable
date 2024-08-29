@@ -43,6 +43,7 @@ import {
   GetRowsCallback,
   GetRowsResponse,
 } from './tabular-api-surface';
+import {AuthorizedView} from './authorized-view';
 
 export {
   InsertRowsCallback,
@@ -1161,6 +1162,10 @@ export class Table extends TabularApiSurface {
       },
       callback
     );
+  }
+
+  view(viewName: string): AuthorizedView {
+    return new AuthorizedView(this, viewName);
   }
 
   waitForReplication(): Promise<WaitForReplicationResponse>;
