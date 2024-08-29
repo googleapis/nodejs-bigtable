@@ -29,7 +29,7 @@ import {Chunk} from './chunktransformer';
 import {CallOptions} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
-import {RowDataUtils} from './row-data-utils';
+import {RowDataUtils, RowProperties} from './row-data-utils';
 import {TabularApiSurface} from './tabular-api-surface';
 
 export interface Rule {
@@ -136,6 +136,18 @@ export class RowError extends Error {
     this.message = `Unknown row: ${row}.`;
     this.code = 404;
   }
+}
+
+/**
+ * getProperties returns the properties needed to make a request for a table.
+ *
+ * @param {Row} row The row to make a request for.
+ */
+function getProperties(row: Row): RowProperties {
+  return {
+    reqOpts: {tableName: row.table.name},
+    requestData: row,
+  };
 }
 
 /**
@@ -389,11 +401,12 @@ export class Row {
     optionsOrCallback?: CallOptions | CreateRulesCallback,
     cb?: CreateRulesCallback
   ): void | Promise<CreateRulesResponse> {
-    const properties = {
-      reqOpts: {tableName: this.table.name},
-      requestData: this,
-    };
-    RowDataUtils.createRulesUtil(rules, properties, optionsOrCallback, cb);
+    RowDataUtils.createRulesUtil(
+      rules,
+      getProperties(this),
+      optionsOrCallback,
+      cb
+    );
   }
 
   delete(options?: CallOptions): Promise<MutateResponse>;
@@ -557,11 +570,7 @@ export class Row {
     configOrCallback?: FilterConfig | FilterCallback,
     cb?: FilterCallback
   ): void | Promise<FilterResponse> {
-    const properties = {
-      reqOpts: {tableName: this.table.name},
-      requestData: this,
-    };
-    RowDataUtils.filterUtil(filter, properties, configOrCallback, cb);
+    RowDataUtils.filterUtil(filter, getProperties(this), configOrCallback, cb);
   }
 
   get(options?: GetRowOptions): Promise<GetRowResponse<Row>>;
@@ -762,13 +771,9 @@ export class Row {
     optionsOrCallback?: CallOptions | IncrementCallback,
     cb?: IncrementCallback
   ): void | Promise<IncrementResponse> {
-    const properties = {
-      reqOpts: {tableName: this.table.name},
-      requestData: this,
-    };
     RowDataUtils.incrementUtils(
       column,
-      properties,
+      getProperties(this),
       valueOrOptionsOrCallback,
       optionsOrCallback,
       cb

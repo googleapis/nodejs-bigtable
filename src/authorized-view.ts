@@ -11,7 +11,7 @@ import {
   IncrementResponse,
   Rule,
 } from './row';
-import {RowDataUtils} from './row-data-utils';
+import {RowDataUtils, RowProperties} from './row-data-utils';
 import {RawFilter} from './filter';
 
 interface FilterInformation {
@@ -146,7 +146,7 @@ class AuthorizedView extends TabularApiSurface {
    * @param {string} id The row id to generate the properties for.
    * @private
    */
-  private generateProperties(id: string) {
+  private generateProperties(id: string): RowProperties {
     return {
       requestData: {
         data: this.rowData[id],

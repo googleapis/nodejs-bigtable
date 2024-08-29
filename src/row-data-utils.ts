@@ -22,7 +22,7 @@ interface TabularApiSurfaceRequest {
   authorizedViewName?: string;
 }
 
-interface RowProperties {
+export interface RowProperties {
   requestData: {
     data?: {[index: string]: Family};
     id: string;
