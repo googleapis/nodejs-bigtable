@@ -1,4 +1,3 @@
-import {Instance} from './instance';
 import {TabularApiSurface} from './tabular-api-surface';
 import {CallOptions} from 'google-gax';
 import {
