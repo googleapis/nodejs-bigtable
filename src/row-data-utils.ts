@@ -34,6 +34,15 @@ export interface RowProperties {
 
 // A class is required because of the mock
 class RowDataUtils {
+  /**
+   * Called by `filter` methods for fulfilling table and authorized view requests.
+   *
+   * @param {Filter} filter Filter to be applied to the contents of the row.
+   * @param {RowProperties} properties Properties containing data for the request.
+   * @param {object} configOrCallback Configuration object.
+   * @param {function} cb The callback function.
+   *
+   */
   static filterUtil(
     filter: RawFilter,
     properties: RowProperties,
@@ -111,6 +120,17 @@ class RowDataUtils {
     return data;
   }
 
+  /**
+   * Called by `createRules` methods for fulfilling table and authorized
+   * view requests.
+   *
+   * @param {object|object[]} rules The rules to apply to this row.
+   * @param {RowProperties} properties Properties containing data for the request.
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   *
+   */
   static createRulesUtil(
     rules: Rule | Rule[],
     properties: RowProperties,
@@ -165,6 +185,14 @@ class RowDataUtils {
     );
   }
 
+  /**
+   * @param {string} column The column we are incrementing a value in.
+   * @param {RowProperties} properties Properties containing data for the request.
+   * @param {number} [valueOrOptionsOrCallback] The amount to increment by, defaults to 1.
+   * @param {object} [optionsOrCallback] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} cb The callback function.
+   */
   static incrementUtils(
     column: string,
     properties: RowProperties,
