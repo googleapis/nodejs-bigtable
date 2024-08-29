@@ -210,7 +210,6 @@ export class Mutation {
    * @private
    */
   static encodeSetCell(data: Data): SetCellObj[] {
-    console.log('in encoding');
     const mutations: SetCellObj[] = [];
 
     Object.keys(data).forEach(familyName => {
