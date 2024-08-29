@@ -34,7 +34,6 @@ import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {TableUtils} from './utils/table';
-import {RowDataUtils} from './row-data-utils';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
