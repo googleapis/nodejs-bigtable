@@ -1224,11 +1224,27 @@
                       },
                       "nested": {
                         "MultiClusterRoutingUseAny": {
+                          "oneofs": {
+                            "affinity": {
+                              "oneof": [
+                                "rowAffinity"
+                              ]
+                            }
+                          },
                           "fields": {
                             "clusterIds": {
                               "rule": "repeated",
                               "type": "string",
                               "id": 1
+                            },
+                            "rowAffinity": {
+                              "type": "RowAffinity",
+                              "id": 3
+                            }
+                          },
+                          "nested": {
+                            "RowAffinity": {
+                              "fields": {}
                             }
                           }
                         },

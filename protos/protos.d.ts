@@ -4318,6 +4318,9 @@ export namespace google {
 
                         /** MultiClusterRoutingUseAny clusterIds */
                         clusterIds?: (string[]|null);
+
+                        /** MultiClusterRoutingUseAny rowAffinity */
+                        rowAffinity?: (google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.IRowAffinity|null);
                     }
 
                     /** Represents a MultiClusterRoutingUseAny. */
@@ -4331,6 +4334,12 @@ export namespace google {
 
                         /** MultiClusterRoutingUseAny clusterIds. */
                         public clusterIds: string[];
+
+                        /** MultiClusterRoutingUseAny rowAffinity. */
+                        public rowAffinity?: (google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.IRowAffinity|null);
+
+                        /** MultiClusterRoutingUseAny affinity. */
+                        public affinity?: "rowAffinity";
 
                         /**
                          * Creates a new MultiClusterRoutingUseAny instance using the specified properties.
@@ -4408,6 +4417,100 @@ export namespace google {
                          * @returns The default type url
                          */
                         public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    namespace MultiClusterRoutingUseAny {
+
+                        /** Properties of a RowAffinity. */
+                        interface IRowAffinity {
+                        }
+
+                        /** Represents a RowAffinity. */
+                        class RowAffinity implements IRowAffinity {
+
+                            /**
+                             * Constructs a new RowAffinity.
+                             * @param [properties] Properties to set
+                             */
+                            constructor(properties?: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.IRowAffinity);
+
+                            /**
+                             * Creates a new RowAffinity instance using the specified properties.
+                             * @param [properties] Properties to set
+                             * @returns RowAffinity instance
+                             */
+                            public static create(properties?: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.IRowAffinity): google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity;
+
+                            /**
+                             * Encodes the specified RowAffinity message. Does not implicitly {@link google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity.verify|verify} messages.
+                             * @param message RowAffinity message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encode(message: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.IRowAffinity, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Encodes the specified RowAffinity message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity.verify|verify} messages.
+                             * @param message RowAffinity message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encodeDelimited(message: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.IRowAffinity, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Decodes a RowAffinity message from the specified reader or buffer.
+                             * @param reader Reader or buffer to decode from
+                             * @param [length] Message length if known beforehand
+                             * @returns RowAffinity
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity;
+
+                            /**
+                             * Decodes a RowAffinity message from the specified reader or buffer, length delimited.
+                             * @param reader Reader or buffer to decode from
+                             * @returns RowAffinity
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity;
+
+                            /**
+                             * Verifies a RowAffinity message.
+                             * @param message Plain object to verify
+                             * @returns `null` if valid, otherwise the reason why it is not
+                             */
+                            public static verify(message: { [k: string]: any }): (string|null);
+
+                            /**
+                             * Creates a RowAffinity message from a plain object. Also converts values to their respective internal types.
+                             * @param object Plain object
+                             * @returns RowAffinity
+                             */
+                            public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity;
+
+                            /**
+                             * Creates a plain object from a RowAffinity message. Also converts values to other types if specified.
+                             * @param message RowAffinity
+                             * @param [options] Conversion options
+                             * @returns Plain object
+                             */
+                            public static toObject(message: google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.RowAffinity, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                            /**
+                             * Converts this RowAffinity to JSON.
+                             * @returns JSON object
+                             */
+                            public toJSON(): { [k: string]: any };
+
+                            /**
+                             * Gets the default type url for RowAffinity
+                             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                             * @returns The default type url
+                             */
+                            public static getTypeUrl(typeUrlPrefix?: string): string;
+                        }
                     }
 
                     /** Properties of a SingleClusterRouting. */
