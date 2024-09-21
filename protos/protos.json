@@ -1097,6 +1097,13 @@
                           "type": "int32",
                           "id": 4
                         },
+                        "nodeScalingFactor": {
+                          "type": "NodeScalingFactor",
+                          "id": 9,
+                          "options": {
+                            "(google.api.field_behavior)": "IMMUTABLE"
+                          }
+                        },
                         "clusterConfig": {
                           "type": "ClusterConfig",
                           "id": 7
@@ -1124,6 +1131,13 @@
                             "CREATING": 2,
                             "RESIZING": 3,
                             "DISABLED": 4
+                          }
+                        },
+                        "NodeScalingFactor": {
+                          "values": {
+                            "NODE_SCALING_FACTOR_UNSPECIFIED": 0,
+                            "NODE_SCALING_FACTOR_1X": 1,
+                            "NODE_SCALING_FACTOR_2X": 2
                           }
                         },
                         "ClusterAutoscalingConfig": {

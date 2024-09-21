@@ -3736,6 +3736,9 @@ export namespace google {
                     /** Cluster serveNodes */
                     serveNodes?: (number|null);
 
+                    /** Cluster nodeScalingFactor */
+                    nodeScalingFactor?: (google.bigtable.admin.v2.Cluster.NodeScalingFactor|keyof typeof google.bigtable.admin.v2.Cluster.NodeScalingFactor|null);
+
                     /** Cluster clusterConfig */
                     clusterConfig?: (google.bigtable.admin.v2.Cluster.IClusterConfig|null);
 
@@ -3766,6 +3769,9 @@ export namespace google {
 
                     /** Cluster serveNodes. */
                     public serveNodes: number;
+
+                    /** Cluster nodeScalingFactor. */
+                    public nodeScalingFactor: (google.bigtable.admin.v2.Cluster.NodeScalingFactor|keyof typeof google.bigtable.admin.v2.Cluster.NodeScalingFactor);
 
                     /** Cluster clusterConfig. */
                     public clusterConfig?: (google.bigtable.admin.v2.Cluster.IClusterConfig|null);
@@ -3866,6 +3872,13 @@ export namespace google {
                         CREATING = 2,
                         RESIZING = 3,
                         DISABLED = 4
+                    }
+
+                    /** NodeScalingFactor enum. */
+                    enum NodeScalingFactor {
+                        NODE_SCALING_FACTOR_UNSPECIFIED = 0,
+                        NODE_SCALING_FACTOR_1X = 1,
+                        NODE_SCALING_FACTOR_2X = 2
                     }
 
                     /** Properties of a ClusterAutoscalingConfig. */
