@@ -26,7 +26,6 @@ import {
 } from './row';
 import {RowDataUtils, RowProperties} from './row-data-utils';
 import {RawFilter} from './filter';
-import {Table} from './table';
 import {Family} from './chunktransformer';
 import {Instance} from './instance';
 
