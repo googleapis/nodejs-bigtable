@@ -1480,6 +1480,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   /**
    * Gets an Authorized View object for making authorized view grpc calls.
    *
+   * @param {string} tableName The name for the Table
    * @param {string} viewName The name for the Authorized view
    */
   view(tableName: string, viewName: string): AuthorizedView {
