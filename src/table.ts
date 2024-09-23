@@ -43,6 +43,7 @@ import {
   GetRowsCallback,
   GetRowsResponse,
 } from './tabular-api-surface';
+import {AuthorizedView} from './authorized-view';
 
 export {
   InsertRowsCallback,
@@ -319,6 +320,10 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
  * ```
  */
 export class Table extends TabularApiSurface {
+  constructor(instance: Instance, id: string) {
+    super(instance, id);
+  }
+
   /**
    * Formats the decodes policy etag value to string.
    *
@@ -1157,6 +1162,15 @@ export class Table extends TabularApiSurface {
       },
       callback
     );
+  }
+
+  /**
+   * Gets an Authorized View object for making authorized view grpc calls.
+   *
+   * @param {string} viewName The name for the Authorized view
+   */
+  view(viewName: string): AuthorizedView {
+    return new AuthorizedView(this, viewName);
   }
 
   waitForReplication(): Promise<WaitForReplicationResponse>;

@@ -127,11 +127,26 @@ export interface PrefixRange {
   end?: BoundData | string;
 }
 
+export interface PrefixRange {
+  start?: BoundData | string;
+  end?: BoundData | string;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
 
+/**
+ * The TabularApiSurface class is a class that contains methods we want to
+ * expose on both tables and authorized views. It also contains data that will
+ * be used by both Authorized views and Tables for these shared methods.
+ *
+ * @class
+ * @param {Instance} instance Instance Object.
+ * @param {string} id Unique identifier of the table.
+ *
+ */
 export class TabularApiSurface {
   bigtable: Bigtable;
   instance: Instance;
@@ -139,10 +154,12 @@ export class TabularApiSurface {
   id: string;
   metadata?: google.bigtable.admin.v2.ITable;
   maxRetries?: number;
+  protected viewName?: string;
 
-  constructor(instance: Instance, id: string) {
+  protected constructor(instance: Instance, id: string, viewName?: string) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
+    this.viewName = viewName;
 
     let name;
 

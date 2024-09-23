@@ -14,9 +14,7 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const dotProp = require('dot-prop');
-import {Filter, RawFilter} from './filter';
+import {RawFilter} from './filter';
 import {Mutation, ConvertFromBytesUserOptions, Bytes, Data} from './mutation';
 import {Bigtable} from '.';
 import {
@@ -31,6 +29,7 @@ import {Chunk} from './chunktransformer';
 import {CallOptions} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
+import {RowDataUtils, RowProperties} from './row-data-utils';
 import {TabularApiSurface} from './tabular-api-surface';
 
 export interface Rule {
@@ -137,6 +136,18 @@ export class RowError extends Error {
     this.message = `Unknown row: ${row}.`;
     this.code = 404;
   }
+}
+
+/**
+ * getProperties returns the properties needed to make a request for a table.
+ *
+ * @param {Row} row The row to make a request for.
+ */
+function getProperties(row: Row): RowProperties {
+  return {
+    reqOpts: {tableName: row.table.name},
+    requestData: row,
+  };
 }
 
 /**
@@ -308,32 +319,7 @@ export class Row {
     families: google.bigtable.v2.IFamily[],
     options?: FormatFamiliesOptions
   ) {
-    const data = {} as {[index: string]: {}};
-    options = options || {};
-    families.forEach(family => {
-      const familyData = (data[family.name!] = {}) as {
-        [index: string]: {};
-      };
-      family.columns!.forEach(column => {
-        const qualifier = Mutation.convertFromBytes(
-          column.qualifier as string
-        ) as string;
-        familyData[qualifier] = column.cells!.map(cell => {
-          let value = cell.value;
-          if (options!.decode !== false) {
-            value = Mutation.convertFromBytes(value as Bytes, {
-              isPossibleNumber: true,
-            }) as string;
-          }
-          return {
-            value,
-            timestamp: cell.timestampMicros,
-            labels: cell.labels,
-          };
-        });
-      });
-    });
-    return data;
+    return RowDataUtils.formatFamilies_Util(families, options);
   }
 
   create(options?: CreateRowOptions): Promise<CreateRowResponse>;
@@ -415,49 +401,11 @@ export class Row {
     optionsOrCallback?: CallOptions | CreateRulesCallback,
     cb?: CreateRulesCallback
   ): void | Promise<CreateRulesResponse> {
-    const gaxOptions =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-
-    if (!rules || (rules as Rule[]).length === 0) {
-      throw new Error('At least one rule must be provided.');
-    }
-
-    rules = arrify(rules).map(rule => {
-      const column = Mutation.parseColumnName(rule.column);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const ruleData: any = {
-        familyName: column.family,
-        columnQualifier: Mutation.convertToBytes(column.qualifier!),
-      };
-
-      if (rule.append) {
-        ruleData.appendValue = Mutation.convertToBytes(rule.append);
-      }
-
-      if (rule.increment) {
-        ruleData.incrementAmount = rule.increment;
-      }
-
-      return ruleData;
-    });
-
-    const reqOpts = {
-      tableName: this.table.name,
-      appProfileId: this.bigtable.appProfileId,
-      rowKey: Mutation.convertToBytes(this.id),
+    RowDataUtils.createRulesUtil(
       rules,
-    };
-    this.data = {};
-    this.bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
-      {
-        client: 'BigtableClient',
-        method: 'readModifyWriteRow',
-        reqOpts,
-        gaxOpts: gaxOptions,
-      },
-      callback
+      getProperties(this),
+      optionsOrCallback,
+      cb
     );
   }
 
@@ -622,41 +570,7 @@ export class Row {
     configOrCallback?: FilterConfig | FilterCallback,
     cb?: FilterCallback
   ): void | Promise<FilterResponse> {
-    const config = typeof configOrCallback === 'object' ? configOrCallback : {};
-    const callback =
-      typeof configOrCallback === 'function' ? configOrCallback : cb!;
-    const reqOpts = {
-      tableName: this.table.name,
-      appProfileId: this.bigtable.appProfileId,
-      rowKey: Mutation.convertToBytes(this.id),
-      predicateFilter: Filter.parse(filter),
-      trueMutations: createFlatMutationsList(config.onMatch!),
-      falseMutations: createFlatMutationsList(config.onNoMatch!),
-    };
-    this.data = {};
-    this.bigtable.request<google.bigtable.v2.ICheckAndMutateRowResponse>(
-      {
-        client: 'BigtableClient',
-        method: 'checkAndMutateRow',
-        reqOpts,
-        gaxOpts: config.gaxOptions,
-      },
-      (err, apiResponse) => {
-        if (err) {
-          callback(err, null, apiResponse);
-          return;
-        }
-
-        callback(null, apiResponse!.predicateMatched, apiResponse);
-      }
-    );
-
-    function createFlatMutationsList(entries: FilterConfigOption[]) {
-      const e2 = arrify(entries).map(
-        entry => Mutation.parse(entry as Mutation).mutations!
-      );
-      return e2.reduce((a, b) => a.concat(b), []);
-    }
+    RowDataUtils.filterUtil(filter, getProperties(this), configOrCallback, cb);
   }
 
   get(options?: GetRowOptions): Promise<GetRowResponse<Row>>;
@@ -857,39 +771,13 @@ export class Row {
     optionsOrCallback?: CallOptions | IncrementCallback,
     cb?: IncrementCallback
   ): void | Promise<IncrementResponse> {
-    const value =
-      typeof valueOrOptionsOrCallback === 'number'
-        ? valueOrOptionsOrCallback
-        : 1;
-    const gaxOptions =
-      typeof valueOrOptionsOrCallback === 'object'
-        ? valueOrOptionsOrCallback
-        : typeof optionsOrCallback === 'object'
-          ? optionsOrCallback
-          : {};
-    const callback =
-      typeof valueOrOptionsOrCallback === 'function'
-        ? valueOrOptionsOrCallback
-        : typeof optionsOrCallback === 'function'
-          ? optionsOrCallback
-          : cb!;
-
-    const reqOpts = {
+    RowDataUtils.incrementUtils(
       column,
-      increment: value,
-    } as Rule;
-
-    this.createRules(reqOpts, gaxOptions, (err, resp) => {
-      if (err) {
-        callback(err, null, resp);
-        return;
-      }
-
-      const data = Row.formatFamilies_(resp!.row!.families!);
-      const value = dotProp.get(data, column.replace(':', '.'))[0].value;
-
-      callback(null, value, resp);
-    });
+      getProperties(this),
+      valueOrOptionsOrCallback,
+      optionsOrCallback,
+      cb
+    );
   }
 
   save(entry: Entry, options?: CallOptions): Promise<MutateResponse>;
