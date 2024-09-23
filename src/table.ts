@@ -1164,15 +1164,6 @@ export class Table extends TabularApiSurface {
     );
   }
 
-  /**
-   * Gets an Authorized View object for making authorized view grpc calls.
-   *
-   * @param {string} viewName The name for the Authorized view
-   */
-  view(viewName: string): AuthorizedView {
-    return new AuthorizedView(this, viewName);
-  }
-
   waitForReplication(): Promise<WaitForReplicationResponse>;
   waitForReplication(callback: WaitForReplicationCallback): void;
   /**
