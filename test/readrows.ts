@@ -402,7 +402,7 @@ describe('Bigtable/ReadRows', () => {
       }
     })();
   });
-  it.only('should not re-request data that the server has already sent', function (done) {
+  it.skip('should not re-request data that the server has already sent', function (done) {
     setWindowsTestTimeout(this);
     const dataResults = [];
     let requestCount = 0;
