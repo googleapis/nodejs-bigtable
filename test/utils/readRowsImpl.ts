@@ -318,6 +318,7 @@ class ReadRowsRequestHandler {
  */
 export class ReadRowsImpl {
   private errorAfterChunkNo?: number;
+  private preProcessor?: () => void;
 
   /**
    * Constructor for creating the ReadRows service. Constructor is private to
@@ -329,6 +330,7 @@ export class ReadRowsImpl {
    */
   private constructor(readonly serviceParameters: ReadRowsServiceParameters) {
     this.errorAfterChunkNo = serviceParameters.errorAfterChunkNo;
+    this.preProcessor = serviceParameters.preProcessor;
   }
 
   /**
@@ -348,6 +350,9 @@ export class ReadRowsImpl {
    * @param stream The stream object that is passed into the request.
    */
   private async handleRequest(stream: ReadRowsWritableStream) {
+    if (this.preProcessor) {
+      this.preProcessor();
+    }
     const debugLog = this.serviceParameters.debugLog;
     prettyPrintRequest(stream.request, debugLog);
     const readRowsRequestHandler = new ReadRowsRequestHandler(stream, debugLog);
