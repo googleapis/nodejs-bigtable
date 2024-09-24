@@ -318,7 +318,9 @@ class ReadRowsRequestHandler {
  */
 export class ReadRowsImpl {
   private errorAfterChunkNo?: number;
-  private preProcessor?: () => void;
+  private preProcessor?: (
+    request: protos.google.bigtable.v2.IReadRowsRequest
+  ) => void;
 
   /**
    * Constructor for creating the ReadRows service. Constructor is private to
@@ -351,7 +353,7 @@ export class ReadRowsImpl {
    */
   private async handleRequest(stream: ReadRowsWritableStream) {
     if (this.preProcessor) {
-      this.preProcessor();
+      this.preProcessor(stream.request);
     }
     const debugLog = this.serviceParameters.debugLog;
     prettyPrintRequest(stream.request, debugLog);

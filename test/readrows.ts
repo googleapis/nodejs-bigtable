@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {before, describe, it} from 'mocha';
-import {Bigtable, Row, Table} from '../src';
+import {Bigtable, protos, Row, Table} from '../src';
 import * as assert from 'assert';
 import {Transform, PassThrough, pipeline} from 'stream';
 
@@ -375,6 +375,68 @@ describe('Bigtable/ReadRows', () => {
         chunkSize: 1,
         chunksPerResponse: 1,
         debugLog,
+      }) as ServerImplementationInterface,
+    });
+    const sleep = (ms: number) => {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    };
+    (async () => {
+      try {
+        // 150 rows must be enough to reproduce issues with losing the data and to create backpressure
+        const stream = table.createReadStream({
+          start: '00000000',
+          end: '00000150',
+        });
+
+        for await (const row of stream) {
+          dataResults.push(row.id);
+          await sleep(50);
+        }
+        const expectedResults = Array.from(Array(150).keys())
+          .map(i => '00000000' + i.toString())
+          .map(i => i.slice(-8));
+        assert.deepStrictEqual(dataResults, expectedResults);
+        done();
+      } catch (error) {
+        done(error);
+      }
+    })();
+  });
+  it.only('should not re-request data that the server has already sent', function (done) {
+    setWindowsTestTimeout(this);
+    const dataResults = [];
+    let requestCount = 0;
+
+    // keyTo and keyFrom are not provided so they will be determined from
+    // the request that is passed in.
+    service.setService({
+      ReadRows: ReadRowsImpl.createService({
+        errorAfterChunkNo: 100, // the server will error after sending this chunk (not row)
+        valueSize: 1,
+        chunkSize: 1,
+        chunksPerResponse: 1,
+        debugLog,
+        preProcessor: (request: protos.google.bigtable.v2.IReadRowsRequest) => {
+          try {
+            requestCount++;
+            if (requestCount === 1) {
+              assert(request?.rows?.rowRanges);
+              assert.strictEqual(
+                request?.rows.rowRanges[0].startKeyClosed?.toString(),
+                '00000000'
+              );
+            }
+            if (requestCount === 2) {
+              assert(request?.rows?.rowRanges);
+              assert.strictEqual(
+                request?.rows.rowRanges[0].startKeyOpen?.toString(),
+                '00000100'
+              );
+            }
+          } catch (err) {
+            done(err);
+          }
+        },
       }) as ServerImplementationInterface,
     });
     const sleep = (ms: number) => {
