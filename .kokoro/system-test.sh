@@ -59,3 +59,5 @@ if npx check-node-version@3.3.0 --silent --node $COVERAGE_NODE; then
 else
   echo "coverage is only reported for Node $COVERAGE_NODE"
 fi
+
+gcloud config list
