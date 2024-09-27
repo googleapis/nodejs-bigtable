@@ -3435,6 +3435,7 @@
                         "kind": {
                           "oneof": [
                             "bytesType",
+                            "stringType",
                             "int64Type",
                             "aggregateType"
                           ]
@@ -3444,6 +3445,10 @@
                         "bytesType": {
                           "type": "Bytes",
                           "id": 1
+                        },
+                        "stringType": {
+                          "type": "String",
+                          "id": 2
                         },
                         "int64Type": {
                           "type": "Int64",
@@ -3479,6 +3484,36 @@
                               },
                               "nested": {
                                 "Raw": {
+                                  "fields": {}
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "String": {
+                          "fields": {
+                            "encoding": {
+                              "type": "Encoding",
+                              "id": 1
+                            }
+                          },
+                          "nested": {
+                            "Encoding": {
+                              "oneofs": {
+                                "encoding": {
+                                  "oneof": [
+                                    "utf8Raw"
+                                  ]
+                                }
+                              },
+                              "fields": {
+                                "utf8Raw": {
+                                  "type": "Utf8Raw",
+                                  "id": 1
+                                }
+                              },
+                              "nested": {
+                                "Utf8Raw": {
                                   "fields": {}
                                 }
                               }

@@ -25,8 +25,10 @@ import * as backupTypes from '../src/backup';
 import * as instanceTypes from '../src/instance';
 import * as sinon from 'sinon';
 
-import {Bigtable} from '../src';
+import {Bigtable, RequestOptions} from '../src';
 import {Table} from '../src/table';
+import {generateId} from '../system-test/common';
+import {Backup} from '../src/backup';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -220,6 +222,66 @@ describe('Bigtable/Backup', () => {
       };
 
       backup.create(config, done);
+    });
+  });
+
+  describe('copy', () => {
+    beforeEach(() => {
+      backup.bigtable.request = (
+        config: RequestOptions,
+        callback: (err: ServiceError | null, res: RequestOptions) => void
+      ) => {
+        callback(null, config);
+      };
+    });
+
+    it('should correctly copy backup from the cluster to a custom project', done => {
+      const destinationProjectId = generateId('project');
+      const bigtable = new Bigtable({projectId: destinationProjectId});
+      const backupId = generateId('backup');
+      const newBackupId = generateId('backup');
+      const backup = new Backup(CLUSTER, backupId);
+      const destinationInstanceId = generateId('instance');
+      const destinationClusterId = generateId('cluster');
+      const instance = new FakeInstance(bigtable, destinationInstanceId);
+      // In callback, config is object received in request function so must be
+      // of type any so that this test can compile and so that asserts can test
+      // its properties.
+      backup.copy(
+        {
+          cluster: new clusterTypes.Cluster(instance, destinationClusterId),
+          id: newBackupId,
+          expireTime: new PreciseDate(177),
+          gaxOptions: {
+            timeout: 139,
+          },
+        },
+        (
+          err?: ServiceError | Error | null,
+          backup?: Backup | null,
+          config?: any
+        ) => {
+          assert.strictEqual(
+            backup?.name,
+            `projects/${destinationProjectId}/instances/${destinationInstanceId}/clusters/${destinationClusterId}/backups/${newBackupId}`
+          );
+          assert.strictEqual(config?.client, 'BigtableTableAdminClient');
+          assert.strictEqual(config?.method, 'copyBackup');
+          assert.deepStrictEqual(config?.reqOpts, {
+            parent: `projects/${destinationProjectId}/instances/${destinationInstanceId}/clusters/${destinationClusterId}`,
+            backupId: newBackupId,
+            sourceBackup: `a/b/c/d/backups/${backupId}`,
+            expireTime: {
+              seconds: 0,
+              nanos: 177000000,
+            },
+          });
+          assert.deepStrictEqual(config?.gaxOpts, {
+            timeout: 139,
+          });
+          done();
+        }
+      );
     });
   });
 
