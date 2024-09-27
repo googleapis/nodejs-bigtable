@@ -16,7 +16,7 @@ import {GetRowsOptions, PrefixRange} from '../table';
 import {Mutation} from '../mutation';
 
 export class TableUtils {
-  static getRanges(options: GetRowsOptions) {
+  static getRanges(options: GetRowsOptions): PrefixRange[] {
     const ranges = options.ranges || [];
     if (options.start || options.end) {
       if (options.ranges || options.prefix || options.prefixes) {
