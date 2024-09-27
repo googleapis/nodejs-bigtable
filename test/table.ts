@@ -950,8 +950,13 @@ describe('Bigtable/Table', () => {
       ];
 
       beforeEach(() => {
-        sinon.stub(table, 'row').callsFake(() => {
-          return {} as Row;
+        sinon.stub(table, 'row').callsFake((...args: unknown[]) => {
+          return {
+            id: args[0] as string,
+            table: table,
+            bigtable: table.bigtable,
+            data: {},
+          } as Row;
         });
         FakeChunkTransformer.prototype._transform = function (
           chunks: Array<{}>,
