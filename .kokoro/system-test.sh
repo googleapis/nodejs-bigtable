@@ -61,4 +61,6 @@ else
 fi
 
 # a comment
+echo "running gcloud commands now"
 gcloud config list
+gcloud bigtable authorized-views create --instance=instance-for-views-id --table=table-for-views-id
