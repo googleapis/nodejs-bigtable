@@ -1,4 +1,4 @@
-// Copyright 2016 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import * as proxyquire from 'proxyquire';
 import * as pumpify from 'pumpify';
 import * as sinon from 'sinon';
 import {PassThrough, Writable} from 'stream';
-import {GoogleError, RetryOptions, ServiceError} from 'google-gax';
+import {ServiceError} from 'google-gax';
 
 import * as inst from '../src/instance';
 import {ChunkTransformer} from '../src/chunktransformer.js';
@@ -33,7 +33,6 @@ import {TableUtils} from '../src/utils/table';
 import {ReadRowsResumptionStrategy} from '../src/utils/read-rows-resumption';
 import {MockGapicLayer} from './util/mock-gapic-layer';
 import {Table} from '../src/table';
-import {RequestType} from 'google-gax/build/src/apitypes';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
