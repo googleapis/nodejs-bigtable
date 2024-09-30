@@ -2,11 +2,12 @@ import {describe} from 'mocha';
 import {AbortableDuplex, Bigtable, PrefixRange, RawFilter} from '../src';
 import {PassThrough} from 'stream';
 import {CallOptions} from 'google-gax';
+import * as assert from 'assert';
 
 describe('Bigtable/AuthorizedViews', () => {
   describe('Authorized View methods should have requests that match Table and Row requests', () => {
     describe('Table', () => {
-      it('requests for createReadStream should match', () => {
+      it.only('requests for createReadStream should match', () => {
         const bigtable = new Bigtable({});
         const fakeTableName = 'fake-table';
         const fakeInstanceName = 'fake-instance';
@@ -14,35 +15,65 @@ describe('Bigtable/AuthorizedViews', () => {
         const instance = bigtable.instance(fakeInstanceName);
         const table = instance.table(fakeTableName);
         const view = instance.view(fakeTableName, fakeViewName);
+        let requestCount = 0;
         table.bigtable.request = (config: any) => {
+          requestCount++;
+          assert.strictEqual(config.client, 'BigtableClient');
+          assert.strictEqual(config.method, 'readRows');
+          const requestForTable = {
+            tableName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}`,
+          };
+          const requestForAuthorizedView = {
+            authorizedViewName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}/authorizedViews/${fakeViewName}`,
+          };
+          const expectedPartialReqOpts =
+            requestCount === 1 ? requestForTable : requestForAuthorizedView;
+          const expectedReqOpts = Object.assign(
+            {
+              appProfileId: undefined,
+              rows: {
+                rowKeys: [],
+                rowRanges: [
+                  {
+                    startKeyClosed: Buffer.from('7'),
+                    endKeyClosed: Buffer.from('9'),
+                  },
+                ],
+              },
+              filter: {
+                columnQualifierRegexFilter: Buffer.from('abc'),
+              },
+              rowsLimit: 5,
+            },
+            expectedPartialReqOpts
+          );
+          assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
+          const expectedGaxOpts = {
+            maxRetries: 4,
+            otherArgs: {
+              headers: {
+                'bigtable-attempt': 0,
+              },
+            },
+          };
+          assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
           const stream = new PassThrough({
             objectMode: true,
           });
           return stream as {} as AbortableDuplex;
         };
-        table.createReadStream({
+        const opts = {
           decode: true,
-
-          /**
-           * The encoding to use when converting Buffer values to a string.
-           */
-          // encoding?: string;
-
-          /**
-           * End value for key range.
-           */
-          // end?: string;
-
-          /**
-           * Row filters allow you to both make advanced queries and format how the data is returned.
-           */
-          // filter: RawFilter;
+          end: '9',
+          filter: [{column: 'abc'}],
           gaxOptions: {
             maxRetries: 4,
           },
           limit: 5,
           start: '7',
-        });
+        };
+        table.createReadStream(opts);
+        view.createReadStream(opts);
       });
     });
   });
