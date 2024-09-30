@@ -306,10 +306,17 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
 
-      const reqOpts = {
-        tableName: this.name,
-        appProfileId: this.bigtable.appProfileId,
-      } as google.bigtable.v2.IReadRowsRequest;
+      const reqOpts = (
+        this.viewName
+          ? {
+              authorizedViewName: `${this.name}/authorizedViews/${this.viewName}`,
+              appProfileId: this.bigtable.appProfileId,
+            }
+          : {
+              tableName: this.name,
+              appProfileId: this.bigtable.appProfileId,
+            }
+      ) as google.bigtable.v2.IReadRowsRequest;
 
       const retryOpts = {
         currentRetryAttempt: 0, // was numConsecutiveErrors
