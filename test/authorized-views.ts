@@ -14,127 +14,132 @@ describe('Bigtable/AuthorizedViews', () => {
       const instance = bigtable.instance(fakeInstanceName);
       const table = instance.table(fakeTableName);
       const view = instance.view(fakeTableName, fakeViewName);
-      it.only('requests for createReadStream should match', async () => {
-        let requestCount = 0;
-        table.bigtable.request = (config: any) => {
-          requestCount++;
-          assert.strictEqual(config.client, 'BigtableClient');
-          assert.strictEqual(config.method, 'readRows');
-          const requestForTable = {
-            tableName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}`,
-          };
-          const requestForAuthorizedView = {
-            authorizedViewName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}/authorizedViews/${fakeViewName}`,
-          };
-          const expectedPartialReqOpts =
-            requestCount === 1 ? requestForTable : requestForAuthorizedView;
-          const expectedReqOpts = Object.assign(
-            {
-              appProfileId: undefined,
-              rows: {
-                rowKeys: [],
-                rowRanges: [
-                  {
-                    startKeyClosed: Buffer.from('7'),
-                    endKeyClosed: Buffer.from('9'),
-                  },
-                ],
+      describe('should make ReadRows grpc requests', () => {
+        it('requests for createReadStream should match', async () => {
+          let requestCount = 0;
+          table.bigtable.request = (config: any) => {
+            requestCount++;
+            assert.strictEqual(config.client, 'BigtableClient');
+            assert.strictEqual(config.method, 'readRows');
+            const requestForTable = {
+              tableName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}`,
+            };
+            const requestForAuthorizedView = {
+              authorizedViewName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}/authorizedViews/${fakeViewName}`,
+            };
+            const expectedPartialReqOpts =
+              requestCount === 1 ? requestForTable : requestForAuthorizedView;
+            const expectedReqOpts = Object.assign(
+              {
+                appProfileId: undefined,
+                rows: {
+                  rowKeys: [],
+                  rowRanges: [
+                    {
+                      startKeyClosed: Buffer.from('7'),
+                      endKeyClosed: Buffer.from('9'),
+                    },
+                  ],
+                },
+                filter: {
+                  columnQualifierRegexFilter: Buffer.from('abc'),
+                },
+                rowsLimit: 5,
               },
-              filter: {
-                columnQualifierRegexFilter: Buffer.from('abc'),
+              expectedPartialReqOpts
+            );
+            assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
+            const expectedGaxOpts = {
+              maxRetries: 4,
+              otherArgs: {
+                headers: {
+                  'bigtable-attempt': 0,
+                },
               },
-              rowsLimit: 5,
+            };
+            assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
+            const stream = new PassThrough({
+              objectMode: true,
+            });
+            return stream as {} as AbortableDuplex;
+          };
+          const opts = {
+            decode: true,
+            end: '9',
+            filter: [{column: 'abc'}],
+            gaxOptions: {
+              maxRetries: 4,
             },
-            expectedPartialReqOpts
-          );
-          assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
-          const expectedGaxOpts = {
-            maxRetries: 4,
-            otherArgs: {
-              headers: {
-                'bigtable-attempt': 0,
+            limit: 5,
+            start: '7',
+          };
+          await table.createReadStream(opts);
+          await view.createReadStream(opts);
+        });
+        it('requests for getRows should match', async () => {
+          let requestCount = 0;
+          table.bigtable.request = (config: any) => {
+            requestCount++;
+            assert.strictEqual(config.client, 'BigtableClient');
+            assert.strictEqual(config.method, 'readRows');
+            const requestForTable = {
+              tableName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}`,
+            };
+            const requestForAuthorizedView = {
+              authorizedViewName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}/authorizedViews/${fakeViewName}`,
+            };
+            const expectedPartialReqOpts =
+              requestCount === 1 ? requestForTable : requestForAuthorizedView;
+            const expectedReqOpts = Object.assign(
+              {
+                appProfileId: undefined,
+                rows: {
+                  rowKeys: [],
+                  rowRanges: [
+                    {
+                      startKeyClosed: Buffer.from('7'),
+                      endKeyClosed: Buffer.from('9'),
+                    },
+                  ],
+                },
+                filter: {
+                  columnQualifierRegexFilter: Buffer.from('abc'),
+                },
+                rowsLimit: 5,
               },
+              expectedPartialReqOpts
+            );
+            assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
+            const expectedGaxOpts = {
+              maxRetries: 4,
+              otherArgs: {
+                headers: {
+                  'bigtable-attempt': 0,
+                },
+              },
+            };
+            assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
+            const stream = new PassThrough({
+              objectMode: true,
+            });
+            setImmediate(() => {
+              stream.end();
+            });
+            return stream as {} as AbortableDuplex;
+          };
+          const opts = {
+            decode: true,
+            end: '9',
+            filter: [{column: 'abc'}],
+            gaxOptions: {
+              maxRetries: 4,
             },
+            limit: 5,
+            start: '7',
           };
-          assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
-          const stream = new PassThrough({
-            objectMode: true,
-          });
-          return stream as {} as AbortableDuplex;
-        };
-        const opts = {
-          decode: true,
-          end: '9',
-          filter: [{column: 'abc'}],
-          gaxOptions: {
-            maxRetries: 4,
-          },
-          limit: 5,
-          start: '7',
-        };
-        await table.createReadStream(opts);
-        await view.createReadStream(opts);
-      });
-      it('requests for getRows should match', async () => {
-        let requestCount = 0;
-        table.bigtable.request = (config: any) => {
-          requestCount++;
-          assert.strictEqual(config.client, 'BigtableClient');
-          assert.strictEqual(config.method, 'readRows');
-          const requestForTable = {
-            tableName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}`,
-          };
-          const requestForAuthorizedView = {
-            authorizedViewName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}/authorizedViews/${fakeViewName}`,
-          };
-          const expectedPartialReqOpts =
-            requestCount === 1 ? requestForTable : requestForAuthorizedView;
-          const expectedReqOpts = Object.assign(
-            {
-              appProfileId: undefined,
-              rows: {
-                rowKeys: [],
-                rowRanges: [
-                  {
-                    startKeyClosed: Buffer.from('7'),
-                    endKeyClosed: Buffer.from('9'),
-                  },
-                ],
-              },
-              filter: {
-                columnQualifierRegexFilter: Buffer.from('abc'),
-              },
-              rowsLimit: 5,
-            },
-            expectedPartialReqOpts
-          );
-          assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
-          const expectedGaxOpts = {
-            maxRetries: 4,
-            otherArgs: {
-              headers: {
-                'bigtable-attempt': 0,
-              },
-            },
-          };
-          assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
-          const stream = new PassThrough({
-            objectMode: true,
-          });
-          return stream as {} as AbortableDuplex;
-        };
-        const opts = {
-          decode: true,
-          end: '9',
-          filter: [{column: 'abc'}],
-          gaxOptions: {
-            maxRetries: 4,
-          },
-          limit: 5,
-          start: '7',
-        };
-        await table.getRows(opts);
-        await view.getRows(opts);
+          await table.getRows(opts);
+          await view.getRows(opts);
+        });
       });
     });
   });

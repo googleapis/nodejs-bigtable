@@ -43,7 +43,6 @@ import {
   GetRowsCallback,
   GetRowsResponse,
 } from './tabular-api-surface';
-import {AuthorizedView} from './authorized-view';
 
 export {
   InsertRowsCallback,
