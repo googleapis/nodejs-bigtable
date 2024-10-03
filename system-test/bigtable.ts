@@ -33,6 +33,7 @@ import {Row} from '../src/row.js';
 import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
 import {generateId, PREFIX} from './common';
+import {Mutation} from '../src/mutation';
 
 describe.only('Bigtable', () => {
   const bigtable = new Bigtable();
@@ -1719,18 +1720,22 @@ describe.only('Bigtable', () => {
       const tableOptions = {
         families: ['follows'],
       };
-      const rows = [
-        {
-          key: 'alincoln',
-          data: {
-            follows: {
-              jadams: 1,
-            },
+      const entry = {
+        key: 'alincoln',
+        data: {
+          follows: {
+            tjefferson: 1,
           },
         },
-      ];
+      };
+      const mutation = {
+        key: 'some-id',
+        data: entry,
+        method: Mutation.methods.INSERT,
+      };
       await table.create(tableOptions);
-      await table.insert(rows);
+      const gaxOptions = {maxRetries: 4};
+      await table.mutate(mutation, {gaxOptions});
     });
 
     afterEach(async () => {
