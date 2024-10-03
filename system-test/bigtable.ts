@@ -1712,6 +1712,36 @@ describe('Bigtable', () => {
       });
     });
   });
+
+  describe('mutate', () => {
+    const table = INSTANCE.table(generateId('table'));
+    beforeEach(async () => {
+      const tableOptions = {
+        families: ['follows'],
+      };
+      const rows = [
+        {
+          key: 'alincoln',
+          data: {
+            follows: {
+              jadams: 1,
+            },
+          },
+        },
+      ];
+      await table.create(tableOptions);
+      await table.insert(rows);
+    });
+
+    afterEach(async () => {
+      await table.delete();
+    });
+
+    it('should get one row from the table', async () => {
+      const [rows] = await table.getRows();
+      assert.strictEqual(rows.length, 1);
+    });
+  });
 });
 
 function createInstanceConfig(
