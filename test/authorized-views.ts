@@ -5,6 +5,8 @@ import * as assert from 'assert';
 import {Mutation} from '../src/mutation';
 import * as mocha from 'mocha';
 
+
+
 describe.only('Bigtable/AuthorizedViews', () => {
   describe('Authorized View methods should have requests that match Table and Row requests', () => {
     describe('Table', () => {
@@ -15,6 +17,22 @@ describe.only('Bigtable/AuthorizedViews', () => {
       const instance = bigtable.instance(fakeInstanceName);
       const table = instance.table(fakeTableName);
       const view = instance.view(fakeTableName, fakeViewName);
+
+      /*
+        This function gets the basic structure of the requests we would
+        expect when first making a request for a table and then for an
+        authorized view.
+       */
+      function getBaseRequestOptions(requestCount: number) {
+        const requestForTable = {
+          tableName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}`,
+        };
+        const requestForAuthorizedView = {
+          authorizedViewName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}/authorizedViews/${fakeViewName}`,
+        };
+        return requestCount === 1 ? requestForTable : requestForAuthorizedView;
+      }
+
       describe('should make ReadRows grpc requests', () => {
         function setupReadRows(done: mocha.Done) {
           let requestCount = 0;
@@ -23,14 +41,7 @@ describe.only('Bigtable/AuthorizedViews', () => {
               requestCount++;
               assert.strictEqual(config.client, 'BigtableClient');
               assert.strictEqual(config.method, 'readRows');
-              const requestForTable = {
-                tableName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}`,
-              };
-              const requestForAuthorizedView = {
-                authorizedViewName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}/authorizedViews/${fakeViewName}`,
-              };
-              const expectedPartialReqOpts =
-                requestCount === 1 ? requestForTable : requestForAuthorizedView;
+
               const expectedReqOpts = Object.assign(
                 {
                   appProfileId: undefined,
@@ -48,7 +59,7 @@ describe.only('Bigtable/AuthorizedViews', () => {
                   },
                   rowsLimit: 5,
                 },
-                expectedPartialReqOpts
+                getBaseRequestOptions(requestCount)
               );
               assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
               const expectedGaxOpts = {
@@ -117,14 +128,6 @@ describe.only('Bigtable/AuthorizedViews', () => {
             try {
               delete config['retryOpts'];
               requestCount++;
-              const requestForTable = {
-                tableName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}`,
-              };
-              const requestForAuthorizedView = {
-                authorizedViewName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}/authorizedViews/${fakeViewName}`,
-              };
-              const expectedPartialReqOpts =
-                requestCount === 1 ? requestForTable : requestForAuthorizedView;
               const mutationValue = Mutation.convertToBytes(1);
               assert.deepStrictEqual(config, {
                 client: 'BigtableClient',
@@ -137,7 +140,7 @@ describe.only('Bigtable/AuthorizedViews', () => {
                     },
                   },
                 },
-                reqOpts: Object.assign(expectedPartialReqOpts, {
+                reqOpts: Object.assign(getBaseRequestOptions(requestCount), {
                   appProfileId: undefined,
                   entries: [
                     {
@@ -226,22 +229,13 @@ describe.only('Bigtable/AuthorizedViews', () => {
             try {
               delete config['retryOpts'];
               requestCount++;
-              const requestForTable = {
-                tableName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}`,
-              };
-              const requestForAuthorizedView = {
-                authorizedViewName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}/authorizedViews/${fakeViewName}`,
-              };
-              const expectedPartialReqOpts =
-                requestCount === 1 ? requestForTable : requestForAuthorizedView;
-              const mutationValue = Mutation.convertToBytes(1);
               assert.deepStrictEqual(config, {
                 client: 'BigtableClient',
                 method: 'sampleRowKeys',
                 gaxOpts: {
                   maxRetries: 4,
                 },
-                reqOpts: Object.assign(expectedPartialReqOpts, {
+                reqOpts: Object.assign(getBaseRequestOptions(requestCount), {
                   appProfileId: undefined,
                 }),
               });
