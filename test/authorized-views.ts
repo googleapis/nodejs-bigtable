@@ -5,8 +5,6 @@ import * as assert from 'assert';
 import {Mutation} from '../src/mutation';
 import * as mocha from 'mocha';
 
-
-
 describe.only('Bigtable/AuthorizedViews', () => {
   describe('Authorized View methods should have requests that match Table and Row requests', () => {
     describe('Table', () => {
@@ -39,38 +37,38 @@ describe.only('Bigtable/AuthorizedViews', () => {
           table.bigtable.request = (config: any) => {
             try {
               requestCount++;
-              assert.strictEqual(config.client, 'BigtableClient');
-              assert.strictEqual(config.method, 'readRows');
-
-              const expectedReqOpts = Object.assign(
-                {
-                  appProfileId: undefined,
-                  rows: {
-                    rowKeys: [],
-                    rowRanges: [
-                      {
-                        startKeyClosed: Buffer.from('7'),
-                        endKeyClosed: Buffer.from('9'),
-                      },
-                    ],
-                  },
-                  filter: {
-                    columnQualifierRegexFilter: Buffer.from('abc'),
-                  },
-                  rowsLimit: 5,
-                },
-                getBaseRequestOptions(requestCount)
-              );
-              assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
-              const expectedGaxOpts = {
-                maxRetries: 4,
-                otherArgs: {
-                  headers: {
-                    'bigtable-attempt': 0,
+              delete config['retryOpts'];
+              assert.deepStrictEqual(config, {
+                client: 'BigtableClient',
+                method: 'readRows',
+                gaxOpts: {
+                  maxRetries: 4,
+                  otherArgs: {
+                    headers: {
+                      'bigtable-attempt': 0,
+                    },
                   },
                 },
-              };
-              assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
+                reqOpts: Object.assign(
+                  {
+                    appProfileId: undefined,
+                    rows: {
+                      rowKeys: [],
+                      rowRanges: [
+                        {
+                          startKeyClosed: Buffer.from('7'),
+                          endKeyClosed: Buffer.from('9'),
+                        },
+                      ],
+                    },
+                    filter: {
+                      columnQualifierRegexFilter: Buffer.from('abc'),
+                    },
+                    rowsLimit: 5,
+                  },
+                  getBaseRequestOptions(requestCount)
+                ),
+              });
             } catch (err: unknown) {
               done(err);
             }
