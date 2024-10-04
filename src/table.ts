@@ -287,15 +287,14 @@ export interface MutateOptions {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Entry = any;
-// TODO: Check these types
 /*
 The Entry type is expected to be in the following format:
 {
   columnFamily: {
-    column: string | number | { value: string | number, timestamp: number}
+    column: Data // Data is the expected type passed into Mutation.encodeSetCell
   }
 }
- */
+*/
 
 export type DeleteTableCallback = (
   err: ServiceError | null,
