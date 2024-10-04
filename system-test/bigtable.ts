@@ -35,7 +35,7 @@ import {RawFilter} from '../src/filter';
 import {generateId, PREFIX} from './common';
 import {Mutation} from '../src/mutation';
 
-describe.only('Bigtable', () => {
+describe('Bigtable', () => {
   const bigtable = new Bigtable();
   const INSTANCE = bigtable.instance(generateId('instance'));
   const DIFF_INSTANCE = bigtable.instance(generateId('d-inst'));
