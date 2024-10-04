@@ -219,6 +219,65 @@ describe.only('Bigtable/AuthorizedViews', () => {
           })();
         });
       });
+      describe('should make SampleRowKeys grpc requests', () => {
+        function setupSampleRowKeys(done: mocha.Done) {
+          let requestCount = 0;
+          table.bigtable.request = (config: any) => {
+            try {
+              delete config['retryOpts'];
+              requestCount++;
+              const requestForTable = {
+                tableName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}`,
+              };
+              const requestForAuthorizedView = {
+                authorizedViewName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}/authorizedViews/${fakeViewName}`,
+              };
+              const expectedPartialReqOpts =
+                requestCount === 1 ? requestForTable : requestForAuthorizedView;
+              const mutationValue = Mutation.convertToBytes(1);
+              assert.deepStrictEqual(config, {
+                client: 'BigtableClient',
+                method: 'sampleRowKeys',
+                gaxOpts: {
+                  maxRetries: 4,
+                },
+                reqOpts: Object.assign(expectedPartialReqOpts, {
+                  appProfileId: undefined,
+                }),
+              });
+            } catch (err: unknown) {
+              done(err);
+            }
+            const stream = new PassThrough({
+              objectMode: true,
+            });
+            setImmediate(() => {
+              stream.end();
+            });
+            return stream as {} as AbortableDuplex;
+          };
+        }
+        it('requests for sampleRowKeys should match', done => {
+          setupSampleRowKeys(done);
+          (async () => {
+            const opts = {
+              maxRetries: 4,
+            };
+            await table.sampleRowKeys(opts);
+            await view.sampleRowKeys(opts);
+            done();
+          })();
+        });
+        it('requests for sampleRowKeysStream should match', done => {
+          setupSampleRowKeys(done);
+          (async () => {
+            const gaxOptions = {maxRetries: 4};
+            await table.sampleRowKeysStream(gaxOptions);
+            await view.sampleRowKeysStream(gaxOptions);
+            done();
+          })();
+        });
+      });
     });
   });
 });
