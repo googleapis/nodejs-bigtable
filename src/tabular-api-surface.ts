@@ -681,13 +681,21 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return pendingEntryIndices.has(index);
       });
 
-      const reqOpts = {
-        tableName: this.name,
+      const baseReqOpts = (
+        this.viewName
+          ? {
+              authorizedViewName: `${this.name}/authorizedViews/${this.viewName}`,
+            }
+          : {
+              tableName: this.name,
+            }
+      ) as google.bigtable.v2.IReadRowsRequest;
+      const reqOpts = Object.assign(baseReqOpts, {
         appProfileId: this.bigtable.appProfileId,
         entries: options.rawMutation
           ? entryBatch
           : entryBatch.map(Mutation.parse),
-      };
+      });
 
       const retryOpts = {
         currentRetryAttempt: numRequestsMade,
