@@ -2195,6 +2195,8 @@ export class BigtableInstanceAdminClient {
    * @param {number} request.serveNodes
    *   The number of nodes allocated to this cluster. More nodes enable higher
    *   throughput and more consistent performance.
+   * @param {google.bigtable.admin.v2.Cluster.NodeScalingFactor} request.nodeScalingFactor
+   *   Immutable. The node scaling factor of this cluster.
    * @param {google.bigtable.admin.v2.Cluster.ClusterConfig} request.clusterConfig
    *   Configuration for this cluster.
    * @param {google.bigtable.admin.v2.StorageType} request.defaultStorageType

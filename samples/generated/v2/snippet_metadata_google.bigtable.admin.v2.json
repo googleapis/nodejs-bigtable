@@ -438,7 +438,7 @@
       "segments": [
         {
           "start": 25,
-          "end": 87,
+          "end": 92,
           "type": "FULL"
         }
       ],
@@ -462,6 +462,10 @@
           {
             "name": "serve_nodes",
             "type": "TYPE_INT32"
+          },
+          {
+            "name": "node_scaling_factor",
+            "type": ".google.bigtable.admin.v2.Cluster.NodeScalingFactor"
           },
           {
             "name": "cluster_config",
