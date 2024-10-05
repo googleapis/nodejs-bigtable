@@ -19,6 +19,7 @@ import * as is from 'is';
 import * as extend from 'extend';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
+const setColumnFamilies = Symbol('sets the column families for a request');
 
 import snakeCase = require('lodash.snakecase');
 import {
@@ -61,6 +62,9 @@ import {
   GetTablesOptions,
   GetTablesCallback,
   GetTablesResponse,
+  UpdateTableOptions,
+  UpdateTableCallback,
+  UpdateTableResponse,
 } from './table';
 import {CallOptions, Operation} from 'google-gax';
 import {ServiceError} from 'google-gax';
@@ -191,6 +195,34 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
 
     this.id = name.split('/').pop()!;
     this.name = name;
+  }
+
+  [setColumnFamilies](
+    reqOpts:
+      | google.bigtable.admin.v2.CreateTableRequest
+      | google.bigtable.admin.v2.UpdateTableRequest,
+    options: CreateTableOptions
+  ): void {
+    if (options.families) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const columnFamilies = (options.families as any[]).reduce(
+        (families, family) => {
+          if (typeof family === 'string') {
+            family = {
+              name: family,
+            };
+          }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const columnFamily: any = (families[family.name] = {});
+          if (family.rule) {
+            columnFamily.gcRule = Family.formatRule_(family.rule);
+          }
+          return families;
+        },
+        {}
+      );
+      reqOpts.table!.columnFamilies = columnFamilies;
+    }
   }
 
   /**
@@ -506,29 +538,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         key,
       }));
     }
-
-    if (options.families) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const columnFamilies = (options.families as any[]).reduce(
-        (families, family) => {
-          if (typeof family === 'string') {
-            family = {
-              name: family,
-            };
-          }
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const columnFamily: any = (families[family.name] = {});
-          if (family.rule) {
-            columnFamily.gcRule = Family.formatRule_(family.rule);
-          }
-          return families;
-        },
-        {}
-      );
-
-      reqOpts.table!.columnFamilies = columnFamilies;
-    }
-
+    this[setColumnFamilies](reqOpts, options);
     this.bigtable.request(
       {
         client: 'BigtableTableAdminClient',
@@ -1472,6 +1482,81 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           return;
         }
         callback!(null, resp.permissions);
+      }
+    );
+  }
+
+  updateTable(options: UpdateTableOptions): Promise<UpdateTableResponse>;
+  updateTable(options: UpdateTableOptions, callback: UpdateTableCallback): void;
+  /**
+   * Update a table on your Bigtable instance.
+   *
+   * @see [Designing Your Schema]{@link https://cloud.google.com/bigtable/docs/schema-design}
+   * @see [Splitting Keys]{@link https://cloud.google.com/bigtable/docs/managing-tables#splits}
+   *
+   * @throws {error} If a id is not provided.
+   *
+   * @param {object} [options] Table update options.
+   * @param {object|string[]} [options.families] Column families to be updated
+   *     within the table.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Table} callback.table The newly updated table.
+   * @param {object} callback.apiResponse The full API response.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_update_table
+   */
+  updateTable(
+    options: UpdateTableOptions,
+    cb?: UpdateTableCallback
+  ): void | Promise<UpdateTableResponse> {
+    if (!options.name) {
+      throw new TypeError('A name is required to update a table.');
+    }
+    const callback = cb!;
+    const updateMask: string[] = [];
+    updateMask.push('deletion_protection');
+    const table = this.table(options.name);
+    const reqOpts = {
+      table: {
+        // The granularity at which timestamps are stored in the table.
+        // Currently only milliseconds is supported, so it's not
+        // configurable.
+        granularity: 0,
+        name: table.name,
+      },
+      updateMask: {
+        paths: updateMask,
+      },
+    } as google.bigtable.admin.v2.UpdateTableRequest;
+    if (reqOpts.table) {
+      Object.assign(
+        reqOpts.table,
+        options.deletionProtection
+          ? {
+              deletionProtection: options.deletionProtection,
+            }
+          : null
+      );
+    }
+    this[setColumnFamilies](reqOpts, options);
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'updateTable',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (...args) => {
+        if (args[1]) {
+          const table = this.table(args[1].name.split('/').pop());
+          table.metadata = args[1];
+          args.splice(1, 0, table);
+        }
+        callback(...args);
       }
     );
   }

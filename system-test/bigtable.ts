@@ -490,6 +490,25 @@ describe('Bigtable', () => {
       assert(table.metadata!.columnFamilies!.test);
     });
 
+    it('should update a table with deletion protection', async () => {
+      const name = generateId('table');
+      const options = {
+        families: ['test'],
+        deletionProtection: false,
+      };
+      await INSTANCE.createTable(name, options);
+      const updateOptions = {
+        deletionProtection: true,
+        name,
+      };
+      const results = await INSTANCE.updateTable(updateOptions);
+      const [, operation] = results;
+      await operation.promise();
+      const table = INSTANCE.table(name);
+      const [, metadata] = await table.get({autoCreate: true});
+      assert(metadata.deletionProtection);
+    });
+
     it('should create a table if autoCreate is true', async () => {
       const table = INSTANCE.table(generateId('table'));
       await table.get({autoCreate: true});
