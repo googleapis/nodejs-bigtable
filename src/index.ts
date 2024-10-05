@@ -69,7 +69,6 @@ export interface RequestOptions {
     | 'BigtableTableAdminClient'
     | 'BigtableClient';
   reqOpts?: {};
-  retryOpts?: {};
   gaxOpts?: {};
   method?: string;
 }
@@ -445,6 +444,11 @@ export class Bigtable {
       {},
       baseOptions,
       {
+        // Setting gaxServerStreamingRetries to true ensures that for readrows,
+        // sampleRowKeys, mutateRows, generateInitialChangeStreamPartitions and
+        // readChangeStream calls in the data client that the new streaming
+        // retries functionality will be used.
+        gaxServerStreamingRetries: true,
         servicePath: customEndpointBaseUrl || defaultBaseUrl,
         'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
         'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
@@ -846,18 +850,6 @@ export class Bigtable {
     }
 
     function makeRequestStream() {
-      const retryRequestOptions = Object.assign(
-        {
-          currentRetryAttempt: 0,
-          noResponseRetries: 0,
-          objectMode: true,
-        },
-        config.retryOpts
-      );
-
-      config.gaxOpts = Object.assign(config.gaxOpts || {}, {
-        retryRequestOptions,
-      });
       prepareGaxRequest((err, requestFn) => {
         if (err) {
           stream.destroy(err);
