@@ -24,29 +24,6 @@ describe.only('Bigtable/AuthorizedViews', () => {
      * @param compareFn The function that maps the requestCount to the
      * request that we would expect to be passed into `request`.
      */
-    function mockStreamRequest(
-      done: mocha.Done,
-      compareFn: (requestCount: number) => unknown
-    ) {
-      let requestCount = 0;
-      table.bigtable.request = (config: any) => {
-        try {
-          requestCount++;
-          delete config['retryOpts'];
-          assert.deepStrictEqual(config, compareFn(requestCount));
-        } catch (err: unknown) {
-          done(err);
-        }
-        const stream = new PassThrough({
-          objectMode: true,
-        });
-        setImmediate(() => {
-          stream.end();
-        });
-        return stream as {} as AbortableDuplex;
-      };
-    }
-
     function mockCallbackRequest(
       done: mocha.Done,
       compareFn: (requestCount: number) => unknown
