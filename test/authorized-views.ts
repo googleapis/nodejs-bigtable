@@ -62,6 +62,12 @@ describe.only('Bigtable/AuthorizedViews', () => {
       }
 
       describe('should make ReadRows grpc requests', () => {
+        /**
+         * This function mocks out the request function to expect a readRows
+         * request when the tests are run.
+         *
+         * @param done The function to call when ending the mocha test
+         */
         function setupReadRows(done: mocha.Done) {
           mockRequest(done, requestCount => {
             return {
@@ -136,6 +142,12 @@ describe.only('Bigtable/AuthorizedViews', () => {
         });
       });
       describe('should make MutateRows grpc requests', () => {
+        /**
+         * This function mocks out the request function to expect a mutateRows
+         * request when the tests are run.
+         *
+         * @param done The function to call when ending the mocha test
+         */
         function setupMutateRows(done: mocha.Done) {
           mockRequest(done, requestCount => {
             return {
@@ -222,6 +234,12 @@ describe.only('Bigtable/AuthorizedViews', () => {
         });
       });
       describe('should make SampleRowKeys grpc requests', () => {
+        /**
+         * This function mocks out the request function to expect a sampleRowKeys
+         * request when the tests are run.
+         *
+         * @param done The function to call when ending the mocha test
+         */
         function setupSampleRowKeys(done: mocha.Done) {
           mockRequest(done, requestCount => {
             return {
