@@ -223,32 +223,18 @@ describe.only('Bigtable/AuthorizedViews', () => {
       });
       describe('should make SampleRowKeys grpc requests', () => {
         function setupSampleRowKeys(done: mocha.Done) {
-          let requestCount = 0;
-          table.bigtable.request = (config: any) => {
-            try {
-              delete config['retryOpts'];
-              requestCount++;
-              assert.deepStrictEqual(config, {
-                client: 'BigtableClient',
-                method: 'sampleRowKeys',
-                gaxOpts: {
-                  maxRetries: 4,
-                },
-                reqOpts: Object.assign(getBaseRequestOptions(requestCount), {
-                  appProfileId: undefined,
-                }),
-              });
-            } catch (err: unknown) {
-              done(err);
-            }
-            const stream = new PassThrough({
-              objectMode: true,
-            });
-            setImmediate(() => {
-              stream.end();
-            });
-            return stream as {} as AbortableDuplex;
-          };
+          mockRequest(done, requestCount => {
+            return {
+              client: 'BigtableClient',
+              method: 'sampleRowKeys',
+              gaxOpts: {
+                maxRetries: 4,
+              },
+              reqOpts: Object.assign(getBaseRequestOptions(requestCount), {
+                appProfileId: undefined,
+              }),
+            };
+          });
         }
         it('requests for sampleRowKeys should match', done => {
           setupSampleRowKeys(done);
