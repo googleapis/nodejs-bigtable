@@ -1,10 +1,11 @@
 import {beforeEach, describe} from 'mocha';
-import {AbortableDuplex, Bigtable} from '../src';
+import {AbortableDuplex, Bigtable, RequestCallback} from '../src';
 import {PassThrough} from 'stream';
 import * as assert from 'assert';
 import {Mutation} from '../src/mutation';
 import * as mocha from 'mocha';
 import {Row} from '../src';
+import {ServiceError} from 'google-gax';
 
 describe('Bigtable/AuthorizedViews', () => {
   describe('Authorized View methods should have requests that match Table and Row requests', () => {
@@ -23,7 +24,7 @@ describe('Bigtable/AuthorizedViews', () => {
      * @param compareFn The function that maps the requestCount to the
      * request that we would expect to be passed into `request`.
      */
-    function mockRequest(
+    function mockStreamRequest(
       done: mocha.Done,
       compareFn: (requestCount: number) => unknown
     ) {
@@ -35,6 +36,35 @@ describe('Bigtable/AuthorizedViews', () => {
           assert.deepStrictEqual(config, compareFn(requestCount));
         } catch (err: unknown) {
           done(err);
+        }
+        const stream = new PassThrough({
+          objectMode: true,
+        });
+        setImmediate(() => {
+          stream.end();
+        });
+        return stream as {} as AbortableDuplex;
+      };
+    }
+
+    function mockCallbackRequest(
+      done: mocha.Done,
+      compareFn: (requestCount: number) => unknown
+    ) {
+      let requestCount = 0;
+      table.bigtable.request = (
+        config?: any,
+        callback?: RequestCallback<any>
+      ) => {
+        try {
+          requestCount++;
+          delete config['retryOpts'];
+          assert.deepStrictEqual(config, compareFn(requestCount));
+        } catch (err: unknown) {
+          done(err);
+        }
+        if (callback) {
+          callback(null);
         }
         const stream = new PassThrough({
           objectMode: true,
@@ -70,7 +100,7 @@ describe('Bigtable/AuthorizedViews', () => {
          * @param done The function to call when ending the mocha test
          */
         function setupReadRows(done: mocha.Done) {
-          mockRequest(done, requestCount => {
+          mockStreamRequest(done, requestCount => {
             return {
               client: 'BigtableClient',
               method: 'readRows',
@@ -150,7 +180,7 @@ describe('Bigtable/AuthorizedViews', () => {
          * @param done The function to call when ending the mocha test
          */
         function setupMutateRows(done: mocha.Done) {
-          mockRequest(done, requestCount => {
+          mockStreamRequest(done, requestCount => {
             return {
               client: 'BigtableClient',
               method: 'mutateRows',
@@ -242,7 +272,7 @@ describe('Bigtable/AuthorizedViews', () => {
          * @param done The function to call when ending the mocha test
          */
         function setupSampleRowKeys(done: mocha.Done) {
-          mockRequest(done, requestCount => {
+          mockStreamRequest(done, requestCount => {
             return {
               client: 'BigtableClient',
               method: 'sampleRowKeys',
@@ -293,17 +323,17 @@ describe('Bigtable/AuthorizedViews', () => {
          * @param done The function to call when ending the mocha test
          */
         function setupReadModifyWriteRow(done: mocha.Done) {
-          mockRequest(done, requestCount => {
+          mockCallbackRequest(done, requestCount => {
             return {
               client: 'BigtableClient',
               method: 'readModifyWriteRow',
-              gaxOpts: {},
+              gaxOpts: {
+                maxRetries: 4,
+              },
               reqOpts: Object.assign(
                 {
                   appProfileId: undefined,
                   rowKey: Buffer.from(rowId),
-                  tableName:
-                    'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
                   rules: [
                     {
                       familyName: 'traits',
@@ -325,11 +355,9 @@ describe('Bigtable/AuthorizedViews', () => {
               column: 'traits:teeth',
               append: '-wood',
             };
-            await row.createRules(rule);
-            await view.createRules(
-              {rules: rule, rowId: 'row-id'},
-              {maxRetries: 4}
-            );
+            const gaxOpts = {maxRetries: 4};
+            await row.createRules(rule, gaxOpts);
+            await view.createRules({rules: rule, rowId: 'row-id'}, gaxOpts);
             done();
           })();
         });
