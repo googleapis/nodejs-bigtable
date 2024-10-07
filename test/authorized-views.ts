@@ -325,7 +325,7 @@ describe.only('Bigtable/AuthorizedViews', () => {
           });
         }
 
-        it('requests for get should match', done => {
+        it('requests for createRules should match', done => {
           setupReadModifyWriteRow(done);
           (async () => {
             const rule = {
