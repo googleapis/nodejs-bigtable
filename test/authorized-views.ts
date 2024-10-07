@@ -137,54 +137,39 @@ describe.only('Bigtable/AuthorizedViews', () => {
       });
       describe('should make MutateRows grpc requests', () => {
         function setupMutateRows(done: mocha.Done) {
-          let requestCount = 0;
-          table.bigtable.request = (config: any) => {
-            try {
-              delete config['retryOpts'];
-              requestCount++;
-              const mutationValue = Mutation.convertToBytes(1);
-              assert.deepStrictEqual(config, {
-                client: 'BigtableClient',
-                method: 'mutateRows',
-                gaxOpts: {
-                  maxRetries: 0,
-                  otherArgs: {
-                    headers: {
-                      ['bigtable-attempt']: 0,
-                    },
+          mockRequest(done, requestCount => {
+            return {
+              client: 'BigtableClient',
+              method: 'mutateRows',
+              gaxOpts: {
+                maxRetries: 0,
+                otherArgs: {
+                  headers: {
+                    ['bigtable-attempt']: 0,
                   },
                 },
-                reqOpts: Object.assign(getBaseRequestOptions(requestCount), {
-                  appProfileId: undefined,
-                  entries: [
-                    {
-                      rowKey: Buffer.from('some-id'),
-                      mutations: [
-                        {
-                          setCell: {
-                            familyName: 'follows',
-                            columnQualifier:
-                              Mutation.convertToBytes('tjefferson'),
-                            timestampMicros: 2,
-                            value: mutationValue,
-                          },
+              },
+              reqOpts: Object.assign(getBaseRequestOptions(requestCount), {
+                appProfileId: undefined,
+                entries: [
+                  {
+                    rowKey: Buffer.from('some-id'),
+                    mutations: [
+                      {
+                        setCell: {
+                          familyName: 'follows',
+                          columnQualifier:
+                            Mutation.convertToBytes('tjefferson'),
+                          timestampMicros: 2,
+                          value: Mutation.convertToBytes(1),
                         },
-                      ],
-                    },
-                  ],
-                }),
-              });
-            } catch (err: unknown) {
-              done(err);
-            }
-            const stream = new PassThrough({
-              objectMode: true,
-            });
-            setImmediate(() => {
-              stream.end();
-            });
-            return stream as {} as AbortableDuplex;
-          };
+                      },
+                    ],
+                  },
+                ],
+              }),
+            };
+          });
         }
         it('requests for mutate should match', done => {
           (async () => {
