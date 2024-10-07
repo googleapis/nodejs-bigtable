@@ -7,15 +7,15 @@ import * as mocha from 'mocha';
 
 describe.only('Bigtable/AuthorizedViews', () => {
   describe('Authorized View methods should have requests that match Table and Row requests', () => {
-    describe('Table', () => {
-      const bigtable = new Bigtable({});
-      const fakeTableName = 'fake-table';
-      const fakeInstanceName = 'fake-instance';
-      const fakeViewName = 'fake-view';
-      const instance = bigtable.instance(fakeInstanceName);
-      const table = instance.table(fakeTableName);
-      const view = instance.view(fakeTableName, fakeViewName);
+    const bigtable = new Bigtable({});
+    const fakeTableName = 'fake-table';
+    const fakeInstanceName = 'fake-instance';
+    const fakeViewName = 'fake-view';
+    const instance = bigtable.instance(fakeInstanceName);
+    const table = instance.table(fakeTableName);
+    const view = instance.view(fakeTableName, fakeViewName);
 
+    describe('Table', () => {
       /** This function mocks out the request function and compares the request
        * passed into it to ensure it is correct.
        *
@@ -46,10 +46,10 @@ describe.only('Bigtable/AuthorizedViews', () => {
         };
       }
 
-      /*
-        This function gets the basic structure of the requests we would
-        expect when first making a request for a table and then for an
-        authorized view.
+      /**
+       * This function gets the basic structure of the requests we would
+       * expect when first making a request for a table and then for an
+       * authorized view.
        */
       function getBaseRequestOptions(requestCount: number) {
         const requestForTable = {
