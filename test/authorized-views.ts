@@ -1,11 +1,12 @@
-import {describe} from 'mocha';
+import {beforeEach, describe} from 'mocha';
 import {AbortableDuplex, Bigtable} from '../src';
 import {PassThrough} from 'stream';
 import * as assert from 'assert';
 import {Mutation} from '../src/mutation';
 import * as mocha from 'mocha';
+import {Row} from '../src';
 
-describe.only('Bigtable/AuthorizedViews', () => {
+describe('Bigtable/AuthorizedViews', () => {
   describe('Authorized View methods should have requests that match Table and Row requests', () => {
     const bigtable = new Bigtable({});
     const fakeTableName = 'fake-table';
@@ -15,52 +16,52 @@ describe.only('Bigtable/AuthorizedViews', () => {
     const table = instance.table(fakeTableName);
     const view = instance.view(fakeTableName, fakeViewName);
 
+    /** This function mocks out the request function and compares the request
+     * passed into it to ensure it is correct.
+     *
+     * @param done The function to call when ending the mocha test
+     * @param compareFn The function that maps the requestCount to the
+     * request that we would expect to be passed into `request`.
+     */
+    function mockRequest(
+      done: mocha.Done,
+      compareFn: (requestCount: number) => unknown
+    ) {
+      let requestCount = 0;
+      table.bigtable.request = (config: any) => {
+        try {
+          requestCount++;
+          delete config['retryOpts'];
+          assert.deepStrictEqual(config, compareFn(requestCount));
+        } catch (err: unknown) {
+          done(err);
+        }
+        const stream = new PassThrough({
+          objectMode: true,
+        });
+        setImmediate(() => {
+          stream.end();
+        });
+        return stream as {} as AbortableDuplex;
+      };
+    }
+
+    /**
+     * This function gets the basic structure of the requests we would
+     * expect when first making a request for a table and then for an
+     * authorized view.
+     */
+    function getBaseRequestOptions(requestCount: number) {
+      const requestForTable = {
+        tableName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}`,
+      };
+      const requestForAuthorizedView = {
+        authorizedViewName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}/authorizedViews/${fakeViewName}`,
+      };
+      return requestCount === 1 ? requestForTable : requestForAuthorizedView;
+    }
+
     describe('Table', () => {
-      /** This function mocks out the request function and compares the request
-       * passed into it to ensure it is correct.
-       *
-       * @param done The function to call when ending the mocha test
-       * @param compareFn The function that maps the requestCount to the
-       * request that we would expect to be passed into `request`.
-       */
-      function mockRequest(
-        done: mocha.Done,
-        compareFn: (requestCount: number) => unknown
-      ) {
-        let requestCount = 0;
-        table.bigtable.request = (config: any) => {
-          try {
-            requestCount++;
-            delete config['retryOpts'];
-            assert.deepStrictEqual(config, compareFn(requestCount));
-          } catch (err: unknown) {
-            done(err);
-          }
-          const stream = new PassThrough({
-            objectMode: true,
-          });
-          setImmediate(() => {
-            stream.end();
-          });
-          return stream as {} as AbortableDuplex;
-        };
-      }
-
-      /**
-       * This function gets the basic structure of the requests we would
-       * expect when first making a request for a table and then for an
-       * authorized view.
-       */
-      function getBaseRequestOptions(requestCount: number) {
-        const requestForTable = {
-          tableName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}`,
-        };
-        const requestForAuthorizedView = {
-          authorizedViewName: `projects/{{projectId}}/instances/${fakeInstanceName}/tables/${fakeTableName}/authorizedViews/${fakeViewName}`,
-        };
-        return requestCount === 1 ? requestForTable : requestForAuthorizedView;
-      }
-
       describe('should make ReadRows grpc requests', () => {
         /**
          * This function mocks out the request function to expect a readRows
@@ -276,6 +277,63 @@ describe.only('Bigtable/AuthorizedViews', () => {
         });
       });
     });
-    describe('Row', () => {});
+    describe.only('Row', () => {
+      const rowId = 'row-id';
+      let row: Row;
+
+      beforeEach(() => {
+        row = table.row(rowId);
+      });
+
+      describe('should make readModifyWriteRow grpc requests', () => {
+        /**
+         * This function mocks out the request function to expect a readRows
+         * request when the tests are run.
+         *
+         * @param done The function to call when ending the mocha test
+         */
+        function setupReadModifyWriteRow(done: mocha.Done) {
+          mockRequest(done, requestCount => {
+            return {
+              client: 'BigtableClient',
+              method: 'readModifyWriteRow',
+              gaxOpts: {},
+              reqOpts: Object.assign(
+                {
+                  appProfileId: undefined,
+                  rowKey: Buffer.from(rowId),
+                  tableName:
+                    'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
+                  rules: [
+                    {
+                      familyName: 'traits',
+                      columnQualifier: Buffer.from('teeth'),
+                      appendValue: Buffer.from('-wood'),
+                    },
+                  ],
+                },
+                getBaseRequestOptions(requestCount)
+              ),
+            };
+          });
+        }
+
+        it('requests for get should match', done => {
+          setupReadModifyWriteRow(done);
+          (async () => {
+            const rule = {
+              column: 'traits:teeth',
+              append: '-wood',
+            };
+            await row.createRules(rule);
+            await view.createRules(
+              {rules: rule, rowId: 'row-id'},
+              {maxRetries: 4}
+            );
+            done();
+          })();
+        });
+      });
+    });
   });
 });
