@@ -16,6 +16,36 @@ describe.only('Bigtable/AuthorizedViews', () => {
       const table = instance.table(fakeTableName);
       const view = instance.view(fakeTableName, fakeViewName);
 
+      /** This function mocks out the request function and compares the request
+       * passed into it to ensure it is correct.
+       *
+       * @param done The function to call when ending the mocha test
+       * @param compareFn The function that maps the requestCount to the
+       * request that we would expect to be passed into `request`.
+       */
+      function mockRequest(
+        done: mocha.Done,
+        compareFn: (requestCount: number) => unknown
+      ) {
+        let requestCount = 0;
+        table.bigtable.request = (config: any) => {
+          try {
+            requestCount++;
+            delete config['retryOpts'];
+            assert.deepStrictEqual(config, compareFn(requestCount));
+          } catch (err: unknown) {
+            done(err);
+          }
+          const stream = new PassThrough({
+            objectMode: true,
+          });
+          setImmediate(() => {
+            stream.end();
+          });
+          return stream as {} as AbortableDuplex;
+        };
+      }
+
       /*
         This function gets the basic structure of the requests we would
         expect when first making a request for a table and then for an
@@ -33,53 +63,39 @@ describe.only('Bigtable/AuthorizedViews', () => {
 
       describe('should make ReadRows grpc requests', () => {
         function setupReadRows(done: mocha.Done) {
-          let requestCount = 0;
-          table.bigtable.request = (config: any) => {
-            try {
-              requestCount++;
-              delete config['retryOpts'];
-              assert.deepStrictEqual(config, {
-                client: 'BigtableClient',
-                method: 'readRows',
-                gaxOpts: {
-                  maxRetries: 4,
-                  otherArgs: {
-                    headers: {
-                      'bigtable-attempt': 0,
-                    },
+          mockRequest(done, requestCount => {
+            return {
+              client: 'BigtableClient',
+              method: 'readRows',
+              gaxOpts: {
+                maxRetries: 4,
+                otherArgs: {
+                  headers: {
+                    'bigtable-attempt': 0,
                   },
                 },
-                reqOpts: Object.assign(
-                  {
-                    appProfileId: undefined,
-                    rows: {
-                      rowKeys: [],
-                      rowRanges: [
-                        {
-                          startKeyClosed: Buffer.from('7'),
-                          endKeyClosed: Buffer.from('9'),
-                        },
-                      ],
-                    },
-                    filter: {
-                      columnQualifierRegexFilter: Buffer.from('abc'),
-                    },
-                    rowsLimit: 5,
+              },
+              reqOpts: Object.assign(
+                {
+                  appProfileId: undefined,
+                  rows: {
+                    rowKeys: [],
+                    rowRanges: [
+                      {
+                        startKeyClosed: Buffer.from('7'),
+                        endKeyClosed: Buffer.from('9'),
+                      },
+                    ],
                   },
-                  getBaseRequestOptions(requestCount)
-                ),
-              });
-            } catch (err: unknown) {
-              done(err);
-            }
-            const stream = new PassThrough({
-              objectMode: true,
-            });
-            setImmediate(() => {
-              stream.end();
-            });
-            return stream as {} as AbortableDuplex;
-          };
+                  filter: {
+                    columnQualifierRegexFilter: Buffer.from('abc'),
+                  },
+                  rowsLimit: 5,
+                },
+                getBaseRequestOptions(requestCount)
+              ),
+            };
+          });
         }
 
         it('requests for createReadStream should match', done => {
@@ -271,5 +287,6 @@ describe.only('Bigtable/AuthorizedViews', () => {
         });
       });
     });
+    describe('Row', () => {});
   });
 });
