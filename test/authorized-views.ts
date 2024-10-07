@@ -7,7 +7,7 @@ import * as mocha from 'mocha';
 import {Row} from '../src';
 import {ServiceError} from 'google-gax';
 
-describe('Bigtable/AuthorizedViews', () => {
+describe.only('Bigtable/AuthorizedViews', () => {
   describe('Authorized View methods should have requests that match Table and Row requests', () => {
     const bigtable = new Bigtable({});
     const fakeTableName = 'fake-table';
@@ -100,7 +100,7 @@ describe('Bigtable/AuthorizedViews', () => {
          * @param done The function to call when ending the mocha test
          */
         function setupReadRows(done: mocha.Done) {
-          mockStreamRequest(done, requestCount => {
+          mockCallbackRequest(done, requestCount => {
             return {
               client: 'BigtableClient',
               method: 'readRows',
@@ -180,7 +180,7 @@ describe('Bigtable/AuthorizedViews', () => {
          * @param done The function to call when ending the mocha test
          */
         function setupMutateRows(done: mocha.Done) {
-          mockStreamRequest(done, requestCount => {
+          mockCallbackRequest(done, requestCount => {
             return {
               client: 'BigtableClient',
               method: 'mutateRows',
@@ -272,7 +272,7 @@ describe('Bigtable/AuthorizedViews', () => {
          * @param done The function to call when ending the mocha test
          */
         function setupSampleRowKeys(done: mocha.Done) {
-          mockStreamRequest(done, requestCount => {
+          mockCallbackRequest(done, requestCount => {
             return {
               client: 'BigtableClient',
               method: 'sampleRowKeys',
@@ -307,7 +307,7 @@ describe('Bigtable/AuthorizedViews', () => {
         });
       });
     });
-    describe.only('Row', () => {
+    describe('Row', () => {
       const rowId = 'row-id';
       let row: Row;
 
