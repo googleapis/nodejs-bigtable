@@ -331,8 +331,19 @@ describe('Bigtable/AuthorizedViews', () => {
               row: {
                 families: [
                   {
-                    name: 'cf1',
-                    columns: [],
+                    name: 'traits',
+                    columns: [
+                      {
+                        qualifier: Buffer.from('teeth'),
+                        cells: [
+                          {
+                            labels: [],
+                            timestampMicros: '4',
+                            value: Mutation.convertToBytes(7),
+                          },
+                        ],
+                      },
+                    ],
                   },
                 ],
               },
