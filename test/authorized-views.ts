@@ -329,13 +329,12 @@ describe('Bigtable/AuthorizedViews', () => {
             },
             {
               row: {
-                families: {
-                  cf1: {
-                    columns: {
-                      c1: 7,
-                    },
+                families: [
+                  {
+                    name: 'cf1',
+                    columns: [],
                   },
-                },
+                ],
               },
             }
           );
