@@ -7,7 +7,7 @@ import * as mocha from 'mocha';
 import {Row} from '../src';
 import {ServiceError} from 'google-gax';
 
-describe.only('Bigtable/AuthorizedViews', () => {
+describe('Bigtable/AuthorizedViews', () => {
   describe('Authorized View methods should have requests that match Table and Row requests', () => {
     const bigtable = new Bigtable({});
     const fakeTableName = 'fake-table';
@@ -315,7 +315,7 @@ describe.only('Bigtable/AuthorizedViews', () => {
                     {
                       familyName: 'traits',
                       columnQualifier: Buffer.from('teeth'),
-                      appendValue: Buffer.from('-wood'),
+                      incrementAmount: 7,
                     },
                   ],
                 },
@@ -330,32 +330,21 @@ describe.only('Bigtable/AuthorizedViews', () => {
           (async () => {
             const rule = {
               column: 'traits:teeth',
-              append: '-wood',
+              increment: 7,
             };
             const gaxOpts = {maxRetries: 4};
             await row.createRules(rule, gaxOpts);
-            await view.createRules({rules: rule, rowId: 'row-id'}, gaxOpts);
+            await view.createRules({rules: rule, rowId: rowId}, gaxOpts);
             done();
           })();
         });
-        /*
-          increment(
-          column: string,
-          valueOrOptionsOrCallback?: number | CallOptions | IncrementCallback,
-          optionsOrCallback?: CallOptions | IncrementCallback,
-          cb?: IncrementCallback
-          ): void | Promise<IncrementResponse> {
-         */
-        it('requests for increment should match', done => {
+        it.only('requests for increment should match', done => {
           setupReadModifyWriteRow(done);
           (async () => {
-            const rule = {
-              column: 'traits:teeth',
-              append: '-wood',
-            };
+            const column = 'traits:teeth';
             const gaxOpts = {maxRetries: 4};
-            await row.createRules(rule, gaxOpts);
-            await view.createRules({rules: rule, rowId: 'row-id'}, gaxOpts);
+            await row.increment(column, 7, gaxOpts);
+            await view.increment({column, rowId}, 7, gaxOpts);
             done();
           })();
         });
