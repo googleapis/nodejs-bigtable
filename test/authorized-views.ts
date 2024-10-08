@@ -338,6 +338,27 @@ describe.only('Bigtable/AuthorizedViews', () => {
             done();
           })();
         });
+        /*
+          increment(
+          column: string,
+          valueOrOptionsOrCallback?: number | CallOptions | IncrementCallback,
+          optionsOrCallback?: CallOptions | IncrementCallback,
+          cb?: IncrementCallback
+          ): void | Promise<IncrementResponse> {
+         */
+        it('requests for increment should match', done => {
+          setupReadModifyWriteRow(done);
+          (async () => {
+            const rule = {
+              column: 'traits:teeth',
+              append: '-wood',
+            };
+            const gaxOpts = {maxRetries: 4};
+            await row.createRules(rule, gaxOpts);
+            await view.createRules({rules: rule, rowId: 'row-id'}, gaxOpts);
+            done();
+          })();
+        });
       });
     });
   });
