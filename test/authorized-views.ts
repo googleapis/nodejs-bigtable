@@ -26,7 +26,8 @@ describe('Bigtable/AuthorizedViews', () => {
      */
     function mockCallbackRequest(
       done: mocha.Done,
-      compareFn: (requestCount: number) => unknown
+      compareFn: (requestCount: number) => unknown,
+      resp?: {}
     ) {
       let requestCount = 0;
       table.bigtable.request = (
@@ -41,7 +42,7 @@ describe('Bigtable/AuthorizedViews', () => {
           done(err);
         }
         if (callback) {
-          callback(null);
+          callback(null, resp);
         }
         const stream = new PassThrough({
           objectMode: true,
@@ -300,29 +301,44 @@ describe('Bigtable/AuthorizedViews', () => {
          * @param done The function to call when ending the mocha test
          */
         function setupReadModifyWriteRow(done: mocha.Done) {
-          mockCallbackRequest(done, requestCount => {
-            return {
-              client: 'BigtableClient',
-              method: 'readModifyWriteRow',
-              gaxOpts: {
-                maxRetries: 4,
-              },
-              reqOpts: Object.assign(
-                {
-                  appProfileId: undefined,
-                  rowKey: Buffer.from(rowId),
-                  rules: [
-                    {
-                      familyName: 'traits',
-                      columnQualifier: Buffer.from('teeth'),
-                      incrementAmount: 7,
-                    },
-                  ],
+          // resp!.row!.families!
+          mockCallbackRequest(
+            done,
+            requestCount => {
+              return {
+                client: 'BigtableClient',
+                method: 'readModifyWriteRow',
+                gaxOpts: {
+                  maxRetries: 4,
                 },
-                getBaseRequestOptions(requestCount)
-              ),
-            };
-          });
+                reqOpts: Object.assign(
+                  {
+                    appProfileId: undefined,
+                    rowKey: Buffer.from(rowId),
+                    rules: [
+                      {
+                        familyName: 'traits',
+                        columnQualifier: Buffer.from('teeth'),
+                        incrementAmount: 7,
+                      },
+                    ],
+                  },
+                  getBaseRequestOptions(requestCount)
+                ),
+              };
+            },
+            {
+              row: {
+                families: {
+                  cf1: {
+                    columns: {
+                      c1: 7,
+                    },
+                  },
+                },
+              },
+            }
+          );
         }
 
         it('requests for createRules should match', done => {
@@ -341,6 +357,7 @@ describe('Bigtable/AuthorizedViews', () => {
         it.only('requests for increment should match', done => {
           setupReadModifyWriteRow(done);
           (async () => {
+            // Change the response so that format families can run.
             const column = 'traits:teeth';
             const gaxOpts = {maxRetries: 4};
             await row.increment(column, 7, gaxOpts);
