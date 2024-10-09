@@ -455,6 +455,13 @@ describe.only('Bigtable/AuthorizedViews', () => {
               onMatch: mutations,
               gaxOptions: {maxRetries: 4},
             });
+            await view.filter(
+              {filter, rowId},
+              {
+                onMatch: mutations,
+                gaxOptions: {maxRetries: 4},
+              }
+            );
             done();
           })();
         });
