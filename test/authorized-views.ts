@@ -1,5 +1,5 @@
 import {beforeEach, describe} from 'mocha';
-import {AbortableDuplex, Bigtable, RequestCallback} from '../src';
+import {AbortableDuplex, Bigtable, RawFilter, RequestCallback} from '../src';
 import {PassThrough} from 'stream';
 import * as assert from 'assert';
 import {Mutation} from '../src/mutation';
@@ -7,7 +7,7 @@ import * as mocha from 'mocha';
 import {Row} from '../src';
 import {ServiceError} from 'google-gax';
 
-describe('Bigtable/AuthorizedViews', () => {
+describe.only('Bigtable/AuthorizedViews', () => {
   describe('Authorized View methods should have requests that match Table and Row requests', () => {
     const bigtable = new Bigtable({});
     const fakeTableName = 'fake-table';
@@ -301,7 +301,6 @@ describe('Bigtable/AuthorizedViews', () => {
          * @param done The function to call when ending the mocha test
          */
         function setupReadModifyWriteRow(done: mocha.Done) {
-          // resp!.row!.families!
           mockCallbackRequest(
             done,
             requestCount => {
@@ -364,7 +363,7 @@ describe('Bigtable/AuthorizedViews', () => {
             done();
           })();
         });
-        it.only('requests for increment should match', done => {
+        it('requests for increment should match', done => {
           setupReadModifyWriteRow(done);
           (async () => {
             // Change the response so that format families can run.
@@ -372,6 +371,90 @@ describe('Bigtable/AuthorizedViews', () => {
             const gaxOpts = {maxRetries: 4};
             await row.increment(column, 7, gaxOpts);
             await view.increment({column, rowId}, 7, gaxOpts);
+            done();
+          })();
+        });
+      });
+      describe('should make checkAndMutateRequest grpc requests', () => {
+        /**
+         * This function mocks out the request function to expect a readRows
+         * request when the tests are run.
+         *
+         * @param done The function to call when ending the mocha test
+         */
+        function setupCheckAndMutateRow(done: mocha.Done) {
+          mockCallbackRequest(
+            done,
+            requestCount => {
+              return {
+                client: 'BigtableClient',
+                method: 'checkAndMutateRow',
+                gaxOpts: {
+                  maxRetries: 4,
+                },
+                reqOpts: Object.assign(
+                  {
+                    appProfileId: undefined,
+                    rowKey: Buffer.from(rowId),
+                    predicateFilter: {
+                      familyNameRegexFilter: 'traits',
+                    },
+                    trueMutations: [
+                      {
+                        deleteFromColumn: {
+                          familyName: 'traits',
+                          columnQualifier: Buffer.from('teeth'),
+                          timeRange: undefined,
+                        },
+                      },
+                    ],
+                    falseMutations: [],
+                  },
+                  getBaseRequestOptions(requestCount)
+                ),
+              };
+            },
+            {
+              row: {
+                families: [
+                  {
+                    name: 'traits',
+                    columns: [
+                      {
+                        qualifier: Buffer.from('teeth'),
+                        cells: [
+                          {
+                            labels: [],
+                            timestampMicros: '4',
+                            value: Mutation.convertToBytes(7),
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            }
+          );
+        }
+
+        it.only('requests for filter should match', done => {
+          setupCheckAndMutateRow(done);
+          (async () => {
+            const filter: RawFilter = {
+              family: 'traits',
+              value: 'teeth',
+            };
+            const mutations = [
+              {
+                method: 'delete',
+                data: ['traits:teeth'],
+              },
+            ];
+            await row.filter(filter, {
+              onMatch: mutations,
+              gaxOptions: {maxRetries: 4},
+            });
             done();
           })();
         });
