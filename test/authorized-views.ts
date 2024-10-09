@@ -438,7 +438,7 @@ describe.only('Bigtable/AuthorizedViews', () => {
           );
         }
 
-        it.only('requests for filter should match', done => {
+        it('requests for filter should match', done => {
           setupCheckAndMutateRow(done);
           (async () => {
             const filter: RawFilter = {
