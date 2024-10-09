@@ -113,26 +113,21 @@ class RowDataUtils {
   ) {
     const data = {} as {[index: string]: {}};
     options = options || {};
-    console.log('families');
-    console.log(families);
     families.forEach(family => {
       const familyData = (data[family.name!] = {}) as {
         [index: string]: {};
       };
-      console.log(family);
       family.columns!.forEach(column => {
         const qualifier = Mutation.convertFromBytes(
           column.qualifier as string
         ) as string;
         familyData[qualifier] = column.cells!.map(cell => {
           let value = cell.value;
-          console.log('value');
           if (options!.decode !== false) {
             value = Mutation.convertFromBytes(value as Bytes, {
               isPossibleNumber: true,
             }) as string;
           }
-          console.log('before return');
           return {
             value,
             timestamp: cell.timestampMicros,
@@ -141,7 +136,6 @@ class RowDataUtils {
         });
       });
     });
-    console.log('returning data');
     return data;
   }
 
@@ -252,12 +246,8 @@ class RowDataUtils {
         callback(err, null, resp);
         return;
       }
-
-      console.log('before data');
       const data = this.formatFamilies_Util(resp!.row!.families!);
-      console.log('before value');
       const value = dotProp.get(data, column.replace(':', '.'))[0].value;
-      console.log('before callback');
 
       callback(null, value, resp);
     });
