@@ -1726,6 +1726,7 @@ describe.only('Bigtable', () => {
       const bigtableClient = bigtable.api[
         'BigtableTableAdminClient'
       ] as BigtableTableAdminClient;
+      // Create an authorized view that the integration tests can use
       await bigtableClient.createAuthorizedView({
         parent: authorizedViewTable.name.replace(
           '{{projectId}}',
@@ -1745,20 +1746,13 @@ describe.only('Bigtable', () => {
           },
         },
       });
-      /*
-    public name: string;
-
-    public subsetView?: (google.bigtable.admin.v2.AuthorizedView.ISubsetView|null);
-
-    public etag: string;
-
-    public deletionProtection: boolean;
-
-    public authorizedView?: "subsetView";
-       */
+      console.log(INSTANCE.id);
+      console.log(tableId);
+      console.log(authorizedViewTable.name);
       console.log('test');
     });
 
+    // TODO: To meet the needs of testing for access, just write a test to try to access a different column.
     it('should do something', () => {
       console.log('test');
     });
