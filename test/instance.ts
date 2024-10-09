@@ -55,7 +55,7 @@ const fakePromisify = Object.assign({}, promisify, {
       'getBackupsStream',
       'getTablesStream',
       'getAppProfilesStream',
-      'view'
+      'view',
     ]);
   },
 });
