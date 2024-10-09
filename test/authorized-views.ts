@@ -316,8 +316,8 @@ describe.only('Bigtable/AuthorizedViews', () => {
                     rowKey: Buffer.from(rowId),
                     rules: [
                       {
-                        familyName: 'traits',
-                        columnQualifier: Buffer.from('teeth'),
+                        familyName: 'columnFamilyName',
+                        columnQualifier: Buffer.from('columnName'),
                         incrementAmount: 7,
                       },
                     ],
@@ -330,10 +330,10 @@ describe.only('Bigtable/AuthorizedViews', () => {
               row: {
                 families: [
                   {
-                    name: 'traits',
+                    name: 'columnFamilyName',
                     columns: [
                       {
-                        qualifier: Buffer.from('teeth'),
+                        qualifier: Buffer.from('columnName'),
                         cells: [
                           {
                             labels: [],
@@ -354,7 +354,7 @@ describe.only('Bigtable/AuthorizedViews', () => {
           setupReadModifyWriteRow(done);
           (async () => {
             const rule = {
-              column: 'traits:teeth',
+              column: 'columnFamilyName:columnName',
               increment: 7,
             };
             const gaxOpts = {maxRetries: 4};
@@ -367,7 +367,7 @@ describe.only('Bigtable/AuthorizedViews', () => {
           setupReadModifyWriteRow(done);
           (async () => {
             // Change the response so that format families can run.
-            const column = 'traits:teeth';
+            const column = 'columnFamilyName:columnName';
             const gaxOpts = {maxRetries: 4};
             await row.increment(column, 7, gaxOpts);
             await view.increment({column, rowId}, 7, gaxOpts);
@@ -397,13 +397,13 @@ describe.only('Bigtable/AuthorizedViews', () => {
                     appProfileId: undefined,
                     rowKey: Buffer.from(rowId),
                     predicateFilter: {
-                      familyNameRegexFilter: 'traits',
+                      familyNameRegexFilter: 'columnFamilyName',
                     },
                     trueMutations: [
                       {
                         deleteFromColumn: {
-                          familyName: 'traits',
-                          columnQualifier: Buffer.from('teeth'),
+                          familyName: 'columnFamilyName',
+                          columnQualifier: Buffer.from('columnName'),
                           timeRange: undefined,
                         },
                       },
@@ -418,10 +418,10 @@ describe.only('Bigtable/AuthorizedViews', () => {
               row: {
                 families: [
                   {
-                    name: 'traits',
+                    name: 'columnFamilyName',
                     columns: [
                       {
-                        qualifier: Buffer.from('teeth'),
+                        qualifier: Buffer.from('columnName'),
                         cells: [
                           {
                             labels: [],
@@ -442,13 +442,13 @@ describe.only('Bigtable/AuthorizedViews', () => {
           setupCheckAndMutateRow(done);
           (async () => {
             const filter: RawFilter = {
-              family: 'traits',
-              value: 'teeth',
+              family: 'columnFamilyName',
+              value: 'columnName',
             };
             const mutations = [
               {
                 method: 'delete',
-                data: ['traits:teeth'],
+                data: ['columnFamilyName:columnName'],
               },
             ];
             await row.filter(filter, {
