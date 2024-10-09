@@ -28,6 +28,7 @@ import {RowDataUtils, RowProperties} from './row-data-utils';
 import {RawFilter} from './filter';
 import {Family} from './chunktransformer';
 import {Instance} from './instance';
+import {promisifyAll} from '@google-cloud/promisify';
 
 interface FilterInformation {
   filter: RawFilter;
@@ -253,3 +254,7 @@ export class AuthorizedView extends TabularApiSurface {
     }
   }
 }
+
+promisifyAll(AuthorizedView, {
+  exclude: ['initializeRow', 'generateProperties'],
+});

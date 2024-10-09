@@ -246,7 +246,6 @@ class RowDataUtils {
         callback(err, null, resp);
         return;
       }
-
       const data = this.formatFamilies_Util(resp!.row!.families!);
       const value = dotProp.get(data, column.replace(':', '.'))[0].value;
 
