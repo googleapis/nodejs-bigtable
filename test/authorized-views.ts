@@ -71,6 +71,11 @@ describe('Bigtable/AuthorizedViews', () => {
      * This function gets the basic structure of the requests we would
      * expect when first making a request for a table and then for an
      * authorized view.
+     *
+     * @param requestCount The number of calls that have been made to request()
+     *
+     * @return The expected table or authorized view in the request that will
+     * reach the request options.
      */
     function getBaseRequestOptions(requestCount: number) {
       const requestForTable = {
