@@ -1776,16 +1776,23 @@ describe.only('Bigtable', () => {
           },
         });
       }
-      console.log(INSTANCE.id);
-      console.log(tableId);
-      console.log(authorizedViewTable.name);
-      console.log('test');
     });
 
     // TODO: To meet the needs of testing for access, just write a test to try to access a different column.
     it('should call getRows for the authorized view', async () => {
-      const results = await authorizedView.getRows();
-      console.log('test');
+      const rows = (await authorizedView.getRows())[0];
+      assert.strictEqual(rows[0].id, rowId);
+      assert.deepStrictEqual(rows[0].data, {
+        [familyName]: {
+          [columnIdInView]: [
+            {
+              value: cellValueInView,
+              labels: [],
+              timestamp: '77000',
+            },
+          ],
+        },
+      });
     });
   });
 });
