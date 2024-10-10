@@ -1714,62 +1714,68 @@ describe.only('Bigtable', () => {
   //   });
   // });
   describe('AuthorizedViews', () => {
-    before(async () => {
-      const tableId = generateId('table');
-      const familyName = generateId('column-family-name');
-      const rowId = generateId('row-id');
-      const authorizedViewId = generateId('authorized-view-id');
-      const columnIdInView = generateId('column-id');
-      const columnIdNotInView = generateId('column-id');
-      const cellValueInView = generateId('cell-value');
-      const cellValueNotInView = generateId('cell-value');
-      const authorizedViewTable = INSTANCE.table(tableId);
-      // Create a table with just one row
-      await authorizedViewTable.create({});
-      await authorizedViewTable.insert([
-        {
-          key: rowId,
-          data: {
-            [familyName]: {
-              [columnIdInView]: {
-                value: cellValueInView,
-                labels: [],
-                timestamp: 77,
-              },
-              [columnIdNotInView]: {
-                value: cellValueNotInView,
-                labels: [],
-                timestamp: 77,
-              },
-            },
-          },
-        },
-      ]);
+    const tableId = generateId('table');
+    const familyName = generateId('column-family-name');
+    const rowId = generateId('row-id');
+    const authorizedViewId = generateId('authorized-view-id');
+    const columnIdInView = generateId('column-id');
+    const columnIdNotInView = generateId('column-id');
+    const cellValueInView = generateId('cell-value');
+    const cellValueNotInView = generateId('cell-value');
+    const authorizedViewTable = INSTANCE.table(tableId);
+    const authorizedView = INSTANCE.view(tableId, authorizedViewId);
 
-      await authorizedViewTable.createFamily(familyName);
-      const bigtableClient = bigtable.api[
-        'BigtableTableAdminClient'
-      ] as BigtableTableAdminClient;
-      // Create an authorized view that the integration tests can use
-      await bigtableClient.createAuthorizedView({
-        parent: authorizedViewTable.name.replace(
-          '{{projectId}}',
-          bigtable.projectId
-        ),
-        authorizedViewId,
-        authorizedView: {
-          etag: `${authorizedViewId}-etag`,
-          deletionProtection: false,
-          subsetView: {
-            rowPrefixes: [Buffer.from(rowId)],
-            familySubsets: {
+    before(async () => {
+      {
+        // Create a table with just one row.
+        await authorizedViewTable.create({});
+        await authorizedViewTable.createFamily(familyName);
+        await authorizedViewTable.insert([
+          {
+            key: rowId,
+            data: {
               [familyName]: {
-                qualifiers: [Buffer.from(columnIdInView)],
+                [columnIdInView]: {
+                  value: cellValueInView,
+                  labels: [],
+                  timestamp: 77000,
+                },
+                [columnIdNotInView]: {
+                  value: cellValueNotInView,
+                  labels: [],
+                  timestamp: 77000,
+                },
               },
             },
           },
-        },
-      });
+        ]);
+      }
+      {
+        // Create an authorized view that the integration tests can use.
+        // The view should only see the columnIdInView column.
+        const bigtableClient = bigtable.api[
+          'BigtableTableAdminClient'
+        ] as BigtableTableAdminClient;
+        await bigtableClient.createAuthorizedView({
+          parent: authorizedViewTable.name.replace(
+            '{{projectId}}',
+            bigtable.projectId
+          ),
+          authorizedViewId,
+          authorizedView: {
+            etag: `${authorizedViewId}-etag`,
+            deletionProtection: false,
+            subsetView: {
+              rowPrefixes: [Buffer.from(rowId)],
+              familySubsets: {
+                [familyName]: {
+                  qualifiers: [Buffer.from(columnIdInView)],
+                },
+              },
+            },
+          },
+        });
+      }
       console.log(INSTANCE.id);
       console.log(tableId);
       console.log(authorizedViewTable.name);
@@ -1777,7 +1783,8 @@ describe.only('Bigtable', () => {
     });
 
     // TODO: To meet the needs of testing for access, just write a test to try to access a different column.
-    it('should do something', () => {
+    it('should call getRows for the authorized view', async () => {
+      const results = await authorizedView.getRows();
       console.log('test');
     });
   });
