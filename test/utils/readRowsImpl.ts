@@ -449,6 +449,7 @@ export class ReadRowsImpl {
       await readRowsRequestHandler.sendResponse(response);
     }
     debugLog(`in total, sent ${chunksSent} chunks`);
+    console.log('emitting end');
     stream.end();
   }
 }

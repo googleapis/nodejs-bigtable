@@ -825,9 +825,12 @@ export class Bigtable {
           gaxStream.cancel();
         }
       };
+      console.log('stream once');
       if (config.method! in gapicStreamingMethods) {
+        console.log('gapic once');
         stream.once('reading', makeGapicStreamRequest);
       } else {
+        console.log('req once');
         stream.once('reading', makeRequestStream);
       }
       return stream;
@@ -846,6 +849,7 @@ export class Bigtable {
     }
 
     function makeRequestStream() {
+      console.log('makeReqStream');
       const retryRequestOptions = Object.assign(
         {
           currentRetryAttempt: 0,

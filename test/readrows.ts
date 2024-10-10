@@ -28,6 +28,7 @@ import {
   ReadRowsWritableStream,
 } from '../test/utils/readRowsServiceParameters';
 import * as mocha from 'mocha';
+import {BigtableClient} from '../src/v2';
 
 const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
 
@@ -66,6 +67,7 @@ describe('Bigtable/ReadRows', () => {
   let table: Table;
 
   before(async () => {
+    console.log('before hook');
     // make sure we have everything initialized before starting tests
     const port = await new Promise<string>(resolve => {
       server = new MockServer(resolve);
@@ -74,6 +76,11 @@ describe('Bigtable/ReadRows', () => {
       apiEndpoint: `localhost:${port}`,
     });
     table = bigtable.instance('fake-instance').table('fake-table');
+    try {
+      await table.getRows();
+    } catch (e: unknown) {
+      console.log(e);
+    }
     service = new BigtableClientMockService(server);
   });
 
@@ -164,7 +171,7 @@ describe('Bigtable/ReadRows', () => {
     pipeline(readStream, transform, passThrough, () => {});
   });
 
-  it('should create read stream and read asynchronously using Transform stream', function (done) {
+  it.only('should create read stream and read asynchronously using Transform stream', function (done) {
     setWindowsTestTimeout(this);
     service.setService({
       ReadRows: ReadRowsImpl.createService(
@@ -175,8 +182,11 @@ describe('Bigtable/ReadRows', () => {
     let receivedRowCount = 0;
     let lastKeyReceived: number | undefined;
 
+    console.log('past try');
     // BigTable stream
-    const readStream = table.createReadStream();
+    const someRequest = {};
+    const bigtableClient = bigtable.api['BigtableClient'] as BigtableClient;
+    const theReadStream = bigtableClient.readRows(someRequest);
 
     // Transform stream
     const transform = new Transform({
@@ -210,8 +220,11 @@ describe('Bigtable/ReadRows', () => {
       assert.strictEqual(lastKeyReceived, STANDARD_KEY_TO - 1);
       done();
     });
+    theReadStream.on('end', () => {
+      console.log('end made it through');
+    });
 
-    pipeline(readStream, transform, passThrough, () => {});
+    pipeline(theReadStream, transform, passThrough, () => {});
   });
 
   it('should be able to stop reading from the read stream', done => {
