@@ -1501,6 +1501,7 @@ promisifyAll(Instance, {
     'getBackupsStream',
     'getTablesStream',
     'getAppProfilesStream',
+    'view',
   ],
 });
 
