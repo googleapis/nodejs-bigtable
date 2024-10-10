@@ -1719,9 +1719,33 @@ describe.only('Bigtable', () => {
       const familyName = generateId('column-family-name');
       const rowId = generateId('row-id');
       const authorizedViewId = generateId('authorized-view-id');
-      const columnId = generateId('column-id');
+      const columnIdInView = generateId('column-id');
+      const columnIdNotInView = generateId('column-id');
+      const cellValueInView = generateId('cell-value');
+      const cellValueNotInView = generateId('cell-value');
       const authorizedViewTable = INSTANCE.table(tableId);
+      // Create a table with just one row
       await authorizedViewTable.create({});
+      await authorizedViewTable.insert([
+        {
+          key: rowId,
+          data: {
+            [familyName]: {
+              [columnIdInView]: {
+                value: cellValueInView,
+                labels: [],
+                timestamp: 77,
+              },
+              [columnIdNotInView]: {
+                value: cellValueNotInView,
+                labels: [],
+                timestamp: 77,
+              },
+            },
+          },
+        },
+      ]);
+
       await authorizedViewTable.createFamily(familyName);
       const bigtableClient = bigtable.api[
         'BigtableTableAdminClient'
@@ -1740,7 +1764,7 @@ describe.only('Bigtable', () => {
             rowPrefixes: [Buffer.from(rowId)],
             familySubsets: {
               [familyName]: {
-                qualifiers: [Buffer.from(columnId)],
+                qualifiers: [Buffer.from(columnIdInView)],
               },
             },
           },
