@@ -1838,8 +1838,6 @@ describe.only('Bigtable', () => {
       });
     });
 
-    // TODO: Add an after all hook that ensures the table values are the same.
-
     // TODO: To meet the needs of testing for access, just write a test to try to access a different column.
     describe('ReadRows grpc calls', () => {
       it('should call getRows for the authorized view', async () => {
