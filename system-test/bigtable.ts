@@ -1859,45 +1859,42 @@ describe.only('Bigtable', () => {
       });
     });
     describe('MutateRows grpc calls', () => {
-      it('should fail when writing to a row not in the authorized view', async () => {
-        const mutation = {
-          key: otherRowId,
-          data: {
-            [familyName]: {
-              [columnIdInView]: newCellValue,
+      describe('For erroneous calls', () => {
+        const errorMessage = `Cannot mutate from ${authorizedViewFullName} because the mutation contains cells outside the Authorized View.`;
+        it('should fail when writing to a row not in the authorized view', async () => {
+          const mutation = {
+            key: otherRowId,
+            data: {
+              [familyName]: {
+                [columnIdInView]: newCellValue,
+              },
             },
-          },
-          method: Mutation.methods.INSERT,
-        } as {} as Entry;
-        try {
-          await authorizedView.mutate(mutation, {} as MutateOptions);
-          assert.fail('The mutate call should have failed');
-        } catch (e: unknown) {
-          assert.strictEqual(
-            (e as ServiceError).message,
-            `Cannot mutate from ${authorizedViewFullName} because the mutation contains cells outside the Authorized View.`
-          );
-        }
-      });
-      it('should fail when writing to a column not in the authorized view', async () => {
-        const mutation = {
-          key: rowId,
-          data: {
-            [familyName]: {
-              [columnIdNotInView]: newCellValue,
+            method: Mutation.methods.INSERT,
+          } as {} as Entry;
+          try {
+            await authorizedView.mutate(mutation, {} as MutateOptions);
+            assert.fail('The mutate call should have failed');
+          } catch (e: unknown) {
+            assert.strictEqual((e as ServiceError).message, errorMessage);
+          }
+        });
+        it('should fail when writing to a column not in the authorized view', async () => {
+          const mutation = {
+            key: rowId,
+            data: {
+              [familyName]: {
+                [columnIdNotInView]: newCellValue,
+              },
             },
-          },
-          method: Mutation.methods.INSERT,
-        } as {} as Entry;
-        try {
-          await authorizedView.mutate(mutation, {} as MutateOptions);
-          assert.fail('The mutate call should have failed');
-        } catch (e: unknown) {
-          assert.strictEqual(
-            (e as ServiceError).message,
-            `Cannot mutate from ${authorizedViewFullName} because the mutation contains cells outside the Authorized View.`
-          );
-        }
+            method: Mutation.methods.INSERT,
+          } as {} as Entry;
+          try {
+            await authorizedView.mutate(mutation, {} as MutateOptions);
+            assert.fail('The mutate call should have failed');
+          } catch (e: unknown) {
+            assert.strictEqual((e as ServiceError).message, errorMessage);
+          }
+        });
       });
     });
 
