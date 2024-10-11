@@ -22,9 +22,12 @@ import {
   Backup,
   BackupTimestamp,
   Bigtable,
+  Entry,
   Instance,
   InstanceOptions,
+  MutateOptions,
 } from '../src';
+import {Mutation} from '../src/mutation';
 import {AppProfile} from '../src/app-profile.js';
 import {CopyBackupConfig} from '../src/backup.js';
 import {Cluster} from '../src/cluster.js';
@@ -34,6 +37,7 @@ import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
 import {generateId, PREFIX} from './common';
 import {BigtableTableAdminClient} from '../src/v2';
+import {ServiceError} from 'google-gax';
 
 describe.only('Bigtable', () => {
   const bigtable = new Bigtable();
@@ -1717,13 +1721,17 @@ describe.only('Bigtable', () => {
     const tableId = generateId('table');
     const familyName = generateId('column-family-name');
     const rowId = generateId('row-id');
+    const otherRowId = generateId('row-id');
     const authorizedViewId = generateId('authorized-view-id');
     const columnIdInView = generateId('column-id');
     const columnIdNotInView = generateId('column-id');
     const cellValueInView = generateId('cell-value');
     const cellValueNotInView = generateId('cell-value');
+    const newCellValue = generateId('cell-value');
     const authorizedViewTable = INSTANCE.table(tableId);
     const authorizedView = INSTANCE.view(tableId, authorizedViewId);
+    let authorizedViewTableFullName: string;
+    let authorizedViewFullName: string;
 
     before(async () => {
       {
@@ -1748,7 +1756,25 @@ describe.only('Bigtable', () => {
               },
             },
           },
+          {
+            key: otherRowId,
+            data: {
+              [familyName]: {
+                [columnIdNotInView]: {
+                  value: cellValueNotInView,
+                  labels: [],
+                  timestamp: 77000,
+                },
+              },
+            },
+          },
         ]);
+        // The following operations must be performed after table.insert because bigtable.projectId needs to be assigned.
+        authorizedViewTableFullName = authorizedViewTable.name.replace(
+          '{{projectId}}',
+          bigtable.projectId
+        );
+        authorizedViewFullName = `${authorizedViewTableFullName}/authorizedViews/${authorizedViewId}`;
       }
       {
         // Create an authorized view that the integration tests can use.
@@ -1757,10 +1783,7 @@ describe.only('Bigtable', () => {
           'BigtableTableAdminClient'
         ] as BigtableTableAdminClient;
         await bigtableClient.createAuthorizedView({
-          parent: authorizedViewTable.name.replace(
-            '{{projectId}}',
-            bigtable.projectId
-          ),
+          parent: authorizedViewTableFullName,
           authorizedViewId,
           authorizedView: {
             etag: `${authorizedViewId}-etag`,
@@ -1779,21 +1802,49 @@ describe.only('Bigtable', () => {
     });
 
     // TODO: To meet the needs of testing for access, just write a test to try to access a different column.
-    it('should call getRows for the authorized view', async () => {
-      const rows = (await authorizedView.getRows())[0];
-      assert.strictEqual(rows[0].id, rowId);
-      assert.deepStrictEqual(rows[0].data, {
-        [familyName]: {
-          [columnIdInView]: [
-            {
-              value: cellValueInView,
-              labels: [],
-              timestamp: '77000',
-            },
-          ],
-        },
+    describe('ReadRows grpc calls', () => {
+      it('should call getRows for the authorized view', async () => {
+        const rows = (await authorizedView.getRows())[0];
+        // The getRows call will only get one of the rows and only display
+        // one of the columns visible in the view.
+        assert.strictEqual(rows[0].id, rowId);
+        assert.deepStrictEqual(rows[0].data, {
+          [familyName]: {
+            [columnIdInView]: [
+              {
+                value: cellValueInView,
+                labels: [],
+                timestamp: '77000',
+              },
+            ],
+          },
+        });
       });
     });
+    describe('MutateRows grpc calls', () => {
+      it('should fail when writing to a row not in the authorized view', async () => {
+        const mutation = {
+          key: otherRowId,
+          data: {
+            [familyName]: {
+              [columnIdInView]: newCellValue,
+            },
+          },
+          method: Mutation.methods.INSERT,
+        } as {} as Entry;
+        try {
+          await authorizedView.mutate(mutation, {} as MutateOptions);
+          assert.fail('The mutate call should have failed');
+        } catch (e: unknown) {
+          assert.strictEqual(
+            (e as ServiceError).message,
+            `Cannot mutate from ${authorizedViewFullName} because the mutation contains cells outside the Authorized View.`
+          );
+        }
+      });
+    });
+
+    it('should call getRows for the authorized view', async () => {});
   });
 });
 
