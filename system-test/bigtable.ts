@@ -1760,8 +1760,8 @@ describe.only('Bigtable', () => {
             key: otherRowId,
             data: {
               [familyName]: {
-                [columnIdNotInView]: {
-                  value: cellValueNotInView,
+                [columnIdInView]: {
+                  value: cellValueInView,
                   labels: [],
                   timestamp: 77000,
                 },
@@ -1801,6 +1801,45 @@ describe.only('Bigtable', () => {
       }
     });
 
+    afterEach(async () => {
+      // Add an after hook to ensure that none of the tests change the table.
+      const rows = (await authorizedViewTable.getRows())[0];
+      assert.strictEqual(rows.length, 2);
+      assert.strictEqual(rows[0].id, rowId);
+      assert.deepStrictEqual(rows[0].data, {
+        [familyName]: {
+          [columnIdInView]: [
+            {
+              value: cellValueInView,
+              labels: [],
+              timestamp: '77000',
+            },
+          ],
+          [columnIdNotInView]: [
+            {
+              value: cellValueNotInView,
+              labels: [],
+              timestamp: '77000',
+            },
+          ],
+        },
+      });
+      assert.strictEqual(rows[1].id, otherRowId);
+      assert.deepStrictEqual(rows[1].data, {
+        [familyName]: {
+          [columnIdInView]: [
+            {
+              value: cellValueInView,
+              labels: [],
+              timestamp: '77000',
+            },
+          ],
+        },
+      });
+    });
+
+    // TODO: Add an after all hook that ensures the table values are the same.
+
     // TODO: To meet the needs of testing for access, just write a test to try to access a different column.
     describe('ReadRows grpc calls', () => {
       it('should call getRows for the authorized view', async () => {
@@ -1828,6 +1867,26 @@ describe.only('Bigtable', () => {
           data: {
             [familyName]: {
               [columnIdInView]: newCellValue,
+            },
+          },
+          method: Mutation.methods.INSERT,
+        } as {} as Entry;
+        try {
+          await authorizedView.mutate(mutation, {} as MutateOptions);
+          assert.fail('The mutate call should have failed');
+        } catch (e: unknown) {
+          assert.strictEqual(
+            (e as ServiceError).message,
+            `Cannot mutate from ${authorizedViewFullName} because the mutation contains cells outside the Authorized View.`
+          );
+        }
+      });
+      it('should fail when writing to a column not in the authorized view', async () => {
+        const mutation = {
+          key: rowId,
+          data: {
+            [familyName]: {
+              [columnIdNotInView]: newCellValue,
             },
           },
           method: Mutation.methods.INSERT,
