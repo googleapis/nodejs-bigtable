@@ -306,10 +306,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
 
-      const reqOpts = {
-        tableName: this.name,
-        appProfileId: this.bigtable.appProfileId,
-      } as google.bigtable.v2.IReadRowsRequest;
+      // If the viewName is provided then request will be made for an
+      // authorized view. Otherwise, the request is made for a table.
+      const reqOpts = (
+        this.viewName
+          ? {
+              authorizedViewName: `${this.name}/authorizedViews/${this.viewName}`,
+              appProfileId: this.bigtable.appProfileId,
+            }
+          : {
+              tableName: this.name,
+              appProfileId: this.bigtable.appProfileId,
+            }
+      ) as google.bigtable.v2.IReadRowsRequest;
 
       const retryOpts = {
         currentRetryAttempt: 0, // was numConsecutiveErrors
@@ -674,13 +683,23 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return pendingEntryIndices.has(index);
       });
 
-      const reqOpts = {
-        tableName: this.name,
+      // If the viewName is provided then request will be made for an
+      // authorized view. Otherwise, the request is made for a table.
+      const baseReqOpts = (
+        this.viewName
+          ? {
+              authorizedViewName: `${this.name}/authorizedViews/${this.viewName}`,
+            }
+          : {
+              tableName: this.name,
+            }
+      ) as google.bigtable.v2.IReadRowsRequest;
+      const reqOpts = Object.assign(baseReqOpts, {
         appProfileId: this.bigtable.appProfileId,
         entries: options.rawMutation
           ? entryBatch
           : entryBatch.map(Mutation.parse),
-      };
+      });
 
       const retryOpts = {
         currentRetryAttempt: numRequestsMade,
@@ -817,10 +836,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * ```
    */
   sampleRowKeysStream(gaxOptions?: CallOptions) {
-    const reqOpts = {
-      tableName: this.name,
-      appProfileId: this.bigtable.appProfileId,
-    };
+    // If the viewName is provided then request will be made for an
+    // authorized view. Otherwise, the request is made for a table.
+    const reqOpts = (
+      this.viewName
+        ? {
+            authorizedViewName: `${this.name}/authorizedViews/${this.viewName}`,
+            appProfileId: this.bigtable.appProfileId,
+          }
+        : {
+            tableName: this.name,
+            appProfileId: this.bigtable.appProfileId,
+          }
+    ) as google.bigtable.v2.IReadRowsRequest;
 
     const rowKeysStream = new Transform({
       transform(key, enc, next) {
