@@ -306,6 +306,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
 
+      // If the viewName is provided then request will be made for an
+      // authorized view. Otherwise, the request is made for a table.
       const reqOpts = (
         this.viewName
           ? {
@@ -681,6 +683,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return pendingEntryIndices.has(index);
       });
 
+      // If the viewName is provided then request will be made for an
+      // authorized view. Otherwise, the request is made for a table.
       const baseReqOpts = (
         this.viewName
           ? {

@@ -34,7 +34,7 @@ import {TabularApiSurface} from './tabular-api-surface';
 
 export interface Rule {
   column: string;
-  append?: string;
+  append?: string; // append is optional since `increment` doesn't supply it for instance.
   increment?: number;
 }
 export interface CreateRowOptions {
