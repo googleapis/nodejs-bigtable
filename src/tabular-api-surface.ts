@@ -832,6 +832,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * ```
    */
   sampleRowKeysStream(gaxOptions?: CallOptions) {
+    // If the viewName is provided then request will be made for an
+    // authorized view. Otherwise, the request is made for a table.
     const reqOpts = (
       this.viewName
         ? {
