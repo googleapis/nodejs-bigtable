@@ -1850,13 +1850,7 @@ describe.only('Bigtable', () => {
         assert.strictEqual(rows[0].id, rowId);
         assert.deepStrictEqual(rows[0].data, {
           [familyName]: {
-            [columnIdInView]: [
-              {
-                value: cellValueInView,
-                labels: [],
-                timestamp: '77000',
-              },
-            ],
+            [columnIdInView]: [columnIdInViewData],
           },
         });
       });
@@ -2091,11 +2085,7 @@ describe.only('Bigtable', () => {
                 key: rowId,
                 data: {
                   [familyName]: {
-                    [columnIdInView]: {
-                      value: cellValueInView2,
-                      labels: [],
-                      timestamp: 77000,
-                    },
+                    [columnIdInView]: columnIdInViewData2,
                   },
                 },
               },
