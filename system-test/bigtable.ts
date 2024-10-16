@@ -1733,6 +1733,18 @@ describe.only('Bigtable', () => {
     let authorizedViewTableFullName: string;
     let authorizedViewFullName: string;
 
+    /**
+     * getErrorMessage gets the error message that the test would expect
+     * for a particular authorizedViewFullName.
+     *
+     * @param authorizedViewFullName The full name of the authorized view.
+     * This method should only be called after authorizedViewFullName has
+     * been initialized.
+     */
+    function getErrorMessage(authorizedViewFullName: string) {
+      return `Cannot mutate from ${authorizedViewFullName} because the mutation contains cells outside the Authorized View.`;
+    }
+
     before(async () => {
       {
         // Create a table with just one row.
@@ -1859,46 +1871,39 @@ describe.only('Bigtable', () => {
       });
       it('should call createReadStream for the authorized view', done => {
         (async () => {
-          const stream = await authorizedView.createReadStream();
-          let receivedDataCount = 0;
-          stream.on('data', row => {
-            assert.strictEqual(row.id, rowId);
-            assert.deepStrictEqual(row.data, {
-              [familyName]: {
-                [columnIdInView]: [
-                  {
-                    value: cellValueInView,
-                    labels: [],
-                    timestamp: '77000',
-                  },
-                ],
-              },
+          try {
+            const stream = await authorizedView.createReadStream();
+            let receivedDataCount = 0;
+            stream.on('data', row => {
+              assert.strictEqual(row.id, rowId);
+              assert.deepStrictEqual(row.data, {
+                [familyName]: {
+                  [columnIdInView]: [
+                    {
+                      value: cellValueInView,
+                      labels: [],
+                      timestamp: '77000',
+                    },
+                  ],
+                },
+              });
+              receivedDataCount = receivedDataCount + 1;
             });
-            receivedDataCount = receivedDataCount + 1;
-          });
-          stream.on('error', () => {
-            done('An error should not have occurred');
-          });
-          stream.on('end', () => {
-            assert.strictEqual(receivedDataCount, 1);
-            done();
-          });
+            stream.on('error', () => {
+              done('An error should not have occurred');
+            });
+            stream.on('end', () => {
+              assert.strictEqual(receivedDataCount, 1);
+              done();
+            });
+          } catch (e: unknown) {
+            done(e);
+          }
         })();
       });
     });
     describe('MutateRows grpc calls', () => {
       describe('For erroneous calls', () => {
-        /**
-         * getErrorMessage gets the error message that the test would expect
-         * for a particular authorizedViewFullName.
-         *
-         * @param authorizedViewFullName The full name of the authorized view.
-         * This method should only be called after authorizedViewFullName has
-         * been initialized.
-         */
-        function getErrorMessage(authorizedViewFullName: string) {
-          return `Cannot mutate from ${authorizedViewFullName} because the mutation contains cells outside the Authorized View.`;
-        }
         it('should fail when writing to a row not in the authorized view', async () => {
           const mutation = {
             key: otherRowId,
@@ -2062,44 +2067,90 @@ describe.only('Bigtable', () => {
       });
       it('should call sampleRowKeysStream for the authorized view', done => {
         (async () => {
-          const stream = await authorizedView.sampleRowKeysStream();
-          let receivedDataCount = 0;
-          stream.on('data', (row: {key: Uint8Array; offset: string}) => {
-            assert.deepStrictEqual(
-              convertBufferToInt(row.key),
-              convertBufferToInt(Buffer.from(rowId)) + 1
-            );
-            receivedDataCount = receivedDataCount + 1;
-          });
-          stream.on('error', () => {
-            done('An error should not have occurred');
-          });
-          stream.on('end', () => {
-            assert.strictEqual(receivedDataCount, 1);
-            done();
-          });
+          try {
+            const stream = await authorizedView.sampleRowKeysStream();
+            let receivedDataCount = 0;
+            stream.on('data', (row: {key: Uint8Array; offset: string}) => {
+              assert.deepStrictEqual(
+                convertBufferToInt(row.key),
+                convertBufferToInt(Buffer.from(rowId)) + 1
+              );
+              receivedDataCount = receivedDataCount + 1;
+            });
+            stream.on('error', () => {
+              done('An error should not have occurred');
+            });
+            stream.on('end', () => {
+              assert.strictEqual(receivedDataCount, 1);
+              done();
+            });
+          } catch (e: unknown) {
+            done(e);
+          }
         })();
       });
     });
     describe('CheckAndMutate grpc calls', () => {
+      it('should error when the request is made for the row key not in a view', done => {
+        (async () => {
+          try {
+            try {
+              await authorizedView.filter(
+                {
+                  rowId: 'some-row-key',
+                  filter: {
+                    column: columnIdInView,
+                  },
+                },
+                {
+                  onMatch: [
+                    {
+                      key: rowId,
+                      method: 'delete',
+                    },
+                  ],
+                }
+              );
+              done('The call to filter should have failed.');
+            } catch (e: unknown) {
+              assert.strictEqual(
+                (e as ServiceError).details,
+                getErrorMessage(authorizedViewFullName)
+              );
+              done();
+            }
+          } catch (e: unknown) {
+            // Will reach this point if there is an assertion error.
+            done(e);
+          }
+        })();
+      });
       it('should call filter for the authorized view', done => {
         (async () => {
-          await authorizedView.filter(
-            {
-              rowId: 'some-row-key',
-              filter: {
-                column: 'data_plan_05gb',
-              },
-            },
-            {
-              onMatch: [
-                {
-                  key: rowId,
-                  method: 'delete',
+          try {
+            await authorizedView.filter(
+              {
+                rowId: rowId,
+                filter: {
+                  row: {
+                    cellOffset: 1,
+                  },
                 },
-              ],
-            }
-          );
+              },
+              {
+                onMatch: [
+                  {
+                    method: 'delete',
+                  },
+                ],
+              }
+            );
+            // Need a deleteFromColumn modifier
+            const rows = (await authorizedView.getRows())[0];
+            done();
+          } catch (e: unknown) {
+            done(e);
+          }
         })();
       });
     });
