@@ -2128,6 +2128,12 @@ describe.only('Bigtable', () => {
       it('should call filter for the authorized view', done => {
         (async () => {
           try {
+            const mutations = [
+              {
+                method: 'delete',
+                data: [`${familyName}:${columnIdInView}`],
+              },
+            ];
             await authorizedView.filter(
               {
                 rowId: rowId,
@@ -2138,11 +2144,7 @@ describe.only('Bigtable', () => {
                 },
               },
               {
-                onMatch: [
-                  {
-                    method: 'delete',
-                  },
-                ],
+                onMatch: mutations,
               }
             );
             // Need a deleteFromColumn modifier
