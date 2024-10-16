@@ -39,7 +39,7 @@ import {generateId, PREFIX} from './common';
 import {BigtableTableAdminClient} from '../src/v2';
 import {ServiceError} from 'google-gax';
 
-describe('Bigtable', () => {
+describe.only('Bigtable', () => {
   const bigtable = new Bigtable();
   const INSTANCE = bigtable.instance(generateId('instance'));
   const DIFF_INSTANCE = bigtable.instance(generateId('d-inst'));
@@ -1857,6 +1857,34 @@ describe('Bigtable', () => {
           },
         });
       });
+      it('should call createReadStream for the authorized view', done => {
+        (async () => {
+          const stream = await authorizedView.createReadStream();
+          let receivedDataCount = 0;
+          stream.on('data', row => {
+            assert.strictEqual(row.id, rowId);
+            assert.deepStrictEqual(row.data, {
+              [familyName]: {
+                [columnIdInView]: [
+                  {
+                    value: cellValueInView,
+                    labels: [],
+                    timestamp: '77000',
+                  },
+                ],
+              },
+            });
+            receivedDataCount = receivedDataCount + 1;
+          });
+          stream.on('error', () => {
+            done('An error should not have occurred');
+          });
+          stream.on('end', () => {
+            assert.strictEqual(receivedDataCount, 1);
+            done();
+          });
+        })();
+      });
     });
     describe('MutateRows grpc calls', () => {
       describe('For erroneous calls', () => {
@@ -2005,15 +2033,74 @@ describe('Bigtable', () => {
       });
     });
     describe('SampleRowKeys grpc calls', () => {
-      it.skip('should get a sample of row keys', async () => {
-        // TODO: Skipped for now, the rowId doesn't match the value coming from the server so a fix is required upstream.
+      /**
+       * This function is for converting a buffer to an integer equal to the
+       * total value of the buffer. It is useful for comparing the sampleRowKeys
+       * return value to the row identifier since the difference between the
+       * total value of these buffers is expected to be exactly 1.
+       *
+       * @param buffer The buffer being mapped to be used for comparisons.
+       */
+      function convertBufferToInt(buffer: Uint8Array) {
+        return buffer
+          .reverse()
+          .reduce(
+            (accumulator, currentValue, index) =>
+              accumulator + Math.pow(currentValue, index),
+            0
+          );
+      }
+
+      it('should get a sample of row keys', async () => {
         const rowKeys = await authorizedView.sampleRowKeys();
         assert.strictEqual(rowKeys.length, 1);
         assert.strictEqual(rowKeys[0].length, 1);
-        assert.deepStrictEqual(rowKeys[0][0], {
-          offset: '805306368',
-          key: Buffer.from(rowId),
-        });
+        assert.deepStrictEqual(
+          convertBufferToInt(rowKeys[0][0].key),
+          convertBufferToInt(Buffer.from(rowId)) + 1
+        );
+      });
+      it('should call sampleRowKeysStream for the authorized view', done => {
+        (async () => {
+          const stream = await authorizedView.sampleRowKeysStream();
+          let receivedDataCount = 0;
+          stream.on('data', (row: {key: Uint8Array; offset: string}) => {
+            assert.deepStrictEqual(
+              convertBufferToInt(row.key),
+              convertBufferToInt(Buffer.from(rowId)) + 1
+            );
+            receivedDataCount = receivedDataCount + 1;
+          });
+          stream.on('error', () => {
+            done('An error should not have occurred');
+          });
+          stream.on('end', () => {
+            assert.strictEqual(receivedDataCount, 1);
+            done();
+          });
+        })();
+      });
+    });
+    describe('CheckAndMutate grpc calls', () => {
+      it('should call filter for the authorized view', done => {
+        (async () => {
+          await authorizedView.filter(
+            {
+              rowId: 'some-row-key',
+              filter: {
+                column: 'data_plan_05gb',
+              },
+            },
+            {
+              onMatch: [
+                {
+                  key: rowId,
+                  method: 'delete',
+                },
+              ],
+            }
+          );
+        })();
       });
     });
   });
