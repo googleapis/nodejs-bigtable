@@ -1726,10 +1726,31 @@ describe.only('Bigtable', () => {
     const columnIdInView = generateId('column-id');
     const columnIdNotInView = generateId('column-id');
     const cellValueInView = generateId('cell-value');
+    const cellValueInView2 = generateId('cell-value');
     const cellValueNotInView = generateId('cell-value');
     const newCellValue = generateId('cell-value');
     const authorizedViewTable = INSTANCE.table(tableId);
     const authorizedView = INSTANCE.view(tableId, authorizedViewId);
+    const columnIdInViewData = {
+      value: cellValueInView,
+      labels: [],
+      timestamp: '77000',
+    };
+    const columnIdInViewData2 = {
+      value: cellValueInView2,
+      labels: [],
+      timestamp: '77000',
+    };
+    const columnIdNotInViewData = {
+      value: cellValueNotInView,
+      labels: [],
+      timestamp: '77000',
+    };
+    const newCellValueData = {
+      value: newCellValue,
+      labels: [],
+      timestamp: '77000',
+    };
     let authorizedViewTableFullName: string;
     let authorizedViewFullName: string;
 
@@ -1755,16 +1776,8 @@ describe.only('Bigtable', () => {
             key: rowId,
             data: {
               [familyName]: {
-                [columnIdInView]: {
-                  value: cellValueInView,
-                  labels: [],
-                  timestamp: 77000,
-                },
-                [columnIdNotInView]: {
-                  value: cellValueNotInView,
-                  labels: [],
-                  timestamp: 77000,
-                },
+                [columnIdInView]: columnIdInViewData,
+                [columnIdNotInView]: columnIdNotInViewData,
               },
             },
           },
@@ -1772,11 +1785,7 @@ describe.only('Bigtable', () => {
             key: otherRowId,
             data: {
               [familyName]: {
-                [columnIdInView]: {
-                  value: cellValueInView,
-                  labels: [],
-                  timestamp: 77000,
-                },
+                [columnIdInView]: columnIdInViewData,
               },
             },
           },
@@ -1820,32 +1829,14 @@ describe.only('Bigtable', () => {
       assert.strictEqual(rows[0].id, rowId);
       assert.deepStrictEqual(rows[0].data, {
         [familyName]: {
-          [columnIdInView]: [
-            {
-              value: cellValueInView,
-              labels: [],
-              timestamp: '77000',
-            },
-          ],
-          [columnIdNotInView]: [
-            {
-              value: cellValueNotInView,
-              labels: [],
-              timestamp: '77000',
-            },
-          ],
+          [columnIdInView]: [columnIdInViewData],
+          [columnIdNotInView]: [columnIdNotInViewData],
         },
       });
       assert.strictEqual(rows[1].id, otherRowId);
       assert.deepStrictEqual(rows[1].data, {
         [familyName]: {
-          [columnIdInView]: [
-            {
-              value: cellValueInView,
-              labels: [],
-              timestamp: '77000',
-            },
-          ],
+          [columnIdInView]: [columnIdInViewData],
         },
       });
     });
@@ -1878,13 +1869,7 @@ describe.only('Bigtable', () => {
               assert.strictEqual(row.id, rowId);
               assert.deepStrictEqual(row.data, {
                 [familyName]: {
-                  [columnIdInView]: [
-                    {
-                      value: cellValueInView,
-                      labels: [],
-                      timestamp: '77000',
-                    },
-                  ],
+                  [columnIdInView]: [columnIdInViewData],
                 },
               });
               receivedDataCount = receivedDataCount + 1;
@@ -1951,11 +1936,7 @@ describe.only('Bigtable', () => {
           key: rowId,
           data: {
             [familyName]: {
-              [columnIdInView]: {
-                value: newCellValue,
-                labels: [],
-                timestamp: 77000,
-              },
+              [columnIdInView]: newCellValueData,
             },
           },
           method: Mutation.methods.INSERT,
@@ -1966,13 +1947,7 @@ describe.only('Bigtable', () => {
         assert.strictEqual(rows[0].id, rowId);
         assert.deepStrictEqual(rows[0].data, {
           [familyName]: {
-            [columnIdInView]: [
-              {
-                value: newCellValue,
-                labels: [],
-                timestamp: '77000',
-              },
-            ],
+            [columnIdInView]: [newCellValueData],
           },
         });
         // Change the cell value back to what it was before
@@ -1980,11 +1955,7 @@ describe.only('Bigtable', () => {
           key: rowId,
           data: {
             [familyName]: {
-              [columnIdInView]: {
-                value: cellValueInView,
-                labels: [],
-                timestamp: 77000,
-              },
+              [columnIdInView]: columnIdInViewData,
             },
           },
           method: Mutation.methods.INSERT,
@@ -1997,11 +1968,7 @@ describe.only('Bigtable', () => {
           key: rowId,
           data: {
             [familyName]: {
-              [columnIdInView]: {
-                value: newCellValue,
-                labels: [],
-                timestamp: 77000,
-              },
+              [columnIdInView]: newCellValueData,
             },
           },
         } as {} as Entry;
@@ -2011,13 +1978,7 @@ describe.only('Bigtable', () => {
         assert.strictEqual(rows[0].id, rowId);
         assert.deepStrictEqual(rows[0].data, {
           [familyName]: {
-            [columnIdInView]: [
-              {
-                value: newCellValue,
-                labels: [],
-                timestamp: '77000',
-              },
-            ],
+            [columnIdInView]: [newCellValueData],
           },
         });
         // Change the cell value back to what it was before
@@ -2025,11 +1986,7 @@ describe.only('Bigtable', () => {
           key: rowId,
           data: {
             [familyName]: {
-              [columnIdInView]: {
-                value: cellValueInView,
-                labels: [],
-                timestamp: 77000,
-              },
+              [columnIdInView]: columnIdInViewData,
             },
           },
           method: Mutation.methods.INSERT,
@@ -2128,6 +2085,22 @@ describe.only('Bigtable', () => {
       it('should call filter for the authorized view', done => {
         (async () => {
           try {
+            // Add the row so that the cell offset filter works properly:
+            await authorizedViewTable.insert([
+              {
+                key: rowId,
+                data: {
+                  [familyName]: {
+                    [columnIdInView]: {
+                      value: cellValueInView2,
+                      labels: [],
+                      timestamp: 77000,
+                    },
+                  },
+                },
+              },
+            ]);
+            // Call filter to conduct a checkAndMutate operation.
             const mutations = [
               {
                 method: 'delete',
@@ -2147,8 +2120,36 @@ describe.only('Bigtable', () => {
                 onMatch: mutations,
               }
             );
-            // Need a deleteFromColumn modifier
-            const rows = (await authorizedView.getRows())[0];
+            // Check the rows to ensure the row was deleted by calling `filter`.
+            const rows = (await authorizedViewTable.getRows())[0];
+            assert.strictEqual(rows.length, 1);
+            assert.strictEqual(rows[0].id, otherRowId);
+            assert.deepStrictEqual(rows[0].data, {
+              [familyName]: {
+                [columnIdInView]: [
+                  {
+                    value: cellValueInView,
+                    labels: [],
+                    timestamp: '77000',
+                  },
+                ],
+              },
+            });
+            // Add the row that was deleted back:
+            await authorizedViewTable.insert([
+              {
+                key: rowId,
+                data: {
+                  [familyName]: {
+                    [columnIdInView]: {
+                      value: cellValueInView2,
+                      labels: [],
+                      timestamp: 77000,
+                    },
+                  },
+                },
+              },
+            ]);
             done();
           } catch (e: unknown) {
             done(e);
