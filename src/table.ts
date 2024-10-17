@@ -290,9 +290,9 @@ export type Entry = any;
 /*
 The Entry type is expected to be in the following format:
 {
-  columnFamily: {
-    column: Data // Data is the expected type passed into Mutation.encodeSetCell
-  }
+  key?: Uint8Array|string,
+  data?: Data, // The Data type is described in the Mutation class.
+  method?: typeof mutation.methods
 }
 */
 
