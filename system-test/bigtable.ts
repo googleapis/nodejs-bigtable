@@ -1766,7 +1766,29 @@ describe.only('Bigtable', () => {
       return `Cannot mutate from ${authorizedViewFullName} because the mutation contains cells outside the Authorized View.`;
     }
 
-    before(async () => {
+    /**
+     * Resets the table to a stable state after running a test.
+     *
+     */
+    async function resetTable() {
+      // Change the cell value back to what it was:
+      await authorizedViewTable.deleteRows(rowId);
+      const firstMutation = {
+        key: rowId,
+        data: {
+          [familyName]: {
+            [columnIdInView]: columnIdInViewData,
+            [columnIdNotInView]: columnIdNotInViewData,
+          },
+        },
+      } as {} as Entry;
+      await authorizedViewTable.insert(firstMutation, {});
+    }
+
+    /**
+     * Creates the table used for the tests.
+     */
+    async function createTable() {
       {
         // Create a table with just one row.
         await authorizedViewTable.create({});
@@ -1820,6 +1842,10 @@ describe.only('Bigtable', () => {
           },
         });
       }
+    }
+
+    before(async () => {
+      await createTable();
     });
 
     afterEach(async () => {
@@ -2163,6 +2189,83 @@ describe.only('Bigtable', () => {
             done(e);
           }
         })();
+      });
+    });
+    describe('ReadModifyWriteRow grpc calls', () => {
+      it('should apply read/modify/write rules to a row', async () => {
+        // Append a value to the table:
+        const rule = {
+          column: `${familyName}:${columnIdInView}`,
+          append: '-appended-value',
+        };
+        await authorizedView.createRules({
+          rowId,
+          rules: rule,
+        });
+        // Check that the operation was performed correctly:
+        const rows = (await authorizedView.getRows())[0];
+        rows[0].data[familyName][columnIdInView][0].timestamp = '77000';
+        assert.strictEqual(rows.length, 1);
+        assert.strictEqual(rows[0].id, rowId);
+        assert.deepStrictEqual(rows[0].data, {
+          [familyName]: {
+            [columnIdInView]: [
+              {
+                value: `${cellValueInView}-appended-value`,
+                labels: [],
+                timestamp: '77000',
+              },
+              columnIdInViewData,
+            ],
+          },
+        });
+        resetTable()
+      });
+      it('should apply increment to a row', async () => {
+        // First set the row in view cell value to a numeric value:
+        const originalValue = Math.floor(Math.random() * 1000000000);
+        await authorizedViewTable.deleteRows(rowId);
+        const firstMutation = {
+          key: rowId,
+          data: {
+            [familyName]: {
+              [columnIdInView]: {
+                value: originalValue,
+                labels: [],
+                timestamp: '77000',
+              },
+              [columnIdNotInView]: columnIdNotInViewData,
+            },
+          },
+        } as {} as Entry;
+        await authorizedViewTable.insert(firstMutation, {});
+        // Next, increment the value:
+        await authorizedView.increment(
+          {
+            rowId,
+            column: `${familyName}:${columnIdInView}`,
+          },
+          1
+        );
+        const rows = (await authorizedView.getRows())[0];
+        rows[0].data[familyName][columnIdInView][0].timestamp = '77000';
+        assert.deepStrictEqual(rows[0].data, {
+          columnFamily: {
+            columnIdInView: [
+              {
+                value: originalValue + 1,
+                labels: [],
+                timestamp: '77000',
+              },
+              {
+                value: originalValue,
+                labels: [],
+                timestamp: '77000',
+              },
+            ],
+          },
+        });
+        resetTable();
       });
     });
   });
