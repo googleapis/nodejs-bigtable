@@ -2219,7 +2219,7 @@ describe.only('Bigtable', () => {
             ],
           },
         });
-        resetTable()
+        await resetTable();
       });
       it('should apply increment to a row', async () => {
         // First set the row in view cell value to a numeric value:
@@ -2265,7 +2265,7 @@ describe.only('Bigtable', () => {
             ],
           },
         });
-        resetTable();
+        await resetTable();
       });
     });
   });
