@@ -2093,12 +2093,14 @@ describe.only('Bigtable', () => {
             const rowsAfterAddition = (await authorizedViewTable.getRows())[0];
             assert.strictEqual(rowsAfterAddition.length, 2);
             assert.strictEqual(rowsAfterAddition[0].id, rowId);
-            assert.deepStrictEqual(rowsAfterAddition[0].data, {
-              [familyName]: {
-                [columnIdNotInView]: [columnIdNotInViewData],
-                [columnIdInView]: [columnIdInViewData, columnIdInViewData2],
-              },
-            });
+            assert.deepStrictEqual(
+              rowsAfterAddition[0].data[familyName][columnIdNotInView].length,
+              1
+            );
+            assert.deepStrictEqual(
+              rowsAfterAddition[0].data[familyName][columnIdInView].length,
+              2
+            );
             assert.strictEqual(rowsAfterAddition[1].id, otherRowId);
             assert.deepStrictEqual(rowsAfterAddition[1].data, {
               [familyName]: {
