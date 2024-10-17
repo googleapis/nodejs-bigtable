@@ -260,7 +260,7 @@ export type SampleRowKeysCallback = (
   err: ServiceError | null,
   keys?: string[]
 ) => void;
-export type SampleRowsKeysResponse = [string[]];
+export type SampleRowsKeysResponse = [{key: Uint8Array; offset: string}[]];
 export type DeleteRowsCallback = (
   err: ServiceError | null,
   apiResponse?: google.protobuf.Empty
