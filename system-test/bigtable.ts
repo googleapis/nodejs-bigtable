@@ -2250,8 +2250,8 @@ describe.only('Bigtable', () => {
         const rows = (await authorizedView.getRows())[0];
         rows[0].data[familyName][columnIdInView][0].timestamp = '77000';
         assert.deepStrictEqual(rows[0].data, {
-          columnFamily: {
-            columnIdInView: [
+          [familyName]: {
+            [columnIdInView]: [
               {
                 value: originalValue + 1,
                 labels: [],
