@@ -2079,17 +2079,32 @@ describe.only('Bigtable', () => {
       it('should call filter for the authorized view', done => {
         (async () => {
           try {
-            // Add the row so that the cell offset filter works properly:
+            // Add the row so that the cell offset filter takes effect:
             await authorizedViewTable.insert([
               {
                 key: rowId,
                 data: {
                   [familyName]: {
-                    [columnIdInView]: columnIdInViewData2,
+                    [columnIdInView]: [columnIdInViewData, columnIdInViewData2],
                   },
                 },
               },
             ]);
+            const rowsAfterAddition = (await authorizedViewTable.getRows())[0];
+            assert.strictEqual(rowsAfterAddition.length, 2);
+            assert.strictEqual(rowsAfterAddition[0].id, rowId);
+            assert.deepStrictEqual(rowsAfterAddition[0].data, {
+              [familyName]: {
+                [columnIdNotInView]: [columnIdNotInViewData],
+                [columnIdInView]: [columnIdInViewData, columnIdInViewData2],
+              },
+            });
+            assert.strictEqual(rowsAfterAddition[1].id, otherRowId);
+            assert.deepStrictEqual(rowsAfterAddition[1].data, {
+              [familyName]: {
+                [columnIdInView]: [columnIdInViewData],
+              },
+            });
             // Call filter to conduct a checkAndMutate operation.
             const mutations = [
               {
@@ -2112,17 +2127,18 @@ describe.only('Bigtable', () => {
             );
             // Check the rows to ensure the row was deleted by calling `filter`.
             const rows = (await authorizedViewTable.getRows())[0];
-            assert.strictEqual(rows.length, 1);
-            assert.strictEqual(rows[0].id, otherRowId);
+            assert.strictEqual(rows.length, 2);
+            assert.strictEqual(rows[0].id, rowId);
             assert.deepStrictEqual(rows[0].data, {
               [familyName]: {
-                [columnIdInView]: [
-                  {
-                    value: cellValueInView,
-                    labels: [],
-                    timestamp: '77000',
-                  },
-                ],
+                [columnIdNotInView]: [columnIdNotInViewData],
+                // [columnIdInView] is deleted by checkAndMutate
+              },
+            });
+            assert.strictEqual(rows[1].id, otherRowId);
+            assert.deepStrictEqual(rows[1].data, {
+              [familyName]: {
+                [columnIdInView]: [columnIdInViewData],
               },
             });
             // Add the row that was deleted back:
@@ -2132,7 +2148,7 @@ describe.only('Bigtable', () => {
                 data: {
                   [familyName]: {
                     [columnIdInView]: {
-                      value: cellValueInView2,
+                      value: cellValueInView,
                       labels: [],
                       timestamp: 77000,
                     },
