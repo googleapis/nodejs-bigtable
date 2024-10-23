@@ -22,9 +22,12 @@ import {
   Backup,
   BackupTimestamp,
   Bigtable,
+  Entry,
   Instance,
   InstanceOptions,
+  MutateOptions,
 } from '../src';
+import {Mutation} from '../src/mutation';
 import {AppProfile} from '../src/app-profile.js';
 import {CopyBackupConfig} from '../src/backup.js';
 import {Cluster} from '../src/cluster.js';
@@ -33,6 +36,8 @@ import {Row} from '../src/row.js';
 import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
 import {generateId, PREFIX} from './common';
+import {BigtableTableAdminClient} from '../src/v2';
+import {ServiceError} from 'google-gax';
 
 describe('Bigtable', () => {
   const bigtable = new Bigtable();
@@ -1709,6 +1714,557 @@ describe('Bigtable', () => {
         } finally {
           await backup.delete();
         }
+      });
+    });
+  });
+  describe('AuthorizedViews', () => {
+    const tableId = generateId('table');
+    const familyName = generateId('column-family-name');
+    const rowId = generateId('row-id');
+    const otherRowId = generateId('row-id');
+    const authorizedViewId = generateId('authorized-view-id');
+    const columnIdInView = generateId('column-id');
+    const columnIdNotInView = generateId('column-id');
+    const cellValueInView = generateId('cell-value');
+    const cellValueInView2 = generateId('cell-value');
+    const cellValueNotInView = generateId('cell-value');
+    const newCellValue = generateId('cell-value');
+    const authorizedViewTable = INSTANCE.table(tableId);
+    const authorizedView = INSTANCE.view(tableId, authorizedViewId);
+    const columnIdInViewData = {
+      value: cellValueInView,
+      labels: [],
+      timestamp: '77000',
+    };
+    const columnIdInViewData2 = {
+      value: cellValueInView2,
+      labels: [],
+      timestamp: '77000',
+    };
+    const columnIdNotInViewData = {
+      value: cellValueNotInView,
+      labels: [],
+      timestamp: '77000',
+    };
+    const newCellValueData = {
+      value: newCellValue,
+      labels: [],
+      timestamp: '77000',
+    };
+    let authorizedViewTableFullName: string;
+    let authorizedViewFullName: string;
+
+    /**
+     * getErrorMessage gets the error message that the test would expect
+     * for a particular authorizedViewFullName.
+     *
+     * @param authorizedViewFullName The full name of the authorized view.
+     * This method should only be called after authorizedViewFullName has
+     * been initialized.
+     */
+    function getErrorMessage(authorizedViewFullName: string) {
+      return `Cannot mutate from ${authorizedViewFullName} because the mutation contains cells outside the Authorized View.`;
+    }
+
+    /**
+     * Resets the table to a stable state after running a test.
+     *
+     */
+    async function resetTable() {
+      // Change the cell value back to what it was:
+      await authorizedViewTable.deleteRows(rowId);
+      const firstMutation = {
+        key: rowId,
+        data: {
+          [familyName]: {
+            [columnIdInView]: columnIdInViewData,
+            [columnIdNotInView]: columnIdNotInViewData,
+          },
+        },
+      } as {} as Entry;
+      await authorizedViewTable.insert(firstMutation, {});
+    }
+
+    /**
+     * Creates the table used for the tests.
+     */
+    async function createTable() {
+      {
+        // Create a table with just one row.
+        await authorizedViewTable.create({});
+        await authorizedViewTable.createFamily(familyName);
+        await authorizedViewTable.insert([
+          {
+            key: rowId,
+            data: {
+              [familyName]: {
+                [columnIdInView]: columnIdInViewData,
+                [columnIdNotInView]: columnIdNotInViewData,
+              },
+            },
+          },
+          {
+            key: otherRowId,
+            data: {
+              [familyName]: {
+                [columnIdInView]: columnIdInViewData,
+              },
+            },
+          },
+        ]);
+        // The following operations must be performed after table.insert because bigtable.projectId needs to be assigned.
+        authorizedViewTableFullName = authorizedViewTable.name.replace(
+          '{{projectId}}',
+          bigtable.projectId
+        );
+        authorizedViewFullName = `${authorizedViewTableFullName}/authorizedViews/${authorizedViewId}`;
+      }
+      {
+        // Create an authorized view that the integration tests can use.
+        // The view should only see the columnIdInView column.
+        const bigtableClient = bigtable.api[
+          'BigtableTableAdminClient'
+        ] as BigtableTableAdminClient;
+        await bigtableClient.createAuthorizedView({
+          parent: authorizedViewTableFullName,
+          authorizedViewId,
+          authorizedView: {
+            etag: `${authorizedViewId}-etag`,
+            deletionProtection: false,
+            subsetView: {
+              rowPrefixes: [Buffer.from(rowId)],
+              familySubsets: {
+                [familyName]: {
+                  qualifiers: [Buffer.from(columnIdInView)],
+                },
+              },
+            },
+          },
+        });
+      }
+    }
+
+    before(async () => {
+      await createTable();
+    });
+
+    afterEach(async () => {
+      // Add an after hook to ensure that none of the tests change the table.
+      const rows = (await authorizedViewTable.getRows())[0];
+      assert.strictEqual(rows.length, 2);
+      assert.strictEqual(rows[0].id, rowId);
+      assert.deepStrictEqual(rows[0].data, {
+        [familyName]: {
+          [columnIdInView]: [columnIdInViewData],
+          [columnIdNotInView]: [columnIdNotInViewData],
+        },
+      });
+      assert.strictEqual(rows[1].id, otherRowId);
+      assert.deepStrictEqual(rows[1].data, {
+        [familyName]: {
+          [columnIdInView]: [columnIdInViewData],
+        },
+      });
+    });
+
+    describe('ReadRows grpc calls', () => {
+      it('should call getRows for the authorized view', async () => {
+        const rows = (await authorizedView.getRows())[0];
+        // The getRows call will only get one of the rows and only display
+        // one of the columns visible in the view.
+        assert.strictEqual(rows[0].id, rowId);
+        assert.deepStrictEqual(rows[0].data, {
+          [familyName]: {
+            [columnIdInView]: [columnIdInViewData],
+          },
+        });
+      });
+      it('should call createReadStream for the authorized view', done => {
+        (async () => {
+          try {
+            const stream = await authorizedView.createReadStream();
+            let receivedDataCount = 0;
+            stream.on('data', row => {
+              assert.strictEqual(row.id, rowId);
+              assert.deepStrictEqual(row.data, {
+                [familyName]: {
+                  [columnIdInView]: [columnIdInViewData],
+                },
+              });
+              receivedDataCount = receivedDataCount + 1;
+            });
+            stream.on('error', () => {
+              done('An error should not have occurred');
+            });
+            stream.on('end', () => {
+              assert.strictEqual(receivedDataCount, 1);
+              done();
+            });
+          } catch (e: unknown) {
+            done(e);
+          }
+        })();
+      });
+    });
+    describe('MutateRows grpc calls', () => {
+      describe('For erroneous calls', () => {
+        it('should fail when writing to a row not in the authorized view', async () => {
+          const mutation = {
+            key: otherRowId,
+            data: {
+              [familyName]: {
+                [columnIdInView]: newCellValue,
+              },
+            },
+            method: Mutation.methods.INSERT,
+          } as {} as Entry;
+          try {
+            await authorizedView.mutate(mutation, {} as MutateOptions);
+            assert.fail('The mutate call should have failed');
+          } catch (e: unknown) {
+            assert.strictEqual(
+              (e as ServiceError).message,
+              getErrorMessage(authorizedViewFullName)
+            );
+          }
+        });
+        it('should fail when writing to a column not in the authorized view', async () => {
+          const mutation = {
+            key: rowId,
+            data: {
+              [familyName]: {
+                [columnIdNotInView]: newCellValue,
+              },
+            },
+            method: Mutation.methods.INSERT,
+          } as {} as Entry;
+          try {
+            await authorizedView.mutate(mutation, {} as MutateOptions);
+            assert.fail('The mutate call should have failed');
+          } catch (e: unknown) {
+            assert.strictEqual(
+              (e as ServiceError).message,
+              getErrorMessage(authorizedViewFullName)
+            );
+          }
+        });
+      });
+      it('should mutate a row for a row/column in view', async () => {
+        // Change the cell in view to a new value.
+        const firstMutation = {
+          key: rowId,
+          data: {
+            [familyName]: {
+              [columnIdInView]: newCellValueData,
+            },
+          },
+          method: Mutation.methods.INSERT,
+        } as {} as Entry;
+        await authorizedView.mutate(firstMutation, {} as MutateOptions);
+        // Ensure the new cell value change took place
+        const rows = (await authorizedView.getRows())[0];
+        assert.strictEqual(rows[0].id, rowId);
+        assert.deepStrictEqual(rows[0].data, {
+          [familyName]: {
+            [columnIdInView]: [newCellValueData],
+          },
+        });
+        // Change the cell value back to what it was before
+        const secondMutation = {
+          key: rowId,
+          data: {
+            [familyName]: {
+              [columnIdInView]: columnIdInViewData,
+            },
+          },
+          method: Mutation.methods.INSERT,
+        } as {} as Entry;
+        await authorizedView.mutate(secondMutation, {} as MutateOptions);
+      });
+      it('should insert a row for a row/column in view', async () => {
+        // Change the cell in view to a new value.
+        const firstMutation = {
+          key: rowId,
+          data: {
+            [familyName]: {
+              [columnIdInView]: newCellValueData,
+            },
+          },
+        } as {} as Entry;
+        await authorizedView.insert(firstMutation, {});
+        // Ensure the new cell value change took place
+        const rows = (await authorizedView.getRows())[0];
+        assert.strictEqual(rows[0].id, rowId);
+        assert.deepStrictEqual(rows[0].data, {
+          [familyName]: {
+            [columnIdInView]: [newCellValueData],
+          },
+        });
+        // Change the cell value back to what it was before
+        const secondMutation = {
+          key: rowId,
+          data: {
+            [familyName]: {
+              [columnIdInView]: columnIdInViewData,
+            },
+          },
+          method: Mutation.methods.INSERT,
+        } as {} as Entry;
+        await authorizedView.insert(secondMutation, {});
+      });
+    });
+    describe('SampleRowKeys grpc calls', () => {
+      /**
+       * This function is for converting a buffer to an integer equal to the
+       * total value of the buffer. It is useful for comparing the sampleRowKeys
+       * return value to the row identifier since the difference between the
+       * total value of these buffers is expected to be exactly 1.
+       *
+       * @param buffer The buffer being mapped to be used for comparisons.
+       */
+      function convertBufferToInt(buffer: Uint8Array) {
+        return buffer
+          .reverse()
+          .reduce(
+            (accumulator, currentValue, index) =>
+              accumulator + Math.pow(currentValue, index),
+            0
+          );
+      }
+
+      it('should get a sample of row keys', async () => {
+        const rowKeys = await authorizedView.sampleRowKeys();
+        assert.strictEqual(rowKeys.length, 1);
+        assert.strictEqual(rowKeys[0].length, 1);
+        assert.deepStrictEqual(
+          convertBufferToInt(rowKeys[0][0].key),
+          convertBufferToInt(Buffer.from(rowId)) + 1
+        );
+      });
+      it('should call sampleRowKeysStream for the authorized view', done => {
+        (async () => {
+          try {
+            const stream = await authorizedView.sampleRowKeysStream();
+            let receivedDataCount = 0;
+            stream.on('data', (row: {key: Uint8Array; offset: string}) => {
+              assert.deepStrictEqual(
+                convertBufferToInt(row.key),
+                convertBufferToInt(Buffer.from(rowId)) + 1
+              );
+              receivedDataCount = receivedDataCount + 1;
+            });
+            stream.on('error', () => {
+              done('An error should not have occurred');
+            });
+            stream.on('end', () => {
+              assert.strictEqual(receivedDataCount, 1);
+              done();
+            });
+          } catch (e: unknown) {
+            done(e);
+          }
+        })();
+      });
+    });
+    describe('CheckAndMutate grpc calls', () => {
+      it('should error when the request is made for the row key not in a view', done => {
+        (async () => {
+          try {
+            try {
+              await authorizedView.filter(
+                {
+                  rowId: 'some-row-key',
+                  filter: {
+                    column: columnIdInView,
+                  },
+                },
+                {
+                  onMatch: [
+                    {
+                      key: rowId,
+                      method: 'delete',
+                    },
+                  ],
+                }
+              );
+              done('The call to filter should have failed.');
+            } catch (e: unknown) {
+              assert.strictEqual(
+                (e as ServiceError).details,
+                getErrorMessage(authorizedViewFullName)
+              );
+              done();
+            }
+          } catch (e: unknown) {
+            // Will reach this point if there is an assertion error.
+            done(e);
+          }
+        })();
+      });
+      it('should call filter for the authorized view', done => {
+        (async () => {
+          try {
+            // Add the row so that the cell offset filter takes effect:
+            await authorizedViewTable.insert([
+              {
+                key: rowId,
+                data: {
+                  [familyName]: {
+                    [columnIdInView]: [columnIdInViewData, columnIdInViewData2],
+                  },
+                },
+              },
+            ]);
+            const rowsAfterAddition = (await authorizedViewTable.getRows())[0];
+            assert.strictEqual(rowsAfterAddition.length, 2);
+            assert.strictEqual(rowsAfterAddition[0].id, rowId);
+            assert.deepStrictEqual(
+              rowsAfterAddition[0].data[familyName][columnIdNotInView].length,
+              1
+            );
+            assert.deepStrictEqual(
+              rowsAfterAddition[0].data[familyName][columnIdInView].length,
+              2
+            );
+            assert.strictEqual(rowsAfterAddition[1].id, otherRowId);
+            assert.deepStrictEqual(rowsAfterAddition[1].data, {
+              [familyName]: {
+                [columnIdInView]: [columnIdInViewData],
+              },
+            });
+            // Call filter to conduct a checkAndMutate operation.
+            const mutations = [
+              {
+                method: 'delete',
+                data: [`${familyName}:${columnIdInView}`],
+              },
+            ];
+            await authorizedView.filter(
+              {
+                rowId: rowId,
+                filter: {
+                  row: {
+                    cellOffset: 1,
+                  },
+                },
+              },
+              {
+                onMatch: mutations,
+              }
+            );
+            // Check the rows to ensure the row was deleted by calling `filter`.
+            const rows = (await authorizedViewTable.getRows())[0];
+            assert.strictEqual(rows.length, 2);
+            assert.strictEqual(rows[0].id, rowId);
+            assert.deepStrictEqual(rows[0].data, {
+              [familyName]: {
+                [columnIdNotInView]: [columnIdNotInViewData],
+                // [columnIdInView] is deleted by checkAndMutate
+              },
+            });
+            assert.strictEqual(rows[1].id, otherRowId);
+            assert.deepStrictEqual(rows[1].data, {
+              [familyName]: {
+                [columnIdInView]: [columnIdInViewData],
+              },
+            });
+            // Add the row that was deleted back:
+            await authorizedViewTable.insert([
+              {
+                key: rowId,
+                data: {
+                  [familyName]: {
+                    [columnIdInView]: {
+                      value: cellValueInView,
+                      labels: [],
+                      timestamp: 77000,
+                    },
+                  },
+                },
+              },
+            ]);
+            done();
+          } catch (e: unknown) {
+            done(e);
+          }
+        })();
+      });
+    });
+    describe('ReadModifyWriteRow grpc calls', () => {
+      it('should apply read/modify/write rules to a row', async () => {
+        // Append a value to the table:
+        const rule = {
+          column: `${familyName}:${columnIdInView}`,
+          append: '-appended-value',
+        };
+        await authorizedView.createRules({
+          rowId,
+          rules: rule,
+        });
+        // Check that the operation was performed correctly:
+        const rows = (await authorizedView.getRows())[0];
+        rows[0].data[familyName][columnIdInView][0].timestamp = '77000';
+        assert.strictEqual(rows.length, 1);
+        assert.strictEqual(rows[0].id, rowId);
+        assert.deepStrictEqual(rows[0].data, {
+          [familyName]: {
+            [columnIdInView]: [
+              {
+                value: `${cellValueInView}-appended-value`,
+                labels: [],
+                timestamp: '77000',
+              },
+              columnIdInViewData,
+            ],
+          },
+        });
+        await resetTable();
+      });
+      it('should apply increment to a row', async () => {
+        // First set the row in view cell value to a numeric value:
+        const originalValue = Math.floor(Math.random() * 1000000000);
+        await authorizedViewTable.deleteRows(rowId);
+        const firstMutation = {
+          key: rowId,
+          data: {
+            [familyName]: {
+              [columnIdInView]: {
+                value: originalValue,
+                labels: [],
+                timestamp: '77000',
+              },
+              [columnIdNotInView]: columnIdNotInViewData,
+            },
+          },
+        } as {} as Entry;
+        await authorizedViewTable.insert(firstMutation, {});
+        // Next, increment the value:
+        await authorizedView.increment(
+          {
+            rowId,
+            column: `${familyName}:${columnIdInView}`,
+          },
+          1
+        );
+        const rows = (await authorizedView.getRows())[0];
+        rows[0].data[familyName][columnIdInView][0].timestamp = '77000';
+        assert.deepStrictEqual(rows[0].data, {
+          [familyName]: {
+            [columnIdInView]: [
+              {
+                value: originalValue + 1,
+                labels: [],
+                timestamp: '77000',
+              },
+              {
+                value: originalValue,
+                labels: [],
+                timestamp: '77000',
+              },
+            ],
+          },
+        });
+        await resetTable();
       });
     });
   });

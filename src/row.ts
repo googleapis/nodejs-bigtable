@@ -58,6 +58,7 @@ export interface Family {
 export interface FilterConfigOption {
   method?: string;
   data?: Data;
+  key?: string;
 }
 export interface FilterConfig {
   gaxOptions?: CallOptions;
