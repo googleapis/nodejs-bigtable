@@ -20,7 +20,7 @@
 
 'use strict';
 
-function main(location, state, defaultStorageType, encryptionConfig) {
+function main(location, state, nodeScalingFactor, defaultStorageType, encryptionConfig) {
   // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateCluster_async]
   /**
    * This snippet has been automatically generated and should be regarded as a code template only.
@@ -50,6 +50,10 @@ function main(location, state, defaultStorageType, encryptionConfig) {
    */
   // const serveNodes = 1234
   /**
+   *  Immutable. The node scaling factor of this cluster.
+   */
+  // const nodeScalingFactor = {}
+  /**
    *  Configuration for this cluster.
    */
   // const clusterConfig = {}
@@ -74,6 +78,7 @@ function main(location, state, defaultStorageType, encryptionConfig) {
     const request = {
       location,
       state,
+      nodeScalingFactor,
       defaultStorageType,
       encryptionConfig,
     };
