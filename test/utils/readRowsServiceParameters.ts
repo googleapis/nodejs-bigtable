@@ -31,7 +31,8 @@ export interface ReadRowsServiceParameters extends SharedReadRowsParameters {
   keyTo?: number; // The key the data coming from the service will end at
   errorAfterChunkNo?: number; // The chunk that the error should come after
   chunksPerResponse: number; // The total number of chunks the server should send
-  debugLog: DebugLog;
+  debugLog: DebugLog; // The debug log for logging messages from the server
+  preProcessor?: (request: protos.google.bigtable.v2.IReadRowsRequest) => void; // The function called each time the server receives a request
 }
 
 export interface ChunkGeneratorParameters extends SharedReadRowsParameters {
