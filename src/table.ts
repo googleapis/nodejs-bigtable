@@ -168,6 +168,7 @@ export interface CreateTableOptions {
   families?: {} | string[];
   gaxOptions?: CallOptions;
   splits?: string[];
+  deletionProtection?: boolean;
 }
 export type CreateTableCallback = (
   err: ServiceError | null,
