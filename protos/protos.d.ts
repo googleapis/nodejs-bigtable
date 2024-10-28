@@ -25279,6 +25279,12 @@ export namespace google {
 
                 /** FeatureFlags clientSideMetricsEnabled */
                 clientSideMetricsEnabled?: (boolean|null);
+
+                /** FeatureFlags trafficDirectorEnabled */
+                trafficDirectorEnabled?: (boolean|null);
+
+                /** FeatureFlags directAccessRequested */
+                directAccessRequested?: (boolean|null);
             }
 
             /** Represents a FeatureFlags. */
@@ -25310,6 +25316,12 @@ export namespace google {
 
                 /** FeatureFlags clientSideMetricsEnabled. */
                 public clientSideMetricsEnabled: boolean;
+
+                /** FeatureFlags trafficDirectorEnabled. */
+                public trafficDirectorEnabled: boolean;
+
+                /** FeatureFlags directAccessRequested. */
+                public directAccessRequested: boolean;
 
                 /**
                  * Creates a new FeatureFlags instance using the specified properties.

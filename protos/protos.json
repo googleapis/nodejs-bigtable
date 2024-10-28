@@ -5949,6 +5949,14 @@
                     "clientSideMetricsEnabled": {
                       "type": "bool",
                       "id": 8
+                    },
+                    "trafficDirectorEnabled": {
+                      "type": "bool",
+                      "id": 9
+                    },
+                    "directAccessRequested": {
+                      "type": "bool",
+                      "id": 10
                     }
                   }
                 },
