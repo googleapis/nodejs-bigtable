@@ -2268,6 +2268,90 @@ describe('Bigtable', () => {
       });
     });
   });
+
+  describe('mutateRows entries tests', () => {
+    const table = INSTANCE.table(generateId('table'));
+
+    afterEach(async () => {
+      await table.delete();
+    });
+
+    it('should only insert one row in the table with mutate', async () => {
+      // Create table
+      const tableOptions = {
+        families: ['columnFamily'],
+      };
+      await table.create(tableOptions);
+      // Add entries
+      const entry = {
+        columnFamily: {
+          column: 1,
+        },
+      };
+      const mutation = {
+        key: 'rowKey',
+        data: entry,
+        method: Mutation.methods.INSERT,
+      };
+      const gaxOptions = {maxRetries: 4};
+      await table.mutate(mutation, {gaxOptions});
+      // Get rows and compare
+      const [rows] = await table.getRows();
+      assert.strictEqual(rows.length, 1);
+    });
+
+    it('should insert one row in the table using mutate in a similar way to how the documentation says to use insert', async () => {
+      // Create table
+      const tableOptions = {
+        families: ['columnFamily'],
+      };
+      await table.create(tableOptions);
+      // Add entries
+      const mutation = {
+        key: 'rowKey',
+        data: {
+          columnFamily: {
+            column: 1,
+          },
+        },
+        method: Mutation.methods.INSERT,
+      };
+      const gaxOptions = {maxRetries: 4};
+      await table.mutate(mutation, {gaxOptions});
+      // Get rows and compare
+      const [rows] = await table.getRows();
+      assert.strictEqual(rows.length, 1);
+    });
+
+    it('should only insert one row in the table with insert as described by the GCP documentation', async () => {
+      // Create table
+      const tableOptions = {
+        families: ['follows'],
+      };
+      await table.create(tableOptions);
+      // Add entries
+      const greetings = ['Hello World!', 'Hello Bigtable!', 'Hello Node!'];
+      const rowsToInsert = greetings.map((greeting, index) => ({
+        key: `greeting${index}`,
+        data: {
+          follows: {
+            // 'follows' is the column family
+            someColumn: {
+              // Setting the timestamp allows the client to perform retries. If
+              // server-side time is used, retries may cause multiple cells to
+              // be generated.
+              timestamp: new Date(),
+              value: greeting,
+            },
+          },
+        },
+      }));
+      await table.insert(rowsToInsert);
+      // Get rows and compare
+      const [rows] = await table.getRows();
+      assert.strictEqual(rows.length, 3);
+    });
+  });
 });
 
 function createInstanceConfig(
