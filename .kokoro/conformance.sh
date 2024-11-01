@@ -40,10 +40,6 @@ popd
 cd cloud-bigtable-clients-test/tests
 eval "go test -v -proxy_addr=:9999"
 RETURN_CODE=$?
-popd
-
-# Stop the proxy
-kill $proxyPID
 
 # fix output location of logs
 bash .kokoro/coerce_logs.sh
