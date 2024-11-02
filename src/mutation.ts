@@ -422,7 +422,7 @@ export class Mutation {
           };
         }
 
-        let timestamp = cell.timestamp || new Date();
+        let timestamp = cell.timestamp || new Date(0);
 
         if (is.date(timestamp)) {
           timestamp = timestamp.getTime() * 1000;

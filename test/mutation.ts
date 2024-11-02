@@ -520,6 +520,32 @@ describe('Bigtable/Mutation', () => {
       assert.strictEqual(convertCalls.length, 2);
       assert.deepStrictEqual(convertCalls, ['gwashington', val]);
     });
+
+    it('should default the timestamp to a fixed timestamp so aggregations work by default when not passed an explicity timestamp', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (Date as any).restore();
+      const val = Buffer.from([42]); // Using number 42 instead of string
+      const fakeMutation = {
+        follows: {
+          gwashington: val,
+        },
+      };
+
+      const cells = Mutation.encodeAddToCell(fakeMutation);
+
+      assert.deepStrictEqual(cells, [
+        {
+          addToCell: {
+            familyName: 'follows',
+            columnQualifier: {rawValue: 'gwashington'},
+            timestamp: {
+              rawTimestampMicros: new Date(0).getTime() * 1000, // Convert ms to μs
+            },
+            input: val,
+          },
+        },
+      ]);
+    });
   });
 
   describe('parse', () => {
