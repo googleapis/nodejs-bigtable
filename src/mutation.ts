@@ -21,6 +21,7 @@ import {google as btTypes} from '../protos/protos';
 export type IMutation = btTypes.bigtable.v2.IMutation;
 export type IMutateRowRequest = btTypes.bigtable.v2.IMutateRowRequest;
 export type ISetCell = btTypes.bigtable.v2.Mutation.ISetCell;
+export type IAddToCell = btTypes.bigtable.v2.Mutation.IAddToCell;
 
 export type Bytes = string | Buffer;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -78,6 +79,10 @@ export interface TimeRange {
 export interface SetCellObj {
   [k: string]: string | ISetCell | undefined;
   setCell?: ISetCell;
+}
+export interface AddToCellObj {
+  [k: string]: string | IAddToCell | undefined;
+  addToCell?: IAddToCell;
 }
 export interface ValueObj {
   [k: string]: Buffer | Value | ValueObj;
@@ -367,6 +372,79 @@ export class Mutation {
   }
 
   /**
+   * Formats an `add` mutation to what the proto service expects.
+   *
+   * @param {object} data - The entity data.
+   * @returns {object[]}
+   *
+   * @example
+   * ```
+   * Mutation.encodeAddToCell({
+   *   follows: {
+   *     gwashington: 1,
+   *     alincoln: -1
+   *   }
+   * });
+   * // [
+   * //   {
+   * //     addToCell: {
+   * //       familyName: 'follows',
+   * //       columnQualifier: 'gwashington', // as buffer
+   * //       timestamp: -1, // -1 means to use the server time
+   * //       input: 1
+   * //     }
+   * //   },
+   *      {
+   *     addToCell: {
+   *       familyName: 'follows',
+   *       columnQualifier: 'alincoln', // as buffer
+   *       timestamp: -1, // -1 means to use the server time
+   *       input: -1
+   *     }
+   *   }
+   * // ]
+   * ```
+   * @private
+   */
+  static encodeAddToCell(data: Data): AddToCellObj[] {
+    const mutations: AddToCellObj[] = [];
+
+    Object.keys(data).forEach(familyName => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const family = (data as any)[familyName];
+
+      Object.keys(family).forEach(cellName => {
+        let cell = family[cellName];
+
+        if (!is.object(cell) || cell instanceof Buffer) {
+          cell = {
+            value: cell,
+          };
+        }
+
+        let timestamp = cell.timestamp || new Date();
+
+        if (is.date(timestamp)) {
+          timestamp = timestamp.getTime() * 1000;
+        }
+
+        const addToCell: IAddToCell = {
+          familyName,
+          columnQualifier: {rawValue: Mutation.convertToBytes(cellName)},
+          timestamp: {
+            rawTimestampMicros: timestamp,
+          },
+          input: Mutation.convertToBytes(cell.value),
+        };
+
+        mutations.push({addToCell});
+      });
+    });
+
+    return mutations;
+  }
+
+  /**
    * Creates a new Mutation object and returns the proto JSON form.
    *
    * @param {object} mutation - The entity data.
@@ -431,6 +509,8 @@ export class Mutation {
       mutation.mutations = Mutation.encodeSetCell(this.data);
     } else if (this.method === Mutation.methods.DELETE) {
       mutation.mutations = Mutation.encodeDelete(this.data);
+    } else if (this.method === Mutation.methods.ADD) {
+      mutation.mutations = Mutation.encodeAddToCell(this.data);
     }
 
     return mutation;
@@ -443,9 +523,11 @@ export class Mutation {
    *
    * INSERT => setCell
    * DELETE => deleteFrom*
+   * ADD => addToCell
    */
   static methods = {
     INSERT: 'insert',
     DELETE: 'delete',
+    ADD: 'add',
   };
 }

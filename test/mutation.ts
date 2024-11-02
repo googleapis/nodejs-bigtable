@@ -415,6 +415,113 @@ describe('Bigtable/Mutation', () => {
     });
   });
 
+  describe('encodeAddToCell', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let convertCalls: any[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const fakeTime = new Date('2018-1-1') as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const realTimestamp = new Date() as any;
+
+    beforeEach(() => {
+      sandbox.stub(global, 'Date').returns(fakeTime);
+      convertCalls = [];
+      sandbox.stub(Mutation, 'convertToBytes').callsFake(value => {
+        convertCalls.push(value);
+        return value;
+      });
+    });
+
+    it('should encode a addToCell mutation', () => {
+      const fakeMutation = {
+        follows: {
+          gwashington: 1,
+          alincoln: -1,
+        },
+      };
+
+      const cells = Mutation.encodeAddToCell(fakeMutation);
+
+      assert.strictEqual(cells.length, 2);
+
+      assert.deepStrictEqual(cells, [
+        {
+          addToCell: {
+            familyName: 'follows',
+            columnQualifier: {rawValue: 'gwashington'},
+            timestamp: {rawTimestampMicros: fakeTime * 1000}, // Convert ms to μs
+            input: 1,
+          },
+        },
+        {
+          addToCell: {
+            familyName: 'follows',
+            columnQualifier: {rawValue: 'alincoln'},
+            timestamp: {rawTimestampMicros: fakeTime * 1000}, // Convert ms to μs
+            input: -1,
+          },
+        },
+      ]);
+
+      assert.strictEqual(convertCalls.length, 4);
+      assert.deepStrictEqual(convertCalls, ['gwashington', 1, 'alincoln', -1]);
+    });
+
+    it('should optionally accept a timestamp', () => {
+      const fakeMutation = {
+        follows: {
+          gwashington: {
+            value: 1,
+            timestamp: realTimestamp,
+          },
+        },
+      };
+
+      const cells = Mutation.encodeAddToCell(fakeMutation);
+
+      assert.deepStrictEqual(cells, [
+        {
+          addToCell: {
+            familyName: 'follows',
+            columnQualifier: {rawValue: 'gwashington'},
+            timestamp: {rawTimestampMicros: realTimestamp * 1000}, // Convert ms to μs
+            input: 1,
+          },
+        },
+      ]);
+
+      assert.strictEqual(convertCalls.length, 2);
+      assert.deepStrictEqual(convertCalls, ['gwashington', 1]);
+    });
+
+    it('should accept buffers', () => {
+      const val = Buffer.from([42]); // Using number 42 instead of string
+      const fakeMutation = {
+        follows: {
+          gwashington: val,
+        },
+      };
+
+      const cells = Mutation.encodeAddToCell(fakeMutation);
+
+      assert.deepStrictEqual(cells, [
+        {
+          addToCell: {
+            familyName: 'follows',
+            columnQualifier: {rawValue: 'gwashington'},
+            timestamp: {
+              rawTimestampMicros: fakeTime * 1000,
+            }, // Convert ms to μs
+            input: val,
+          },
+        },
+      ]);
+
+      assert.strictEqual(convertCalls.length, 2);
+      assert.deepStrictEqual(convertCalls, ['gwashington', val]);
+    });
+  });
+
   describe('parse', () => {
     let toProtoCalled = false;
     const fakeData = {a: 'a'} as IMutateRowRequest;
