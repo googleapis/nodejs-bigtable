@@ -145,7 +145,7 @@ export class RowError extends Error {
   constructor(row: string) {
     super();
     this.name = 'RowError';
-    this.message = `Unknown row: ${row}.`;
+    this.message = `Unknown row: ${row}`;
     this.code = 404;
   }
 }
@@ -670,15 +670,21 @@ export class Row {
     }
   }
 
-  mutate(mutation: MutationInput | MutationInput[], config?: MutateRowOptions): Promise<MutateRowResponse>;
+  mutate(
+    mutation: MutationInput | MutationInput[],
+    config?: MutateRowOptions
+  ): Promise<MutateRowResponse>;
   mutate(
     mutation: MutationInput | MutationInput[],
     config: MutateRowOptions,
     callback: MutateRowCallback
   ): void;
-  mutate(mutation: MutationInput | MutationInput[], callback: MutateRowCallback): void;
+  mutate(
+    mutation: MutationInput | MutationInput[],
+    callback: MutateRowCallback
+  ): void;
   /**
-   * Mutates a row atomically. 
+   * Mutates a row atomically.
    */
   mutate(
     mutationsRaw: MutationInput | MutationInput[],
@@ -697,7 +703,7 @@ export class Row {
       tableName: this.table.name,
       appProfileId: this.bigtable.appProfileId,
       rowKey: Mutation.convertToBytes(this.id),
-      mutations: mutations.reduce((a, b) => a.concat(b), [])
+      mutations: mutations.reduce((a, b) => a.concat(b), []),
     };
     this.data = {};
     this.bigtable.request<google.bigtable.v2.IMutateRowResponse>(
