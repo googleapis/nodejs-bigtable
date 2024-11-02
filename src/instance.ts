@@ -522,6 +522,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           if (family.rule) {
             columnFamily.gcRule = Family.formatRule_(family.rule);
           }
+          if (family.valueType) {
+            columnFamily.valueType = family.valueType;
+          }
           return families;
         },
         {}
