@@ -80,6 +80,7 @@
     "c8": "^9.0.0",
     "codecov": "^3.6.5",
     "gapic-tools": "^0.4.0",
+    "gitpkg": "^1.0.0-beta.4",
     "gts": "^5.0.0",
     "jsdoc": "^4.0.2",
     "jsdoc-fresh": "^3.0.0",
