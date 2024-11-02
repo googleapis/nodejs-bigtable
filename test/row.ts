@@ -851,14 +851,14 @@ describe('Bigtable/Row', () => {
   });
 
   describe('filter', () => {
-    const mutations = [
+    const mutations: rw.MutationInput[] = [
       {
         method: 'insert',
         data: {
           a: 'a',
         },
       },
-    ] as {} as rw.FilterConfigOption[];
+    ];
 
     const fakeMutations = {
       mutations: [
@@ -866,7 +866,7 @@ describe('Bigtable/Row', () => {
           a: 'b',
         },
       ],
-    } as {} as {mutations: rw.FilterConfigOption};
+    } as {} as {mutations: Mutation[]};
 
     beforeEach(() => {
       FakeMutation.parse.resetHistory();
@@ -983,6 +983,105 @@ describe('Bigtable/Row', () => {
         (err: Error, matched: boolean, apiResponse: {}) => {
           assert.ifError(err);
           assert(matched);
+          assert.strictEqual(response, apiResponse);
+          done();
+        }
+      );
+    });
+  });
+
+  describe('mutate', () => {
+    const mutations: rw.MutationInput[] = [
+      {
+        method: 'insert',
+        data: {
+          a: 'a',
+        },
+      },
+      {
+        method: 'insert',
+        data: {
+          b: 'b',
+        },
+      },
+    ] ;
+
+    beforeEach(() => {
+      FakeMutation.parse.resetHistory();
+    });
+
+    it('should provide the proper request options', done => {
+      (FakeMutation.parse as Function) = sandbox.spy((mutation) => {
+        return {mutations: [{parsed: true, ...mutation.data}]};
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (row.bigtable.request as Function) = (config: any) => {
+        assert.strictEqual(config.client, 'BigtableClient');
+        assert.strictEqual(config.method, 'mutateRow');
+        assert.strictEqual(config.reqOpts.tableName, TABLE.name);
+        assert.strictEqual(config.reqOpts.rowKey, CONVERTED_ROW_ID);
+        assert.deepEqual(
+          config.reqOpts.mutations,
+          [{parsed: true, a: 'a'}, {parsed: true, b: 'b'}]
+        );
+
+        assert.strictEqual(config.gaxOpts, undefined);
+        assert.strictEqual(FakeMutation.parse.callCount, 2);
+        assert.strictEqual(FakeMutation.parse.getCall(0).args[0], mutations[0]);
+        assert.strictEqual(FakeMutation.parse.getCall(1).args[0], mutations[1]);
+        done();
+      };
+
+      row.mutate(
+        mutations,
+        assert.ifError
+      );
+    });
+
+    it('should accept gaxOptions', done => {
+      const mutation: rw.MutationInput = {
+        method: 'insert',
+        data: {
+          a: 'a',
+        },
+      };
+      const gaxOptions = {};
+      sandbox.stub(row.bigtable, 'request').callsFake(config => {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      });
+      row.mutate(mutation, {gaxOptions}, assert.ifError);
+    });
+
+    it('should use an appProfileId', done => {
+      const mutation: rw.MutationInput = {
+        method: 'insert',
+        data: {
+          a: 'a',
+        },
+      };
+      const bigtableInstance = row.bigtable;
+      bigtableInstance.appProfileId = 'app-profile-id-12345';
+      sandbox.stub(bigtableInstance, 'request').callsFake(config => {
+        assert.strictEqual(
+          config.reqOpts.appProfileId,
+          bigtableInstance.appProfileId
+        );
+        done();
+      });
+      row.mutate(mutation, assert.ifError);
+    });
+
+    it('should return an error to the callback', done => {
+      const err = new Error('err');
+      const response = {};
+      sandbox.stub(row.bigtable, 'request').callsArgWith(1, err, response);
+      row.mutate(
+        mutations,
+        {},
+        (err_, apiResponse) => {
+          assert.strictEqual(err, err_);
           assert.strictEqual(response, apiResponse);
           done();
         }

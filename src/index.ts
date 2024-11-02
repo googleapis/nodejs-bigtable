@@ -1175,7 +1175,7 @@ export {
   CreateRulesResponse,
   FilterCallback,
   FilterConfig,
-  FilterConfigOption,
+  MutationInput as FilterConfigOption,
   FilterResponse,
   FormatFamiliesOptions,
   GetRowMetadataCallback,

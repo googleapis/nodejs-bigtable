@@ -55,15 +55,20 @@ export interface Family {
     }>;
   }>;
 }
-export interface FilterConfigOption {
+export interface MutationInput {
   method?: string;
   data?: Data;
 }
 export interface FilterConfig {
   gaxOptions?: CallOptions;
-  onMatch?: FilterConfigOption[];
-  onNoMatch?: FilterConfigOption[];
+  onMatch?: MutationInput[];
+  onNoMatch?: MutationInput[];
 }
+
+export interface MutateRowOptions {
+  gaxOptions?: CallOptions;
+}
+
 export interface GetRowOptions {
   /**
    *  If set to `false` it will not decode Buffer values returned from Bigtable.
@@ -115,6 +120,13 @@ export type FilterResponse = [
   boolean | null,
   google.bigtable.v2.ICheckAndMutateRowResponse,
 ];
+
+export type MutateRowCallback = (
+  err: ServiceError | PartialFailureError | null,
+  apiResponse?: google.bigtable.v2.IMutateRowResponse
+) => void;
+export type MutateRowResponse = [google.bigtable.v2.IMutateRowResponse];
+
 export type IncrementCallback = (
   err: ServiceError | null,
   value?: number | null,
@@ -650,12 +662,60 @@ export class Row {
       }
     );
 
-    function createFlatMutationsList(entries: FilterConfigOption[]) {
+    function createFlatMutationsList(entries: MutationInput[]) {
       const e2 = arrify(entries).map(
         entry => Mutation.parse(entry as Mutation).mutations!
       );
       return e2.reduce((a, b) => a.concat(b), []);
     }
+  }
+
+  mutate(mutation: MutationInput | MutationInput[], config?: MutateRowOptions): Promise<MutateRowResponse>;
+  mutate(
+    mutation: MutationInput | MutationInput[],
+    config: MutateRowOptions,
+    callback: MutateRowCallback
+  ): void;
+  mutate(mutation: MutationInput | MutationInput[], callback: MutateRowCallback): void;
+  /**
+   * Mutates a row atomically. 
+   */
+  mutate(
+    mutationsRaw: MutationInput | MutationInput[],
+    configOrCallback?: MutateRowOptions | MutateRowCallback,
+    cb?: MutateRowCallback
+  ): void | Promise<MutateRowResponse> {
+    const config = typeof configOrCallback === 'object' ? configOrCallback : {};
+    const callback =
+      typeof configOrCallback === 'function' ? configOrCallback : cb!;
+
+    const mutations = arrify(mutationsRaw).map(
+      entry => Mutation.parse(entry as Mutation).mutations!
+    );
+
+    const reqOpts: google.bigtable.v2.IMutateRowRequest = {
+      tableName: this.table.name,
+      appProfileId: this.bigtable.appProfileId,
+      rowKey: Mutation.convertToBytes(this.id),
+      mutations: mutations.reduce((a, b) => a.concat(b), [])
+    };
+    this.data = {};
+    this.bigtable.request<google.bigtable.v2.IMutateRowResponse>(
+      {
+        client: 'BigtableClient',
+        method: 'mutateRow',
+        reqOpts,
+        gaxOpts: config.gaxOptions,
+      },
+      (err, apiResponse) => {
+        if (err) {
+          callback(err, apiResponse);
+          return;
+        }
+
+        callback(null, apiResponse);
+      }
+    );
   }
 
   get(options?: GetRowOptions): Promise<GetRowResponse<Row>>;
