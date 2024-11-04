@@ -376,6 +376,28 @@ describe('Bigtable/Filter', () => {
     });
   });
 
+  describe('chain', () => {
+    it('should create a chain filter', done => {
+      const fakeFilters = [{}, {}, {}];
+
+      const spy = sandbox.stub(Filter, 'parse').returnsArg(0);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      filter.set = (filterName, value: any) => {
+        assert.strictEqual(filterName, 'chain');
+        assert.strictEqual(value.filters[0], fakeFilters[0]);
+        assert.strictEqual(value.filters[1], fakeFilters[1]);
+        assert.strictEqual(value.filters[2], fakeFilters[2]);
+        assert.strictEqual(spy.getCall(0).args[0], fakeFilters[0]);
+        assert.strictEqual(spy.getCall(1).args[0], fakeFilters[1]);
+        assert.strictEqual(spy.getCall(2).args[0], fakeFilters[2]);
+        spy.restore();
+        done();
+      };
+
+      filter.chain(fakeFilters);
+    });
+  });
+
   describe('label', () => {
     it('should apply the label transformer', done => {
       const label = 'label';
