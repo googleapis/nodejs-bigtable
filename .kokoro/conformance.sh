@@ -38,10 +38,13 @@ popd
 
 # Run the conformance test
 cd cloud-bigtable-clients-test/tests
-eval "go test -v -proxy_addr=:9999"
+eval "go test -v -proxy_addr=:9999 > test.log"
 RETURN_CODE=$?
 
-# fix output location of logs
+# Updates the known failures tests.
+grep "FAIL:" test.log | awk '{print $3}' | sed 's/$/\\|/' | tr -d '\n' | sed 's/\\|$//' >> .kokoro/testproxy/known_failures.txt
+
+# Fix output location of logs
 bash .kokoro/coerce_logs.sh
 
 echo "exiting with ${RETURN_CODE}"
