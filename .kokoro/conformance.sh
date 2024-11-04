@@ -41,8 +41,8 @@ cd cloud-bigtable-clients-test/tests
 eval "go test -v -proxy_addr=:9999 > test.log"
 RETURN_CODE=$?
 
-# Updates the known failures tests.
-grep "FAIL:" test.log | awk '{print $3}' | sed 's/$/\\|/' | tr -d '\n' | sed 's/\\|$//' >> .kokoro/testproxy/known_failures.txt
+# Prints out the known failure tests into the format for update
+grep "FAIL:" test.log | awk '{print $3}' | sed 's/$/\\|/' | tr -d '\n' | sed 's/\\|$//'
 
 # Fix output location of logs
 bash .kokoro/coerce_logs.sh
