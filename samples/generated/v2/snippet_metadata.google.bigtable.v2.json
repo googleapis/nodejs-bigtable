@@ -22,7 +22,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 85,
+          "end": 97,
           "type": "FULL"
         }
       ],
@@ -54,6 +54,10 @@
           {
             "name": "request_stats_view",
             "type": ".google.bigtable.v2.ReadRowsRequest.RequestStatsView"
+          },
+          {
+            "name": "reversed",
+            "type": "TYPE_BOOL"
           }
         ],
         "resultType": ".google.bigtable.v2.ReadRowsResponse",

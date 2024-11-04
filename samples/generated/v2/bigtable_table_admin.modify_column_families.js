@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,12 +35,16 @@ function main(name, modifications) {
    */
   // const name = 'abc123'
   /**
-   *  Required. Modifications to be atomically applied to the specified table's families.
-   *  Entries are applied in order, meaning that earlier modifications can be
-   *  masked by later ones (in the case of repeated updates to the same family,
-   *  for example).
+   *  Required. Modifications to be atomically applied to the specified table's
+   *  families. Entries are applied in order, meaning that earlier modifications
+   *  can be masked by later ones (in the case of repeated updates to the same
+   *  family, for example).
    */
-  // const modifications = 1234
+  // const modifications = [1,2,3,4]
+  /**
+   *  Optional. If true, ignore safety checks when modifying the column families.
+   */
+  // const ignoreWarnings = true
 
   // Imports the Admin library
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;

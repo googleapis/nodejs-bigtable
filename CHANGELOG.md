@@ -4,6 +4,59 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [5.1.2](https://github.com/googleapis/nodejs-bigtable/compare/v5.1.1...v5.1.2) (2024-07-22)
+
+
+### Bug Fixes
+
+* Throw away excess data in order to avoid delivering duplicate data ([#1453](https://github.com/googleapis/nodejs-bigtable/issues/1453)) ([069239d](https://github.com/googleapis/nodejs-bigtable/commit/069239dce83498293e86851d37ad5943b5d919da))
+
+## [5.1.1](https://github.com/googleapis/nodejs-bigtable/compare/v5.1.0...v5.1.1) (2024-07-11)
+
+
+### Bug Fixes
+
+* Ensure that during resumption of a scan, rows that have not been observed by the caller are re-requested ([#1444](https://github.com/googleapis/nodejs-bigtable/issues/1444)) ([2d8de32](https://github.com/googleapis/nodejs-bigtable/commit/2d8de3247595a08c5cd0f7b42a59eb44dd255797))
+* Remove custom readrows retry logic and rely on gax for retries ([#1422](https://github.com/googleapis/nodejs-bigtable/issues/1422)) ([3e0a46e](https://github.com/googleapis/nodejs-bigtable/commit/3e0a46e1a9bf68ac8f4b74f9a202291d00681074))
+
+## [5.1.0](https://github.com/googleapis/nodejs-bigtable/compare/v5.0.0...v5.1.0) (2024-05-28)
+
+
+### Features
+
+* Add feature for copying backups ([#1153](https://github.com/googleapis/nodejs-bigtable/issues/1153)) ([91f85b5](https://github.com/googleapis/nodejs-bigtable/commit/91f85b53340b9bf0bfb4620a4027333890030efe))
+* Add String type with Utf8Raw encoding to Bigtable API ([#1419](https://github.com/googleapis/nodejs-bigtable/issues/1419)) ([724b711](https://github.com/googleapis/nodejs-bigtable/commit/724b7118972e6697e3fd648b5d6ce2d047ab2b6a))
+* Publish Automated Backups protos ([#1391](https://github.com/googleapis/nodejs-bigtable/issues/1391)) ([17838ed](https://github.com/googleapis/nodejs-bigtable/commit/17838eda19b001e322765c33a83a756eeeb68963))
+* Trusted Private Cloud support, use the universeDomain parameter ([#1386](https://github.com/googleapis/nodejs-bigtable/issues/1386)) ([c0c287e](https://github.com/googleapis/nodejs-bigtable/commit/c0c287e2d386758609f57f3efee78b18fc9d8b7d))
+
+
+### Bug Fixes
+
+* **deps:** Update dependency @google-cloud/precise-date to v4 ([#1318](https://github.com/googleapis/nodejs-bigtable/issues/1318)) ([9dcef90](https://github.com/googleapis/nodejs-bigtable/commit/9dcef901b0cc7a52afb4c3f85622bd08e67d7429))
+* Extend timeouts for deleting snapshots, backups and tables ([#1387](https://github.com/googleapis/nodejs-bigtable/issues/1387)) ([1a6f59a](https://github.com/googleapis/nodejs-bigtable/commit/1a6f59afd238ccda4427251cbe0c71c8db37568e))
+* Fix flakey test by extending timeout ([#1350](https://github.com/googleapis/nodejs-bigtable/issues/1350)) ([906ac79](https://github.com/googleapis/nodejs-bigtable/commit/906ac796e3aaf724d00607854162bdefedcee96d))
+* Improve retry logic for streaming API calls ([#1372](https://github.com/googleapis/nodejs-bigtable/issues/1372)) ([e8083a4](https://github.com/googleapis/nodejs-bigtable/commit/e8083a4c71e0523e196911fbf6262ff8fe6272de))
+* Remove the watermarks ([#1313](https://github.com/googleapis/nodejs-bigtable/issues/1313)) ([0126a0e](https://github.com/googleapis/nodejs-bigtable/commit/0126a0ea1e4b6a845acb4e5600ddb3082443d310))
+
+## [5.0.0](https://github.com/googleapis/nodejs-bigtable/compare/v4.6.1...v5.0.0) (2023-08-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to Node 14 ([#1311](https://github.com/googleapis/nodejs-bigtable/issues/1311))
+
+### Miscellaneous Chores
+
+* Upgrade to Node 14 ([#1311](https://github.com/googleapis/nodejs-bigtable/issues/1311)) ([4330cb2](https://github.com/googleapis/nodejs-bigtable/commit/4330cb238ec887e85456cde0f18f3881caca5e14))
+
+## [4.6.1](https://github.com/googleapis/nodejs-bigtable/compare/v4.6.0...v4.6.1) (2023-05-30)
+
+
+### Bug Fixes
+
+* Properly handle asynchronous read from stream ([#1284](https://github.com/googleapis/nodejs-bigtable/issues/1284)) ([55d86ba](https://github.com/googleapis/nodejs-bigtable/commit/55d86baaf554247c0c3d063fc790a37569f3e77b)). This could result in silently dropped rows in a `createReadStream`. The bug is active when the `ReadRows` stream would be piped into a consumer that would defer the processing of the rows until the next event loop run (i.e. use a `Transform` that would defer the callback invocation via `setTimeout()`).
+
+
 ## [4.6.0](https://github.com/googleapis/nodejs-bigtable/compare/v4.5.2...v4.6.0) (2023-05-26)
 
 

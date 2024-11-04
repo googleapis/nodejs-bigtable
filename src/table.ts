@@ -288,6 +288,14 @@ export interface MutateOptions {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Entry = any;
+/*
+The Entry type is expected to be in the following format:
+{
+  key?: Uint8Array|string,
+  data?: Data, // The Data type is described in the Mutation class.
+  method?: typeof mutation.methods
+}
+*/
 
 export type DeleteTableCallback = (
   err: ServiceError | null,
@@ -354,7 +362,7 @@ export type GetReplicationStatesCallback = (
 ) => void;
 export type GetReplicationStatesResponse = [
   Map<string, google.bigtable.admin.v2.Table.IClusterState>,
-  google.bigtable.admin.v2.ITable
+  google.bigtable.admin.v2.ITable,
 ];
 export type GetRowsCallback = (
   err: ServiceError | null,
@@ -727,7 +735,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let filter: {} | null;
     const rowsLimit = options.limit || 0;
     const hasLimit = rowsLimit !== 0;
-    let rowsRead = 0;
+
     let numConsecutiveErrors = 0;
     let numRequestsMade = 0;
     let retryTimer: NodeJS.Timeout | null;
@@ -746,28 +754,78 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       filter = Filter.parse(options.filter);
     }
 
-    const userStream = new PassThrough({objectMode: true});
-    const end = userStream.end.bind(userStream);
-    userStream.end = () => {
+    let chunkTransformer: ChunkTransformer;
+    let rowStream: Duplex;
+
+    let userCanceled = false;
+    // The key of the last row that was emitted by the per attempt pipeline
+    // Note: this must be updated from the operation level userStream to avoid referencing buffered rows that will be
+    // discarded in the per attempt subpipeline (rowStream)
+    let lastRowKey = '';
+    let rowsRead = 0;
+    const userStream = new PassThrough({
+      objectMode: true,
+      readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
+      writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
+      transform(row, _encoding, callback) {
+        if (userCanceled) {
+          callback();
+          return;
+        }
+        if (TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
+          /*
+          Sometimes duplicate rows reach this point. To avoid delivering
+          duplicate rows to the user, rows are thrown away if they don't exceed
+          the last row key. We can expect each row to reach this point and rows
+          are delivered in order so if the last row key equals or exceeds the
+          row id then we know data for this row has already reached this point
+          and been delivered to the user. In this case we want to throw the row
+          away and we do not want to deliver this row to the user again.
+           */
+          callback();
+          return;
+        }
+        lastRowKey = row.id;
+        rowsRead++;
+        callback(null, row);
+      },
+    });
+
+    // The caller should be able to call userStream.end() to stop receiving
+    // more rows and cancel the stream prematurely. But also, the 'end' event
+    // will be emitted if the stream ended normally. To tell these two
+    // situations apart, we'll save the "original" end() function, and
+    // will call it on rowStream.on('end').
+    const originalEnd = userStream.end.bind(userStream);
+
+    // Taking care of this extra listener when piping and unpiping userStream:
+    const rowStreamPipe = (rowStream: Duplex, userStream: PassThrough) => {
+      rowStream.pipe(userStream, {end: false});
+      rowStream.on('end', originalEnd);
+    };
+    const rowStreamUnpipe = (rowStream: Duplex, userStream: PassThrough) => {
       rowStream?.unpipe(userStream);
+      rowStream?.removeListener('end', originalEnd);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
+      rowStreamUnpipe(rowStream, userStream);
+      userCanceled = true;
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
       if (retryTimer) {
         clearTimeout(retryTimer);
       }
-      return end();
+      return originalEnd(chunk, encoding, cb);
     };
-
-    let chunkTransformer: ChunkTransformer;
-    let rowStream: Duplex;
 
     const makeNewRequest = () => {
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
       retryTimer = null;
 
-      const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
 
@@ -865,7 +923,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts.rowsLimit = rowsLimit - rowsRead;
       }
 
-      options.gaxOptions = populateAttemptHeader(
+      const gaxOpts = populateAttemptHeader(
         numRequestsMade,
         options.gaxOptions
       );
@@ -874,7 +932,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         client: 'BigtableClient',
         method: 'readRows',
         reqOpts,
-        gaxOpts: options.gaxOptions,
+        gaxOpts,
         retryOpts,
       });
 
@@ -883,13 +941,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       const toRowStream = new Transform({
         transform: (rowData, _, next) => {
           if (
-            chunkTransformer._destroyed ||
+            userCanceled ||
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (userStream as any)._writableState.ended
           ) {
             return next();
           }
-          rowsRead++;
           const row = this.row(rowData.key);
           row.data = rowData.data;
           next(null, row);
@@ -914,7 +971,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream
         .on('error', (error: ServiceError) => {
-          rowStream.unpipe(userStream);
+          rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
             // We ignore the `cancelled` "error", since we are the ones who cause
@@ -948,7 +1005,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on('end', () => {
           activeRequestStream = null;
         });
-      rowStream.pipe(userStream);
+      rowStreamPipe(rowStream, userStream);
     };
 
     makeNewRequest();
@@ -1902,9 +1959,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
 
       // set timeout for 10 minutes
-      const timeoutAfterTenMinutes = setTimeout(() => {
-        callback!(null, false);
-      }, 10 * 60 * 1000);
+      const timeoutAfterTenMinutes = setTimeout(
+        () => {
+          callback!(null, false);
+        },
+        10 * 60 * 1000
+      );
 
       // method checks if retrial is required & init retrial with 5 sec
       // delay
