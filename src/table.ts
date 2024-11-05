@@ -284,6 +284,14 @@ export interface MutateOptions {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Entry = any;
+/*
+The Entry type is expected to be in the following format:
+{
+  key?: Uint8Array|string,
+  data?: Data, // The Data type is described in the Mutation class.
+  method?: typeof mutation.methods
+}
+*/
 
 export type DeleteTableCallback = (
   err: ServiceError | null,

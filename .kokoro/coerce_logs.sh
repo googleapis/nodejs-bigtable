@@ -1,6 +1,5 @@
 #!/bin/bash
-
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,35 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# This script finds and moves sponge logs so that they can be found by placer
+# and are not flagged as flaky by sponge.
+
 set -eo pipefail
 
-export NPM_CONFIG_PREFIX=${HOME}/.npm-global
-
+## Get the directory of the build script
+scriptDir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
 ## cd to the parent directory, i.e. the root of the git repo
-cd $(dirname $0)/..
+cd ${scriptDir}/..
 
-# Stop the testbench & cleanup environment variables
-function cleanup() {
-    echo "Cleanup testbench"
-    # Stop the proxy
-    kill $proxyPID
-}
-trap cleanup EXIT
+job=$(basename ${KOKORO_JOB_NAME})
 
-# Build and start the proxy in a separate process
-pushd .
-npm install
-nohup npm run testproxy &
-proxyPID=$!
-popd
-
-# Run the conformance test
-cd cloud-bigtable-clients-test/tests
-eval "go test -v -proxy_addr=:9999"
-RETURN_CODE=$?
-
-# fix output location of logs
-bash .kokoro/coerce_logs.sh
-
-echo "exiting with ${RETURN_CODE}"
-exit ${RETURN_CODE}
+echo "coercing sponge logs..."
+for xml in `find . -name *-sponge_log.xml`
+do
+  class=$(basename ${xml} | cut -d- -f2)
+  dir=$(dirname ${xml})/${job}/${class}
+  text=$(dirname ${xml})/${class}-sponge_log.txt
+  mkdir -p ${dir}
+  mv ${xml} ${dir}/sponge_log.xml
+  mv ${text} ${dir}/sponge_log.txt
+done
