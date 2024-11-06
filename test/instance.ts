@@ -1964,4 +1964,33 @@ describe('Bigtable/Instance', () => {
       });
     });
   });
+
+  describe('updateTable', () => {
+    it('should pass the right options to update table', done => {
+      const options = {
+        name: 'table',
+        deletionProtection: true,
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = (config: any) => {
+        assert.deepStrictEqual(config, {
+          client: 'BigtableTableAdminClient',
+          method: 'updateTable',
+          reqOpts: {
+            table: {
+              granularity: 0,
+              name: 'projects/my-project/instances/my-instance/tables/table',
+              deletionProtection: true,
+            },
+            updateMask: {
+              paths: ['deletion_protection'],
+            },
+          },
+          gaxOpts: undefined,
+        });
+        done();
+      };
+      instance.updateTable(options, done);
+    });
+  });
 });
