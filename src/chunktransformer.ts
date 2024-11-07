@@ -34,7 +34,7 @@ export interface Data {
   chunks: Chunk[];
   lastScannedRowKey?: Buffer;
 }
-interface Family {
+export interface Family {
   [qualifier: string]: Qualifier[];
 }
 export interface Qualifier {

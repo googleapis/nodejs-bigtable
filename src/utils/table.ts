@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {GetRowsOptions, PrefixRange} from '../table';
+import {GetRowsOptions, PrefixRange} from '../tabular-api-surface';
 import {Mutation} from '../mutation';
 
 export class TableUtils {
