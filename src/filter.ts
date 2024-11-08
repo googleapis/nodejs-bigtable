@@ -213,8 +213,8 @@ export class Filter {
    * ```
    */
   static createRange(
-    start: BoundData | null,
-    end: BoundData | null,
+    start: BoundData | null | undefined,
+    end: BoundData | null | undefined,
     key: string
   ) {
     const range = {};
@@ -1036,14 +1036,14 @@ export class Filter {
       v = value as ValueFilter;
     }
 
-    if (v.value) {
+    if (typeof v.value !== 'undefined') {
       const valueReg = Mutation.convertToBytes(
         Filter.convertToRegExpString(v.value)
       );
       this.set('valueRegexFilter', valueReg);
     }
 
-    if (v.start || v.end) {
+    if (typeof v.start !== 'undefined' || typeof v.end !== 'undefined') {
       const range = Filter.createRange(v.start!, v.end!, 'Value');
       this.set('valueRangeFilter', range);
     }

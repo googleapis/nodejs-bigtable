@@ -623,6 +623,55 @@ describe('Bigtable/Filter', () => {
       filter.value(value);
     });
 
+    it('should accept value filters that test against 0', done => {
+      const value = {
+        value: '0',
+      };
+      const fakeRegExValue = '000';
+      const fakeConvertedValue = '111';
+
+      const regSpy = sandbox
+        .stub(Filter, 'convertToRegExpString')
+        .returns(fakeRegExValue);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const bytesSpy = ((FakeMutation as any).convertToBytes = sandbox.spy(
+        () => {
+          return fakeConvertedValue;
+        }
+      ));
+
+      filter.set = (filterName, val) => {
+        assert.strictEqual(filterName, 'valueRegexFilter');
+        assert.strictEqual(fakeConvertedValue, val);
+        assert(regSpy.calledWithExactly(value.value));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        assert((bytesSpy as any).calledWithExactly(fakeRegExValue));
+        regSpy.restore();
+        done();
+      };
+
+      filter.value(value);
+    });
+
+    it('should accept value filters that test against a range starting with 0', done => {
+      const fakeRange = {
+        a: 'a',
+      };
+      const value = {
+        start: 0 as fr.BoundData,
+      };
+      const spy = sandbox.stub(Filter, 'createRange').returns(fakeRange);
+      filter.set = (filterName, val) => {
+        assert.strictEqual(filterName, 'valueRangeFilter');
+        assert.strictEqual(val, fakeRange);
+        assert(spy.calledWithExactly(value.start, undefined, 'Value'));
+        spy.restore();
+        done();
+      };
+      filter.value(value);
+    });
+
     it('should apply the strip label transformer', done => {
       const value = {
         strip: true,
