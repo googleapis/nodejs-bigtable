@@ -36,9 +36,9 @@ nohup npm run testproxy &
 proxyPID=$!
 popd
 
-# Run the conformance test
+# Run the conformance test skipping known failures
 cd cloud-bigtable-clients-test/tests
-eval "go test -v -proxy_addr=:9999 -skip `cat ../../testproxy/known_failures.txt`"
+eval "go test -v -proxy_addr=:9999 -skip `tr -d '\n' < ../../testproxy/known_failures.txt`"
 RETURN_CODE=$?
 
 # fix output location of logs
