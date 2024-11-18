@@ -15,6 +15,15 @@ TestReadRows_Retry_PausedScan\|
 TestReadRows_Retry_LastScannedRow\|
 TestReadRows_Retry_LastScannedRow_Reverse\|
 TestReadRows_Retry_StreamReset\|
+TestReadRows_Generic_CloseClient\|
+TestReadRows_Generic_DeadlineExceeded\|
+TestReadRows_Retry_WithRoutingCookie\|
+TestReadRows_Retry_WithRoutingCookie_MultipleErrorResponses\|
+TestReadRows_Retry_WithRetryInfo\|
+TestReadRows_Retry_WithRetryInfo_MultipleErrorResponse\|
 TestCheckAndMutateRow_NoRetry_TransientError\|
 TestCheckAndMutateRow_Generic_DeadlineExceeded\|
-TestCheckAndMutateRow_Generic_Headers
+TestCheckAndMutateRow_Generic_Headers\|
+TestSampleRowKeys_Generic_Headers\|
+TestSampleRowKeys_Generic_DeadlineExceeded\|
+TestSampleRowKeys_Retry_WithRoutingCookie
