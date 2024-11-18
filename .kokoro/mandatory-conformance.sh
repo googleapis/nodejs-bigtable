@@ -42,7 +42,7 @@ eval "go test -v -proxy_addr=:9999 -skip `tr -d '\n' < ../../testproxy/known_fai
 RETURN_CODE=$?
 
 # fix output location of logs
-bash .kokoro/coerce_logs.sh
+bash ../../.kokoro/coerce_logs.sh
 
 echo "exiting with ${RETURN_CODE}"
 exit ${RETURN_CODE}
