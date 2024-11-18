@@ -2,6 +2,7 @@ TestMutateRow_Generic_Headers\|
 TestMutateRow_Generic_DeadlineExceeded\|
 TestMutateRows_Generic_CloseClient\|
 TestMutateRows_Retry_WithRoutingCookie\|
+TestMutateRows_Generic_DeadlineExceeded\|
 TestReadModifyWriteRow_Generic_Headers\|
 TestReadModifyWriteRow_NoRetry_TransientError\|
 TestReadModifyWriteRow_Generic_DeadlineExceeded\|
@@ -13,5 +14,7 @@ TestReadRows_NoRetry_OutOfOrderError_Reverse\|
 TestReadRows_Retry_PausedScan\|
 TestReadRows_Retry_LastScannedRow\|
 TestReadRows_Retry_LastScannedRow_Reverse\|
+TestReadRows_Retry_StreamReset\|
 TestCheckAndMutateRow_NoRetry_TransientError\|
-TestCheckAndMutateRow_Generic_DeadlineExceeded
+TestCheckAndMutateRow_Generic_DeadlineExceeded\|
+TestCheckAndMutateRow_Generic_Headers
