@@ -8,7 +8,6 @@ branchProtectionRules:
       - "ci/kokoro: Samples test"
       - "ci/kokoro: System test"
       - lint
-      - mandatory-conformance
       - test (14)
       - test (16)
       - test (18)
