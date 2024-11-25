@@ -215,7 +215,7 @@ describe('Bigtable/ChunkTransformer', () => {
           },
         },
       };
-      assert.deepStrictEqual(rows[0].data, expectedRow);
+      assert.deepStrictEqual(rows[0], expectedRow);
     });
     it('partial row  ', () => {
       const chunk = {
@@ -417,7 +417,7 @@ describe('Bigtable/ChunkTransformer', () => {
           },
         },
       };
-      const row = rows[0].data;
+      const row = rows[0];
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
@@ -463,7 +463,7 @@ describe('Bigtable/ChunkTransformer', () => {
           },
         },
       };
-      const row = rows[0].data;
+      const row = rows[0];
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
@@ -510,7 +510,7 @@ describe('Bigtable/ChunkTransformer', () => {
           family2: {},
         },
       };
-      const row = rows[0].data;
+      const row = rows[0];
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
@@ -559,7 +559,7 @@ describe('Bigtable/ChunkTransformer', () => {
           },
         },
       };
-      const row = rows[0].data;
+      const row = rows[0];
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
@@ -789,7 +789,7 @@ describe('Bigtable/ChunkTransformer', () => {
           },
         },
       };
-      const row = rows[0].data;
+      const row = rows[0];
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
@@ -1153,7 +1153,7 @@ describe('Bigtable/ChunkTransformer', () => {
         },
       };
       const row = rows[0];
-      assert.deepStrictEqual(row.data, expectedRow, 'row mismatch');
+      assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
