@@ -18,6 +18,11 @@ import {TableUtils} from './utils/table';
 
 export type Value = string | number | boolean | Uint8Array;
 
+export enum DataEvent {
+  DATA,
+  LAST_ROW_KEY_UPDATE,
+}
+
 export interface Chunk {
   rowContents: Value;
   commitRow: boolean;
@@ -348,7 +353,7 @@ export class ChunkTransformer extends Transform {
   moveToNextState(chunk: Chunk): void {
     const row = this.row;
     if (chunk.commitRow) {
-      this.push(row);
+      this.push({eventType: DataEvent.DATA, data: row});
       this.commit();
       this.lastRowKey = row!.key;
     } else {

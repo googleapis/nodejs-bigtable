@@ -26,7 +26,7 @@ import {
 } from './index';
 import {Filter, BoundData, RawFilter} from './filter';
 import {Row} from './row';
-import {ChunkTransformer} from './chunktransformer';
+import {ChunkTransformer, DataEvent} from './chunktransformer';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {google} from '../protos/protos';
 import {CallOptions, ServiceError} from 'google-gax';
@@ -244,7 +244,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       objectMode: true,
       readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
       writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
-      transform(row, _encoding, callback) {
+      transform(event, _encoding, callback) {
+        // TODO: Will add event here to handle last scanned row
+        const row = event.data;
         if (userCanceled) {
           callback();
           return;
@@ -433,9 +435,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           ) {
             return next();
           }
-          const row = this.row(rowData.key);
-          row.data = rowData.data;
-          next(null, row);
+          const row = this.row(rowData.data.key);
+          row.data = rowData.data.data;
+          next(null, {eventType: DataEvent.DATA, data: row});
         },
         objectMode: true,
       });
