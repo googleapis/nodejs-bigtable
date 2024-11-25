@@ -12,7 +12,6 @@ TestReadRow_Retry_WithRetryInfo\|
 TestReadRows_ReverseScans_FeatureFlag_Enabled\|
 TestReadRows_NoRetry_OutOfOrderError_Reverse\|
 TestReadRows_Retry_PausedScan\|
-TestReadRows_Retry_LastScannedRow\|
 TestReadRows_Retry_LastScannedRow_Reverse\|
 TestReadRows_Retry_StreamReset\|
 TestReadRows_Generic_CloseClient\|
