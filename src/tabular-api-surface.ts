@@ -26,7 +26,7 @@ import {
 } from './index';
 import {Filter, BoundData, RawFilter} from './filter';
 import {Row} from './row';
-import {ChunkTransformer, DataEvent} from './chunktransformer';
+import {ChunkPushData, ChunkTransformer, DataEvent} from './chunktransformer';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {google} from '../protos/protos';
 import {CallOptions, ServiceError} from 'google-gax';
@@ -251,6 +251,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           callback();
           return;
         }
+        if (event.eventType === DataEvent.LAST_ROW_KEY_UPDATE) {
+          /**
+           * This code will run when the chunk transformer sends an event to
+           * change the lastRowKey after receiving lastScannedRow data. The
+           * lastRowKey needs to be updated here and not in the chunk transformer
+           * to ensure it is queued behind all the data that we should deliver to
+           * the user first.
+           */
+          lastRowKey = event.lastScannedRowKey;
+          callback();
+          return;
+        }
+        console.log(event.eventType);
         if (TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
           /*
           Sometimes duplicate rows reach this point. To avoid delivering
@@ -427,7 +440,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       activeRequestStream = requestStream!;
 
       const toRowStream = new Transform({
-        transform: (rowData, _, next) => {
+        transform: (rowData: ChunkPushData, _, next) => {
           if (
             userCanceled ||
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -435,9 +448,21 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           ) {
             return next();
           }
-          const row = this.row(rowData.data.key);
-          row.data = rowData.data.data;
-          next(null, {eventType: DataEvent.DATA, data: row});
+          if (rowData.eventType === DataEvent.DATA) {
+            /**
+             * If the data is just regular rows being pushed from the
+             * chunk transformer then this code is used.
+             */
+            const row = this.row(rowData.data.key as string);
+            row.data = rowData.data.data;
+            next(null, {eventType: DataEvent.DATA, data: row});
+          } else {
+            /**
+             * If the data is the chunk transformer communicating that the
+             * lastScannedRow was received then this code is used.
+             */
+            next(null, rowData);
+          }
         },
         objectMode: true,
       });

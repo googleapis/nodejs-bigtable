@@ -18,7 +18,11 @@ import * as Long from 'long';
 import * as proxyquire from 'proxyquire';
 import * as sn from 'sinon';
 
-import {ChunkPushRowData, DataEvent, RowStateEnum} from '../src/chunktransformer.js';
+import {
+  ChunkPushRowData,
+  DataEvent,
+  RowStateEnum,
+} from '../src/chunktransformer.js';
 import {Mutation} from '../src/mutation.js';
 import {Row} from '../src/row.js';
 

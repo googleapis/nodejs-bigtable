@@ -62,7 +62,7 @@ export interface ChunkPushRowData {
 }
 interface ChunkPushLastScannedRowData {
   eventType: DataEvent.LAST_ROW_KEY_UPDATE;
-  lastScannedRowKey?: Buffer;
+  lastScannedRowKey?: string;
 }
 
 export type ChunkPushData = ChunkPushRowData | ChunkPushLastScannedRowData;
@@ -174,6 +174,16 @@ export class ChunkTransformer extends Transform {
           userOptions: this.options,
         }
       );
+      /**
+       * Push an event that will update the lastRowKey in the user stream after
+       * all rows ahead of this event have reached the user stream. This will
+       * ensure that a retry excludes the lastScannedRow as this is required
+       * for the TestReadRows_Retry_LastScannedRow test.
+       */
+      this.push({
+        eventType: DataEvent.LAST_ROW_KEY_UPDATE,
+        lastScannedRowKey: this.lastRowKey,
+      });
     }
     next();
   }
