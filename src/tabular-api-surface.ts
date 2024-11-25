@@ -256,11 +256,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
         if (event.eventType === DataEvent.LAST_ROW_KEY_UPDATE) {
           /**
-           * This code will run when the chunk transformer sends an event to
-           * change the lastRowKey after receiving lastScannedRow data. The
-           * lastRowKey needs to be updated here and not in the chunk transformer
-           * to ensure it is queued behind all the data that we should deliver to
-           * the user first.
+           * This code will run when receiving an event containing
+           * lastScannedRowKey data that the chunk transformer sent. When the
+           * chunk transformer gets lastScannedRowKey data, it is necessary to
+           * update the lastRowKey to ensure row ids with the lastScannedRowKey
+           * aren't re-requested in retries. The lastRowKey needs to be updated
+           * here and not in the chunk transformer to ensure it is queued
+           * behind all the data that needs to reach the user stream first.
            */
           lastRowKey = event.lastScannedRowKey;
           callback();
