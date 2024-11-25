@@ -954,7 +954,9 @@ describe('Bigtable/Table', () => {
           enc: {},
           next: Function
         ) {
-          formattedRows.forEach(row => this.push(row));
+          formattedRows.forEach(row =>
+            this.push({eventType: DataEvent.DATA, data: row})
+          );
           next();
         };
         FakeChunkTransformer.prototype._flush = (cb: Function) => {
