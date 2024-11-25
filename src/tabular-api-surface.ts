@@ -460,13 +460,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           ) {
             /**
              * If the data is the chunk transformer communicating that the
-             * lastScannedRow was received then this code is used.
+             * lastScannedRow was received then this message is passed along
+             * to the user stream to update the lastRowKey.
              */
             next(null, rowData);
           } else {
             /**
              * If the data is just regular rows being pushed from the
-             * chunk transformer then this code is used.
+             * chunk transformer then the rows are encoded so that they
+             * can be consumed by the user stream.
              */
             const row = this.row((rowData as Row).key as string);
             row.data = (rowData as Row).data;
