@@ -18,11 +18,7 @@ import * as Long from 'long';
 import * as proxyquire from 'proxyquire';
 import * as sn from 'sinon';
 
-import {
-  ChunkPushRowData,
-  DataEvent,
-  RowStateEnum,
-} from '../src/chunktransformer.js';
+import {ChunkPushData, DataEvent, RowStateEnum} from '../src/chunktransformer.js';
 import {Mutation} from '../src/mutation.js';
 import {Row} from '../src/row.js';
 
@@ -48,7 +44,7 @@ describe('Bigtable/ChunkTransformer', () => {
   let ChunkTransformer: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let chunkTransformer: any;
-  let rows: ChunkPushRowData[];
+  let rows: ChunkPushData[];
   before(() => {
     ChunkTransformer = proxyquire('../src/chunktransformer.js', {
       './mutation.js': {Mutation: FakeMutation},
@@ -57,7 +53,7 @@ describe('Bigtable/ChunkTransformer', () => {
   beforeEach(() => {
     chunkTransformer = new ChunkTransformer();
     rows = [];
-    chunkTransformer.push = (row: ChunkPushRowData) => {
+    chunkTransformer.push = (row: ChunkPushData) => {
       rows.push(row);
     };
   });
