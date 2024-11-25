@@ -1151,7 +1151,7 @@ describe('Bigtable/Table', () => {
           next: Function
         ) {
           rows.forEach(row =>
-            this.push({eventType: DataEvent.DATA, data: row})
+            this.push(row)
           );
           this.lastRowKey = rows[rows.length - 1].key;
           next();
