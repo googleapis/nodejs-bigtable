@@ -1150,9 +1150,7 @@ describe('Bigtable/Table', () => {
           enc: {},
           next: Function
         ) {
-          rows.forEach(row =>
-            this.push(row)
-          );
+          rows.forEach(row => this.push(row));
           this.lastRowKey = rows[rows.length - 1].key;
           next();
         };
