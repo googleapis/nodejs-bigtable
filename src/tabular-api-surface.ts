@@ -262,8 +262,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
            * update the lastRowKey to ensure row ids with the lastScannedRowKey
            * aren't re-requested in retries. The lastRowKey needs to be updated
            * here and not in the chunk transformer to ensure the update is
-           * queued behind all events that deliver data that needs to the user
-           * stream first.
+           * queued behind all events that deliver data to the user stream
+           * first.
            */
           lastRowKey = event.lastScannedRowKey;
           callback();
