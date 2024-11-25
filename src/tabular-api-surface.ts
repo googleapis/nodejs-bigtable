@@ -261,8 +261,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
            * chunk transformer gets lastScannedRowKey data, it is necessary to
            * update the lastRowKey to ensure row ids with the lastScannedRowKey
            * aren't re-requested in retries. The lastRowKey needs to be updated
-           * here and not in the chunk transformer to ensure it is queued
-           * behind all the data that needs to reach the user stream first.
+           * here and not in the chunk transformer to ensure the update is
+           * queued behind all events that deliver data that needs to the user
+           * stream first.
            */
           lastRowKey = event.lastScannedRowKey;
           callback();
