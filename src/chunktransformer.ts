@@ -56,10 +56,16 @@ export interface TransformErrorProps {
   message: string;
   chunk: Chunk | null;
 }
-export interface ChunkPushData {
+export interface ChunkPushRowData {
   eventType: DataEvent.DATA;
   data: Row;
 }
+interface ChunkPushLastScannedRowData {
+  eventType: DataEvent.LAST_ROW_KEY_UPDATE;
+  lastScannedRowKey?: Buffer;
+}
+
+export type ChunkPushData = ChunkPushRowData | ChunkPushLastScannedRowData;
 
 class TransformError extends Error {
   constructor(props: TransformErrorProps) {
