@@ -262,7 +262,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           callback();
           return;
         }
-        console.log(event.eventType);
         if (TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
           /*
           Sometimes duplicate rows reach this point. To avoid delivering
