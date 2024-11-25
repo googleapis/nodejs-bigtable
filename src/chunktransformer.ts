@@ -173,7 +173,10 @@ export class ChunkTransformer extends Transform {
        * Push an event that will update the lastRowKey in the user stream after
        * all rows ahead of this event have reached the user stream. This will
        * ensure that a retry excludes the lastScannedRow as this is required
-       * for the TestReadRows_Retry_LastScannedRow test.
+       * for the TestReadRows_Retry_LastScannedRow conformance test to pass. It
+       * is important to use a 'data' event to update the last row key in order
+       * to allow all the data queued ahead of this event to reach the user
+       * stream first.
        */
       this.push({
         eventType: DataEvent.LAST_ROW_KEY_UPDATE,
