@@ -258,8 +258,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           /**
            * This code will run when receiving an event containing
            * lastScannedRowKey data that the chunk transformer sent. When the
-           * chunk transformer gets lastScannedRowKey data, it is necessary to
-           * update the lastRowKey to ensure row ids with the lastScannedRowKey
+           * chunk transformer gets lastScannedRowKey data, this code
+           * updates the lastRowKey to ensure row ids with the lastScannedRowKey
            * aren't re-requested in retries. The lastRowKey needs to be updated
            * here and not in the chunk transformer to ensure the update is
            * queued behind all events that deliver data to the user stream
