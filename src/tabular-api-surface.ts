@@ -26,7 +26,13 @@ import {
 } from './index';
 import {Filter, BoundData, RawFilter} from './filter';
 import {Row} from './row';
-import {ChunkPushData, ChunkTransformer, DataEvent} from './chunktransformer';
+import {
+  ChunkPushData,
+  ChunkPushLastScannedRowData,
+  ChunkPushRowData,
+  ChunkTransformer,
+  DataEvent,
+} from './chunktransformer';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {google} from '../protos/protos';
 import {CallOptions, ServiceError} from 'google-gax';
@@ -446,20 +452,23 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           ) {
             return next();
           }
-          if (rowData.eventType === DataEvent.DATA) {
-            /**
-             * If the data is just regular rows being pushed from the
-             * chunk transformer then this code is used.
-             */
-            const row = this.row(rowData.data.key as string);
-            row.data = rowData.data.data;
-            next(null, {eventType: DataEvent.DATA, data: row});
-          } else {
+          if (
+            (rowData as ChunkPushLastScannedRowData).eventType ===
+            DataEvent.LAST_ROW_KEY_UPDATE
+          ) {
             /**
              * If the data is the chunk transformer communicating that the
              * lastScannedRow was received then this code is used.
              */
             next(null, rowData);
+          } else {
+            /**
+             * If the data is just regular rows being pushed from the
+             * chunk transformer then this code is used.
+             */
+            const row = this.row((rowData as ChunkPushRowData).key as string);
+            row.data = (rowData as ChunkPushRowData).data;
+            next(null, {eventType: DataEvent.DATA, data: row});
           }
         },
         objectMode: true,

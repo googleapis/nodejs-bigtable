@@ -56,11 +56,8 @@ export interface TransformErrorProps {
   message: string;
   chunk: Chunk | null;
 }
-export interface ChunkPushRowData {
-  eventType: DataEvent.DATA;
-  data: Row;
-}
-interface ChunkPushLastScannedRowData {
+export type ChunkPushRowData = Row;
+export interface ChunkPushLastScannedRowData {
   eventType: DataEvent.LAST_ROW_KEY_UPDATE;
   lastScannedRowKey?: string;
 }
@@ -373,7 +370,7 @@ export class ChunkTransformer extends Transform {
   moveToNextState(chunk: Chunk): void {
     const row = this.row;
     if (chunk.commitRow) {
-      this.push({eventType: DataEvent.DATA, data: row});
+      this.push(row);
       this.commit();
       this.lastRowKey = row!.key;
     } else {
