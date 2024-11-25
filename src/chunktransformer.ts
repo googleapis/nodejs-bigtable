@@ -19,7 +19,6 @@ import {TableUtils} from './utils/table';
 export type Value = string | number | boolean | Uint8Array;
 
 export enum DataEvent {
-  DATA,
   LAST_ROW_KEY_UPDATE,
 }
 

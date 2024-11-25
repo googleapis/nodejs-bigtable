@@ -251,7 +251,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
       writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
       transform(event, _encoding, callback) {
-        const row = event.data;
         if (userCanceled) {
           callback();
           return;
@@ -268,6 +267,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           callback();
           return;
         }
+        const row = event;
         if (TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
           /*
           Sometimes duplicate rows reach this point. To avoid delivering
@@ -468,7 +468,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
              */
             const row = this.row((rowData as ChunkPushRowData).key as string);
             row.data = (rowData as ChunkPushRowData).data;
-            next(null, {eventType: DataEvent.DATA, data: row});
+            next(null, row);
           }
         },
         objectMode: true,
