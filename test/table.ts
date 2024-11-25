@@ -22,7 +22,7 @@ import {PassThrough, Writable, Duplex} from 'stream';
 import {ServiceError} from 'google-gax';
 
 import * as inst from '../src/instance';
-import {ChunkTransformer, DataEvent} from '../src/chunktransformer.js';
+import {ChunkTransformer} from '../src/chunktransformer.js';
 import {Family} from '../src/family.js';
 import {Mutation} from '../src/mutation.js';
 import {Row} from '../src/row.js';
