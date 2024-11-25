@@ -29,7 +29,6 @@ import {Row} from './row';
 import {
   ChunkPushData,
   ChunkPushLastScannedRowData,
-  ChunkPushRowData,
   ChunkTransformer,
   DataEvent,
 } from './chunktransformer';
@@ -466,8 +465,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
              * If the data is just regular rows being pushed from the
              * chunk transformer then this code is used.
              */
-            const row = this.row((rowData as ChunkPushRowData).key as string);
-            row.data = (rowData as ChunkPushRowData).data;
+            const row = this.row((rowData as Row).key as string);
+            row.data = (rowData as Row).data;
             next(null, row);
           }
         },
