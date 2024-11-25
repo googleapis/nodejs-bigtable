@@ -18,7 +18,7 @@ import * as Long from 'long';
 import * as proxyquire from 'proxyquire';
 import * as sn from 'sinon';
 
-import {RowStateEnum} from '../src/chunktransformer.js';
+import {ChunkPushData, DataEvent, RowStateEnum} from '../src/chunktransformer.js';
 import {Mutation} from '../src/mutation.js';
 import {Row} from '../src/row.js';
 
@@ -44,7 +44,7 @@ describe('Bigtable/ChunkTransformer', () => {
   let ChunkTransformer: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let chunkTransformer: any;
-  let rows: Row[];
+  let rows: ChunkPushData[];
   before(() => {
     ChunkTransformer = proxyquire('../src/chunktransformer.js', {
       './mutation.js': {Mutation: FakeMutation},
@@ -53,7 +53,7 @@ describe('Bigtable/ChunkTransformer', () => {
   beforeEach(() => {
     chunkTransformer = new ChunkTransformer();
     rows = [];
-    chunkTransformer.push = (row: Row) => {
+    chunkTransformer.push = (row: ChunkPushData) => {
       rows.push(row);
     };
   });
@@ -215,7 +215,7 @@ describe('Bigtable/ChunkTransformer', () => {
           },
         },
       };
-      assert.deepStrictEqual(rows[0], expectedRow);
+      assert.deepStrictEqual(rows[0].data, expectedRow);
     });
     it('partial row  ', () => {
       const chunk = {
@@ -417,7 +417,7 @@ describe('Bigtable/ChunkTransformer', () => {
           },
         },
       };
-      const row = rows[0];
+      const row = rows[0].data;
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
@@ -463,7 +463,7 @@ describe('Bigtable/ChunkTransformer', () => {
           },
         },
       };
-      const row = rows[0];
+      const row = rows[0].data;
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
@@ -510,7 +510,7 @@ describe('Bigtable/ChunkTransformer', () => {
           family2: {},
         },
       };
-      const row = rows[0];
+      const row = rows[0].data;
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
@@ -559,7 +559,7 @@ describe('Bigtable/ChunkTransformer', () => {
           },
         },
       };
-      const row = rows[0];
+      const row = rows[0].data;
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
@@ -789,7 +789,7 @@ describe('Bigtable/ChunkTransformer', () => {
           },
         },
       };
-      const row = rows[0];
+      const row = rows[0].data;
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
@@ -1153,7 +1153,7 @@ describe('Bigtable/ChunkTransformer', () => {
         },
       };
       const row = rows[0];
-      assert.deepStrictEqual(row, expectedRow, 'row mismatch');
+      assert.deepStrictEqual(row.data, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
