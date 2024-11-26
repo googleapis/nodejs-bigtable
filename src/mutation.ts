@@ -129,7 +129,8 @@ export class Mutation {
     bytes: Buffer | string,
     options?: ConvertFromBytesOptions
   ): Buffer | Value | string {
-    const buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
+    const buf =
+      bytes instanceof Buffer ? bytes : Buffer.from(bytes as string, 'base64');
     if (options && options.isPossibleNumber && buf.length === 8) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const num = Long.fromBytes(buf as any).toNumber();
