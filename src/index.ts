@@ -866,7 +866,10 @@ export class Bigtable {
 
         gaxStream = requestFn!();
         gaxStream
-          .on('error', stream.destroy.bind(stream))
+          .on('error', (error: any) => {
+            console.log(`Request error code ${error.code}`);
+            stream.destroy.bind(stream)(error);
+          })
           .on('metadata', stream.emit.bind(stream, 'metadata'))
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
