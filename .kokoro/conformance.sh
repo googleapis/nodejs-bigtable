@@ -41,5 +41,8 @@ cd cloud-bigtable-clients-test/tests
 eval "go test -v -proxy_addr=:9999"
 RETURN_CODE=$?
 
+# fix output location of logs
+bash .kokoro/coerce_logs.sh
+
 echo "exiting with ${RETURN_CODE}"
 exit ${RETURN_CODE}

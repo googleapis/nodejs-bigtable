@@ -506,6 +506,66 @@
           }
         }
       }
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_ExecuteQuery_async",
+      "title": "bigtable executeQuery Sample",
+      "origin": "API_DEFINITION",
+      "description": " Executes a BTQL query against a particular Cloud Bigtable instance.",
+      "canonical": false,
+      "file": "bigtable.execute_query.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 29,
+          "end": 106,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "ExecuteQuery",
+        "fullName": "google.bigtable.v2.Bigtable.ExecuteQuery",
+        "async": true,
+        "parameters": [
+          {
+            "name": "instance_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "query",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "proto_format",
+            "type": ".google.bigtable.v2.ProtoFormat"
+          },
+          {
+            "name": "resume_token",
+            "type": "TYPE_BYTES"
+          },
+          {
+            "name": "params",
+            "type": "TYPE_MESSAGE[]"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.ExecuteQueryResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "ExecuteQuery",
+          "fullName": "google.bigtable.v2.Bigtable.ExecuteQuery",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
     }
   ]
 }

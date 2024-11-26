@@ -12,7 +12,7 @@
                 "v2": {
                   "options": {
                     "csharp_namespace": "Google.Cloud.Bigtable.Admin.V2",
-                    "go_package": "google.golang.org/genproto/googleapis/bigtable/admin/v2;admin",
+                    "go_package": "cloud.google.com/go/bigtable/admin/apiv2/adminpb;adminpb",
                     "java_multiple_files": true,
                     "java_outer_classname": "TypesProto",
                     "java_package": "com.google.bigtable.admin.v2",
@@ -3376,6 +3376,14 @@
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
+                        },
+                        "backupType": {
+                          "type": "BackupType",
+                          "id": 11
+                        },
+                        "hotToStandardTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 12
                         }
                       },
                       "nested": {
@@ -3384,6 +3392,13 @@
                             "STATE_UNSPECIFIED": 0,
                             "CREATING": 1,
                             "READY": 2
+                          }
+                        },
+                        "BackupType": {
+                          "values": {
+                            "BACKUP_TYPE_UNSPECIFIED": 0,
+                            "STANDARD": 1,
+                            "HOT": 2
                           }
                         }
                       }
@@ -3440,7 +3455,15 @@
                             "bytesType",
                             "stringType",
                             "int64Type",
-                            "aggregateType"
+                            "float32Type",
+                            "float64Type",
+                            "boolType",
+                            "timestampType",
+                            "dateType",
+                            "aggregateType",
+                            "structType",
+                            "arrayType",
+                            "mapType"
                           ]
                         }
                       },
@@ -3457,9 +3480,41 @@
                           "type": "Int64",
                           "id": 5
                         },
+                        "float32Type": {
+                          "type": "Float32",
+                          "id": 12
+                        },
+                        "float64Type": {
+                          "type": "Float64",
+                          "id": 9
+                        },
+                        "boolType": {
+                          "type": "Bool",
+                          "id": 8
+                        },
+                        "timestampType": {
+                          "type": "Timestamp",
+                          "id": 10
+                        },
+                        "dateType": {
+                          "type": "Date",
+                          "id": 11
+                        },
                         "aggregateType": {
                           "type": "Aggregate",
                           "id": 6
+                        },
+                        "structType": {
+                          "type": "Struct",
+                          "id": 7
+                        },
+                        "arrayType": {
+                          "type": "Array",
+                          "id": 3
+                        },
+                        "mapType": {
+                          "type": "Map",
+                          "id": 4
                         }
                       },
                       "nested": {
@@ -3505,18 +3560,32 @@
                               "oneofs": {
                                 "encoding": {
                                   "oneof": [
-                                    "utf8Raw"
+                                    "utf8Raw",
+                                    "utf8Bytes"
                                   ]
                                 }
                               },
                               "fields": {
                                 "utf8Raw": {
                                   "type": "Utf8Raw",
-                                  "id": 1
+                                  "id": 1,
+                                  "options": {
+                                    "deprecated": true
+                                  }
+                                },
+                                "utf8Bytes": {
+                                  "type": "Utf8Bytes",
+                                  "id": 2
                                 }
                               },
                               "nested": {
                                 "Utf8Raw": {
+                                  "options": {
+                                    "deprecated": true
+                                  },
+                                  "fields": {}
+                                },
+                                "Utf8Bytes": {
                                   "fields": {}
                                 }
                               }
@@ -3558,11 +3627,72 @@
                             }
                           }
                         },
+                        "Bool": {
+                          "fields": {}
+                        },
+                        "Float32": {
+                          "fields": {}
+                        },
+                        "Float64": {
+                          "fields": {}
+                        },
+                        "Timestamp": {
+                          "fields": {}
+                        },
+                        "Date": {
+                          "fields": {}
+                        },
+                        "Struct": {
+                          "fields": {
+                            "fields": {
+                              "rule": "repeated",
+                              "type": "Field",
+                              "id": 1
+                            }
+                          },
+                          "nested": {
+                            "Field": {
+                              "fields": {
+                                "fieldName": {
+                                  "type": "string",
+                                  "id": 1
+                                },
+                                "type": {
+                                  "type": "Type",
+                                  "id": 2
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "Array": {
+                          "fields": {
+                            "elementType": {
+                              "type": "Type",
+                              "id": 1
+                            }
+                          }
+                        },
+                        "Map": {
+                          "fields": {
+                            "keyType": {
+                              "type": "Type",
+                              "id": 1
+                            },
+                            "valueType": {
+                              "type": "Type",
+                              "id": 2
+                            }
+                          }
+                        },
                         "Aggregate": {
                           "oneofs": {
                             "aggregator": {
                               "oneof": [
-                                "sum"
+                                "sum",
+                                "hllppUniqueCount",
+                                "max",
+                                "min"
                               ]
                             }
                           },
@@ -3581,10 +3711,31 @@
                             "sum": {
                               "type": "Sum",
                               "id": 4
+                            },
+                            "hllppUniqueCount": {
+                              "type": "HyperLogLogPlusPlusUniqueCount",
+                              "id": 5
+                            },
+                            "max": {
+                              "type": "Max",
+                              "id": 6
+                            },
+                            "min": {
+                              "type": "Min",
+                              "id": 7
                             }
                           },
                           "nested": {
                             "Sum": {
+                              "fields": {}
+                            },
+                            "Max": {
+                              "fields": {}
+                            },
+                            "Min": {
+                              "fields": {}
+                            },
+                            "HyperLogLogPlusPlusUniqueCount": {
                               "fields": {}
                             }
                           }
@@ -3598,7 +3749,7 @@
             "v2": {
               "options": {
                 "csharp_namespace": "Google.Cloud.Bigtable.V2",
-                "go_package": "google.golang.org/genproto/googleapis/bigtable/v2;bigtable",
+                "go_package": "cloud.google.com/go/bigtable/apiv2/bigtablepb;bigtablepb",
                 "java_multiple_files": true,
                 "java_outer_classname": "ResponseParamsProto",
                 "java_package": "com.google.bigtable.v2",
@@ -3984,6 +4135,45 @@
                         },
                         {
                           "(google.api.method_signature)": "table_name,app_profile_id"
+                        }
+                      ]
+                    },
+                    "ExecuteQuery": {
+                      "requestType": "ExecuteQueryRequest",
+                      "responseType": "ExecuteQueryResponse",
+                      "responseStream": true,
+                      "options": {
+                        "(google.api.http).post": "/v2/{instance_name=projects/*/instances/*}:executeQuery",
+                        "(google.api.http).body": "*",
+                        "(google.api.routing).routing_parameters.field": "app_profile_id",
+                        "(google.api.routing).routing_parameters.path_template": "{name=projects/*/instances/*}",
+                        "(google.api.method_signature)": "instance_name,query,app_profile_id"
+                      },
+                      "parsedOptions": [
+                        {
+                          "(google.api.http)": {
+                            "post": "/v2/{instance_name=projects/*/instances/*}:executeQuery",
+                            "body": "*"
+                          }
+                        },
+                        {
+                          "(google.api.routing)": {
+                            "routing_parameters": [
+                              {
+                                "field": "instance_name",
+                                "path_template": "{name=projects/*/instances/*}"
+                              },
+                              {
+                                "field": "app_profile_id"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "(google.api.method_signature)": "instance_name,query"
+                        },
+                        {
+                          "(google.api.method_signature)": "instance_name,query,app_profile_id"
                         }
                       ]
                     }
@@ -4612,6 +4802,78 @@
                     }
                   }
                 },
+                "ExecuteQueryRequest": {
+                  "oneofs": {
+                    "dataFormat": {
+                      "oneof": [
+                        "protoFormat"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "instanceName": {
+                      "type": "string",
+                      "id": 1,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
+                      }
+                    },
+                    "appProfileId": {
+                      "type": "string",
+                      "id": 2,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL"
+                      }
+                    },
+                    "query": {
+                      "type": "string",
+                      "id": 3,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED"
+                      }
+                    },
+                    "protoFormat": {
+                      "type": "ProtoFormat",
+                      "id": 4
+                    },
+                    "resumeToken": {
+                      "type": "bytes",
+                      "id": 8,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL"
+                      }
+                    },
+                    "params": {
+                      "keyType": "string",
+                      "type": "Value",
+                      "id": 7,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED"
+                      }
+                    }
+                  }
+                },
+                "ExecuteQueryResponse": {
+                  "oneofs": {
+                    "response": {
+                      "oneof": [
+                        "metadata",
+                        "results"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "metadata": {
+                      "type": "ResultSetMetadata",
+                      "id": 1
+                    },
+                    "results": {
+                      "type": "PartialResultSet",
+                      "id": 2
+                    }
+                  }
+                },
                 "Row": {
                   "fields": {
                     "key": {
@@ -4674,11 +4936,22 @@
                       "oneof": [
                         "rawValue",
                         "rawTimestampMicros",
-                        "intValue"
+                        "bytesValue",
+                        "stringValue",
+                        "intValue",
+                        "boolValue",
+                        "floatValue",
+                        "timestampValue",
+                        "dateValue",
+                        "arrayValue"
                       ]
                     }
                   },
                   "fields": {
+                    "type": {
+                      "type": "Type",
+                      "id": 7
+                    },
                     "rawValue": {
                       "type": "bytes",
                       "id": 8
@@ -4687,9 +4960,46 @@
                       "type": "int64",
                       "id": 9
                     },
+                    "bytesValue": {
+                      "type": "bytes",
+                      "id": 2
+                    },
+                    "stringValue": {
+                      "type": "string",
+                      "id": 3
+                    },
                     "intValue": {
                       "type": "int64",
                       "id": 6
+                    },
+                    "boolValue": {
+                      "type": "bool",
+                      "id": 10
+                    },
+                    "floatValue": {
+                      "type": "double",
+                      "id": 11
+                    },
+                    "timestampValue": {
+                      "type": "google.protobuf.Timestamp",
+                      "id": 12
+                    },
+                    "dateValue": {
+                      "type": "google.type.Date",
+                      "id": 13
+                    },
+                    "arrayValue": {
+                      "type": "ArrayValue",
+                      "id": 4
+                    }
+                  }
+                },
+                "ArrayValue": {
+                  "fields": {
+                    "values": {
+                      "rule": "repeated",
+                      "type": "Value",
+                      "id": 1
                     }
                   }
                 },
@@ -4972,6 +5282,7 @@
                       "oneof": [
                         "setCell",
                         "addToCell",
+                        "mergeToCell",
                         "deleteFromColumn",
                         "deleteFromFamily",
                         "deleteFromRow"
@@ -4986,6 +5297,10 @@
                     "addToCell": {
                       "type": "AddToCell",
                       "id": 5
+                    },
+                    "mergeToCell": {
+                      "type": "MergeToCell",
+                      "id": 6
                     },
                     "deleteFromColumn": {
                       "type": "DeleteFromColumn",
@@ -5022,6 +5337,26 @@
                       }
                     },
                     "AddToCell": {
+                      "fields": {
+                        "familyName": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "columnQualifier": {
+                          "type": "Value",
+                          "id": 2
+                        },
+                        "timestamp": {
+                          "type": "Value",
+                          "id": 3
+                        },
+                        "input": {
+                          "type": "Value",
+                          "id": 4
+                        }
+                      }
+                    },
+                    "MergeToCell": {
                       "fields": {
                         "familyName": {
                           "type": "string",
@@ -5124,6 +5459,379 @@
                     "token": {
                       "type": "string",
                       "id": 2
+                    }
+                  }
+                },
+                "ProtoFormat": {
+                  "fields": {}
+                },
+                "ColumnMetadata": {
+                  "fields": {
+                    "name": {
+                      "type": "string",
+                      "id": 1
+                    },
+                    "type": {
+                      "type": "Type",
+                      "id": 2
+                    }
+                  }
+                },
+                "ProtoSchema": {
+                  "fields": {
+                    "columns": {
+                      "rule": "repeated",
+                      "type": "ColumnMetadata",
+                      "id": 1
+                    }
+                  }
+                },
+                "ResultSetMetadata": {
+                  "oneofs": {
+                    "schema": {
+                      "oneof": [
+                        "protoSchema"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "protoSchema": {
+                      "type": "ProtoSchema",
+                      "id": 1
+                    }
+                  }
+                },
+                "ProtoRows": {
+                  "fields": {
+                    "values": {
+                      "rule": "repeated",
+                      "type": "Value",
+                      "id": 2
+                    }
+                  }
+                },
+                "ProtoRowsBatch": {
+                  "fields": {
+                    "batchData": {
+                      "type": "bytes",
+                      "id": 1
+                    }
+                  }
+                },
+                "PartialResultSet": {
+                  "oneofs": {
+                    "partialRows": {
+                      "oneof": [
+                        "protoRowsBatch"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "protoRowsBatch": {
+                      "type": "ProtoRowsBatch",
+                      "id": 3
+                    },
+                    "resumeToken": {
+                      "type": "bytes",
+                      "id": 5
+                    },
+                    "estimatedBatchSize": {
+                      "type": "int32",
+                      "id": 4
+                    }
+                  }
+                },
+                "Type": {
+                  "oneofs": {
+                    "kind": {
+                      "oneof": [
+                        "bytesType",
+                        "stringType",
+                        "int64Type",
+                        "float32Type",
+                        "float64Type",
+                        "boolType",
+                        "timestampType",
+                        "dateType",
+                        "aggregateType",
+                        "structType",
+                        "arrayType",
+                        "mapType"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "bytesType": {
+                      "type": "Bytes",
+                      "id": 1
+                    },
+                    "stringType": {
+                      "type": "String",
+                      "id": 2
+                    },
+                    "int64Type": {
+                      "type": "Int64",
+                      "id": 5
+                    },
+                    "float32Type": {
+                      "type": "Float32",
+                      "id": 12
+                    },
+                    "float64Type": {
+                      "type": "Float64",
+                      "id": 9
+                    },
+                    "boolType": {
+                      "type": "Bool",
+                      "id": 8
+                    },
+                    "timestampType": {
+                      "type": "Timestamp",
+                      "id": 10
+                    },
+                    "dateType": {
+                      "type": "Date",
+                      "id": 11
+                    },
+                    "aggregateType": {
+                      "type": "Aggregate",
+                      "id": 6
+                    },
+                    "structType": {
+                      "type": "Struct",
+                      "id": 7
+                    },
+                    "arrayType": {
+                      "type": "Array",
+                      "id": 3
+                    },
+                    "mapType": {
+                      "type": "Map",
+                      "id": 4
+                    }
+                  },
+                  "nested": {
+                    "Bytes": {
+                      "fields": {
+                        "encoding": {
+                          "type": "Encoding",
+                          "id": 1
+                        }
+                      },
+                      "nested": {
+                        "Encoding": {
+                          "oneofs": {
+                            "encoding": {
+                              "oneof": [
+                                "raw"
+                              ]
+                            }
+                          },
+                          "fields": {
+                            "raw": {
+                              "type": "Raw",
+                              "id": 1
+                            }
+                          },
+                          "nested": {
+                            "Raw": {
+                              "fields": {}
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "String": {
+                      "fields": {
+                        "encoding": {
+                          "type": "Encoding",
+                          "id": 1
+                        }
+                      },
+                      "nested": {
+                        "Encoding": {
+                          "oneofs": {
+                            "encoding": {
+                              "oneof": [
+                                "utf8Raw",
+                                "utf8Bytes"
+                              ]
+                            }
+                          },
+                          "fields": {
+                            "utf8Raw": {
+                              "type": "Utf8Raw",
+                              "id": 1,
+                              "options": {
+                                "deprecated": true
+                              }
+                            },
+                            "utf8Bytes": {
+                              "type": "Utf8Bytes",
+                              "id": 2
+                            }
+                          },
+                          "nested": {
+                            "Utf8Raw": {
+                              "options": {
+                                "deprecated": true
+                              },
+                              "fields": {}
+                            },
+                            "Utf8Bytes": {
+                              "fields": {}
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "Int64": {
+                      "fields": {
+                        "encoding": {
+                          "type": "Encoding",
+                          "id": 1
+                        }
+                      },
+                      "nested": {
+                        "Encoding": {
+                          "oneofs": {
+                            "encoding": {
+                              "oneof": [
+                                "bigEndianBytes"
+                              ]
+                            }
+                          },
+                          "fields": {
+                            "bigEndianBytes": {
+                              "type": "BigEndianBytes",
+                              "id": 1
+                            }
+                          },
+                          "nested": {
+                            "BigEndianBytes": {
+                              "fields": {
+                                "bytesType": {
+                                  "type": "Bytes",
+                                  "id": 1
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "Bool": {
+                      "fields": {}
+                    },
+                    "Float32": {
+                      "fields": {}
+                    },
+                    "Float64": {
+                      "fields": {}
+                    },
+                    "Timestamp": {
+                      "fields": {}
+                    },
+                    "Date": {
+                      "fields": {}
+                    },
+                    "Struct": {
+                      "fields": {
+                        "fields": {
+                          "rule": "repeated",
+                          "type": "Field",
+                          "id": 1
+                        }
+                      },
+                      "nested": {
+                        "Field": {
+                          "fields": {
+                            "fieldName": {
+                              "type": "string",
+                              "id": 1
+                            },
+                            "type": {
+                              "type": "Type",
+                              "id": 2
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "Array": {
+                      "fields": {
+                        "elementType": {
+                          "type": "Type",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "Map": {
+                      "fields": {
+                        "keyType": {
+                          "type": "Type",
+                          "id": 1
+                        },
+                        "valueType": {
+                          "type": "Type",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "Aggregate": {
+                      "oneofs": {
+                        "aggregator": {
+                          "oneof": [
+                            "sum",
+                            "hllppUniqueCount",
+                            "max",
+                            "min"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "inputType": {
+                          "type": "Type",
+                          "id": 1
+                        },
+                        "stateType": {
+                          "type": "Type",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "sum": {
+                          "type": "Sum",
+                          "id": 4
+                        },
+                        "hllppUniqueCount": {
+                          "type": "HyperLogLogPlusPlusUniqueCount",
+                          "id": 5
+                        },
+                        "max": {
+                          "type": "Max",
+                          "id": 6
+                        },
+                        "min": {
+                          "type": "Min",
+                          "id": 7
+                        }
+                      },
+                      "nested": {
+                        "Sum": {
+                          "fields": {}
+                        },
+                        "Max": {
+                          "fields": {}
+                        },
+                        "Min": {
+                          "fields": {}
+                        },
+                        "HyperLogLogPlusPlusUniqueCount": {
+                          "fields": {}
+                        }
+                      }
                     }
                   }
                 },
@@ -7482,11 +8190,12 @@
         },
         "type": {
           "options": {
-            "go_package": "google.golang.org/genproto/googleapis/type/expr;expr",
+            "go_package": "google.golang.org/genproto/googleapis/type/date;date",
             "java_multiple_files": true,
-            "java_outer_classname": "ExprProto",
+            "java_outer_classname": "DateProto",
             "java_package": "com.google.type",
-            "objc_class_prefix": "GTP"
+            "objc_class_prefix": "GTP",
+            "cc_enable_arenas": true
           },
           "nested": {
             "Expr": {
@@ -7506,6 +8215,22 @@
                 "location": {
                   "type": "string",
                   "id": 4
+                }
+              }
+            },
+            "Date": {
+              "fields": {
+                "year": {
+                  "type": "int32",
+                  "id": 1
+                },
+                "month": {
+                  "type": "int32",
+                  "id": 2
+                },
+                "day": {
+                  "type": "int32",
+                  "id": 3
                 }
               }
             }

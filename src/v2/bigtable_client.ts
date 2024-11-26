@@ -237,6 +237,11 @@ export class BigtableClient {
         !!opts.fallback,
         !!opts.gaxServerStreamingRetries
       ),
+      executeQuery: new this._gaxModule.StreamDescriptor(
+        this._gaxModule.StreamType.SERVER_STREAMING,
+        !!opts.fallback,
+        !!opts.gaxServerStreamingRetries
+      ),
     };
 
     // Put together the default options sent with requests.
@@ -298,6 +303,7 @@ export class BigtableClient {
       'readModifyWriteRow',
       'generateInitialChangeStreamPartitions',
       'readChangeStream',
+      'executeQuery',
     ];
     for (const methodName of bigtableStubMethods) {
       const callPromise = this.bigtableStub.then(
@@ -1397,6 +1403,97 @@ export class BigtableClient {
       });
     this.initialize();
     return this.innerApiCalls.readChangeStream(request, options);
+  }
+
+  /**
+   * Executes a BTQL query against a particular Cloud Bigtable instance.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.instanceName
+   *   Required. The unique name of the instance against which the query should be
+   *   executed.
+   *   Values are of the form `projects/<project>/instances/<instance>`
+   * @param {string} [request.appProfileId]
+   *   Optional. This value specifies routing for replication. If not specified,
+   *   the `default` application profile will be used.
+   * @param {string} request.query
+   *   Required. The query string.
+   * @param {google.bigtable.v2.ProtoFormat} request.protoFormat
+   *   Protocol buffer format as described by ProtoSchema and ProtoRows
+   *   messages.
+   * @param {Buffer} [request.resumeToken]
+   *   Optional. If this request is resuming a previously interrupted query
+   *   execution, `resume_token` should be copied from the last
+   *   PartialResultSet yielded before the interruption. Doing this
+   *   enables the query execution to resume where the last one left
+   *   off.
+   *   The rest of the request parameters must exactly match the
+   *   request that yielded this token. Otherwise the request will fail.
+   * @param {number[]} request.params
+   *   Required. params contains string type keys and Bigtable type values that
+   *   bind to placeholders in the query string. In query string, a parameter
+   *   placeholder consists of the
+   *   `@` character followed by the parameter name (for example, `@firstName`) in
+   *   the query string.
+   *
+   *   For example, if
+   *   `params["firstName"] = bytes_value: "foo" type {bytes_type {}}`
+   *    then `@firstName` will be replaced with googlesql bytes value "foo" in the
+   *    query string during query evaluation.
+   *
+   *   In case of Value.kind is not set, it will be set to corresponding null
+   *   value in googlesql.
+   *    `params["firstName"] =  type {string_type {}}`
+   *    then `@firstName` will be replaced with googlesql null string.
+   *
+   *   Value.type should always be set and no inference of type will be made from
+   *   Value.kind. If Value.type is not set, we will return INVALID_ARGUMENT
+   *   error.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Stream}
+   *   An object stream which emits {@link protos.google.bigtable.v2.ExecuteQueryResponse|ExecuteQueryResponse} on 'data' event.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming | documentation }
+   *   for more details and examples.
+   */
+  executeQuery(
+    request?: protos.google.bigtable.v2.IExecuteQueryRequest,
+    options?: CallOptions
+  ): gax.CancellableStream {
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    const routingParameter = {};
+    {
+      const fieldValue = request.instanceName;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(RegExp('(?<name>projects/[^/]+/instances/[^/]+)'));
+        if (match) {
+          const parameterValue = match.groups?.['name'] ?? fieldValue;
+          Object.assign(routingParameter, {name: parameterValue});
+        }
+      }
+    }
+    {
+      const fieldValue = request.appProfileId;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(RegExp('(?<app_profile_id>.*)'));
+        if (match) {
+          const parameterValue = match.groups?.['app_profile_id'] ?? fieldValue;
+          Object.assign(routingParameter, {app_profile_id: parameterValue});
+        }
+      }
+    }
+    options.otherArgs.headers['x-goog-request-params'] =
+      this._gaxModule.routingHeader.fromParams(routingParameter);
+    this.initialize();
+    return this.innerApiCalls.executeQuery(request, options);
   }
 
   // --------------------
