@@ -491,6 +491,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
                * CANCELLED since the user actually cancelled the call by closing
                * the client.
                */
+              // TODO: Replace 1 with grpc.status.CANCELLED and address the docs github action failure that it causes.
               error.code = 1; // grpc.status.CANCELLED = 1
             }
             userStream.emit('error', error);
