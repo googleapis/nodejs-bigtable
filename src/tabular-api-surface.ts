@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// A test
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {Instance} from './instance';
