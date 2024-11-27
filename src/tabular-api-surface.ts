@@ -29,7 +29,7 @@ import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {google} from '../protos/protos';
-import {CallOptions, ServiceError} from 'google-gax';
+import {CallOptions, grpc, ServiceError} from 'google-gax';
 import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
@@ -491,8 +491,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               // CANCELLED since the user actually cancelled the call by closing
               // the client.
               //
-              // TODO: Replace 1 with grpc.status.CANCELLED and address the docs github action failure that it causes.
-              error.code = 1; // grpc.status.CANCELLED = 1
+              error.code = grpc.status.CANCELLED;
             }
             userStream.emit('error', error);
           }
