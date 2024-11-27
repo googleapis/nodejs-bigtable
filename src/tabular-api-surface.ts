@@ -458,13 +458,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream
         .on('error', (error: ServiceError) => {
-          console.log(error.code);
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
             // We ignore the `cancelled` "error", since we are the ones who cause
             // it when the user calls `.abort()`.
-            console.log('ending stream');
             userStream.end();
             return;
           }
