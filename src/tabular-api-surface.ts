@@ -484,13 +484,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               !error.code &&
               error.message === 'The client has already been closed.'
             ) {
-              /**
-               * The TestReadRows_Generic_CloseClient conformance test requires
-               * a grpc code to be present when the client is closed. According
-               * to Gemini, the appropriate code for a closed client is
-               * CANCELLED since the user actually cancelled the call by closing
-               * the client.
-               */
+              //
+              // The TestReadRows_Generic_CloseClient conformance test requires
+              // a grpc code to be present when the client is closed. According
+              // to Gemini, the appropriate code for a closed client is
+              // CANCELLED since the user actually cancelled the call by closing
+              // the client.
+              //
               // TODO: Replace 1 with grpc.status.CANCELLED and address the docs github action failure that it causes.
               error.code = 1; // grpc.status.CANCELLED = 1
             }
