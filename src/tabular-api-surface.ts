@@ -34,6 +34,7 @@ import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {TableUtils} from './utils/table';
+import * as grpc from '@grpc/grpc-js';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -457,11 +458,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream
         .on('error', (error: ServiceError) => {
+          console.log(error.code);
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
             // We ignore the `cancelled` "error", since we are the ones who cause
             // it when the user calls `.abort()`.
+            console.log('ending stream');
             userStream.end();
             return;
           }
@@ -480,6 +483,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             );
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
+            if (
+              !error.code &&
+              error.message === 'The client has already been closed.'
+            ) {
+              /**
+               * The TestReadRows_Generic_CloseClient conformance test requires
+               * a grpc code to be present when the client is closed. According
+               * to Gemini, the appropriate code for a closed client is
+               * CANCELLED since the user actually cancelled the call by closing
+               * the client.
+               */
+              error.code = grpc.status.CANCELLED;
+            }
             userStream.emit('error', error);
           }
         })
