@@ -1217,7 +1217,9 @@ describe('Bigtable', () => {
   describe('close', () => {
     it('should have failed request after close is called', done => {
       bigtable.close().then(() => {
+        console.log('after close');
         bigtable.getInstances((err: Error) => {
+          console.log('after getInstances');
           if (err) {
             done();
           } else {
