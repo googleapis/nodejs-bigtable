@@ -379,6 +379,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * ```
  */
 export class Bigtable {
+  private closed = false;
   customEndpoint?: string;
   options: BigtableOptions;
   api: {
@@ -786,7 +787,7 @@ export class Bigtable {
     const prepareGaxRequest = (
       callback: (err: Error | null, fn?: Function) => void
     ) => {
-      this.getProjectId_((err, projectId) => {
+      this.getProjectId_(async (err, projectId) => {
         if (err) {
           callback(err);
           return;
@@ -797,6 +798,17 @@ export class Bigtable {
           const clientOptions = this.options[config.client]!;
           gaxClient = new v2[config.client](clientOptions);
           this.api[config.client] = gaxClient;
+          if (this.closed) {
+            /**
+             * If close has already been called on the handwritten client then
+             * we still want to make sure the Gapic client is closed before it
+             * services the API call. In order for the close function to work,
+             * the initialize function needs to be called to initialize the
+             * stub so that it can be closed.
+             */
+            await gaxClient.initialize();
+            await gaxClient.close();
+          }
         }
         let reqOpts = extend(true, {}, config.reqOpts);
         if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
@@ -900,6 +912,7 @@ export class Bigtable {
    * kill connections with pending requests.
    */
   close(): Promise<void[]> {
+    this.closed = true;
     const combined = Object.keys(this.api).map(clientType =>
       this.api[clientType].close()
     );
