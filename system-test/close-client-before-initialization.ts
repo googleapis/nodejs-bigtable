@@ -22,11 +22,10 @@ import {ServiceError} from 'google-gax';
 
 const v2 = Symbol.for('v2');
 
-describe.only('CloseClient', () => {
+describe.only('CloseClientBeforeInitialization', () => {
+  const instanceId = generateId('instance');
   const bigtable = new Bigtable();
-  const INSTANCE = bigtable.instance(generateId('instance'));
-  const DIFF_INSTANCE = bigtable.instance(generateId('d-inst'));
-  const CMEK_INSTANCE = bigtable.instance(generateId('cmek'));
+  const INSTANCE = bigtable.instance(instanceId);
   const TABLE = INSTANCE.table(generateId('table'));
   const APP_PROFILE_ID = generateId('appProfile');
   const CLUSTER_ID = generateId('cluster');
@@ -90,8 +89,10 @@ describe.only('CloseClient', () => {
   });
 
   after(async () => {
+    const secondBigtable = new Bigtable();
+    const SECOND_INSTANCE = secondBigtable.instance(instanceId);
     const q = new Q({concurrency: 5});
-    const instances = [INSTANCE, DIFF_INSTANCE, CMEK_INSTANCE];
+    const instances = [SECOND_INSTANCE];
 
     // need to delete backups first due to instance deletion precondition
     await Promise.all(instances.map(instance => reapBackups(instance)));
@@ -107,22 +108,8 @@ describe.only('CloseClient', () => {
       })
     );
   });
+
   it('Calling close and then sampleRowKeys should tell us the client is closed before client initialization', async () => {
-    // await (bigtable as any)[v2].close();
-    // await bigtable.api.BigtableClient.close();
-    await bigtable.close();
-    try {
-      await TABLE.sampleRowKeys();
-      assert.fail('This call should have resulted in a client closed error');
-    } catch (e) {
-      assert.strictEqual(
-        (e as ServiceError).message,
-        'The client has already been closed.'
-      );
-    }
-  });
-  it('Calling close and then sampleRowKeys should tell us the client is closed after client initialization', async () => {
-    await TABLE.sampleRowKeys(); // Initialize the client.
     // await (bigtable as any)[v2].close();
     // await bigtable.api.BigtableClient.close();
     await bigtable.close();
