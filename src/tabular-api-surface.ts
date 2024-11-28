@@ -29,7 +29,7 @@ import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {google} from '../protos/protos';
-import {CallOptions, ServiceError} from 'google-gax';
+import {CallOptions, grpc, ServiceError} from 'google-gax';
 import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
@@ -480,6 +480,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             );
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
+            if (
+              !error.code &&
+              error.message === 'The client has already been closed.'
+            ) {
+              //
+              // The TestReadRows_Generic_CloseClient conformance test requires
+              // a grpc code to be present when the client is closed. According
+              // to Gemini, the appropriate code for a closed client is
+              // CANCELLED since the user actually cancelled the call by closing
+              // the client.
+              //
+              error.code = grpc.status.CANCELLED;
+            }
             userStream.emit('error', error);
           }
         })
