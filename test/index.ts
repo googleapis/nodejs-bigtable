@@ -1221,9 +1221,7 @@ describe('Bigtable', () => {
           if (err) {
             done();
           } else {
-            assert.fail(
-              // TODO: I think errors from this assert statement are not bubbling up.
-              // We should use done('The request did not fail, but it should have because the connection is closed') instead.
+            done(
               'The request did not fail, but it should have because the connection is closed'
             );
           }
