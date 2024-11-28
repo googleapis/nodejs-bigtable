@@ -379,7 +379,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * ```
  */
 export class Bigtable {
-  private closed = false;
+  closed = false; // Make private
   customEndpoint?: string;
   options: BigtableOptions;
   api: {
