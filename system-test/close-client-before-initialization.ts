@@ -20,9 +20,7 @@ import {generateId, PREFIX} from './common';
 import * as assert from 'assert';
 import {ServiceError} from 'google-gax';
 
-const v2 = Symbol.for('v2');
-
-describe.only('CloseClientBeforeInitialization', () => {
+describe('CloseClientBeforeInitialization', () => {
   const instanceId = generateId('instance');
   const bigtable = new Bigtable();
   const INSTANCE = bigtable.instance(instanceId);
