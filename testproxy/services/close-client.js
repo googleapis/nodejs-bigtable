@@ -19,12 +19,13 @@ const v2 = Symbol.for('v2');
 
 const closeClient = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
+    console.log('reached close service in test proxy');
     const request = rawRequest.request;
     const {clientId} = request;
     const bigtable = clientMap.get(clientId);
 
     if (bigtable) {
-      await bigtable[v2].close();
+      // await bigtable[v2].close();
       await bigtable.close();
       return {};
     }

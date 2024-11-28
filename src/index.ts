@@ -778,6 +778,7 @@ export class Bigtable {
     config: RequestOptions,
     callback?: (err: ServiceError | null, resp?: T) => void
   ): void | AbortableDuplex {
+    console.log('calling request');
     const isStreamMode = !callback;
 
     let gaxStream: gax.CancellableStream;
@@ -797,6 +798,7 @@ export class Bigtable {
           const clientOptions = this.options[config.client]!;
           gaxClient = new v2[config.client](clientOptions);
           this.api[config.client] = gaxClient;
+          console.log('lazy instantiation');
         }
         let reqOpts = extend(true, {}, config.reqOpts);
         if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
@@ -900,6 +902,7 @@ export class Bigtable {
    * kill connections with pending requests.
    */
   close(): Promise<void[]> {
+    console.log('close called');
     const combined = Object.keys(this.api).map(clientType =>
       this.api[clientType].close()
     );
