@@ -22,7 +22,7 @@ import {ServiceError} from 'google-gax';
 
 const v2 = Symbol.for('v2');
 
-describe.only('CloseClientAfterInitialization', () => {
+describe('CloseClientAfterInitialization', () => {
   const instanceId = generateId('instance');
   const bigtable = new Bigtable();
   const INSTANCE = bigtable.instance(instanceId);
