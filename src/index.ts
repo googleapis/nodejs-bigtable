@@ -809,6 +809,7 @@ export class Bigtable {
             console.log('initializing and closing');
             await gaxClient.initialize();
             await gaxClient.close();
+            console.log('done initializing and closing');
           }
         }
         let reqOpts = extend(true, {}, config.reqOpts);
