@@ -24,7 +24,7 @@ const closeClient = ({clientMap}) =>
     const bigtable = clientMap.get(clientId);
 
     if (bigtable) {
-      await bigtable[v2].close();
+      // await bigtable[v2].close();
       await bigtable.close();
       return {};
     }
