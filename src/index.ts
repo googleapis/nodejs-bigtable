@@ -806,6 +806,7 @@ export class Bigtable {
              * the initialize function needs to be called to initialize the
              * stub so that it can be closed.
              */
+            console.log('initializing and closing');
             await gaxClient.initialize();
             await gaxClient.close();
           }
