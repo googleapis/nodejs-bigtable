@@ -778,7 +778,7 @@ export class Bigtable {
     config: RequestOptions,
     callback?: (err: ServiceError | null, resp?: T) => void
   ): void | AbortableDuplex {
-    console.log('calling request');
+    console.log(`calling request ${config.method}`);
     const isStreamMode = !callback;
 
     let gaxStream: gax.CancellableStream;
@@ -798,7 +798,9 @@ export class Bigtable {
           const clientOptions = this.options[config.client]!;
           gaxClient = new v2[config.client](clientOptions);
           this.api[config.client] = gaxClient;
-          console.log('lazy instantiation');
+          console.log(
+            `lazy instantiation of ${config.method}: ${config.client}`
+          );
         }
         let reqOpts = extend(true, {}, config.reqOpts);
         if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
