@@ -1216,7 +1216,8 @@ describe('Bigtable', () => {
     });
   });
   describe('close', () => {
-    it('should have failed request after close is called', done => {
+    it('should have failed request after close is called', function (done) {
+      this.timeout(300000); // Closing and initializing the client takes a long time on kokoro.
       console.log('before close');
       bigtable
         .close()
