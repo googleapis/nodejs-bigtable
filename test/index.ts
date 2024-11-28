@@ -26,6 +26,7 @@ import {PassThrough} from 'stream';
 import {RequestOptions} from '../src';
 import * as snapshot from 'snap-shot-it';
 import {createClusterOptionsList} from './constants/cluster';
+import {ServiceError} from 'google-gax';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const v2 = require('../src/v2');
@@ -1216,19 +1217,25 @@ describe('Bigtable', () => {
   });
   describe('close', () => {
     it('should have failed request after close is called', done => {
-      bigtable.close().then(() => {
-        console.log('after close');
-        bigtable.getInstances((err: Error) => {
-          console.log('after getInstances');
-          if (err) {
-            done();
-          } else {
-            done(
-              'The request did not fail, but it should have because the connection is closed'
-            );
-          }
+      console.log('before close');
+      bigtable
+        .close()
+        .then(() => {
+          console.log('after close');
+          bigtable.getInstances((err: Error) => {
+            console.log('after getInstances');
+            if (err) {
+              done();
+            } else {
+              done(
+                'The request did not fail, but it should have because the connection is closed'
+              );
+            }
+          });
+        })
+        .catch((e: ServiceError) => {
+          done(e);
         });
-      });
     });
   });
 });
