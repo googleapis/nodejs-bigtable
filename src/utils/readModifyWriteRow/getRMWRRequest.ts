@@ -64,7 +64,6 @@ export function getRMWRRequest(request: RMWRRequestData): RMRWRequest {
     return ruleData;
   });
 
-  console.log(`In request fn ${request.appProfileId}`);
   return Object.assign(
     {
       rowKey: Mutation.convertToBytes(id),
@@ -107,7 +106,6 @@ export function getRMWRRequestInverse(request: RMRWRequest): RMWRRequestData {
     }
   }
 
-  console.log(`In inverse ${request.appProfileId}`);
   const tableName = request.tableName as string;
   const authorizedViewName = request.authorizedViewName as string;
   const appProfileId = request.appProfileId as string;
