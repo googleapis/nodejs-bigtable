@@ -64,13 +64,14 @@ export function getRMWRRequest(request: RMWRRequestData): RMRWRequest {
     return ruleData;
   });
 
+  console.log(`In request fn ${request.appProfileId}`);
   return Object.assign(
     {
-      appProfileId: appProfileId,
       rowKey: Mutation.convertToBytes(id),
       rules: requestRules,
     },
-    reqOpts
+    reqOpts,
+    appProfileId ? {appProfileId} : null
   );
 }
 
@@ -106,13 +107,20 @@ export function getRMWRRequestInverse(request: RMRWRequest): RMWRRequestData {
     }
   }
 
-  return {
-    reqOpts: {
-      tableName: request.tableName as string | undefined,
-      authorizedViewName: request.authorizedViewName as string | undefined,
+  console.log(`In inverse ${request.appProfileId}`);
+  const tableName = request.tableName as string;
+  const authorizedViewName = request.authorizedViewName as string;
+  const appProfileId = request.appProfileId as string;
+  return Object.assign(
+    {
+      reqOpts: Object.assign(
+        {},
+        tableName ? {tableName} : null,
+        authorizedViewName ? {authorizedViewName} : null
+      ),
+      id: Mutation.convertFromBytes(request.rowKey as Bytes) as string,
+      rules: rules,
     },
-    id: Mutation.convertFromBytes(request.rowKey as Bytes) as string,
-    rules: rules,
-    appProfileId: request.appProfileId as string,
-  };
+    appProfileId ? {appProfileId} : null
+  );
 }
