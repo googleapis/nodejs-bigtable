@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {Rule} from '../../row';
-import {Mutation} from '../../mutation';
+import {Bytes, Mutation} from '../../mutation';
 import arrify = require('arrify');
 import * as protos from '../../../protos/protos';
 
@@ -85,22 +85,34 @@ export function getRMWRRequest(request: RMWRRequestData): RMRWRequest {
  * into getRMWRRequest and return the original `request` parameter.
  */
 export function getRMWRRequestInverse(request: RMRWRequest): RMWRRequestData {
+  const rules: Rule[] = [];
+  if (request.rules) {
+    for (const rule of request.rules) {
+      const ruleData: Rule = {
+        column: `${rule.familyName}:${Mutation.convertFromBytes(rule.columnQualifier as Bytes)}`,
+      };
+
+      if (rule.appendValue) {
+        ruleData.append = Mutation.convertFromBytes(
+          rule.appendValue as Bytes
+        ) as string;
+      }
+
+      if (rule.incrementAmount) {
+        ruleData.increment = rule.incrementAmount as number;
+      }
+
+      rules.push(ruleData);
+    }
+  }
+
   return {
-    reqOpts: {},
-    id: request.rowKey as string,
-    rules: [],
-  }; // TODO: Implement this function.
-  /**
-   * This function needs to be written so that for any `request` value we have
-   * request === getRMWRRequestInverse(getRMWRRequest(request)) and
-   * request === getRMWRRequest(getRMWRRequestInverse(request)). It will be used
-   * by the readModifyWriteRow test proxy service to transform a Gapic request
-   * into a request for the handwritten layer. getRMWRRequest and
-   * getRMWRRequestInverse are required to be inverses so that when
-   * getRMWRRequestInverse is applied in the test proxy service and then
-   * getRMWRRequest is applied by the handwritten layer that the Gapic layer
-   * receives the request that was originally passed into the test proxy
-   * service. This will ensure the test proxy is actually testing the request
-   * it is supposed to be testing.
-   */
+    reqOpts: {
+      tableName: request.tableName as string | undefined,
+      authorizedViewName: request.authorizedViewName as string | undefined,
+    },
+    id: Mutation.convertFromBytes(request.rowKey as Bytes) as string,
+    rules: rules,
+    appProfileId: request.appProfileId as string,
+  };
 }
