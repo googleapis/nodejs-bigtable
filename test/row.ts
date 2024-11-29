@@ -68,7 +68,17 @@ const FakeFilter = {
   }),
 };
 
+const FakeGetRMWRRequest = proxyquire(
+  '../src/utils/readModifyWriteRow/getRMWRRequest',
+  {
+    '../../mutation.js': {Mutation: FakeMutation},
+  }
+).getRMWRRequest;
+
 const FakeRowDataUtil = proxyquire('../src/row-data-utils.js', {
+  '../src/utils/readModifyWriteRow/getRMWRRequest': {
+    getRMWRRequest: FakeGetRMWRRequest,
+  },
   './mutation.js': {Mutation: FakeMutation},
   './filter.js': {Filter: FakeFilter},
 }).RowDataUtils;
