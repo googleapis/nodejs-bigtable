@@ -58,28 +58,11 @@ describe.only('getRMWRRequest and getRMWRRequestInverse', () => {
     }, // appProfileId
     // Add more test cases with different combinations of fields
   ];
-
-  it('Run test 1', () => {
-    const inverseResult = getRMWRRequestInverse(testCases[0]);
-    const result = getRMWRRequest(inverseResult);
-    assert.deepStrictEqual(result, testCases[0]);
-  });
-  it('Run test 2', () => {
-    assert.deepStrictEqual(
-      getRMWRRequest(getRMWRRequestInverse(testCases[1])),
-      testCases[1]
-    );
-  });
-  it('Run test 3', () => {
-    assert.deepStrictEqual(
-      getRMWRRequest(getRMWRRequestInverse(testCases[2])),
-      testCases[2]
-    );
-  });
-  it('Run test 4', () => {
-    assert.deepStrictEqual(
-      getRMWRRequest(getRMWRRequestInverse(testCases[3])),
-      testCases[3]
-    );
+  testCases.forEach((test, index) => {
+    it(`Run test ${index}`, () => {
+      const inverseResult = getRMWRRequestInverse(test);
+      const result = getRMWRRequest(inverseResult);
+      assert.deepStrictEqual(result, test);
+    });
   });
 });
