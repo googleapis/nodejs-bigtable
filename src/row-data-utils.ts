@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {getRMWRRequest} from './utils/readModifyWriteRow/getRMWRRequest';
+
 const dotProp = require('dot-prop');
 import {Filter, RawFilter} from './filter';
 import {
@@ -161,37 +163,12 @@ class RowDataUtils {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    if (!rules || (rules as Rule[]).length === 0) {
-      throw new Error('At least one rule must be provided.');
-    }
-
-    rules = arrify(rules).map(rule => {
-      const column = Mutation.parseColumnName(rule.column);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const ruleData: any = {
-        familyName: column.family,
-        columnQualifier: Mutation.convertToBytes(column.qualifier!),
-      };
-
-      if (rule.append) {
-        ruleData.appendValue = Mutation.convertToBytes(rule.append);
-      }
-
-      if (rule.increment) {
-        ruleData.incrementAmount = rule.increment;
-      }
-
-      return ruleData;
+    const reqOpts = getRMWRRequest({
+      reqOpts: properties.reqOpts,
+      id: properties.requestData.id,
+      rules,
+      appProfileId: properties.requestData.bigtable.appProfileId,
     });
-
-    const reqOpts = Object.assign(
-      {
-        appProfileId: properties.requestData.bigtable.appProfileId,
-        rowKey: Mutation.convertToBytes(properties.requestData.id),
-        rules,
-      },
-      properties.reqOpts
-    );
     properties.requestData.data = {};
     properties.requestData.bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
       {
