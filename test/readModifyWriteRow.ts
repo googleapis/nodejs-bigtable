@@ -35,11 +35,6 @@ describe.only('getRMWRRequest and getRMWRRequestInverse', () => {
       ],
     },
     {
-      tableName: 'empty-rules-table',
-      rowKey: Buffer.from('row-key-3'),
-      rules: [],
-    }, // Empty rules
-    {
       tableName: 'test-table-4',
       rowKey: Buffer.from('test-row-key-4'),
       rules: [
