@@ -5,7 +5,7 @@ import {
 import * as protos from '../protos/protos';
 import * as assert from 'assert';
 
-describe.only('getRMWRRequest and getRMWRRequestInverse', () => {
+describe.only('Check getRMWRRequest and getRMWRRequestInverse are inverses', () => {
   const testCases: protos.google.bigtable.v2.IReadModifyWriteRowRequest[] = [
     {
       tableName: 'test-table',
