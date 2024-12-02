@@ -110,7 +110,7 @@ describe('Bigtable/Table', () => {
   let table: any;
 
   before(() => {
-    Table = proxyquire('../src/table.js', {
+    const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
       '@google-cloud/promisify': fakePromisify,
       './family.js': {Family: FakeFamily},
       './mutation.js': {Mutation: FakeMutation},
@@ -118,6 +118,13 @@ describe('Bigtable/Table', () => {
       pumpify,
       './row.js': {Row: FakeRow},
       './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+    }).TabularApiSurface;
+    Table = proxyquire('../src/table.js', {
+      '@google-cloud/promisify': fakePromisify,
+      './family.js': {Family: FakeFamily},
+      './mutation.js': {Mutation: FakeMutation},
+      './row.js': {Row: FakeRow},
+      './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
     }).Table;
   });
 
