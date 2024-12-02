@@ -5,10 +5,26 @@ import {
 import * as protos from '../protos/protos';
 import * as assert from 'assert';
 
-describe.only('Check getRMWRRequest and getRMWRRequestInverse are inverses', () => {
+describe('Check getRMWRRequest and getRMWRRequestInverse are inverses', () => {
   const testCases: protos.google.bigtable.v2.IReadModifyWriteRowRequest[] = [
     {
       tableName: 'test-table',
+      rowKey: Buffer.from('test-row-key'),
+      rules: [
+        {
+          familyName: 'cf1',
+          columnQualifier: Buffer.from('cq1'),
+          appendValue: Buffer.from('append-val'),
+        },
+        {
+          familyName: 'cf2',
+          columnQualifier: Buffer.from('cq2'),
+          incrementAmount: 10,
+        },
+      ],
+    },
+    {
+      authorizedViewName: 'test-authorized-view',
       rowKey: Buffer.from('test-row-key'),
       rules: [
         {
