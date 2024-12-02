@@ -14,7 +14,6 @@ TestReadRows_NoRetry_OutOfOrderError_Reverse\|
 TestReadRows_Retry_PausedScan\|
 TestReadRows_Retry_LastScannedRow_Reverse\|
 TestReadRows_Retry_StreamReset\|
-TestReadRows_Generic_CloseClient\|
 TestReadRows_Generic_DeadlineExceeded\|
 TestReadRows_Retry_WithRoutingCookie\|
 TestReadRows_Retry_WithRoutingCookie_MultipleErrorResponses\|
