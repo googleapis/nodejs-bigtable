@@ -3,7 +3,6 @@ import * as assert from 'assert';
 import {describe} from 'mocha';
 import {protos} from '../../src';
 import {BigtableClient} from '../../src/v2';
-import type {Callback, CallOptions} from 'google-gax';
 const readModifyWriteRow = require('../../../testproxy/services/read-modify-write-row.js');
 const createClient = require('../../../testproxy/services/create-client.js');
 
