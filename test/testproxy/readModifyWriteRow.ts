@@ -1,38 +1,13 @@
 import * as assert from 'assert';
 
 import {describe} from 'mocha';
-import * as gax from 'google-gax';
-
-import {ReadRowsImpl} from '../utils/readRowsImpl';
-import {MockServer} from '../../src/util/mock-servers/mock-server';
-import {MockService} from '../../src/util/mock-servers/mock-service';
-import {BigtableClientMockService} from '../../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
-import {ServerWritableStream} from '@grpc/grpc-js';
 import {protos} from '../../src';
 import {BigtableClient} from '../../src/v2';
 import type {Callback, CallOptions} from 'google-gax';
-import {StreamProxy} from 'google-gax/build/src/streamingCalls/streaming';
 const readModifyWriteRow = require('../../../testproxy/services/read-modify-write-row.js');
 const createClient = require('../../../testproxy/services/create-client.js');
 
-export type ReadModifyWriteRowWritableStream = ServerWritableStream<
-  protos.google.bigtable.v2.IReadModifyWriteRowRequest,
-  protos.google.bigtable.v2.IReadModifyWriteRowResponse
->;
-
 describe.only('TestProxy/ReadModifyWriteRow', () => {
-  let server: MockServer;
-  let service: MockService;
-  let port: string;
-
-  before(async () => {
-    // make sure we have everything initialized before starting tests
-    port = await new Promise<string>(resolve => {
-      server = new MockServer(resolve);
-    });
-    service = new BigtableClientMockService(server);
-  });
-
   it('Ensure the proper request is passed to the Gapic Layer', done => {
     const readModifyWriteRowRequest = {
       tableName: 'test-table',
@@ -51,24 +26,6 @@ describe.only('TestProxy/ReadModifyWriteRow', () => {
         },
       ],
     };
-    /*
-        return async (stream: ReadRowsWritableStream): Promise<void> => {
-      await new ReadRowsImpl(serviceParameters).handleRequest(stream);
-    };
-     */
-    service.setService({
-      ReadModifyWriteRow: async (
-        stream: ReadModifyWriteRowWritableStream
-      ): Promise<void> => {
-        try {
-          assert.deepStrictEqual(stream.request, readModifyWriteRowRequest);
-          done();
-        } catch (e) {
-          done(e);
-        }
-        // stream.request = {rules: [], tableName: '', rowKey: Buffer(0), appProfileId: '', authorizedViewName: ''}
-      },
-    });
     (async () => {
       const clientMap = new Map();
       const createClientFunction = createClient({clientMap});
@@ -77,7 +34,7 @@ describe.only('TestProxy/ReadModifyWriteRow', () => {
           {
             request: {
               clientId: 'TestReadModifyWriteRow_NoRetry_TransientError',
-              dataTarget: `localhost:${port}`,
+              dataTarget: `localhost:1234`,
               projectId: 'projectId',
               instanceId: 'instance',
               appProfileId: '',
@@ -152,7 +109,6 @@ describe.only('TestProxy/ReadModifyWriteRow', () => {
           }
         );
       });
-      console.log(clientMap);
     })();
   });
 });
