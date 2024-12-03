@@ -17,7 +17,7 @@ const grpc = require('@grpc/grpc-js');
 
 const normalizeCallback = require('./utils/normalize-callback.js');
 
-const v2 = Symbol.for('v2');
+// const v2 = Symbol.for('v2');
 
 const readModifyWriteRow = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
@@ -26,8 +26,9 @@ const readModifyWriteRow = ({clientMap}) =>
     const {appProfileId, rowKey, rules, tableName} = sampleRowKeysRequest;
 
     const {clientId} = request;
-    const client = clientMap.get(clientId)[v2];
-    const [result] = await client.readModifyWriteRow({
+    // const client = clientMap.get(clientId)[v2];
+    const bigtableClient = clientMap.get(clientId).api['BigtableClient'];
+    const [result] = await bigtableClient.readModifyWriteRow({
       appProfileId,
       rowKey,
       rules,
