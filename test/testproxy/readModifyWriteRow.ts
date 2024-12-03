@@ -57,23 +57,7 @@ describe.only('TestProxy/ReadModifyWriteRow', () => {
       );
       bigtable.api['BigtableClient'] = bigtableClient;
       bigtableClient.readModifyWriteRow = (
-        request?: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
-        optionsOrCallback?:
-          | CallOptions
-          | Callback<
-              protos.google.bigtable.v2.IReadModifyWriteRowResponse,
-              | protos.google.bigtable.v2.IReadModifyWriteRowRequest
-              | null
-              | undefined,
-              {} | null | undefined
-            >,
-        callback?: Callback<
-          protos.google.bigtable.v2.IReadModifyWriteRowResponse,
-          | protos.google.bigtable.v2.IReadModifyWriteRowRequest
-          | null
-          | undefined,
-          {} | null | undefined
-        >
+        request?: protos.google.bigtable.v2.IReadModifyWriteRowRequest
       ) => {
         try {
           // If the Gapic request is correct then the test passes.
