@@ -330,6 +330,7 @@ describe('Bigtable/AuthorizedViews', () => {
                 },
                 reqOpts: Object.assign(
                   {
+                    appProfileId: undefined,
                     rowKey: Buffer.from(rowId),
                     rules: [
                       {
