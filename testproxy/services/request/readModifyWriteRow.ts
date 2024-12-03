@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Rule} from '../../../../src/row';
-import {Bytes, Mutation} from '../../../../src/mutation';
+import {Rule} from '../../../src/row';
+import {Bytes, Mutation} from '../../../src/mutation';
 import arrify = require('arrify');
-import * as protos from '../../../../protos/protos';
+import * as protos from '../../../protos/protos';
 
 type RMRWRequest = protos.google.bigtable.v2.IReadModifyWriteRowRequest;
 

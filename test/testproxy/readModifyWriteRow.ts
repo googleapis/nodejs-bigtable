@@ -10,7 +10,7 @@ const createClient = require('../../../testproxy/services/create-client.js');
 describe.only('TestProxy/ReadModifyWriteRow', () => {
   it('Ensure the proper request is passed to the Gapic Layer', done => {
     const readModifyWriteRowRequest = {
-      tableName: 'test-table',
+      tableName: 'projects/projectId/instances/instance/tables/test-table',
       appProfileId: 'test-app-profile',
       rowKey: Buffer.from('test-row-key'),
       rules: [

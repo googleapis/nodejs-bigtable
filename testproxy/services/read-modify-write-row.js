@@ -16,25 +16,24 @@
 const grpc = require('@grpc/grpc-js');
 
 const normalizeCallback = require('./utils/normalize-callback.js');
+const {
+  getRMWRRequestInverse,
+} = require('../../build/testproxy/services/request/readModifyWriteRow.js');
+const getTableInfo = require('./utils/get-table-info');
 
 // const v2 = Symbol.for('v2');
 
 const readModifyWriteRow = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
-    const {request: sampleRowKeysRequest} = request;
-    const {appProfileId, rowKey, rules, tableName} = sampleRowKeysRequest;
-
-    const {clientId} = request;
-    // const client = clientMap.get(clientId)[v2];
-    const bigtableClient = clientMap.get(clientId).api['BigtableClient'];
-    const [result] = await bigtableClient.readModifyWriteRow({
-      appProfileId,
-      rowKey,
-      rules,
-      tableName,
-    });
-
+    const {clientId, request: readModifyWriteRow} = request;
+    const {appProfileId, tableName} = readModifyWriteRow;
+    const handWrittenRequest = getRMWRRequestInverse(readModifyWriteRow);
+    const bigtable = clientMap.get(clientId);
+    bigtable.appProfileId = appProfileId;
+    const table = getTableInfo(bigtable, tableName);
+    const row = table.row(handWrittenRequest.id);
+    const result = await row.createRules(handWrittenRequest.rules);
     return {
       status: {code: grpc.status.OK, details: []},
       row: result.row,
