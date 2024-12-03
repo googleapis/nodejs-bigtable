@@ -3,7 +3,7 @@ import * as assert from 'assert';
 import {describe} from 'mocha';
 import {protos} from '../../src';
 import {BigtableClient} from '../../src/v2';
-const readModifyWriteRow = require('../../../testproxy/services/read-modify-write-row.js');
+const readModifyWriteRowService = require('../../../testproxy/services/read-modify-write-row.js');
 const createClient = require('../../../testproxy/services/create-client.js');
 
 describe.only('TestProxy/ReadModifyWriteRow', () => {
@@ -72,7 +72,7 @@ describe.only('TestProxy/ReadModifyWriteRow', () => {
           resolve([response, {}, undefined]);
         });
       };
-      const readModifyWriteRowFunction = readModifyWriteRow({clientMap});
+      const readModifyWriteRowFunction = readModifyWriteRowService({clientMap});
       await new Promise((resolve, reject) => {
         readModifyWriteRowFunction(
           {
