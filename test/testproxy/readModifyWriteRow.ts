@@ -34,7 +34,7 @@ describe.only('TestProxy/ReadModifyWriteRow', () => {
           {
             request: {
               clientId: 'TestReadModifyWriteRow_NoRetry_TransientError',
-              dataTarget: `localhost:1234`,
+              dataTarget: 'localhost:1234',
               projectId: 'projectId',
               instanceId: 'instance',
               appProfileId: '',
@@ -70,7 +70,7 @@ describe.only('TestProxy/ReadModifyWriteRow', () => {
         // The following code is added just so the mocked gapic function will compile.
         // A return value is provided to match the return value of the readrows
         // Gapic function.
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
           const response: protos.google.bigtable.v2.IReadModifyWriteRowResponse =
             {};
           resolve([response, {}, undefined]);
