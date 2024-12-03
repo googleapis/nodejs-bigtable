@@ -67,9 +67,6 @@ describe.only('TestProxy/ReadModifyWriteRow', () => {
           // If the Gapic request is incorrect then the test fails with an error.
           done(e);
         }
-        // The following code is added just so the mocked gapic function will compile.
-        // A return value is provided to match the return value of the readrows
-        // Gapic function.
         return new Promise(resolve => {
           const response: protos.google.bigtable.v2.IReadModifyWriteRowResponse =
             {};
