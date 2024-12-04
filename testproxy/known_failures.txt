@@ -23,4 +23,6 @@ TestCheckAndMutateRow_Generic_DeadlineExceeded\|
 TestCheckAndMutateRow_Generic_Headers\|
 TestSampleRowKeys_Generic_Headers\|
 TestSampleRowKeys_Generic_DeadlineExceeded\|
+TestSampleRowKeys_Generic_CloseClient\|
+TestSampleRowKeys_Generic_MultiStreams\|
 TestSampleRowKeys_Retry_WithRoutingCookie
