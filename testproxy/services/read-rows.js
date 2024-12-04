@@ -72,7 +72,14 @@ const readRows = ({clientMap}) =>
         rows: rows.map(getRowResponse),
       };
     } catch (e) {
-      return {status: e};
+      return {
+        status: {
+          code: e.code,
+          details: e.details,
+          message: e.message,
+        },
+        code: 7,
+      };
     }
   });
 

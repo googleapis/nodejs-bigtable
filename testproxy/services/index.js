@@ -25,6 +25,8 @@ const readRows = require('./read-rows.js');
 const removeClient = require('./remove-client.js');
 const sampleRowKeys = require('./sample-row-keys.js');
 
+
+
 /*
  * Starts the client pool map and retrieves the object that
  * lists all methods to be passed to grpc.Server.addService.
@@ -34,6 +36,10 @@ const sampleRowKeys = require('./sample-row-keys.js');
 function getServicesImplementation() {
   const clientMap = new ClientMap();
 
+  function passThrough(arg1, arg2, arg3) {
+    const result = readRows(arg1, arg2, arg3);
+    return result;
+  }
   return {
     bulkMutateRows: bulkMutateRows({clientMap}),
     checkAndMutateRow: checkAndMutateRow({clientMap}),
