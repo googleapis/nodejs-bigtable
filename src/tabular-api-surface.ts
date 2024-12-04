@@ -537,18 +537,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           numRequestsMade++;
           if (
             numConsecutiveErrors <= maxRetries &&
-            (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
+            (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error)) &&
             !(error.code === grpc.status.DEADLINE_EXCEEDED && timeout < new Date().getTime() - callTimeMillis)
           ) {
+            const backOffSettings =
+                options.gaxOptions?.retry?.backoffSettings ||
+                DEFAULT_BACKOFF_SETTINGS;
+            const nextRetryDelay = getNextDelay(
+                numConsecutiveErrors,
+                backOffSettings
+            );
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
-            const backOffSettings =
-              options.gaxOptions?.retry?.backoffSettings ||
-              DEFAULT_BACKOFF_SETTINGS;
-            const nextRetryDelay = getNextDelay(
-              numConsecutiveErrors,
-              backOffSettings
-            );
             if (
               !error.code &&
               error.message === 'The client has already been closed.'
