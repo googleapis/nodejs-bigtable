@@ -75,10 +75,9 @@ const readRows = ({clientMap}) =>
       return {
         status: {
           code: e.code,
-          details: e.details,
+          details: [],
           message: e.message,
         },
-        code: 7,
       };
     }
   });
