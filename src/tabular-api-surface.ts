@@ -142,6 +142,7 @@ const concat = require('concat-stream');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
 
+// Add a comment
 /**
  * The TabularApiSurface class is a class that contains methods we want to
  * expose on both tables and authorized views. It also contains data that will
