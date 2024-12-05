@@ -21,8 +21,6 @@ const {
 } = require('../../build/testproxy/services/utils/request/readModifyWriteRow.js');
 const getTableInfo = require('./utils/get-table-info');
 
-// const v2 = Symbol.for('v2');
-
 const readModifyWriteRow = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
