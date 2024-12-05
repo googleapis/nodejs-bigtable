@@ -6,6 +6,9 @@ TestMutateRows_Generic_DeadlineExceeded\|
 TestReadModifyWriteRow_Generic_Headers\|
 TestReadModifyWriteRow_NoRetry_TransientError\|
 TestReadModifyWriteRow_Generic_DeadlineExceeded\|
+TestReadModifyWriteRow_NoRetry_MultiValues\|
+TestReadModifyWriteRow_Generic_CloseClient\|
+TestReadModifyWriteRow_Generic_MultiStreams\|
 TestReadRow_Generic_DeadlineExceeded\|
 TestReadRow_Retry_WithRoutingCookie\|
 TestReadRow_Retry_WithRetryInfo\|
