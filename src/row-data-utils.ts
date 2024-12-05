@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {getCheckAndMutateRowRequest} from './requests/checkAndMutateRow';
+
 const dotProp = require('dot-prop');
 import {Filter, RawFilter} from './filter';
 import {
@@ -71,16 +73,11 @@ class RowDataUtils {
     const config = typeof configOrCallback === 'object' ? configOrCallback : {};
     const callback =
       typeof configOrCallback === 'function' ? configOrCallback : cb!;
-    const reqOpts = Object.assign(
-      {
-        appProfileId: properties.requestData.bigtable.appProfileId,
-        rowKey: Mutation.convertToBytes(properties.requestData.id),
-        predicateFilter: Filter.parse(filter),
-        trueMutations: createFlatMutationsList(config.onMatch!),
-        falseMutations: createFlatMutationsList(config.onNoMatch!),
-      },
-      properties.reqOpts
-    );
+    const reqOpts = getCheckAndMutateRowRequest({
+      filter,
+      properties,
+      config,
+    });
     properties.requestData.data = {};
     properties.requestData.bigtable.request<google.bigtable.v2.ICheckAndMutateRowResponse>(
       {
