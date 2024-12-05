@@ -15,7 +15,7 @@
 import {
   getRMWRRequest,
   getRMWRRequestInverse,
-} from '../../testproxy/services/request/readModifyWriteRow';
+} from '../../testproxy/services/utils/request/readModifyWriteRow';
 import * as protos from '../../protos/protos';
 import * as assert from 'assert';
 
