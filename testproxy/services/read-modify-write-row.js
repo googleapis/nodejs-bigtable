@@ -18,7 +18,7 @@ const grpc = require('@grpc/grpc-js');
 const normalizeCallback = require('./utils/normalize-callback.js');
 const {
   getRMWRRequestInverse,
-} = require('../../build/testproxy/services/request/readModifyWriteRow.js');
+} = require('../../build/testproxy/services/utils/request/readModifyWriteRow.js');
 const getTableInfo = require('./utils/get-table-info');
 
 // const v2 = Symbol.for('v2');
