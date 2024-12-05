@@ -31,11 +31,21 @@ const readModifyWriteRow = ({clientMap}) =>
     bigtable.appProfileId = appProfileId;
     const table = getTableInfo(bigtable, tableName);
     const row = table.row(handWrittenRequest.id);
-    const result = await row.createRules(handWrittenRequest.rules);
-    return {
-      status: {code: grpc.status.OK, details: []},
-      row: result.row,
-    };
+    try {
+      const result = await row.createRules(handWrittenRequest.rules);
+      return {
+        status: {code: grpc.status.OK, details: []},
+        row: result.row,
+      };
+    } catch (e) {
+      return {
+        status: {
+          code: e.code,
+          details: [],
+          message: e.message,
+        },
+      };
+    }
   });
 
 module.exports = readModifyWriteRow;
