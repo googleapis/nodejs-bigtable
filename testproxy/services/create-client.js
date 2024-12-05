@@ -68,12 +68,13 @@ const createClient = ({clientMap}) =>
        */
       Object.entries(
         clientConfig.interfaces['google.bigtable.v2.Bigtable'].methods
-      ).forEach(
-        ([, v]) =>
-          (v.timeout_millis = durationToMilliseconds(
+      ).forEach(([k, v]) => {
+        if (k === 'ReadRows') {
+          v.timeout_millis = durationToMilliseconds(
             request.perOperationTimeout
-          ))
-      );
+          );
+        }
+      });
     }
     const bigtable = new Bigtable({
       projectId,
