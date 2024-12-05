@@ -22,6 +22,7 @@ import * as rw from '../src/row';
 import {Table, Entry} from '../src/table.js';
 import {Chunk} from '../src/chunktransformer.js';
 import {CallOptions} from 'google-gax';
+import {getCheckAndMutateRowRequest} from '../src/requests/checkAndMutateRow';
 
 const sandbox = sinon.createSandbox();
 
@@ -68,7 +69,15 @@ const FakeFilter = {
   }),
 };
 
+const FakeGetRMWRRequest = proxyquire('../src/requests/checkAndMutateRow.js', {
+  '../mutation.js': {Mutation: FakeMutation},
+  '../filter.js': {Filter: FakeFilter},
+}).getCheckAndMutateRowRequest;
+
 const FakeRowDataUtil = proxyquire('../src/row-data-utils.js', {
+  '../src/requests/checkAndMutateRow.js': {
+    getCheckAndMutateRowRequest: FakeGetRMWRRequest,
+  },
   './mutation.js': {Mutation: FakeMutation},
   './filter.js': {Filter: FakeFilter},
 }).RowDataUtils;
