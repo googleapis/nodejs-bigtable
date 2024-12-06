@@ -231,10 +231,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     downstream in google-gax.
      */
     const timeout =
-      this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces &&
-      this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces[
-        'google.bigtable.v2.Bigtable'
-      ]?.methods['ReadRows']?.timeout_millis;
+      opts?.gaxOptions?.timeout ||
+      (this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces &&
+        this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces[
+          'google.bigtable.v2.Bigtable'
+        ]?.methods['ReadRows']?.timeout_millis);
     const callTimeMillis = new Date().getTime();
 
     const ranges = TableUtils.getRanges(options);
