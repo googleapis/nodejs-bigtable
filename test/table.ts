@@ -1121,11 +1121,9 @@ describe.only('Bigtable/Table', () => {
       });
     });
     it('Should respect the timeout parameter passed in', done => {
-      let callCount = 0;
-      const timeout = 2000;
-      const options = {gaxOptions: {timeout}};
-      table.bigtable.request = () => {
-        callCount++;
+      // The timeout is 2 seconds, but the error is received after 3 seconds
+      // so the client doesn't retry because more than 2 seconds have elapsed.
+      const requestSpy = (table.bigtable.request = sinon.spy(() => {
         const stream = new PassThrough({
           objectMode: true,
         });
@@ -1136,11 +1134,11 @@ describe.only('Bigtable/Table', () => {
           stream.emit('error', error);
         }, 3000);
         return stream;
-      };
-      const stream = table.createReadStream(options);
+      }));
+      const stream = table.createReadStream({gaxOptions: {timeout: 2000}});
       stream.on('error', (error: ServiceError) => {
         assert.strictEqual(error.code, 4);
-        assert.strictEqual(callCount, 1); // Ensures the client has not retried.
+        assert.strictEqual(requestSpy.callCount, 1); // Ensures the client has not retried.
         done();
       });
     });
