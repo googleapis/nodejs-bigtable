@@ -523,11 +523,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             numConsecutiveErrors <= maxRetries &&
             (RETRYABLE_STATUS_CODES.has(error.code) ||
               isRstStreamError(error)) &&
-            !(
-              timeout &&
-              error.code === grpc.status.DEADLINE_EXCEEDED &&
-              timeout < new Date().getTime() - callTimeMillis
-            )
+            !(timeout && timeout < new Date().getTime() - callTimeMillis)
           ) {
             const backOffSettings =
               options.gaxOptions?.retry?.backoffSettings ||
