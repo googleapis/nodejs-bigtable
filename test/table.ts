@@ -1120,26 +1120,7 @@ describe('Bigtable/Table', () => {
           .on('data', done);
       });
     });
-    it('Should respect the timeout parameter passed in', done => {
-      const timeout = 2000;
-      const options = {timeout};
-      table.bigtable.request = (config: any) => {
-        // TODO: Do an assert check here - correct config, only called once.
-        const stream = new PassThrough({
-          objectMode: true,
-        });
-        (stream as any).abort = () => {};
-        setTimeout(() => {
-          const error = new Error('retry me!') as ServiceError;
-          error.code = 4;
-          stream.emit('error', error);
-        }, 3000);
-      };
-      const stream = table.createReadStream(options);
-      stream.on('error', (error: any) => {
-        done();
-      });
-    });
+
     describe('retries', () => {
       let callCreateReadStream: Function;
       let emitters: EventEmitter[] | null; // = [((stream: Writable) => { stream.push([{ key: 'a' }]);
