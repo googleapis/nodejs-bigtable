@@ -100,7 +100,7 @@ const FakeFilter = {
   },
 };
 
-describe.only('Bigtable/Table', () => {
+describe('Bigtable/Table', () => {
   const TABLE_ID = 'my-table';
   let INSTANCE: inst.Instance;
   let TABLE_NAME: string;
