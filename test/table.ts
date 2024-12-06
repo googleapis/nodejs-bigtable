@@ -1134,6 +1134,7 @@ describe('Bigtable/Table', () => {
           error.code = 4;
           stream.emit('error', error);
         }, 3000);
+        return stream;
       };
       const stream = table.createReadStream(options);
       stream.on('error', (error: any) => {
