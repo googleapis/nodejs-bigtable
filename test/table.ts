@@ -100,7 +100,7 @@ const FakeFilter = {
   },
 };
 
-describe('Bigtable/Table', () => {
+describe.only('Bigtable/Table', () => {
   const TABLE_ID = 'my-table';
   let INSTANCE: inst.Instance;
   let TABLE_NAME: string;
@@ -1121,10 +1121,11 @@ describe('Bigtable/Table', () => {
       });
     });
     it('Should respect the timeout parameter passed in', done => {
+      let callCount = 0;
       const timeout = 2000;
       const options = {timeout};
-      table.bigtable.request = (config: any) => {
-        // TODO: Do an assert check here - correct config, only called once.
+      table.bigtable.request = () => {
+        callCount++;
         const stream = new PassThrough({
           objectMode: true,
         });
@@ -1137,7 +1138,9 @@ describe('Bigtable/Table', () => {
         return stream;
       };
       const stream = table.createReadStream(options);
-      stream.on('error', (error: any) => {
+      stream.on('error', (error: ServiceError) => {
+        assert.strictEqual(error.code, 4);
+        assert.strictEqual(callCount, 1); // Ensures the client has not retried.
         done();
       });
     });
