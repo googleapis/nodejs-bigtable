@@ -1123,7 +1123,7 @@ describe.only('Bigtable/Table', () => {
     it('Should respect the timeout parameter passed in', done => {
       let callCount = 0;
       const timeout = 2000;
-      const options = {timeout};
+      const options = {gaxOptions: {timeout}};
       table.bigtable.request = () => {
         callCount++;
         const stream = new PassThrough({
