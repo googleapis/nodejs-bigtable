@@ -2,6 +2,7 @@ import {FilterConfigOption} from '../../../../src/row';
 import {Mutation} from '../../../../src/mutation';
 import arrify = require('arrify');
 import {google} from '../../../../protos/protos';
+import {mutationParseInverse} from './mutateInverse';
 
 /**
  * Creates a flattened list of mutations by applying a transformation function to each entry in an array of FilterConfigOptions.
@@ -59,3 +60,15 @@ export function createFlatMutationsListWithFnInverse<
 
   return invertedEntries;
 }
+
+/*
+function createFlatMutationsListInverse(
+  mutations: google.bigtable.v2.IMutation[]
+) {
+  return createFlatMutationsListWithFnInverse(
+    mutations,
+    mutationParseInverse({mutations}),
+    1
+  );
+}
+*/
