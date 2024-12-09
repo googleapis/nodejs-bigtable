@@ -4,7 +4,7 @@ import {mutationParseInverse} from '../../testproxy/services/utils/request/mutat
 import * as protos from '../../protos/protos';
 
 describe.only('Check mutation parse and mutationParseInverse are inverses', () => {
-  it('should invert setCell mutations', () => {
+  it('should invert mutations properly', () => {
     const rowKey = 'row123';
     const insertMutations: protos.google.bigtable.v2.IMutation[] = [
       {
