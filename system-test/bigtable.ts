@@ -1438,6 +1438,13 @@ describe('Bigtable', () => {
         PreciseDate.now() + (8 + 600) * 60 * 60 * 1000;
       const copyExpireTime = new PreciseDate(copyExpireTimeMilliseconds);
 
+      beforeEach(async () => {
+        // Sleep here for just over a minute so that the system tests don't
+        // experience quota issues due to too many requests per minute.
+        await new Promise(resolve => {
+          setTimeout(resolve, 60001);
+        });
+      });
       /*
         This function checks that when a backup is copied using the provided
         config that a new backup is created on the instance.
