@@ -21,10 +21,17 @@ const {BigtableClient} = require('../../build/src/index.js').v2;
 
 const v2 = Symbol.for('v2');
 
+function durationToMilliseconds(duration) {
+  const secondsInMs = parseInt(duration.seconds, 10) * 1000;
+  const nanosInMs = duration.nanos / 1000000;
+  return secondsInMs + nanosInMs;
+}
+
 const createClient = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     // TODO: Handle refresh periods
     const {request} = rawRequest;
+    const clientConfig = require('../../src/v2/bigtable_client_config.json');
     const {
       callCredential,
       clientId,
@@ -54,12 +61,33 @@ const createClient = ({clientMap}) =>
     if (callCredential && callCredential.jsonServiceAccount) {
       authClient = JSON.parse(request.callCredential.jsonServiceAccount);
     }
+    if (request.perOperationTimeout) {
+      /**
+       * This block of code ensures the server times out for every method call
+       * after the amount of time specified in request.perOperationTimeout.
+       */
+      Object.entries(
+        clientConfig.interfaces['google.bigtable.v2.Bigtable'].methods
+      ).forEach(([k, v]) => {
+        if (k === 'ReadRows') {
+          /*
+          TODO: In the future we should apply this for all methods, but right
+          now doing so results in regressions in the TestSampleRowKeys_Generic_MultiStreams
+          and TestSampleRowKeys_Generic_CloseClient conformance tests that need
+          to be addressed.
+          */
+          v.timeout_millis = durationToMilliseconds(
+            request.perOperationTimeout
+          );
+        }
+      });
+    }
     const bigtable = new Bigtable({
       projectId,
       apiEndpoint,
       authClient,
       appProfileId,
-      clientConfig: require('../../src/v2/bigtable_client_config.json'),
+      clientConfig,
     });
     bigtable[v2] = new BigtableClient(bigtable.options.BigtableClient);
     clientMap.set(clientId, bigtable);
