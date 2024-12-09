@@ -224,6 +224,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     rowKeys = options.keys || [];
 
+    /*
+    The following line of code sets the timeout if it was provided while
+    creating the client. This will be used to determine if the client should
+    retry on DEADLINE_EXCEEDED errors. Eventually, this will be handled
+    downstream in google-gax.
+     */
+    const timeout =
+      opts?.gaxOptions?.timeout ||
+      (this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces &&
+        this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces[
+          'google.bigtable.v2.Bigtable'
+        ]?.methods['ReadRows']?.timeout_millis);
+    const callTimeMillis = new Date().getTime();
+
     const ranges = TableUtils.getRanges(options);
 
     // If rowKeys and ranges are both empty, the request is a full table scan.
@@ -507,7 +521,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           numRequestsMade++;
           if (
             numConsecutiveErrors <= maxRetries &&
-            (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
+            (RETRYABLE_STATUS_CODES.has(error.code) ||
+              isRstStreamError(error)) &&
+            !(timeout && timeout < new Date().getTime() - callTimeMillis)
           ) {
             const backOffSettings =
               options.gaxOptions?.retry?.backoffSettings ||
