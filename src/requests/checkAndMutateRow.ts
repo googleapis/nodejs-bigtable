@@ -35,3 +35,11 @@ function createFlatMutationsList(entries: FilterConfigOption[]) {
   );
   return e2.reduce((a, b) => a.concat(b), []);
 }
+
+function createFlatMutationsListWithFn<T>(
+  entries: FilterConfigOption[],
+  f: (entry: Mutation) => {mutations: T[]}
+) {
+  const e2 = arrify(entries).map(entry => f(entry as Mutation).mutations!);
+  return e2.reduce((a, b) => a.concat(b), []);
+}
