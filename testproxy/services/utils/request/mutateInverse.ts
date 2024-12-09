@@ -9,10 +9,11 @@ import * as protos from '../../../../protos/protos';
  * @param {protos.google.bigtable.v2.IMutateRowRequest} req The protobuf representation of the mutation.
  * @returns {Mutation} The reconstructed Mutation object.
  */
-export function mutationParseInverse(
-  req: protos.google.bigtable.v2.IMutateRowRequest
-): Mutation {
-  const key = Mutation.convertFromBytes(req.rowKey! as string);
+export function mutationParseInverse(req: {
+  mutations: protos.google.bigtable.v2.IMutation[];
+  rowKey: Buffer;
+}): Mutation {
+  const key = Mutation.convertFromBytes(req.rowKey!);
   let method: string | undefined;
   let data: FilterConfigOption | FilterConfigOption[] | undefined;
 
@@ -35,6 +36,7 @@ export function mutationParseInverse(
           }
           localData[family][qualifier as string] = {
             value: Mutation.convertFromBytes(cell?.value as Bytes),
+            timestamp: cell?.timestampMicros,
           };
         }
       });

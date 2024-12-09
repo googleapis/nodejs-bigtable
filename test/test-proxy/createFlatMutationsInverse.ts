@@ -24,10 +24,9 @@ describe.only('Check mutation parse and mutationParseInverse are inverses', () =
         },
       },
     ];
-    const inputRequest: protos.google.bigtable.v2.IMutateRowRequest = {
+    const inputRequest = {
       rowKey: Buffer.from(rowKey),
       mutations: insertMutations,
-      appProfileId: 'my-app-profile',
     };
     const insertMutation = mutationParseInverse(inputRequest);
     const parsedMutation = Mutation.parse(insertMutation);
