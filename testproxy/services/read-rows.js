@@ -75,7 +75,7 @@ const readRows = ({clientMap}) =>
       return {
         status: {
           code: e.code,
-          details: [],
+          details: [], // e.details must be in an empty array for the test runner to return the status. This is tracked in https://b.corp.google.com/issues/383096533.
           message: e.message,
         },
       };
