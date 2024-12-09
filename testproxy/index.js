@@ -57,7 +57,7 @@ async function main() {
   const descriptor = await loadDescriptor();
   const {service} =
     descriptor.google.bigtable.testproxy.CloudBigtableV2TestProxy;
-  await startServer(service);
+  startServer(service);
 }
 
 main();
