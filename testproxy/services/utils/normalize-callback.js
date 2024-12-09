@@ -36,7 +36,7 @@ const normalizeCallback = fn =>
         e
       );
     }
-    return res;
+    return await res;
   });
 
 module.exports = normalizeCallback;
