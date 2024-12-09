@@ -18,6 +18,10 @@ import {TableUtils} from './utils/table';
 
 export type Value = string | number | boolean | Uint8Array;
 
+export enum DataEvent {
+  LAST_ROW_KEY_UPDATE,
+}
+
 export interface Chunk {
   rowContents: Value;
   commitRow: boolean;
@@ -34,7 +38,7 @@ export interface Data {
   chunks: Chunk[];
   lastScannedRowKey?: Buffer;
 }
-interface Family {
+export interface Family {
   [qualifier: string]: Qualifier[];
 }
 export interface Qualifier {
@@ -51,6 +55,12 @@ export interface TransformErrorProps {
   message: string;
   chunk: Chunk | null;
 }
+export interface ChunkPushLastScannedRowData {
+  eventType: DataEvent.LAST_ROW_KEY_UPDATE;
+  lastScannedRowKey?: string;
+}
+
+export type ChunkPushData = Row | ChunkPushLastScannedRowData;
 
 class TransformError extends Error {
   constructor(props: TransformErrorProps) {
@@ -159,6 +169,19 @@ export class ChunkTransformer extends Transform {
           userOptions: this.options,
         }
       );
+      /**
+       * Push an event that will update the lastRowKey in the user stream after
+       * all rows ahead of this event have reached the user stream. This will
+       * ensure that a retry excludes the lastScannedRow as this is required
+       * for the TestReadRows_Retry_LastScannedRow conformance test to pass. It
+       * is important to use a 'data' event to update the last row key in order
+       * to allow all the data queued ahead of this event to reach the user
+       * stream first.
+       */
+      this.push({
+        eventType: DataEvent.LAST_ROW_KEY_UPDATE,
+        lastScannedRowKey: this.lastRowKey,
+      });
     }
     next();
   }
