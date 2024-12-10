@@ -19,7 +19,7 @@ import * as protos from '../../protos/protos';
 
 describe('Check mutation parse and mutationParseInverse are inverses', () => {
   it('should invert mutations properly', () => {
-    const insertMutations: protos.google.bigtable.v2.IMutation[] = [
+    const mutations: protos.google.bigtable.v2.IMutation[] = [
       {
         setCell: {
           familyName: 'cf1',
@@ -65,7 +65,7 @@ describe('Check mutation parse and mutationParseInverse are inverses', () => {
       */
     ];
     const inputRequest = {
-      mutations: insertMutations,
+      mutations,
     };
     const insertMutation = mutationParseInverse(inputRequest);
     const parsedMutation = Mutation.parse(insertMutation);
