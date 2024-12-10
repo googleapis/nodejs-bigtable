@@ -37,7 +37,7 @@ describe('Check mutation parse and mutationParseInverse are inverses', () => {
         },
       },
       /*
-      TODO: Fix the inverse function later so that these mutations can be used.
+      TODO: Fix the inverse function later so that these mutations can be used in the test proxy.
       {
         deleteFromColumn: {
           familyName: 'cf1',
