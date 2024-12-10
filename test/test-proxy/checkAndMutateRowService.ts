@@ -20,7 +20,7 @@ import {BigtableClient} from '../../src/v2';
 const readModifyWriteRowService = require('../../../testproxy/services/check-and-mutate-row.js');
 const createClient = require('../../../testproxy/services/create-client.js');
 
-describe.only('TestProxy/CheckAndMutateRow', () => {
+describe('TestProxy/CheckAndMutateRow', () => {
   const testCases: protos.google.bigtable.v2.ICheckAndMutateRowRequest[] = [
     {
       tableName: 'projects/projectId/instances/instance/tables/test-table',

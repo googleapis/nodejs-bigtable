@@ -6,7 +6,7 @@ import {
 import {mutationParseInverse} from '../../testproxy/services/utils/request/mutateInverse';
 import * as assert from 'assert';
 
-describe.only('Check createFlatMutationsList and createFlatMutationsListInverse are inverses', () => {
+describe('Check createFlatMutationsList and createFlatMutationsListInverse are inverses', () => {
   it('should invert mutations properly', () => {
     const insertMutations = [
       {
