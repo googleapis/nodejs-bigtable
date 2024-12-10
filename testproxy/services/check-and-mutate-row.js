@@ -23,7 +23,6 @@ const {
 const {
   mutationParseInverse,
 } = require('../../build/testproxy/services/utils/request/mutateInverse');
-const {Mutation} = require('../../build/src');
 
 function handwrittenLayerMutations(gapicLayerMutations) {
   return createFlatMutationsListWithFnInverse(
@@ -35,6 +34,23 @@ function handwrittenLayerMutations(gapicLayerMutations) {
     mutationParseInverse,
     1
   );
+}
+
+/**
+ * Converts a byte array (or string) back to a string.  This is the inverse of
+ * Mutation.convertToBytes.
+ *
+ * @param {Bytes} bytes The byte array or string to convert.
+ * @returns {string} The converted string.
+ */
+function convertFromBytes(bytes) {
+  if (bytes instanceof Buffer) {
+    return bytes.toString();
+  } else if (typeof bytes === 'string') {
+    return bytes;
+  } else {
+    throw new Error('Invalid input type. Must be Buffer or string.');
+  }
 }
 
 const checkAndMutateRow = ({clientMap}) =>
@@ -52,7 +68,7 @@ const checkAndMutateRow = ({clientMap}) =>
     } = checkAndMutateRowRequest;
     const onMatch = handwrittenLayerMutations(trueMutations);
     const onNoMatch = handwrittenLayerMutations(falseMutations);
-    const id = Mutation.convertFromBytes(rowKey);
+    const id = convertFromBytes(rowKey);
     const bigtable = clientMap.get(clientId);
     bigtable.appProfileId = appProfileId; // TODO: Remove this line and pass appProfileId into the client.
     const table = getTableInfo(bigtable, tableName);
