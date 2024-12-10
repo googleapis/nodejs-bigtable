@@ -16,30 +16,62 @@
 const grpc = require('@grpc/grpc-js');
 
 const normalizeCallback = require('./utils/normalize-callback.js');
+const getTableInfo = require('./utils/get-table-info');
+const {
+  createFlatMutationsListWithFnInverse,
+} = require('./utils/request/createFlatMutationsList');
+const {mutationParseInverse} = require('./utils/request/mutateInverse');
+const {Mutation} = require('../../src');
 
-const v2 = Symbol.for('v2');
+function handwrittenLayerMutations(gapicLayerMutations) {
+  return createFlatMutationsListWithFnInverse(
+    [
+      {
+        mutations: gapicLayerMutations,
+      },
+    ],
+    mutationParseInverse,
+    1
+  );
+}
 
 const checkAndMutateRow = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
-    const {request: checkAndMutateRequest} = request;
-    const {appProfileId, falseMutations, rowKey, tableName, trueMutations} =
-      checkAndMutateRequest;
-
-    const {clientId} = request;
-    const client = clientMap.get(clientId)[v2];
-    const [result] = await client.checkAndMutateRow({
+    const {clientId, request: checkAndMutateRowRequest} = request;
+    const {
+      // authorizedViewName, // TODO: Pass the authorizedViewName along in the test proxy.
       appProfileId,
       falseMutations,
       rowKey,
+      // predicateFilter, // TODO: Pass the predicateFilter along in the test proxy.
       tableName,
       trueMutations,
-    });
-
-    return {
-      status: {code: grpc.status.OK, details: []},
-      result,
-    };
+    } = checkAndMutateRowRequest;
+    const onMatch = handwrittenLayerMutations(trueMutations);
+    const onNoMatch = handwrittenLayerMutations(falseMutations);
+    const id = Mutation.convertFromBytes(rowKey);
+    const bigtable = clientMap.get(clientId);
+    bigtable.appProfileId = appProfileId; // TODO: Remove this line and pass appProfileId into the client.
+    const table = getTableInfo(bigtable, tableName);
+    const row = table.row(id);
+    const filter = [];
+    const filterConfig = {onMatch, onNoMatch};
+    try {
+      const result = await row.filter(filter, filterConfig);
+      return {
+        status: {code: grpc.status.OK, details: []},
+        row: result,
+      };
+    } catch (e) {
+      return {
+        status: {
+          code: e.code,
+          details: [],
+          message: e.message,
+        },
+      };
+    }
   });
 
 module.exports = checkAndMutateRow;
