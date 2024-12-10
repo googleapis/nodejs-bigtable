@@ -11,9 +11,7 @@ import * as protos from '../../../../protos/protos';
  */
 export function mutationParseInverse(req: {
   mutations: protos.google.bigtable.v2.IMutation[];
-  rowKey: Buffer;
 }): Mutation {
-  const key = Mutation.convertFromBytes(req.rowKey!);
   let method: string | undefined;
   let data: FilterConfigOption | FilterConfigOption[] | undefined;
 
@@ -85,5 +83,5 @@ export function mutationParseInverse(req: {
     }
   }
 
-  return new Mutation({key: key as string, method: method!, data}); // method cannot be undefined here, assert non-null
+  return {method: method!, data} as Mutation; // method cannot be undefined here, assert non-null
 }

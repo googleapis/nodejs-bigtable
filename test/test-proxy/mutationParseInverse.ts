@@ -52,7 +52,6 @@ describe.only('Check mutation parse and mutationParseInverse are inverses', () =
       */
     ];
     const inputRequest = {
-      rowKey: Buffer.from(rowKey),
       mutations: insertMutations,
     };
     const insertMutation = mutationParseInverse(inputRequest);
