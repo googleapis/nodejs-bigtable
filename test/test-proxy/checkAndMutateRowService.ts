@@ -17,8 +17,6 @@ import * as assert from 'assert';
 import {describe} from 'mocha';
 import {protos} from '../../src';
 import {BigtableClient} from '../../src/v2';
-import {google} from '../../protos/protos';
-import IRowFilter = google.bigtable.v2.IRowFilter;
 const readModifyWriteRowService = require('../../../testproxy/services/check-and-mutate-row.js');
 const createClient = require('../../../testproxy/services/create-client.js');
 
