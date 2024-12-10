@@ -17,10 +17,11 @@ import * as assert from 'assert';
 import {describe} from 'mocha';
 import {protos} from '../../src';
 import {BigtableClient} from '../../src/v2';
+import type {Callback, CallOptions} from 'google-gax';
 const readModifyWriteRowService = require('../../../testproxy/services/check-and-mutate-row.js');
 const createClient = require('../../../testproxy/services/create-client.js');
 
-describe('TestProxy/CheckAndMutateRow', () => {
+describe.only('TestProxy/CheckAndMutateRow', () => {
   const testCases: protos.google.bigtable.v2.ICheckAndMutateRowRequest[] = [
     {
       tableName: 'projects/projectId/instances/instance/tables/test-table',
@@ -99,15 +100,33 @@ describe('TestProxy/CheckAndMutateRow', () => {
           );
           bigtable.api['BigtableClient'] = bigtableClient;
           bigtableClient.checkAndMutateRow = (
-            request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest
+            request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
+            optionsOrCallback?:
+              | CallOptions
+              | Callback<
+                  protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+                  | protos.google.bigtable.v2.ICheckAndMutateRowRequest
+                  | null
+                  | undefined,
+                  {} | null | undefined
+                >,
+            callback?: Callback<
+              protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+              | protos.google.bigtable.v2.ICheckAndMutateRowRequest
+              | null
+              | undefined,
+              {} | null | undefined
+            >
           ) => {
             try {
               // If the Gapic request is correct then the test passes.
               assert.deepStrictEqual(request, checkAndMutateRowRequest);
-              done();
             } catch (e) {
               // If the Gapic request is incorrect then the test fails with an error.
               done(e);
+            }
+            if (callback) {
+              callback(null, {});
             }
             return new Promise(resolve => {
               const response: protos.google.bigtable.v2.ICheckAndMutateRowResponse =
@@ -134,6 +153,7 @@ describe('TestProxy/CheckAndMutateRow', () => {
               }
             );
           });
+          done();
         })();
       });
     });
