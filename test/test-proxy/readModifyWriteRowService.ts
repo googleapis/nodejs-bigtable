@@ -21,7 +21,7 @@ import type {Callback, CallOptions} from 'google-gax';
 const readModifyWriteRowService = require('../../../testproxy/services/read-modify-write-row.js');
 const createClient = require('../../../testproxy/services/create-client.js');
 
-describe.only('TestProxy/ReadModifyWriteRow', () => {
+describe('TestProxy/ReadModifyWriteRow', () => {
   const testCases: protos.google.bigtable.v2.IReadModifyWriteRowRequest[] = [
     {
       tableName: 'projects/projectId/instances/instance/tables/test-table',
