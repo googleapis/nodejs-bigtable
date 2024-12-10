@@ -18,9 +18,10 @@ import {mutationParseInverse} from './mutateInverse';
  *   This function takes a `Mutation` object as input and must return an object with a `mutations` property that is an array of `T` objects.
  * @returns {T[]} A flattened array of mutations of type `T`, created by concatenating the `mutations` arrays returned by applying `f` to each entry.
  */
-export function createFlatMutationsListWithFn<
-  T extends google.bigtable.v2.IMutation,
->(entries: FilterConfigOption[], f: (entry: Mutation) => {mutations: T[]}) {
+export function createFlatMutationsListWithFn<T>(
+  entries: FilterConfigOption[],
+  f: (entry: Mutation) => {mutations: T[]}
+) {
   const e2 = arrify(entries).map(entry => f(entry as Mutation).mutations!);
   return e2.reduce((a, b) => a.concat(b), []);
 }
@@ -35,9 +36,7 @@ export function createFlatMutationsListWithFn<
  * @param {number} numEntries The original number of entries.  This is REQUIRED as the flattening operation loses this information.
  * @returns {FilterConfigOption[]} The reconstructed FilterConfigOption array.
  */
-export function createFlatMutationsListWithFnInverse<
-  T extends google.bigtable.v2.IMutation,
->(
+export function createFlatMutationsListWithFnInverse<T>(
   entries: T[],
   fInverse: (entry: T) => Mutation, //  Type changed to reflect the inverse function
   numEntries: number
