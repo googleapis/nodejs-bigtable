@@ -5,7 +5,6 @@ import * as protos from '../../protos/protos';
 
 describe.only('Check mutation parse and mutationParseInverse are inverses', () => {
   it('should invert mutations properly', () => {
-    const rowKey = 'row123';
     const insertMutations: protos.google.bigtable.v2.IMutation[] = [
       {
         setCell: {
