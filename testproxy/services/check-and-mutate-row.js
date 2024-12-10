@@ -19,9 +19,11 @@ const normalizeCallback = require('./utils/normalize-callback.js');
 const getTableInfo = require('./utils/get-table-info');
 const {
   createFlatMutationsListWithFnInverse,
-} = require('./utils/request/createFlatMutationsList');
-const {mutationParseInverse} = require('./utils/request/mutateInverse');
-const {Mutation} = require('../../src');
+} = require('../../build/testproxy/services/utils/request/createFlatMutationsList');
+const {
+  mutationParseInverse,
+} = require('../../build/testproxy/services/utils/request/mutateInverse');
+const {Mutation} = require('../../build/src');
 
 function handwrittenLayerMutations(gapicLayerMutations) {
   return createFlatMutationsListWithFnInverse(
