@@ -1,0 +1,143 @@
+// Copyright 2024 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import * as assert from 'assert';
+
+import {describe} from 'mocha';
+import {protos} from '../../src';
+import {BigtableClient} from '../../src/v2';
+import {google} from '../../protos/protos';
+import IRowFilter = google.bigtable.v2.IRowFilter;
+const readModifyWriteRowService = require('../../../testproxy/services/check-and-mutate-row.js');
+const createClient = require('../../../testproxy/services/create-client.js');
+
+describe.only('TestProxy/CheckAndMutateRow', () => {
+  const testCases: protos.google.bigtable.v2.ICheckAndMutateRowRequest[] = [
+    {
+      tableName: 'projects/projectId/instances/instance/tables/test-table',
+      appProfileId: 'test-app-profile',
+      rowKey: Buffer.from('test-row-key'),
+      predicateFilter: null,
+      trueMutations: [
+        {
+          setCell: {
+            familyName: 'cf1',
+            timestampMicros: 1000007,
+            columnQualifier: Buffer.from('cq1'),
+            value: Buffer.from('value1'),
+          },
+        },
+        {
+          setCell: {
+            familyName: 'cf2',
+            timestampMicros: 1000007,
+            columnQualifier: Buffer.from('cq2'),
+            value: Buffer.from('value2'),
+          },
+        },
+      ],
+      falseMutations: [
+        {
+          setCell: {
+            familyName: 'cf1',
+            timestampMicros: 1000007,
+            columnQualifier: Buffer.from('cq1'),
+            value: Buffer.from('value1'),
+          },
+        },
+        {
+          setCell: {
+            familyName: 'cf2',
+            timestampMicros: 1000007,
+            columnQualifier: Buffer.from('cq2'),
+            value: Buffer.from('value2'),
+          },
+        },
+      ],
+    },
+  ];
+  describe('Ensure the proper request is passed to the Gapic Layer', () => {
+    testCases.forEach((checkAndMutateRowRequest, index) => {
+      it(`Run test ${index}`, done => {
+        (async () => {
+          const clientMap = new Map();
+          const createClientFunction = createClient({clientMap});
+          await new Promise((resolve, reject) => {
+            createClientFunction(
+              {
+                request: {
+                  clientId: 'TestCheckAndMutateRow_NoRetry_TransientError',
+                  dataTarget: 'localhost:1234',
+                  projectId: 'projectId',
+                  instanceId: 'instance',
+                  appProfileId: '',
+                },
+              },
+              (...args: any) => {
+                if (args[0]) {
+                  reject(args[0]);
+                }
+                resolve(args[1]);
+              }
+            );
+          });
+          const bigtable = clientMap.get(
+            'TestCheckAndMutateRow_NoRetry_TransientError'
+          );
+          // Mock out the Gapic layer so we can see requests coming into it
+          const bigtableClient = new BigtableClient(
+            bigtable.options.BigtableClient
+          );
+          bigtable.api['BigtableClient'] = bigtableClient;
+          bigtableClient.checkAndMutateRow = (
+            request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest
+          ) => {
+            try {
+              // If the Gapic request is correct then the test passes.
+              assert.deepStrictEqual(request, checkAndMutateRowRequest);
+              done();
+            } catch (e) {
+              // If the Gapic request is incorrect then the test fails with an error.
+              done(e);
+            }
+            return new Promise(resolve => {
+              const response: protos.google.bigtable.v2.ICheckAndMutateRowResponse =
+                {};
+              resolve([response, {}, undefined]);
+            });
+          };
+          const readModifyWriteRowFunction = readModifyWriteRowService({
+            clientMap,
+          });
+          await new Promise((resolve, reject) => {
+            readModifyWriteRowFunction(
+              {
+                request: {
+                  clientId: 'TestCheckAndMutateRow_NoRetry_TransientError',
+                  request: checkAndMutateRowRequest,
+                },
+              },
+              (...args: any) => {
+                if (args[0]) {
+                  reject(args[0]);
+                }
+                resolve(args[1]);
+              }
+            );
+          });
+        })();
+      });
+    });
+  });
+});

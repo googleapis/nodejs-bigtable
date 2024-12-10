@@ -70,7 +70,7 @@ const checkAndMutateRow = ({clientMap}) =>
     const onNoMatch = handwrittenLayerMutations(falseMutations);
     const id = convertFromBytes(rowKey);
     const bigtable = clientMap.get(clientId);
-    bigtable.appProfileId = appProfileId; // TODO: Remove this line and pass appProfileId into the client.
+    bigtable.appProfileId = appProfileId; // TODO: Remove this line and pass appProfileId into row.filter.
     const table = getTableInfo(bigtable, tableName);
     const row = table.row(id);
     const filter = [];
