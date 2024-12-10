@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Mutation, Bytes} from '../../../../src/mutation';
-import {FilterConfigOption} from '../../../../src/row';
+import {Data, Mutation, Bytes} from '../../../../src/mutation';
 import * as protos from '../../../../protos/protos';
 
 /**
@@ -27,7 +26,7 @@ export function mutationParseInverse(req: {
   mutations: protos.google.bigtable.v2.IMutation[];
 }): Mutation {
   let method: string | undefined;
-  let data: FilterConfigOption | FilterConfigOption[] | undefined;
+  let data: Data;
 
   if (req.mutations && req.mutations.length > 0) {
     if (req.mutations[0].setCell) {
@@ -59,7 +58,7 @@ export function mutationParseInverse(req: {
       )
     ) {
       method = Mutation.methods.DELETE;
-      const localData: FilterConfigOption[] = [];
+      const localData: Data[] = [];
 
       req.mutations.forEach(m => {
         if (m.deleteFromColumn) {
@@ -80,14 +79,11 @@ export function mutationParseInverse(req: {
               start: col?.timeRange?.startTimestampMicros,
               end: col?.timeRange.endTimestampMicros,
             };
-            // @ts-ignore
             localData.push({column: qualifier, time});
           } else {
-            // @ts-ignore
             localData.push(qualifier);
           }
         } else if (m.deleteFromFamily) {
-          // @ts-ignore
           localData.push(m.deleteFromFamily?.familyName);
         } else if (m.deleteFromRow) {
           localData.push({}); // Represent deleteFromRow as an empty object
