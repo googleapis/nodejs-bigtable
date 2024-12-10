@@ -24,6 +24,15 @@ const {
   mutationParseInverse,
 } = require('../../build/testproxy/services/utils/request/mutateInverse');
 
+/**
+ * Transforms mutations from the gRPC layer format to the handwritten layer format.
+ * This function takes an array of gRPC layer mutations (google.bigtable.v2.IMutation[]) and converts
+ * them back to the format used by the handwritten layer.  It essentially reverses the transformation
+ * performed by Mutation.parse.  It's used internally by the test proxy for checkAndMutateRow.
+ *
+ * @param {google.bigtable.v2.IMutation[]} gapicLayerMutations An array of mutations in the gRPC layer format.
+ * @returns {FilterConfigOption[]} An array of mutations in the handwritten layer format.
+ */
 function handwrittenLayerMutations(gapicLayerMutations) {
   return createFlatMutationsListWithFnInverse(
     [
