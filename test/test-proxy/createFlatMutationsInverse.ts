@@ -36,6 +36,7 @@ describe.only('Check createFlatMutationsList and createFlatMutationsListInverse 
       1
     );
     const f = (entry: Mutation) => {
+      // parse needs to be wrapped in f to cast and solve a compiler error.
       return Mutation.parse(entry) as {mutations: any[]};
     };
     const flatMutationsList = createFlatMutationsListWithFn(
