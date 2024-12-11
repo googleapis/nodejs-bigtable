@@ -135,11 +135,8 @@ describe('TestProxy/CheckAndMutateRow', () => {
               });
             };
           }
-          const checkAndMutateRowFunction = checkAndMutateRowService({
-            clientMap,
-          });
           await new Promise((resolve, reject) => {
-            checkAndMutateRowFunction(
+            checkAndMutateRowService({clientMap})(
               {
                 request: {
                   clientId,
