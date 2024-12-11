@@ -15,6 +15,7 @@
 import * as assert from 'assert';
 import {Mutation} from '../../src/mutation';
 import {mutationParseInverse} from '../../testproxy/services/utils/request/mutateInverse';
+import * as protos from '../../protos/protos';
 
 describe('Check mutation parse and mutationParseInverse are inverses', () => {
   it('should invert mutations properly', () => {
