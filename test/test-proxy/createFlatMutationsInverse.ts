@@ -15,7 +15,7 @@
 import {Mutation} from '../../src/mutation';
 import {
   createFlatMutationsListWithFn,
-  createFlatMutationsListWithFnInverse,
+  createFlatMutationsListWithFnInverse as inverse,
 } from '../../testproxy/services/utils/request/createFlatMutationsList';
 import {mutationParseInverse} from '../../testproxy/services/utils/request/mutateInverse';
 import * as assert from 'assert';
@@ -46,13 +46,8 @@ describe('Check createFlatMutationsList and createFlatMutationsListInverse are i
         ],
       },
     ];
-    const invertedMutations = createFlatMutationsListWithFnInverse(
-      insertMutations,
-      mutationParseInverse,
-      1
-    );
     const flatMutationsList = createFlatMutationsListWithFn(
-      invertedMutations,
+      inverse(insertMutations, mutationParseInverse, 1),
       // parse needs to be wrapped to cast and solve a compiler error.
       (entry: Mutation) => Mutation.parse(entry) as {mutations: IMutation[]}
     );
