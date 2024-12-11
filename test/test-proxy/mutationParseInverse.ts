@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as assert from 'assert';
-import {Mutation} from '../../src';
+import {Mutation} from '../../src/mutation';
 import {mutationParseInverse} from '../../testproxy/services/utils/request/mutateInverse';
 
 describe('Check mutation parse and mutationParseInverse are inverses', () => {
