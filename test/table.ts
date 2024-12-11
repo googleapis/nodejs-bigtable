@@ -1295,7 +1295,7 @@ describe('Bigtable/Table', () => {
           }) as {} as EventEmitter,
         ];
 
-        const fullScan = {rowKeys: [], rowRanges: [{}]};
+        const fullScan = {rowKeys: [], rowRanges: []};
 
         callCreateReadStream(null, () => {
           assert.deepStrictEqual(reqOptsCalls[0].rows, fullScan);
