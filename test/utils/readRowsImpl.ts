@@ -230,6 +230,15 @@ function generateChunksFromRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest,
   serviceParameters: ReadRowsServiceParameters
 ) {
+  if (
+    request.rows &&
+    request.rows.rowRanges &&
+    request.rows.rowRanges.length === 0
+  ) {
+    // The mock server isn't designed to handle a request with no row ranges.
+    // Add an empty row range to provide a request the mock server can process.
+    request.rows.rowRanges.push({});
+  }
   return generateChunks(
     {
       keyFrom: getSelectedKey(request, {
