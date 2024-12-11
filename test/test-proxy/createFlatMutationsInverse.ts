@@ -19,6 +19,8 @@ import {
 } from '../../testproxy/services/utils/request/createFlatMutationsList';
 import {mutationParseInverse} from '../../testproxy/services/utils/request/mutateInverse';
 import * as assert from 'assert';
+import {google} from '../../protos/protos';
+import IMutation = google.bigtable.v2.IMutation;
 
 describe('Check createFlatMutationsList and createFlatMutationsListInverse are inverses', () => {
   it('should invert mutations properly', () => {
@@ -49,13 +51,10 @@ describe('Check createFlatMutationsList and createFlatMutationsListInverse are i
       mutationParseInverse,
       1
     );
-    const f = (entry: Mutation) => {
-      // parse needs to be wrapped in f to cast and solve a compiler error.
-      return Mutation.parse(entry) as {mutations: any[]};
-    };
     const flatMutationsList = createFlatMutationsListWithFn(
       invertedMutations,
-      f
+      // parse needs to be wrapped to cast and solve a compiler error.
+      (entry: Mutation) => Mutation.parse(entry) as {mutations: IMutation[]}
     );
     assert.deepStrictEqual(flatMutationsList, insertMutations[0].mutations);
   });
