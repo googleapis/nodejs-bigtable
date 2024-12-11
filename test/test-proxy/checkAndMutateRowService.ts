@@ -94,46 +94,48 @@ describe('TestProxy/CheckAndMutateRow', () => {
           const bigtable = clientMap.get(
             'TestCheckAndMutateRow_NoRetry_TransientError'
           );
-          // Mock out the Gapic layer so we can see requests coming into it
-          const bigtableClient = new BigtableClient(
-            bigtable.options.BigtableClient
-          );
-          bigtable.api['BigtableClient'] = bigtableClient;
-          bigtableClient.checkAndMutateRow = (
-            request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
-            optionsOrCallback?:
-              | CallOptions
-              | Callback<
-                  protos.google.bigtable.v2.ICheckAndMutateRowResponse,
-                  | protos.google.bigtable.v2.ICheckAndMutateRowRequest
-                  | null
-                  | undefined,
-                  {} | null | undefined
-                >,
-            callback?: Callback<
-              protos.google.bigtable.v2.ICheckAndMutateRowResponse,
-              | protos.google.bigtable.v2.ICheckAndMutateRowRequest
-              | null
-              | undefined,
-              {} | null | undefined
-            >
-          ) => {
-            try {
-              // If the Gapic request is correct then the test passes.
-              assert.deepStrictEqual(request, checkAndMutateRowRequest);
-            } catch (e) {
-              // If the Gapic request is incorrect then the test fails with an error.
-              done(e);
-            }
-            if (callback) {
-              callback(null, {});
-            }
-            return new Promise(resolve => {
-              const response: protos.google.bigtable.v2.ICheckAndMutateRowResponse =
-                {};
-              resolve([response, {}, undefined]);
-            });
-          };
+          {
+            // Mock out the Gapic layer so we can see requests coming into it
+            const bigtableClient = new BigtableClient(
+              bigtable.options.BigtableClient
+            );
+            bigtable.api['BigtableClient'] = bigtableClient;
+            bigtableClient.checkAndMutateRow = (
+              request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
+              optionsOrCallback?:
+                | CallOptions
+                | Callback<
+                    protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+                    | protos.google.bigtable.v2.ICheckAndMutateRowRequest
+                    | null
+                    | undefined,
+                    {} | null | undefined
+                  >,
+              callback?: Callback<
+                protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+                | protos.google.bigtable.v2.ICheckAndMutateRowRequest
+                | null
+                | undefined,
+                {} | null | undefined
+              >
+            ) => {
+              try {
+                // If the Gapic request is correct then the test passes.
+                assert.deepStrictEqual(request, checkAndMutateRowRequest);
+              } catch (e) {
+                // If the Gapic request is incorrect then the test fails with an error.
+                done(e);
+              }
+              if (callback) {
+                callback(null, {});
+              }
+              return new Promise(resolve => {
+                const response: protos.google.bigtable.v2.ICheckAndMutateRowResponse =
+                  {};
+                resolve([response, {}, undefined]);
+              });
+            };
+          }
           const readModifyWriteRowFunction = readModifyWriteRowService({
             clientMap,
           });
