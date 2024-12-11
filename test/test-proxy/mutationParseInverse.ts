@@ -19,56 +19,56 @@ import * as protos from '../../protos/protos';
 
 describe('Check mutation parse and mutationParseInverse are inverses', () => {
   it('should invert mutations properly', () => {
-    const mutations: protos.google.bigtable.v2.IMutation[] = [
-      {
-        setCell: {
-          familyName: 'cf1',
-          timestampMicros: 1000007,
-          columnQualifier: Buffer.from('cq1'),
-          value: Buffer.from('value1'),
-        },
-      },
-      {
-        setCell: {
-          familyName: 'cf2',
-          timestampMicros: 1000007,
-          columnQualifier: Buffer.from('cq2'),
-          value: Buffer.from('value2'),
-        },
-      },
-      /*
-      TODO: Fix the inverse function later so that these mutations can be used in the test proxy.
-      {
-        deleteFromColumn: {
-          familyName: 'cf1',
-          columnQualifier: Buffer.from('cq1'),
-          timeRange: {
-            startTimestampMicros: 1678886400000000, // Example timestamp
-            endTimestampMicros: 1678972800000000, // Example timestamp
+    const gapicLayerRequest = {
+      mutations: [
+        {
+          setCell: {
+            familyName: 'cf1',
+            timestampMicros: 1000007,
+            columnQualifier: Buffer.from('cq1'),
+            value: Buffer.from('value1'),
           },
         },
-      },
-      {
-        deleteFromColumn: {
-          familyName: 'cf1',
-          columnQualifier: Buffer.from('cq2'),
+        {
+          setCell: {
+            familyName: 'cf2',
+            timestampMicros: 1000007,
+            columnQualifier: Buffer.from('cq2'),
+            value: Buffer.from('value2'),
+          },
         },
-      },
-      {
-        deleteFromFamily: {
-          familyName: 'cf1',
+        /*
+        TODO: Fix the inverse function later so that these mutations can be used in the test proxy.
+        {
+          deleteFromColumn: {
+            familyName: 'cf1',
+            columnQualifier: Buffer.from('cq1'),
+            timeRange: {
+              startTimestampMicros: 1678886400000000, // Example timestamp
+              endTimestampMicros: 1678972800000000, // Example timestamp
+            },
+          },
         },
-      },
-      {
-        deleteFromRow: {},
-      }
-      */
-    ];
-    const inputRequest = {
-      mutations,
+        {
+          deleteFromColumn: {
+            familyName: 'cf1',
+            columnQualifier: Buffer.from('cq2'),
+          },
+        },
+        {
+          deleteFromFamily: {
+            familyName: 'cf1',
+          },
+        },
+        {
+          deleteFromRow: {},
+        }
+        */
+      ],
     };
-    const insertMutation = mutationParseInverse(inputRequest);
-    const parsedMutation = Mutation.parse(insertMutation);
-    assert.deepStrictEqual(parsedMutation, inputRequest);
+    assert.deepStrictEqual(
+      Mutation.parse(mutationParseInverse(gapicLayerRequest)),
+      gapicLayerRequest
+    );
   });
 });
