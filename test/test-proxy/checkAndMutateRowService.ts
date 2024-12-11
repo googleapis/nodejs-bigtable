@@ -84,11 +84,11 @@ describe('TestProxy/CheckAndMutateRow', () => {
                   appProfileId: '',
                 },
               },
-              (...args: any) => {
-                if (args[0]) {
-                  reject(args[0]);
+              (error: ServiceError, response: {}) => {
+                if (error) {
+                  reject(error);
                 }
-                resolve(args[1]);
+                resolve(response);
               }
             );
           });
