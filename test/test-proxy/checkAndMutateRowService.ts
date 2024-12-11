@@ -67,6 +67,7 @@ describe('TestProxy/CheckAndMutateRow', () => {
     },
   ];
   describe('Ensure the proper request is passed to the Gapic Layer', () => {
+    const clientId = 'TestCheckAndMutateRow_NoRetry_TransientError';
     testCases.forEach((checkAndMutateRowRequest, index) => {
       it(`Run test ${index}`, done => {
         (async () => {
@@ -76,7 +77,7 @@ describe('TestProxy/CheckAndMutateRow', () => {
             createClientFunction(
               {
                 request: {
-                  clientId: 'TestCheckAndMutateRow_NoRetry_TransientError',
+                  clientId,
                   dataTarget: 'localhost:1234',
                   projectId: 'projectId',
                   instanceId: 'instance',
@@ -93,9 +94,7 @@ describe('TestProxy/CheckAndMutateRow', () => {
           });
           {
             // Mock out the Gapic layer so we can see requests coming into it
-            const bigtable = clientMap.get(
-              'TestCheckAndMutateRow_NoRetry_TransientError'
-            );
+            const bigtable = clientMap.get(clientId);
             const bigtableClient = new BigtableClient(
               bigtable.options.BigtableClient
             );
@@ -143,7 +142,7 @@ describe('TestProxy/CheckAndMutateRow', () => {
             readModifyWriteRowFunction(
               {
                 request: {
-                  clientId: 'TestCheckAndMutateRow_NoRetry_TransientError',
+                  clientId,
                   request: checkAndMutateRowRequest,
                 },
               },
