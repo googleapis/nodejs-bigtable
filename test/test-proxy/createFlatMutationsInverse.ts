@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Mutation} from '../../src/mutation';
+import {Mutation} from '../../src';
 import {
   createFlatMutationsListWithFn,
   createFlatMutationsListWithFnInverse as inverse,
