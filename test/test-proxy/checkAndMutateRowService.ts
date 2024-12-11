@@ -18,7 +18,7 @@ import {describe} from 'mocha';
 import {protos} from '../../src';
 import {BigtableClient} from '../../src/v2';
 import type {Callback, CallOptions} from 'google-gax';
-const readModifyWriteRowService = require('../../../testproxy/services/check-and-mutate-row.js');
+const checkAndMutateRowService = require('../../../testproxy/services/check-and-mutate-row.js');
 const createClient = require('../../../testproxy/services/create-client.js');
 
 describe('TestProxy/CheckAndMutateRow', () => {
@@ -135,11 +135,11 @@ describe('TestProxy/CheckAndMutateRow', () => {
               });
             };
           }
-          const readModifyWriteRowFunction = readModifyWriteRowService({
+          const checkAndMutateRowFunction = checkAndMutateRowService({
             clientMap,
           });
           await new Promise((resolve, reject) => {
-            readModifyWriteRowFunction(
+            checkAndMutateRowFunction(
               {
                 request: {
                   clientId,
