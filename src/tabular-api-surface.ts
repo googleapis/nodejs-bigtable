@@ -226,12 +226,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     const ranges = TableUtils.getRanges(options);
 
-    // If rowKeys and ranges are both empty, the request is a full table scan.
-    // Add an empty range to simplify the resumption logic.
-    if (rowKeys.length === 0 && ranges.length === 0) {
-      ranges.push({});
-    }
-
     if (options.filter) {
       filter = Filter.parse(options.filter);
     }
@@ -516,6 +510,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               numConsecutiveErrors,
               backOffSettings
             );
+            // If rowKeys and ranges are both empty, the request is a full table scan.
+            // Add an empty range to simplify the resumption logic.
+            if (rowKeys.length === 0 && ranges.length === 0) {
+              ranges.push({});
+            }
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
             if (
