@@ -17,7 +17,7 @@ import * as assert from 'assert';
 import {describe} from 'mocha';
 import {protos} from '../../src';
 import {BigtableClient} from '../../src/v2';
-import type {Callback, CallOptions} from 'google-gax';
+import type {Callback, CallOptions, ServiceError} from 'google-gax';
 const checkAndMutateRowService = require('../../../testproxy/services/check-and-mutate-row.js');
 const createClient = require('../../../testproxy/services/create-client.js');
 
@@ -143,11 +143,11 @@ describe('TestProxy/CheckAndMutateRow', () => {
                   request: checkAndMutateRowRequest,
                 },
               },
-              (...args: any) => {
-                if (args[0]) {
-                  reject(args[0]);
+              (error: ServiceError, response: {}) => {
+                if (error) {
+                  reject(error);
                 }
-                resolve(args[1]);
+                resolve(response);
               }
             );
           });
