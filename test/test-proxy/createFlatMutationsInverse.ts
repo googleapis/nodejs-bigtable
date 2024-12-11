@@ -46,11 +46,13 @@ describe('Check createFlatMutationsList and createFlatMutationsListInverse are i
         ],
       },
     ];
-    const flatMutationsList = createFlatMutationsListWithFn(
-      inverse(insertMutations, mutationParseInverse, 1),
-      // parse needs to be wrapped to cast and solve a compiler error.
-      (entry: Mutation) => Mutation.parse(entry) as {mutations: IMutation[]}
+    assert.deepStrictEqual(
+      createFlatMutationsListWithFn(
+        inverse(insertMutations, mutationParseInverse, 1),
+        // parse needs to be wrapped to cast and solve a compiler error.
+        (entry: Mutation) => Mutation.parse(entry) as {mutations: IMutation[]}
+      ), // This is the flattened list of Gapic Layer shaped mutations.
+      insertMutations[0].mutations
     );
-    assert.deepStrictEqual(flatMutationsList, insertMutations[0].mutations);
   });
 });
