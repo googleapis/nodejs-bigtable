@@ -91,11 +91,11 @@ describe('TestProxy/CheckAndMutateRow', () => {
               }
             );
           });
-          const bigtable = clientMap.get(
-            'TestCheckAndMutateRow_NoRetry_TransientError'
-          );
           {
             // Mock out the Gapic layer so we can see requests coming into it
+            const bigtable = clientMap.get(
+              'TestCheckAndMutateRow_NoRetry_TransientError'
+            );
             const bigtableClient = new BigtableClient(
               bigtable.options.BigtableClient
             );
