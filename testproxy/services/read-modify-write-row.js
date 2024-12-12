@@ -28,7 +28,9 @@ const readModifyWriteRow = ({clientMap}) =>
     const {appProfileId, tableName} = readModifyWriteRow;
     const handWrittenRequest = getRMWRRequestInverse(readModifyWriteRow);
     const bigtable = clientMap.get(clientId);
-    bigtable.appProfileId = appProfileId;
+    if (appProfileId && appProfileId !== '') {
+      bigtable.appProfileId = appProfileId;
+    }
     const table = getTableInfo(bigtable, tableName);
     const row = table.row(handWrittenRequest.id);
     try {
