@@ -31,7 +31,9 @@ const createClient = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     // TODO: Handle refresh periods
     const {request} = rawRequest;
-    const clientConfig = require('../../src/v2/bigtable_client_config.json');
+    const clientConfig = JSON.parse(
+      JSON.stringify(require('../../src/v2/bigtable_client_config.json'))
+    );
     const {
       callCredential,
       clientId,
