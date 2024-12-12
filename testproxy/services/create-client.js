@@ -69,7 +69,7 @@ const createClient = ({clientMap}) =>
       Object.entries(
         clientConfig.interfaces['google.bigtable.v2.Bigtable'].methods
       ).forEach(([k, v]) => {
-        if (k === 'ReadRows') {
+        if (k === 'ReadRows' || k === 'ReadModifyWriteRow') {
           /*
           TODO: In the future we should apply this for all methods, but right
           now doing so results in regressions in the TestSampleRowKeys_Generic_MultiStreams
