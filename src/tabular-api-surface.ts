@@ -702,7 +702,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       (this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces &&
         this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces[
           'google.bigtable.v2.Bigtable'
-        ]?.methods['ReadRows']?.timeout_millis);
+        ]?.methods['MutateRows']?.timeout_millis);
     const callTimeMillis = new Date().getTime();
 
     let numRequestsMade = 0;
