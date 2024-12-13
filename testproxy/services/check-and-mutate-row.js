@@ -23,11 +23,13 @@ const checkAndMutateRow = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {request: checkAndMutateRequest} = request;
-    const {appProfileId, falseMutations, rowKey, tableName, trueMutations} =
+    const {falseMutations, rowKey, tableName, trueMutations} =
       checkAndMutateRequest;
 
     const {clientId} = request;
     const client = clientMap.get(clientId)[v2];
+    const appProfileId = clientMap.get(clientId).appProfileId;
+
     const [result] = await client.checkAndMutateRow({
       appProfileId,
       falseMutations,
