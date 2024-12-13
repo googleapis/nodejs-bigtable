@@ -695,8 +695,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     /*
     The following line of code sets the timeout if it was provided while
     creating the client. This will be used to determine if the client should
-    retry on DEADLINE_EXCEEDED errors. Eventually, this will be handled
-    downstream in google-gax.
+    retry on errors. Eventually, this will be handled downstream in google-gax.
     */
     const timeout =
       options?.gaxOptions?.timeout ||
@@ -759,7 +758,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         callback(new PartialFailureError(mutationErrors, err));
         return;
       }
-      if (err) {
+      if (err && timeout && timeout < new Date().getTime() - callTimeMillis) {
         callback(
           new PartialFailureError(
             /* We concatenate an error onto the list for each pending entry
