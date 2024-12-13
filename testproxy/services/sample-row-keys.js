@@ -23,9 +23,10 @@ const sampleRowKeys = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {request: sampleRowKeysRequest} = request;
-    const {appProfileId, tableName} = sampleRowKeysRequest;
-
+    const {tableName} = sampleRowKeysRequest;
     const {clientId} = request;
+
+    const appProfileId = clientMap.get(clientId).appProfileId;
     const client = clientMap.get(clientId)[v2];
     const samples = await new Promise((res, rej) => {
       const response = [];
