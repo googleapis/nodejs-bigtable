@@ -26,10 +26,15 @@ import {
 } from './index';
 import {Filter, BoundData, RawFilter} from './filter';
 import {Row} from './row';
-import {ChunkTransformer} from './chunktransformer';
+import {
+  ChunkPushData,
+  ChunkPushLastScannedRowData,
+  ChunkTransformer,
+  DataEvent,
+} from './chunktransformer';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {google} from '../protos/protos';
-import {CallOptions, ServiceError} from 'google-gax';
+import {CallOptions, grpc, ServiceError} from 'google-gax';
 import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
@@ -219,6 +224,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     rowKeys = options.keys || [];
 
+    /*
+    The following line of code sets the timeout if it was provided while
+    creating the client. This will be used to determine if the client should
+    retry on DEADLINE_EXCEEDED errors. Eventually, this will be handled
+    downstream in google-gax.
+     */
+    const timeout =
+      opts?.gaxOptions?.timeout ||
+      (this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces &&
+        this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces[
+          'google.bigtable.v2.Bigtable'
+        ]?.methods['ReadRows']?.timeout_millis);
+    const callTimeMillis = new Date().getTime();
+
     const ranges = TableUtils.getRanges(options);
 
     // If rowKeys and ranges are both empty, the request is a full table scan.
@@ -244,11 +263,27 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       objectMode: true,
       readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
       writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
-      transform(row, _encoding, callback) {
+      transform(event, _encoding, callback) {
         if (userCanceled) {
           callback();
           return;
         }
+        if (event.eventType === DataEvent.LAST_ROW_KEY_UPDATE) {
+          /**
+           * This code will run when receiving an event containing
+           * lastScannedRowKey data that the chunk transformer sent. When the
+           * chunk transformer gets lastScannedRowKey data, this code
+           * updates the lastRowKey to ensure row ids with the lastScannedRowKey
+           * aren't re-requested in retries. The lastRowKey needs to be updated
+           * here and not in the chunk transformer to ensure the update is
+           * queued behind all events that deliver data to the user stream
+           * first.
+           */
+          lastRowKey = event.lastScannedRowKey;
+          callback();
+          return;
+        }
+        const row = event;
         if (TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
           /*
           Sometimes duplicate rows reach this point. To avoid delivering
@@ -425,7 +460,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       activeRequestStream = requestStream!;
 
       const toRowStream = new Transform({
-        transform: (rowData, _, next) => {
+        transform: (rowData: ChunkPushData, _, next) => {
           if (
             userCanceled ||
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -433,9 +468,26 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           ) {
             return next();
           }
-          const row = this.row(rowData.key);
-          row.data = rowData.data;
-          next(null, row);
+          if (
+            (rowData as ChunkPushLastScannedRowData).eventType ===
+            DataEvent.LAST_ROW_KEY_UPDATE
+          ) {
+            /**
+             * If the data is the chunk transformer communicating that the
+             * lastScannedRow was received then this message is passed along
+             * to the user stream to update the lastRowKey.
+             */
+            next(null, rowData);
+          } else {
+            /**
+             * If the data is just regular rows being pushed from the
+             * chunk transformer then the rows are encoded so that they
+             * can be consumed by the user stream.
+             */
+            const row = this.row((rowData as Row).key as string);
+            row.data = (rowData as Row).data;
+            next(null, row);
+          }
         },
         objectMode: true,
       });
@@ -469,7 +521,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           numRequestsMade++;
           if (
             numConsecutiveErrors <= maxRetries &&
-            (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
+            (RETRYABLE_STATUS_CODES.has(error.code) ||
+              isRstStreamError(error)) &&
+            !(timeout && timeout < new Date().getTime() - callTimeMillis)
           ) {
             const backOffSettings =
               options.gaxOptions?.retry?.backoffSettings ||
@@ -480,6 +534,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             );
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
+            if (
+              !error.code &&
+              error.message === 'The client has already been closed.'
+            ) {
+              //
+              // The TestReadRows_Generic_CloseClient conformance test requires
+              // a grpc code to be present when the client is closed. According
+              // to Gemini, the appropriate code for a closed client is
+              // CANCELLED since the user actually cancelled the call by closing
+              // the client.
+              //
+              error.code = grpc.status.CANCELLED;
+            }
             userStream.emit('error', error);
           }
         })

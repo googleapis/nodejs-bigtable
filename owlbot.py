@@ -36,14 +36,14 @@ if staging.is_dir():
     for version in ['v2']:
         library = staging / version
         _tracked_paths.add(library)
-        s.copy([library], excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json'])
+        s.copy([library], excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json', '.github/sync-repo-settings.yaml'])
 
     # Copy the admin library.
     # Not override system-test for admin/v2, just keep the v2 version.
     for version in ['v2']:
         library = staging / 'admin' / version
         _tracked_paths.add(library)
-        s.copy([library], excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json', 'system-test/fixtures/sample/src/index.ts', 'system-test/fixtures/sample/src/index.js'])
+        s.copy([library], excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json', 'system-test/fixtures/sample/src/index.ts', 'system-test/fixtures/sample/src/index.js', '.github/sync-repo-settings.yaml'])
 
     # Replace the client name for generated system-test.
     system_test_files=['system-test/fixtures/sample/src/index.ts','system-test/fixtures/sample/src/index.js']
