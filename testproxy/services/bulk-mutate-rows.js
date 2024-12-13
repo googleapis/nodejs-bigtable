@@ -54,18 +54,8 @@ const bulkMutateRows = ({clientMap}) =>
         };
       } else {
         return {
-          status: {
-            code: error.code,
-            details: [],
-            message: error.message,
-          },
-          entries: Array.from(error.errors.entries()).map(([index, entry]) => ({
-            index: index + 1,
-            status: {
-              code: entry.code,
-              message: entry.message,
-            },
-          })),
+          status: error,
+          entries: [],
         };
       }
     }
