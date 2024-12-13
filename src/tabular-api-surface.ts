@@ -716,8 +716,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
     const mutationErrorsByEntryIndex = new Map();
 
-    const isRetryable = (err: ServiceError | null) => {
-      if (timeout && timeout < new Date().getTime() - callTimeMillis) {
+    const isRetryable = (
+      err: ServiceError | null,
+      timeoutExceeded: boolean
+    ) => {
+      if (timeoutExceeded) {
         // If the timeout has been exceeded then do not retry.
         return false;
       }
@@ -738,7 +741,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return;
       }
 
-      if (isRetryable(err)) {
+      const timeoutExceeded = !!(
+        timeout && timeout < new Date().getTime() - callTimeMillis
+      );
+      if (isRetryable(err, timeoutExceeded)) {
         const backOffSettings =
           options.gaxOptions?.retry?.backoffSettings ||
           DEFAULT_BACKOFF_SETTINGS;
@@ -758,7 +764,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         callback(new PartialFailureError(mutationErrors, err));
         return;
       }
-      if (err && timeout && timeout < new Date().getTime() - callTimeMillis) {
+      if (err && timeoutExceeded) {
         callback(
           new PartialFailureError(
             /* We concatenate an error onto the list for each pending entry
