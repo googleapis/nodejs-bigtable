@@ -120,9 +120,6 @@ export interface GetRowsOptions {
   start?: string;
 }
 
-type WithInnerErrors = {errors: GoogleInnerError[]};
-type ServiceErrorWithMutations = ServiceError & WithInnerErrors;
-
 export type GetRowsCallback = (
   err: ServiceError | null,
   rows?: Row[],
@@ -735,7 +732,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       return !err || RETRYABLE_STATUS_CODES.has(err.code);
     };
 
-    const onBatchResponse = (err: ServiceErrorWithMutations | null) => {
+    const onBatchResponse = (err: ServiceError | null) => {
       // Return if the error happened before a request was made
       if (numRequestsMade === 0) {
         callback(err);
@@ -830,8 +827,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           gaxOpts: options.gaxOptions,
           retryOpts,
         })
-        .on('error', (err: ServiceErrorWithMutations) => {
-          // TODO: Change type back.
+        .on('error', (err: ServiceError) => {
           onBatchResponse(err);
         })
         .on('data', (obj: google.bigtable.v2.IMutateRowsResponse) => {
