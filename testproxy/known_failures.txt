@@ -18,7 +18,6 @@ TestReadRows_Retry_WithRetryInfo\|
 TestReadRows_Retry_WithRetryInfo_MultipleErrorResponse\|
 TestCheckAndMutateRow_NoRetry_TransientError\|
 TestCheckAndMutateRow_Generic_DeadlineExceeded\|
-TestCheckAndMutateRow_Generic_Headers\|
 TestSampleRowKeys_Generic_Headers\|
 TestSampleRowKeys_Generic_DeadlineExceeded\|
 TestSampleRowKeys_Retry_WithRoutingCookie
