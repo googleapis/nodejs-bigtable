@@ -776,7 +776,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             mutationErrors.concat(
               [...pendingEntryIndices]
                 .filter(index => !mutationErrorsByEntryIndex.has(index))
-                .map(_ => err)
+                .map(() => err)
             ),
             err
           )
