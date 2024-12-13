@@ -39,16 +39,33 @@ const bulkMutateRows = ({clientMap}) =>
     } catch (error) {
       if (error.name === 'PartialFailureError') {
         return {
-          status: error,
+          status: {
+            code: error.code,
+            details: [],
+            message: error.message,
+          },
           entries: Array.from(error.errors.entries()).map(([index, entry]) => ({
             index: index + 1,
-            status: entry,
+            status: {
+              code: entry.code,
+              message: entry.message,
+            },
           })),
         };
       } else {
         return {
-          status: error,
-          entries: [],
+          status: {
+            code: error.code,
+            details: [],
+            message: error.message,
+          },
+          entries: Array.from(error.errors.entries()).map(([index, entry]) => ({
+            index: index + 1,
+            status: {
+              code: entry.code,
+              message: entry.message,
+            },
+          })),
         };
       }
     }

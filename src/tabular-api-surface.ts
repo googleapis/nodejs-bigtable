@@ -120,6 +120,9 @@ export interface GetRowsOptions {
   start?: string;
 }
 
+type WithInnerErrors = {errors: GoogleInnerError[]};
+type ServiceErrorWithMutations = ServiceError & WithInnerErrors;
+
 export type GetRowsCallback = (
   err: ServiceError | null,
   rows?: Row[],
@@ -692,6 +695,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       []
     );
 
+    /*
+    The following line of code sets the timeout if it was provided while
+    creating the client. This will be used to determine if the client should
+    retry on DEADLINE_EXCEEDED errors. Eventually, this will be handled
+    downstream in google-gax.
+    */
+    const timeout =
+      options?.gaxOptions?.timeout ||
+      (this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces &&
+        this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces[
+          'google.bigtable.v2.Bigtable'
+        ]?.methods['ReadRows']?.timeout_millis);
+    const callTimeMillis = new Date().getTime();
+
     let numRequestsMade = 0;
 
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
@@ -704,6 +721,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const mutationErrorsByEntryIndex = new Map();
 
     const isRetryable = (err: ServiceError | null) => {
+      if (timeout && timeout < new Date().getTime() - callTimeMillis) {
+        // If the timeout has been exceeded then do not retry.
+        return false;
+      }
       // Don't retry if there are no more entries or retry attempts
       if (pendingEntryIndices.size === 0 || numRequestsMade >= maxRetries + 1) {
         return false;
@@ -714,7 +735,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       return !err || RETRYABLE_STATUS_CODES.has(err.code);
     };
 
-    const onBatchResponse = (err: ServiceError | null) => {
+    const onBatchResponse = (err: ServiceErrorWithMutations | null) => {
       // Return if the error happened before a request was made
       if (numRequestsMade === 0) {
         callback(err);
@@ -736,12 +757,24 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         err = null;
       }
 
+      const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
       if (mutationErrorsByEntryIndex.size !== 0) {
-        const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
         callback(new PartialFailureError(mutationErrors, err));
         return;
       }
-
+      if (err) {
+        callback(
+          new PartialFailureError(
+            mutationErrors.concat(
+              [...pendingEntryIndices]
+                .filter(index => !mutationErrorsByEntryIndex.has(index))
+                .map(_ => err)
+            ),
+            err
+          )
+        );
+        return;
+      }
       callback(err);
     };
 
@@ -791,7 +824,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           gaxOpts: options.gaxOptions,
           retryOpts,
         })
-        .on('error', (err: ServiceError) => {
+        .on('error', (err: ServiceErrorWithMutations) => {
+          // TODO: Change type back.
           onBatchResponse(err);
         })
         .on('data', (obj: google.bigtable.v2.IMutateRowsResponse) => {
