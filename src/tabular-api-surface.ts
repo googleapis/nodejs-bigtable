@@ -765,6 +765,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       if (err) {
         callback(
           new PartialFailureError(
+            /* We concatenate an error onto the list for each pending entry
+              because it is required in TestMutateRows_Generic_DeadlineExceeded.
+              The test checks to see if the number of entries is greater than 0
+              indicating that it is expecting some errors even though no data
+              has been received yet.
+               */
             mutationErrors.concat(
               [...pendingEntryIndices]
                 .filter(index => !mutationErrorsByEntryIndex.has(index))
