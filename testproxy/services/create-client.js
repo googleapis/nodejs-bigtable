@@ -31,7 +31,9 @@ const createClient = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     // TODO: Handle refresh periods
     const {request} = rawRequest;
-    const clientConfig = require('../../src/v2/bigtable_client_config.json');
+    const clientConfig = JSON.parse(
+      JSON.stringify(require('../../src/v2/bigtable_client_config.json'))
+    );
     const {
       callCredential,
       clientId,
@@ -68,18 +70,8 @@ const createClient = ({clientMap}) =>
        */
       Object.entries(
         clientConfig.interfaces['google.bigtable.v2.Bigtable'].methods
-      ).forEach(([k, v]) => {
-        if (k === 'ReadRows') {
-          /*
-          TODO: In the future we should apply this for all methods, but right
-          now doing so results in regressions in the TestSampleRowKeys_Generic_MultiStreams
-          and TestSampleRowKeys_Generic_CloseClient conformance tests that need
-          to be addressed.
-          */
-          v.timeout_millis = durationToMilliseconds(
-            request.perOperationTimeout
-          );
-        }
+      ).forEach(([, v]) => {
+        v.timeout_millis = durationToMilliseconds(request.perOperationTimeout);
       });
     }
     const bigtable = new Bigtable({
