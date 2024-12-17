@@ -68,19 +68,19 @@ const checkAndMutateRow = ({clientMap}) =>
     const {clientId, request: checkAndMutateRowRequest} = request;
     const {
       // authorizedViewName, // TODO: Pass the authorizedViewName along in the test proxy.
-      // appProfileId,
+      appProfileId,
       falseMutations,
       rowKey,
       // predicateFilter, // TODO: Pass the predicateFilter along in the test proxy.
       tableName,
       trueMutations,
     } = checkAndMutateRowRequest;
-    const appProfileId = clientMap.get(clientId).appProfileId;
     const onMatch = handwrittenLayerMutations(trueMutations);
     const onNoMatch = handwrittenLayerMutations(falseMutations);
     const id = convertFromBytes(rowKey);
     const bigtable = clientMap.get(clientId);
-    bigtable.appProfileId = appProfileId; // TODO: Remove this line and pass appProfileId into row.filter.
+    bigtable.appProfileId =
+      appProfileId === '' ? clientMap.get(clientId).appProfileId : appProfileId;
     const table = getTableInfo(bigtable, tableName);
     const row = table.row(id);
     const filter = [];
