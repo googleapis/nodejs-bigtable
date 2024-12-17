@@ -68,13 +68,14 @@ const checkAndMutateRow = ({clientMap}) =>
     const {clientId, request: checkAndMutateRowRequest} = request;
     const {
       // authorizedViewName, // TODO: Pass the authorizedViewName along in the test proxy.
-      appProfileId,
+      // appProfileId,
       falseMutations,
       rowKey,
       // predicateFilter, // TODO: Pass the predicateFilter along in the test proxy.
       tableName,
       trueMutations,
     } = checkAndMutateRowRequest;
+    const appProfileId = clientMap.get(clientId).appProfileId;
     const onMatch = handwrittenLayerMutations(trueMutations);
     const onNoMatch = handwrittenLayerMutations(falseMutations);
     const id = convertFromBytes(rowKey);
