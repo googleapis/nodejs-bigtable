@@ -19,10 +19,10 @@ const normalizeCallback = require('./utils/normalize-callback.js');
 const getTableInfo = require('./utils/get-table-info');
 const {
   createFlatMutationsListWithFnInverse,
-} = require('../../build/testproxy/services/utils/request/createFlatMutationsList');
+} = require('../../build/testproxy/services/utils/request/createFlatMutationsList.js');
 const {
   mutationParseInverse,
-} = require('../../build/testproxy/services/utils/request/mutateInverse');
+} = require('../../build/testproxy/services/utils/request/mutateInverse.js');
 
 /**
  * Transforms mutations from the gRPC layer format to the handwritten layer format.
