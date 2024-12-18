@@ -28,6 +28,7 @@ const sampleRowKeys = ({clientMap}) =>
 
     const appProfileId = clientMap.get(clientId).appProfileId;
     const client = clientMap.get(clientId)[v2];
+    console.log(client);
     const samples = await new Promise((res, rej) => {
       const response = [];
       client

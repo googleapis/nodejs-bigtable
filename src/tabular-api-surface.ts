@@ -39,6 +39,7 @@ import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {TableUtils} from './utils/table';
+import { time } from 'console';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -866,8 +867,29 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+
+    /*
+    The following line of code sets the timeout if it was provided while
+    creating the client. This will be used to determine if the client should
+    retry on DEADLINE_EXCEEDED errors. Eventually, this will be handled
+    downstream in google-gax.
+     */
+    const timeout = gaxOptions?.timeout;
+    // ||
+    // (this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces &&
+    //   this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces[
+    //     'google.bigtable.v2.Bigtable'
+    //   ]?.methods['SampleRowKeys']?.timeout_millis);
+    const callTimeMillis = new Date().getTime();
+    console.log('SAMPLE ROW');
+
     this.sampleRowKeysStream(gaxOptions)
-      .on('error', callback)
+      .on('error', (error: grpc.ServiceError) => {
+        if (timeout && timeout > new Date().getTime() - callTimeMillis) {
+          error.code = grpc.status.DEADLINE_EXCEEDED;
+        }
+        callback(error);
+      })
       .pipe(
         concat((keys: string[]) => {
           callback(null, keys);
