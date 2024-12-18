@@ -23,10 +23,11 @@ const mutateRow = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {request: mutateRequest} = request;
-    const {appProfileId, mutations, tableName, rowKey} = mutateRequest;
-
+    const {mutations, tableName, rowKey} = mutateRequest;
     const {clientId} = request;
+    const appProfileId = clientMap.get(clientId).appProfileId;
     const client = clientMap.get(clientId)[v2];
+
     await client.mutateRow({
       appProfileId,
       mutations,
