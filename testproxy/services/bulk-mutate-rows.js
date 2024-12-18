@@ -53,9 +53,22 @@ const bulkMutateRows = ({clientMap}) =>
           })),
         };
       } else {
+        const entries = error.errors
+          ? Array.from(error.errors.entries()).map(([index, entry]) => ({
+              index: index + 1,
+              status: {
+                code: entry.code,
+                message: entry.message,
+              },
+            }))
+          : [];
         return {
-          status: error,
-          entries: [],
+          status: {
+            code: error.code,
+            details: [],
+            message: error.message,
+          },
+          entries,
         };
       }
     }
