@@ -764,23 +764,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         callback(new PartialFailureError(mutationErrors, err));
         return;
       }
-      if (err && timeoutExceeded) {
-        callback(
-          new PartialFailureError(
-            /* We concatenate an error onto the list for each pending entry
-              because it is required in TestMutateRows_Generic_DeadlineExceeded.
-              The test checks to see if the number of entries is greater than 0
-              indicating that it is expecting some errors even though no data
-              has been received yet.
-               */
-            mutationErrors.concat(
-              [...pendingEntryIndices]
-                .filter(index => !mutationErrorsByEntryIndex.has(index))
-                .map(() => err)
-            ),
-            err
-          )
-        );
+      if (err) {
+        const errWithEntryErrors = Object.assign({
+          /* If there's an RPC level failure and the mutation entries don't have
+           a status code, the RPC level failure error code will be used as the
+           entry failure code.
+          */
+          errors: mutationErrors.concat(
+            [...pendingEntryIndices]
+              .filter(index => !mutationErrorsByEntryIndex.has(index))
+              .map(() => err)
+          ),
+          err,
+        });
+        callback(errWithEntryErrors);
         return;
       }
       callback(err);
