@@ -765,19 +765,17 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return;
       }
       if (err) {
-        const errWithEntryErrors = Object.assign({
-          /* If there's an RPC level failure and the mutation entries don't have
+        /* If there's an RPC level failure and the mutation entries don't have
            a status code, the RPC level failure error code will be used as the
            entry failure code.
           */
-          errors: mutationErrors.concat(
+        (err as ServiceError & {errors?: ServiceError[]}).errors =
+          mutationErrors.concat(
             [...pendingEntryIndices]
               .filter(index => !mutationErrorsByEntryIndex.has(index))
               .map(() => err)
-          ),
-          err,
-        });
-        callback(errWithEntryErrors);
+          );
+        callback(err);
         return;
       }
       callback(err);
