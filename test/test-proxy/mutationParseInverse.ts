@@ -36,33 +36,6 @@ describe('Check mutation parse and mutationParseInverse are inverses', () => {
             value: Buffer.from('value2'),
           },
         },
-        /*
-        TODO: Fix the inverse function later so that these mutations can be used in the test proxy.
-        {
-          deleteFromColumn: {
-            familyName: 'cf1',
-            columnQualifier: Buffer.from('cq1'),
-            timeRange: {
-              startTimestampMicros: 1678886400000000, // Example timestamp
-              endTimestampMicros: 1678972800000000, // Example timestamp
-            },
-          },
-        },
-        {
-          deleteFromColumn: {
-            familyName: 'cf1',
-            columnQualifier: Buffer.from('cq2'),
-          },
-        },
-        {
-          deleteFromFamily: {
-            familyName: 'cf1',
-          },
-        },
-        {
-          deleteFromRow: {},
-        }
-        */
       ],
     };
     assert.deepStrictEqual(
