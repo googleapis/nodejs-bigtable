@@ -67,11 +67,9 @@ const checkAndMutateRow = ({clientMap}) =>
     const {request} = rawRequest;
     const {clientId, request: checkAndMutateRowRequest} = request;
     const {
-      // authorizedViewName, // TODO: Pass the authorizedViewName along in the test proxy.
       appProfileId,
       falseMutations,
       rowKey,
-      // predicateFilter, // TODO: Pass the predicateFilter along in the test proxy.
       tableName,
       trueMutations,
     } = checkAndMutateRowRequest;
