@@ -66,13 +66,8 @@ const checkAndMutateRow = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {clientId, request: checkAndMutateRowRequest} = request;
-    const {
-      appProfileId,
-      falseMutations,
-      rowKey,
-      tableName,
-      trueMutations,
-    } = checkAndMutateRowRequest;
+    const {appProfileId, falseMutations, rowKey, tableName, trueMutations} =
+      checkAndMutateRowRequest;
     const onMatch = handwrittenLayerMutations(trueMutations);
     const onNoMatch = handwrittenLayerMutations(falseMutations);
     const id = convertFromBytes(rowKey);
