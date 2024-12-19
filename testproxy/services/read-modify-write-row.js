@@ -42,7 +42,7 @@ const readModifyWriteRow = ({clientMap}) =>
     } catch (e) {
       return {
         status: {
-          code: e.code,
+          code: e.code ? e.code : grpc.status.UNKNOWN,
           details: [],
           message: e.message,
         },
