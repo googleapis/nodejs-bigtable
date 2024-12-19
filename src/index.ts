@@ -900,9 +900,9 @@ export class Bigtable {
    * kill connections with pending requests.
    */
   close(): Promise<void[]> {
-    const combined = Object.keys(this.api).map(clientType => {
-      this.api[clientType].close();
-    });
+    const combined = Object.keys(this.api).map(clientType =>
+      this.api[clientType].close()
+    );
     return Promise.all(combined);
   }
 
