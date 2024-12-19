@@ -253,6 +253,10 @@ class RowDataUtils {
     } as Rule;
 
     this.createRulesUtil(reqOpts, properties, gaxOptions, (err, resp) => {
+      if (err) {
+        callback(err, null, resp);
+        return;
+      }
       const data = this.formatFamilies_Util(resp!.row!.families!);
       const value = dotProp.get(data, column.replace(':', '.'))[0].value;
 
