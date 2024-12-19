@@ -29,7 +29,7 @@ import {google} from '../protos/protos';
 import {TabularApiSurface} from './tabular-api-surface';
 import arrify = require('arrify');
 import {Bigtable} from './index';
-import {CallOptions} from 'google-gax';
+import {CallOptions, ServiceError} from 'google-gax';
 
 interface TabularApiSurfaceRequest {
   tableName?: string;
@@ -193,6 +193,15 @@ class RowDataUtils {
       properties.reqOpts
     );
     properties.requestData.data = {};
+    const passThroughCallback = (
+      err: ServiceError | null,
+      apiResponse?: google.bigtable.v2.IReadModifyWriteRowResponse
+    ) => {
+      if (err && err.message === 'The client has already been closed.') {
+        err.code = 1; // CANCELLED
+      }
+      callback(err, apiResponse);
+    };
     properties.requestData.bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
       {
         client: 'BigtableClient',
@@ -200,7 +209,7 @@ class RowDataUtils {
         reqOpts,
         gaxOpts: gaxOptions,
       },
-      callback
+      passThroughCallback
     );
   }
 
