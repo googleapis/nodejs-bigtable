@@ -778,7 +778,6 @@ export class Bigtable {
     config: RequestOptions,
     callback?: (err: ServiceError | null, resp?: T) => void
   ): void | AbortableDuplex {
-    console.log('increment request');
     const isStreamMode = !callback;
 
     let gaxStream: gax.CancellableStream;
@@ -866,7 +865,6 @@ export class Bigtable {
         }
 
         gaxStream = requestFn!();
-
         gaxStream
           .on('error', stream.destroy.bind(stream))
           .on('metadata', stream.emit.bind(stream, 'metadata'))
@@ -903,7 +901,6 @@ export class Bigtable {
    */
   close(): Promise<void[]> {
     const combined = Object.keys(this.api).map(clientType => {
-      console.log('now closing?');
       this.api[clientType].close();
     });
     return Promise.all(combined);
