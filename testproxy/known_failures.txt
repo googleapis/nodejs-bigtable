@@ -14,6 +14,7 @@ TestReadRows_Retry_WithRoutingCookie\|
 TestReadRows_Retry_WithRoutingCookie_MultipleErrorResponses\|
 TestReadRows_Retry_WithRetryInfo\|
 TestReadRows_Retry_WithRetryInfo_MultipleErrorResponse\|
+TestCheckAndMutateRow_Generic_DeadlineExceeded\|
 TestCheckAndMutateRow_NoRetry_TrueMutations\|
 TestCheckAndMutateRow_NoRetry_FalseMutations\|
 TestCheckAndMutateRow_Generic_CloseClient\|
