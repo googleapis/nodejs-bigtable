@@ -2785,7 +2785,6 @@ describe('Bigtable/Table', () => {
           }) as {} as EventEmitter,
         ];
         table.maxRetries = 3;
-        console.log('Mutating');
         table.mutate(
           mutateEntries,
           (err: ServiceError & {errors?: ServiceError[]}) => {
