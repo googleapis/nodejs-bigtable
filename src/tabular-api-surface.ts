@@ -692,6 +692,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       []
     );
 
+    /*
+    The following line of code sets the timeout if it was provided while
+    creating the client. This will be used to determine if the client should
+    retry on errors. Eventually, this will be handled downstream in google-gax.
+    */
+    const timeout =
+      options?.gaxOptions?.timeout ||
+      (this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces &&
+        this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces[
+          'google.bigtable.v2.Bigtable'
+        ]?.methods['MutateRows']?.timeout_millis);
+    const callTimeMillis = new Date().getTime();
+
     let numRequestsMade = 0;
 
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
@@ -703,7 +716,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
     const mutationErrorsByEntryIndex = new Map();
 
-    const isRetryable = (err: ServiceError | null) => {
+    const isRetryable = (
+      err: ServiceError | null,
+      timeoutExceeded: boolean
+    ) => {
+      if (timeoutExceeded) {
+        // If the timeout has been exceeded then do not retry.
+        return false;
+      }
       // Don't retry if there are no more entries or retry attempts
       if (pendingEntryIndices.size === 0 || numRequestsMade >= maxRetries + 1) {
         return false;
@@ -721,7 +741,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return;
       }
 
-      if (isRetryable(err)) {
+      const timeoutExceeded = !!(
+        timeout && timeout < new Date().getTime() - callTimeMillis
+      );
+      if (isRetryable(err, timeoutExceeded)) {
         const backOffSettings =
           options.gaxOptions?.retry?.backoffSettings ||
           DEFAULT_BACKOFF_SETTINGS;
@@ -736,12 +759,25 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         err = null;
       }
 
+      const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
       if (mutationErrorsByEntryIndex.size !== 0) {
-        const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
         callback(new PartialFailureError(mutationErrors, err));
         return;
       }
-
+      if (err) {
+        /* If there's an RPC level failure and the mutation entries don't have
+           a status code, the RPC level failure error code will be used as the
+           entry failure code.
+          */
+        (err as ServiceError & {errors?: ServiceError[]}).errors =
+          mutationErrors.concat(
+            [...pendingEntryIndices]
+              .filter(index => !mutationErrorsByEntryIndex.has(index))
+              .map(() => err)
+          );
+        callback(err);
+        return;
+      }
       callback(err);
     };
 
