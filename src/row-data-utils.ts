@@ -91,16 +91,12 @@ class RowDataUtils {
       },
       (err, apiResponse) => {
         if (err) {
-          if (err) {
-            if (
-              err &&
-              err.message === 'The client has already been closed.' &&
-              !err.code
-            ) {
-              err.code = 1; // CANCELLED
-            }
-            callback(err, null, apiResponse);
-            return;
+          if (
+            err &&
+            err.message === 'The client has already been closed.' &&
+            !err.code
+          ) {
+            err.code = 1; // CANCELLED
           }
           callback(err, null, apiResponse);
           return;
