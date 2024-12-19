@@ -29,7 +29,7 @@ import {google} from '../protos/protos';
 import {TabularApiSurface} from './tabular-api-surface';
 import arrify = require('arrify');
 import {Bigtable} from './index';
-import {CallOptions, ServiceError} from 'google-gax';
+import {CallOptions} from 'google-gax';
 
 interface TabularApiSurfaceRequest {
   tableName?: string;
