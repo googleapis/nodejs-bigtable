@@ -917,11 +917,6 @@ export class Bigtable {
    * kill connections with pending requests.
    */
   close(): Promise<void[]> {
-    const combined = Object.keys(this.api).map(clientType => {
-      console.log('now closing?');
-      return this.api[clientType].close;
-    });
-    console.log('done closing');
     const waitForRequestsInFlight = new Promise<void>(resolve => {
       if (this.pendingRequests === 0) {
         resolve();
@@ -931,6 +926,10 @@ export class Bigtable {
     });
     console.log('starting close');
     return waitForRequestsInFlight.then(() => {
+      const combined = Object.keys(this.api).map(clientType => {
+        console.log('now closing?');
+        this.api[clientType].close();
+      });
       console.log('finalizing close');
       return Promise.all(combined);
     });
