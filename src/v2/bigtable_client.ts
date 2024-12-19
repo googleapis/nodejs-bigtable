@@ -1667,6 +1667,7 @@ export class BigtableClient {
    * @returns {Promise} A promise that resolves when the client is closed.
    */
   close(): Promise<void> {
+    console.log('Gapic client close');
     if (this.bigtableStub && !this._terminated) {
       return this.bigtableStub.then(stub => {
         this._terminated = true;

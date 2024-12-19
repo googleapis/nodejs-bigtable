@@ -395,6 +395,8 @@ export class Bigtable {
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
+  private pendingRequests = 0;
+  private pendingResolve: ((value: void | PromiseLike<void>) => void)[] = [];
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -778,6 +780,8 @@ export class Bigtable {
     config: RequestOptions,
     callback?: (err: ServiceError | null, resp?: T) => void
   ): void | AbortableDuplex {
+    this.pendingRequests++;
+    console.log('increment request');
     const isStreamMode = !callback;
 
     let gaxStream: gax.CancellableStream;
@@ -835,13 +839,25 @@ export class Bigtable {
       makeRequestCallback();
     }
 
+    const makeRequestCallbackCallback = (
+      ...args: [err: ServiceError | null, resp?: T]
+    ) => {
+      this.pendingRequests--;
+      console.log('decrement request');
+      if (this.pendingRequests === 0) {
+        this.pendingResolve.forEach(resolve => {
+          resolve();
+        });
+      }
+      callback(...args);
+    };
     function makeRequestCallback() {
       prepareGaxRequest((err, requestFn) => {
         if (err) {
           callback!(err as ServiceError);
           return;
         }
-        requestFn!(callback);
+        requestFn!(makeRequestCallbackCallback);
       });
     }
 
@@ -865,6 +881,7 @@ export class Bigtable {
         }
 
         gaxStream = requestFn!();
+
         gaxStream
           .on('error', stream.destroy.bind(stream))
           .on('metadata', stream.emit.bind(stream, 'metadata'))
@@ -900,10 +917,23 @@ export class Bigtable {
    * kill connections with pending requests.
    */
   close(): Promise<void[]> {
-    const combined = Object.keys(this.api).map(clientType =>
-      this.api[clientType].close()
-    );
-    return Promise.all(combined);
+    const combined = Object.keys(this.api).map(clientType => {
+      console.log('now closing?');
+      return this.api[clientType].close;
+    });
+    console.log('done closing');
+    const waitForRequestsInFlight = new Promise<void>(resolve => {
+      if (this.pendingRequests === 0) {
+        resolve();
+      } else {
+        this.pendingResolve.push(resolve);
+      }
+    });
+    console.log('starting close');
+    return waitForRequestsInFlight.then(() => {
+      console.log('finalizing close');
+      return Promise.all(combined);
+    });
   }
 
   /**
