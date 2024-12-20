@@ -2752,6 +2752,56 @@ describe('Bigtable/Table', () => {
         };
       });
 
+      it('should send back errors for each pending entry', done => {
+        const mutateEntries = [
+          {
+            key: 'a',
+            method: 'insert',
+            data: {},
+          },
+          {
+            key: 'b',
+            method: 'insert',
+            data: {},
+          },
+        ];
+        const unretriableError = new Error('not retryable') as ServiceError;
+        unretriableError.code = 3; // INVALID_ARGUMENT
+        emitters = [
+          ((stream: Writable) => {
+            stream.emit('data', {
+              entries: [
+                {
+                  index: 0,
+                  status: {
+                    details: [],
+                    code: 0,
+                    message: 'Received data',
+                  },
+                },
+              ],
+            });
+            stream.emit('error', unretriableError);
+          }) as {} as EventEmitter,
+        ];
+        table.maxRetries = 3;
+        table.mutate(
+          mutateEntries,
+          (err: ServiceError & {errors?: ServiceError[]}) => {
+            try {
+              assert.strictEqual(err.code, 3);
+              assert.strictEqual(err.message, 'not retryable');
+              assert(err.errors);
+              assert.strictEqual(err.errors.length, 1);
+              assert.strictEqual(err.errors[0].code, 3);
+              assert.strictEqual(err.errors[0].message, 'not retryable');
+              done();
+            } catch (e) {
+              done(e);
+            }
+          }
+        );
+      });
       it('should not retry unretriable errors', done => {
         const unretriableError = new Error('not retryable') as ServiceError;
         unretriableError.code = 3; // INVALID_ARGUMENT
