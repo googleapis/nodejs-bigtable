@@ -48,7 +48,7 @@ const bulkMutateRows = ({clientMap}) =>
         : [];
       return {
         status: {
-          code: error.code,
+          code: error.code ? error.code : grpc.status.UNKNOWN,
           details: [],
           message: error.message,
         },
