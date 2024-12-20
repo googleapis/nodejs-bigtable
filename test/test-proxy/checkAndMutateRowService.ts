@@ -21,7 +21,7 @@ import type {Callback, CallOptions, ServiceError} from 'google-gax';
 const checkAndMutateRowService = require('../../../testproxy/services/check-and-mutate-row.js');
 const createClient = require('../../../testproxy/services/create-client.js');
 
-describe('TestProxy/CheckAndMutateRow', () => {
+describe.only('TestProxy/CheckAndMutateRow', () => {
   const testCases: protos.google.bigtable.v2.ICheckAndMutateRowRequest[] = [
     {
       tableName: 'projects/projectId/instances/instance/tables/test-table',
@@ -64,6 +64,31 @@ describe('TestProxy/CheckAndMutateRow', () => {
           },
         },
       ],
+    },
+    {
+      tableName: 'projects/projectId/instances/instance/tables/test-table',
+      appProfileId: 'test-app-profile',
+      rowKey: Buffer.from('test-row-key'),
+      predicateFilter: null,
+      trueMutations: [
+        {
+          setCell: {
+            familyName: 'cf1',
+            timestampMicros: 1000007,
+            columnQualifier: Buffer.from('cq1'),
+            value: Buffer.from('value1'),
+          },
+        },
+        {
+          setCell: {
+            familyName: 'cf2',
+            timestampMicros: 1000007,
+            columnQualifier: Buffer.from('cq2'),
+            value: Buffer.from('value2'),
+          },
+        },
+      ],
+      falseMutations: [],
     },
   ];
   describe('Ensure the proper request is passed to the Gapic Layer', () => {
