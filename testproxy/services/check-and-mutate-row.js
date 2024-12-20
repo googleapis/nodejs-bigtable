@@ -79,15 +79,15 @@ const checkAndMutateRow = ({clientMap}) =>
     const filter = [];
     const filterConfig = {onMatch, onNoMatch};
     try {
-      const result = await row.filter(filter, filterConfig);
+      const [, result] = await row.filter(filter, filterConfig);
       return {
         status: {code: grpc.status.OK, details: []},
-        row: result,
+        result,
       };
     } catch (e) {
       return {
         status: {
-          code: e.code,
+          code: e.code ? e.code : grpc.status.UNKNOWN,
           details: [],
           message: e.message,
         },
