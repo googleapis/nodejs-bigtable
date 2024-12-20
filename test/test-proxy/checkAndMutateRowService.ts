@@ -73,18 +73,18 @@ describe.only('TestProxy/CheckAndMutateRow', () => {
       trueMutations: [
         {
           setCell: {
-            familyName: 'cf1',
+            familyName: '',
             timestampMicros: 1000007,
-            columnQualifier: Buffer.from('cq1'),
-            value: Buffer.from('value1'),
+            columnQualifier: Buffer.from(''),
+            value: Buffer.from(''),
           },
         },
         {
           setCell: {
-            familyName: 'cf2',
+            familyName: '',
             timestampMicros: 1000007,
-            columnQualifier: Buffer.from('cq2'),
-            value: Buffer.from('value2'),
+            columnQualifier: Buffer.from(''),
+            value: Buffer.from(''),
           },
         },
       ],

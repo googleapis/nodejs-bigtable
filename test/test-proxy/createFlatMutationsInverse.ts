@@ -22,7 +22,7 @@ import * as assert from 'assert';
 import {google} from '../../protos/protos';
 import IMutation = google.bigtable.v2.IMutation;
 
-describe('Check createFlatMutationsList and createFlatMutationsListInverse are inverses', () => {
+describe.only('Check createFlatMutationsList and createFlatMutationsListInverse are inverses', () => {
   it('should invert mutations properly', () => {
     const insertMutations = [
       {
@@ -46,9 +46,10 @@ describe('Check createFlatMutationsList and createFlatMutationsListInverse are i
         ],
       },
     ];
+    const inverseValues = inverse(insertMutations, mutationParseInverse, 1);
     assert.deepStrictEqual(
       createFlatMutationsListWithFn(
-        inverse(insertMutations, mutationParseInverse, 1),
+        inverseValues,
         // parse needs to be wrapped to cast and solve a compiler error.
         (entry: Mutation) => Mutation.parse(entry) as {mutations: IMutation[]}
       ), // This is the flattened list of Gapic Layer shaped mutations.
