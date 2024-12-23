@@ -14,6 +14,8 @@
     "src/**/*.ts",
     "test/*.ts",
     "test/**/*.ts",
+    "testproxy/*.ts",
+    "testproxy/**/*.ts",
     "system-test/*.ts"
   ]
 }

@@ -39,7 +39,6 @@ import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {TableUtils} from './utils/table';
-import { time } from 'console';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -159,7 +158,7 @@ export class TabularApiSurface {
   name: string;
   id: string;
   metadata?: google.bigtable.admin.v2.ITable;
-  maxRetries?: number;
+  maxRetries?: number; 
   protected viewName?: string;
 
   protected constructor(instance: Instance, id: string, viewName?: string) {
@@ -881,7 +880,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     //     'google.bigtable.v2.Bigtable'
     //   ]?.methods['SampleRowKeys']?.timeout_millis);
     const callTimeMillis = new Date().getTime();
-    console.log('SAMPLE ROW');
 
     this.sampleRowKeysStream(gaxOptions)
       .on('error', (error: grpc.ServiceError) => {
