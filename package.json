@@ -22,7 +22,6 @@
   "files": [
     "build/protos",
     "build/src",
-    "build/testproxy",
     "!**/*.map"
   ],
   "scripts": {
