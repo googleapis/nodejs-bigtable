@@ -17,7 +17,7 @@ const grpc = require('@grpc/grpc-js');
 
 const normalizeCallback = require('./utils/normalize-callback.js');
 const getRowResponse = require('./utils/get-row-response.js');
-const getTableInfo = require('./utils/get-table-info.js').default;
+const getTableInfo = require('./utils/get-table-info.js');
 
 const readRow = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
