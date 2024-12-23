@@ -60,7 +60,8 @@ templates = common_templates.node_library(
   source_location='build/src'
 )
 s.copy(templates,excludes=[
-  '.github/auto-approve.yml'
+  '.github/auto-approve.yml',
+  '.github/sync-repo-settings.yaml'
 ])
 
 node.postprocess_gapic_library_hermetic()
