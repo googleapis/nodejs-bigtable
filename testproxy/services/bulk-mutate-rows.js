@@ -16,7 +16,7 @@
 const grpc = require('@grpc/grpc-js');
 
 const normalizeCallback = require('./utils/normalize-callback.js');
-const getTableInfo = require('./utils/get-table-info').default;
+const getTableInfo = require('./utils/get-table-info');
 
 const bulkMutateRows = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
