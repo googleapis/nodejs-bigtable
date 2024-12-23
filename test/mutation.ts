@@ -494,10 +494,10 @@ describe('Bigtable/Mutation', () => {
         data: [],
       };
       const mutation = new Mutation(data);
-      Mutation.encodeSetCell = _data => {
+      sandbox.stub(Mutation, 'encodeSetCell').callsFake(_data => {
         assert.strictEqual(_data, data.data);
         return fakeEncoded;
-      };
+      });
       const mutationProto = mutation.toProto();
       assert.strictEqual(mutationProto.mutations, fakeEncoded);
       assert.strictEqual(mutationProto.rowKey, data.key);

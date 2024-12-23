@@ -1,10 +1,7 @@
 TestMutateRow_Generic_DeadlineExceeded\|
+TestMutateRow_Generic_CloseClient\|
 TestMutateRows_Generic_CloseClient\|
 TestMutateRows_Retry_WithRoutingCookie\|
-TestMutateRows_Generic_DeadlineExceeded\|
-TestReadModifyWriteRow_NoRetry_MultiValues\|
-TestReadModifyWriteRow_Generic_CloseClient\|
-TestReadModifyWriteRow_Generic_MultiStreams\|
 TestReadRow_Generic_DeadlineExceeded\|
 TestReadRow_Retry_WithRoutingCookie\|
 TestReadRow_Retry_WithRetryInfo\|
@@ -15,8 +12,7 @@ TestReadRows_Retry_WithRoutingCookie\|
 TestReadRows_Retry_WithRoutingCookie_MultipleErrorResponses\|
 TestReadRows_Retry_WithRetryInfo\|
 TestReadRows_Retry_WithRetryInfo_MultipleErrorResponse\|
-TestCheckAndMutateRow_NoRetry_TransientError\|
-TestCheckAndMutateRow_Generic_DeadlineExceeded\|
-TestCheckAndMutateRow_Generic_Headers\|
-TestSampleRowKeys_Generic_DeadlineExceeded\|
-TestSampleRowKeys_Retry_WithRoutingCookie
+TestCheckAndMutateRow_NoRetry_TrueMutations\|
+TestCheckAndMutateRow_NoRetry_FalseMutations\|
+TestSampleRowKeys_Retry_WithRoutingCookie\|
+TestSampleRowKeys_Generic_CloseClient
