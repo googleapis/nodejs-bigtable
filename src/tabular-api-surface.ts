@@ -158,7 +158,7 @@ export class TabularApiSurface {
   name: string;
   id: string;
   metadata?: google.bigtable.admin.v2.ITable;
-  maxRetries?: number; 
+  maxRetries?: number;
   protected viewName?: string;
 
   protected constructor(instance: Instance, id: string, viewName?: string) {
