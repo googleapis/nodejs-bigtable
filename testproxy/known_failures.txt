@@ -1,6 +1,5 @@
 TestMutateRow_Generic_DeadlineExceeded\|
 TestMutateRow_Generic_CloseClient\|
-TestMutateRows_Generic_CloseClient\|
 TestMutateRows_Retry_WithRoutingCookie\|
 TestReadRow_Generic_DeadlineExceeded\|
 TestReadRow_Retry_WithRoutingCookie\|
@@ -12,7 +11,5 @@ TestReadRows_Retry_WithRoutingCookie\|
 TestReadRows_Retry_WithRoutingCookie_MultipleErrorResponses\|
 TestReadRows_Retry_WithRetryInfo\|
 TestReadRows_Retry_WithRetryInfo_MultipleErrorResponse\|
-TestCheckAndMutateRow_NoRetry_TrueMutations\|
-TestCheckAndMutateRow_NoRetry_FalseMutations\|
 TestSampleRowKeys_Retry_WithRoutingCookie\|
 TestSampleRowKeys_Generic_CloseClient

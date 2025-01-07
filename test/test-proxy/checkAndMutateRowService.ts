@@ -65,6 +65,31 @@ describe('TestProxy/CheckAndMutateRow', () => {
         },
       ],
     },
+    {
+      tableName: 'projects/projectId/instances/instance/tables/test-table',
+      appProfileId: 'test-app-profile',
+      rowKey: Buffer.from('test-row-key'),
+      predicateFilter: null,
+      trueMutations: [
+        {
+          setCell: {
+            familyName: '',
+            timestampMicros: 1000007,
+            columnQualifier: Buffer.from(''),
+            value: Buffer.from(''),
+          },
+        },
+        {
+          setCell: {
+            familyName: '',
+            timestampMicros: 1000007,
+            columnQualifier: Buffer.from(''),
+            value: Buffer.from(''),
+          },
+        },
+      ],
+      falseMutations: [],
+    },
   ];
   describe('Ensure the proper request is passed to the Gapic Layer', () => {
     const clientId = 'TestCheckAndMutateRow_NoRetry_TransientError';
