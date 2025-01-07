@@ -21,7 +21,7 @@ import Q from 'p-queue';
 import {
   Backup,
   BackupTimestamp,
-  Bigtable,
+  Bigtable, BigtableOptions,
   Entry,
   Instance,
   InstanceOptions,
@@ -90,7 +90,7 @@ describe('Bigtable', () => {
       })
     );
   }
-
+  /*
   before(async () => {
     await reapInstances();
     const [, operation] = await INSTANCE.create(
@@ -125,8 +125,9 @@ describe('Bigtable', () => {
       })
     );
   });
+   */
 
-  it('universe domain', () => {
+  it.only('universe domain', () => {
     async function readRowsWithCustomProjectAndUniverse() {
       console.log(process.env.GOOGLE_APPLICATION_CREDENTIALS);
       // const projectId = 'tpczero-system:bootstrap-libraries'; // Replace with your actual project ID
@@ -136,17 +137,20 @@ describe('Bigtable', () => {
       const tableId = 'your-table-id'; // Replace with your Bigtable table ID
       const options = {
         // projectId,
-        // keyFilename: '/Users/djbruce/Documents/Programming/keys/tpc.sa.key.json',
+        keyFilename:
+          '/Users/djbruce/Documents/Programming/keys/tpc_sa_key.json',
         universeDomain,
         BigtableInstanceAdminClient: {
-          universeDomain
+          universeDomain,
         },
         BigtableClient: {
-          universeDomain
+          universeDomain,
         },
-      }
+      };
       const bigtable = new Bigtable(options as BigtableOptions);
-      console.log(`Universe Domain: ${(bigtable.options.BigtableClient.BigtableClient as any).universeDomain}`);
+      console.log(
+        `Universe Domain: ${(bigtable.options?.BigtableClient?.BigtableClient as any).universeDomain}`
+      );
       const instance = bigtable.instance(instanceId);
       // await bigtable.getInstances()
       const table = instance.table(tableId);
@@ -154,11 +158,13 @@ describe('Bigtable', () => {
       try {
         console.log('Get rows');
         const rows = await table.getRows();
-        const instances = await bigtable.getInstances()
+        /*
+        const instances = await bigtable.getInstances();
         console.log('Instances:');
         instances.forEach(instance => {
           console.log(instance);
         });
+         */
         /*
         console.log('Rows:');
         rows.forEach(row => {
@@ -169,7 +175,8 @@ describe('Bigtable', () => {
         console.error('Error reading rows:', error);
       }
     }
-  })
+    readRowsWithCustomProjectAndUniverse();
+  });
   describe('instances', () => {
     it('should get a list of instances', async () => {
       const [instances, failedLocations] = await bigtable.getInstances();

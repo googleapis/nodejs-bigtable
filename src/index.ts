@@ -413,9 +413,6 @@ export class Bigtable {
       }
     }
 
-    const defaultBaseUrl = 'bigtable.googleapis.com';
-    const defaultAdminBaseUrl = 'bigtableadmin.googleapis.com';
-
     const customEndpoint =
       options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
     this.customEndpoint = customEndpoint;
@@ -440,12 +437,13 @@ export class Bigtable {
       'grpc.keepalive_time_ms': 30000,
       'grpc.keepalive_timeout_ms': 10000,
     }) as gax.ClientOptions;
-
+    const customServicePathConfig = customEndpointBaseUrl
+      ? {servicePath: customEndpointBaseUrl}
+      : {};
     const dataOptions = Object.assign(
       {},
       baseOptions,
       {
-        servicePath: customEndpointBaseUrl || defaultBaseUrl,
         'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
         'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
         'grpc.gcpApiConfig': grpcGcp.createGcpApiConfig({
@@ -457,15 +455,14 @@ export class Bigtable {
           },
         }),
       },
+      customServicePathConfig,
       options
     ) as gax.ClientOptions;
 
     const adminOptions = Object.assign(
       {},
       baseOptions,
-      {
-        servicePath: customEndpointBaseUrl || defaultAdminBaseUrl,
-      },
+      customServicePathConfig,
       options
     );
 
