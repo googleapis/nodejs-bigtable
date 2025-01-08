@@ -10,7 +10,11 @@ describe.only('Service Path', () => {
     const options = {
       universeDomain,
     };
-    const bigtable = new Bigtable(options);
+    const bigtable = new Bigtable({
+      BigtableClient: options,
+      BigtableInstanceAdminClient: options,
+      BigtableTableAdminClient: options,
+    });
     // Need to mock getProjectId_ since it normally uses auth and auth isn't
     // available in unit tests.
     bigtable.getProjectId_ = (
@@ -21,6 +25,11 @@ describe.only('Service Path', () => {
     try {
       // This is necessary to initialize the bigtable instance admin client.
       await bigtable.getInstances({timeout: 1000});
+    } catch (e) {
+      assert.strictEqual(
+        (e as ServiceError).message,
+        'Total timeout of API google.bigtable.admin.v2.BigtableInstanceAdmin exceeded 1000 milliseconds retrying error Error: 14 UNAVAILABLE: Name resolution failed for target dns:bigtableadmin.someUniverseDomain:443  before any response was received.'
+      );
     } finally {
       assert.strictEqual(
         (
@@ -36,6 +45,11 @@ describe.only('Service Path', () => {
       const instance = bigtable.instance('instanceId');
       const table = instance.table('tableId');
       await table.getRows({gaxOptions: {timeout: 1000}});
+    } catch (e) {
+      assert.strictEqual(
+        (e as ServiceError).message,
+        '14 UNAVAILABLE: Name resolution failed for target dns:bigtable.someUniverseDomain:443'
+      );
     } finally {
       assert.strictEqual(
         (bigtable.api.BigtableClient as BigtableClient)['_opts'].servicePath,
@@ -48,9 +62,13 @@ describe.only('Service Path', () => {
     const apiEndpoint = 'someApiEndpoint';
     const options = {
       universeDomain,
-      apiEndpoint,
     };
-    const bigtable = new Bigtable(options);
+    const bigtable = new Bigtable({
+      apiEndpoint,
+      BigtableClient: options,
+      BigtableInstanceAdminClient: options,
+      BigtableTableAdminClient: options,
+    });
     // Need to mock getProjectId_ since it normally uses auth and auth isn't
     // available in unit tests.
     bigtable.getProjectId_ = (
@@ -61,6 +79,11 @@ describe.only('Service Path', () => {
     try {
       // This is necessary to initialize the bigtable instance admin client.
       await bigtable.getInstances({timeout: 1000});
+    } catch (e) {
+      assert.strictEqual(
+        (e as ServiceError).message,
+        'Total timeout of API google.bigtable.admin.v2.BigtableInstanceAdmin exceeded 1000 milliseconds retrying error Error: 14 UNAVAILABLE: Name resolution failed for target dns:someApiEndpoint:443  before any response was received.'
+      );
     } finally {
       assert.strictEqual(
         (
