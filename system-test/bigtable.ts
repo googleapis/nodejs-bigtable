@@ -21,7 +21,7 @@ import Q from 'p-queue';
 import {
   Backup,
   BackupTimestamp,
-  Bigtable, BigtableOptions,
+  Bigtable,
   Entry,
   Instance,
   InstanceOptions,
@@ -90,7 +90,7 @@ describe('Bigtable', () => {
       })
     );
   }
-  /*
+
   before(async () => {
     await reapInstances();
     const [, operation] = await INSTANCE.create(
@@ -125,54 +125,7 @@ describe('Bigtable', () => {
       })
     );
   });
-   */
 
-  it.only('universe domain', () => {
-    async function readRowsWithCustomProjectAndUniverse() {
-      console.log(process.env.GOOGLE_APPLICATION_CREDENTIALS);
-      // const projectId = 'tpczero-system:bootstrap-libraries'; // Replace with your actual project ID
-      const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
-      const location = 'tpcl-us-central13';
-      const instanceId = 'test-instance'; // Replace with your Bigtable instance ID
-      const tableId = 'your-table-id'; // Replace with your Bigtable table ID
-      const options = {
-        // projectId,
-        keyFilename:
-          '/Users/djbruce/Documents/Programming/keys/tpc_sa_key.json',
-        universeDomain,
-        BigtableInstanceAdminClient: {
-          universeDomain,
-        },
-        BigtableClient: {
-          universeDomain,
-        },
-      };
-      const bigtable = new Bigtable(options as BigtableOptions);
-      console.log(
-        `Universe Domain: ${(bigtable.options?.BigtableClient?.BigtableClient as any).universeDomain}`
-      );
-      const instance = bigtable.instance(instanceId);
-      // await bigtable.getInstances()
-      const table = instance.table(tableId);
-
-      try {
-        const instances = await bigtable.getInstances();
-        console.log('Instances:');
-        instances.forEach(instance => {
-          console.log(instance);
-        });
-        console.log('Get rows');
-        const rows = await table.getRows();
-        console.log('Rows:');
-        rows.forEach(row => {
-          console.log(row);
-        });
-      } catch (error) {
-        console.error('Error reading rows:', error);
-      }
-    }
-    readRowsWithCustomProjectAndUniverse();
-  });
   describe('instances', () => {
     it('should get a list of instances', async () => {
       const [instances, failedLocations] = await bigtable.getInstances();
