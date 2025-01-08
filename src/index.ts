@@ -461,6 +461,7 @@ export class Bigtable {
       'grpc.keepalive_time_ms': 30000,
       'grpc.keepalive_timeout_ms': 10000,
     }) as gax.ClientOptions;
+
     const dataOptions = Object.assign(
       {},
       baseOptions,
