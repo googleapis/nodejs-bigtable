@@ -902,8 +902,23 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+
+    /*
+    The following line of code sets the timeout if it was provided while
+    creating the client. This will be used to determine if the client should
+    retry on DEADLINE_EXCEEDED errors. Eventually, this will be handled
+    downstream in google-gax.
+     */
+    const timeout = gaxOptions?.timeout;
+    const callTimeMillis = new Date().getTime();
+
     this.sampleRowKeysStream(gaxOptions)
-      .on('error', callback)
+      .on('error', (error: grpc.ServiceError) => {
+        if (timeout && timeout > new Date().getTime() - callTimeMillis) {
+          error.code = grpc.status.DEADLINE_EXCEEDED;
+        }
+        callback(error);
+      })
       .pipe(
         concat((keys: string[]) => {
           callback(null, keys);
