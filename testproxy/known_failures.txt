@@ -11,6 +11,5 @@ TestReadRows_Retry_WithRoutingCookie\|
 TestReadRows_Retry_WithRoutingCookie_MultipleErrorResponses\|
 TestReadRows_Retry_WithRetryInfo\|
 TestReadRows_Retry_WithRetryInfo_MultipleErrorResponse\|
-TestSampleRowKeys_Generic_DeadlineExceeded\|
 TestSampleRowKeys_Retry_WithRoutingCookie\|
 TestSampleRowKeys_Generic_CloseClient
