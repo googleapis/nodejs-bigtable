@@ -100,6 +100,8 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
    * Internal only.
    */
   BigtableTableAdminClient?: gax.ClientOptions;
+
+  universeDomain?: string;
 }
 
 /**
