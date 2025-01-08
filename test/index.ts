@@ -1230,7 +1230,7 @@ describe('Bigtable', () => {
       });
     });
   });
-  describe.only('service path', () => {
+  describe('service path', () => {
     it('Setting universe domain should set the service path', async () => {
       const universeDomain = 'someUniverseDomain'; // or your universe domain if not using emulator
       const options = {
