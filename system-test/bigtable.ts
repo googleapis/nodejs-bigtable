@@ -156,16 +156,14 @@ describe('Bigtable', () => {
       const table = instance.table(tableId);
 
       try {
-        console.log('Get rows');
-        const rows = await table.getRows();
-        /*
         const instances = await bigtable.getInstances();
         console.log('Instances:');
         instances.forEach(instance => {
           console.log(instance);
         });
-         */
         /*
+        console.log('Get rows');
+        const rows = await table.getRows();
         console.log('Rows:');
         rows.forEach(row => {
           console.log(row);
