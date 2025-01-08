@@ -133,7 +133,7 @@ describe('Bigtable', () => {
       // const projectId = 'tpczero-system:bootstrap-libraries'; // Replace with your actual project ID
       const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
       const location = 'tpcl-us-central13';
-      const instanceId = 'your-instance-id'; // Replace with your Bigtable instance ID
+      const instanceId = 'test-instance'; // Replace with your Bigtable instance ID
       const tableId = 'your-table-id'; // Replace with your Bigtable table ID
       const options = {
         // projectId,
@@ -161,14 +161,12 @@ describe('Bigtable', () => {
         instances.forEach(instance => {
           console.log(instance);
         });
-        /*
         console.log('Get rows');
         const rows = await table.getRows();
         console.log('Rows:');
         rows.forEach(row => {
           console.log(row);
         });
-         */
       } catch (error) {
         console.error('Error reading rows:', error);
       }
