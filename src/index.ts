@@ -113,7 +113,8 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * @returns {string} The universe domain.
  */
 function getDomain(opts?: gax.ClientOptions) {
-  // This code is an exact replica of the code in the Gapic Layer
+  // This code for universe domain was taken from the Gapic Layer.
+  // It is reused here to build the service path.
   const universeDomainEnvVar =
     typeof process === 'object' && typeof process.env === 'object'
       ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
