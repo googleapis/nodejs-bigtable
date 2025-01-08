@@ -105,6 +105,28 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
 }
 
 /**
+ * Retrieves the domain to be used for the service path.
+ *
+ * This function retrieves the domain from gax.ClientOptions passed in or via an environment variable.
+ * It defaults to 'googleapis.com' if none has been set.
+ * @param {gax.ClientOptions} [opts] The gax client options
+ * @returns {string} The universe domain.
+ */
+function getDomain(opts?: gax.ClientOptions) {
+  // This code is an exact replica of the code in the Gapic Layer
+  const universeDomainEnvVar =
+    typeof process === 'object' && typeof process.env === 'object'
+      ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
+      : undefined;
+  return (
+    opts?.universeDomain ??
+    opts?.universe_domain ??
+    universeDomainEnvVar ??
+    'googleapis.com'
+  );
+}
+
+/**
  * @typedef {object} ClientConfig
  * @property {string} [apiEndpoint] Override the default API endpoint used
  *     to reach Bigtable. This is useful for connecting to your local Bigtable
@@ -439,13 +461,13 @@ export class Bigtable {
       'grpc.keepalive_time_ms': 30000,
       'grpc.keepalive_timeout_ms': 10000,
     }) as gax.ClientOptions;
-    const customServicePathConfig = customEndpointBaseUrl
-      ? {servicePath: customEndpointBaseUrl}
-      : {};
     const dataOptions = Object.assign(
       {},
       baseOptions,
       {
+        servicePath:
+          customEndpointBaseUrl ||
+          `bigtable.${getDomain(options.BigtableClient)}`,
         'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
         'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
         'grpc.gcpApiConfig': grpcGcp.createGcpApiConfig({
@@ -457,20 +479,33 @@ export class Bigtable {
           },
         }),
       },
-      customServicePathConfig,
       options
     ) as gax.ClientOptions;
 
     const adminOptions = Object.assign(
       {},
       baseOptions,
-      customServicePathConfig,
+      {
+        servicePath:
+          customEndpointBaseUrl ||
+          `bigtableadmin.${getDomain(options.BigtableTableAdminClient)}`,
+      },
+      options
+    );
+    const instanceAdminOptions = Object.assign(
+      {},
+      baseOptions,
+      {
+        servicePath:
+          customEndpointBaseUrl ||
+          `bigtableadmin.${getDomain(options.BigtableInstanceAdminClient)}`,
+      },
       options
     );
 
     this.options = {
       BigtableClient: dataOptions,
-      BigtableInstanceAdminClient: adminOptions,
+      BigtableInstanceAdminClient: instanceAdminOptions,
       BigtableTableAdminClient: adminOptions,
     };
 
