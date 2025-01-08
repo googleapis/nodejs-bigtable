@@ -4,7 +4,7 @@ import {ServiceError} from 'google-gax';
 import {Bigtable} from '../src';
 import {BigtableClient, BigtableInstanceAdminClient} from '../src/v2';
 
-describe.only('Service Path', () => {
+describe('Service Path', () => {
   it('Setting universe domain should set the service path', async () => {
     const universeDomain = 'someUniverseDomain'; // or your universe domain if not using emulator
     const options = {
