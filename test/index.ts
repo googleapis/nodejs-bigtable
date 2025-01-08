@@ -26,7 +26,6 @@ import {PassThrough} from 'stream';
 import {RequestOptions} from '../src';
 import * as snapshot from 'snap-shot-it';
 import {createClusterOptionsList} from './constants/cluster';
-import {ServiceError} from 'google-gax';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const v2 = require('../src/v2');
