@@ -34,15 +34,19 @@ const {
  * @returns {FilterConfigOption[]} An array of mutations in the handwritten layer format.
  */
 function handwrittenLayerMutations(gapicLayerMutations) {
-  return createFlatMutationsListWithFnInverse(
-    [
-      {
-        mutations: gapicLayerMutations,
-      },
-    ],
-    mutationParseInverse,
-    1
-  );
+  return gapicLayerMutations
+    .map(mutation =>
+      createFlatMutationsListWithFnInverse(
+        [
+          {
+            mutations: [mutation],
+          },
+        ],
+        mutationParseInverse,
+        1
+      )
+    )
+    .flat();
 }
 
 /**
