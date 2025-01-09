@@ -480,7 +480,7 @@ describe('Bigtable/ReadRows', () => {
       // Simulate deadline exceeded.
       readStream.destroy(new GoogleError('DEADLINE_EXCEEDED'));
       readStream.on('error', err => {
-        console.log(err);
+        console.error(err);
         readStream.end();
       });
     }
