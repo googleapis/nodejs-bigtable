@@ -462,7 +462,7 @@ describe('Bigtable/ReadRows', () => {
     })();
   });
 
-  describe('common pitfalls', () => {
+  it('requests a full table scan during a retry on a transient error', () => {
     function readRowsWithDeadline() {
       service.setService({
         ReadRows: ReadRowsImpl.createService(
@@ -484,26 +484,23 @@ describe('Bigtable/ReadRows', () => {
         readStream.end();
       });
     }
+    // Spy on the retry mechanism.
+    const retrySpy = sinon.spy(table, 'createReadStream');
 
-    it('requests a full table scan during a retry on a transient error', () => {
-      // Spy on the retry mechanism.
-      const retrySpy = sinon.spy(table, 'createReadStream');
-
-      try {
-        readRowsWithDeadline();
-        assert.fail('Should have thrown error');
-      } catch (err) {
-        if (err instanceof GoogleError) {
-          assert.equal(err.code, 'DEADLINE_EXCEEDED');
-        }
-
-        // Assert that the retry was attempted with an empty RowSet and limit 0
-        assert(retrySpy.calledOnce);
-        const retryRequest = retrySpy.getCall(0).args[0];
-        assert.deepStrictEqual(retryRequest?.ranges, undefined); // Empty RowSet
-        assert.strictEqual(retryRequest?.limit, undefined); // No limit
+    try {
+      readRowsWithDeadline();
+      assert.fail('Should have thrown error');
+    } catch (err) {
+      if (err instanceof GoogleError) {
+        assert.equal(err.code, 'DEADLINE_EXCEEDED');
       }
-    });
+
+      // Assert that the retry was attempted with an empty RowSet and limit 0
+      assert(retrySpy.calledOnce);
+      const retryRequest = retrySpy.getCall(0).args[0];
+      assert.deepStrictEqual(retryRequest?.ranges, undefined); // Empty RowSet
+      assert.strictEqual(retryRequest?.limit, undefined); // No limit
+    }
   });
 
   after(async () => {
