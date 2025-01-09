@@ -28,6 +28,7 @@ import {
   ReadRowsWritableStream,
 } from '../test/utils/readRowsServiceParameters';
 import * as mocha from 'mocha';
+import sinon = require('sinon');
 
 const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
 
@@ -459,6 +460,50 @@ describe('Bigtable/ReadRows', () => {
         done(error);
       }
     })();
+  });
+
+  describe('common pitfalls', () => {
+    function readRowsWithDeadline() {
+      service.setService({
+        ReadRows: ReadRowsImpl.createService(
+          STANDARD_SERVICE_WITHOUT_ERRORS
+        ) as ServerImplementationInterface,
+      });
+
+      const readStream = table.createReadStream();
+
+      // Stream push simulate receiving rows.
+      readStream.push({
+        id: '0',
+      });
+
+      // Simulate deadline exceeded.
+      readStream.destroy(new GoogleError('DEADLINE_EXCEEDED'));
+      readStream.on('error', err => {
+        console.log(err);
+        readStream.end();
+      });
+    }
+
+    it('requests a full table scan during a retry on a transient error', () => {
+      // Spy on the retry mechanism.
+      const retrySpy = sinon.spy(table, 'createReadStream');
+
+      try {
+        readRowsWithDeadline();
+        assert.fail('Should have thrown error');
+      } catch (err) {
+        if (err instanceof GoogleError) {
+          assert.equal(err.code, 'DEADLINE_EXCEEDED');
+        }
+
+        // Assert that the retry was attempted with an empty RowSet and limit 0
+        assert(retrySpy.calledOnce);
+        const retryRequest = retrySpy.getCall(0).args[0];
+        assert.deepStrictEqual(retryRequest?.ranges, undefined); // Empty RowSet
+        assert.strictEqual(retryRequest?.limit, undefined); // No limit
+      }
+    });
   });
 
   after(async () => {
