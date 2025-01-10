@@ -35,6 +35,7 @@ import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
+import {MetricsTracerFactory} from './metrics-tracer-factory';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -395,8 +396,10 @@ export class Bigtable {
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
+  metricsTracerFactory: MetricsTracerFactory;
 
   constructor(options: BigtableOptions = {}) {
+    this.metricsTracerFactory = new MetricsTracerFactory();
     // Determine what scopes are needed.
     // It is the union of the scopes on all three clients.
     const scopes: string[] = [];

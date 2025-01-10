@@ -210,6 +210,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * region_tag:bigtable_api_table_readstream
    */
   createReadStream(opts?: GetRowsOptions) {
+    const metricsTracer = this.bigtable.metricsTracerFactory.getMetricsTracer();
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
     let activeRequestStream: AbortableDuplex | null;
@@ -506,6 +507,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
         return false;
       };
+      /*
+      function onCallComplete() {
+        this.metricsTracer.onOperationComplete({
+          retries: numConsecutiveErrors,
+        });
+      }
+       */
 
       rowStream
         .on('error', (error: ServiceError) => {
@@ -548,6 +556,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               error.code = grpc.status.CANCELLED;
             }
             userStream.emit('error', error);
+            //onCallComplete();
           }
         })
         .on('data', _ => {
@@ -557,6 +566,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         })
         .on('end', () => {
           activeRequestStream = null;
+          //onCallComplete();
         });
       rowStreamPipe(rowStream, userStream);
     };
