@@ -514,7 +514,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         });
       }
        */
-
+      requestStream
+        .on(
+          'metadata',
+          (metadata: {internalRepr: Map<string, Buffer>; options: {}}) => {
+            console.log(metadata);
+          }
+        )
+        .on(
+          'status',
+          (status: {internalRepr: Map<string, Buffer>; options: {}}) => {
+            console.log(status);
+          }
+        );
       rowStream
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
@@ -563,9 +575,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
-        })
-        .on('metadata', (something: any) => {
-          console.log(something);
         })
         .on('end', (something: any) => {
           activeRequestStream = null;

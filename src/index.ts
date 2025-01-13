@@ -870,9 +870,8 @@ export class Bigtable {
         gaxStream = requestFn!();
         gaxStream
           .on('error', stream.destroy.bind(stream))
-          .on('metadata', (arg1, arg2) => {
-            stream.emit.bind(stream, 'metadata')(arg1, arg2);
-          })
+          .on('metadata', stream.emit.bind(stream, 'metadata'))
+          .on('status', stream.emit.bind(stream, 'status'))
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
       });
