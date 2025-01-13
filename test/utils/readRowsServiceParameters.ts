@@ -27,9 +27,10 @@ interface SharedReadRowsParameters {
 export type DebugLog = (message: string) => void;
 
 export interface ReadRowsServiceParameters extends SharedReadRowsParameters {
+  deadlineExceededError?: boolean; // Send deadline exceeded transient error
+  errorAfterChunkNo?: number; // The chunk that the error should come after
   keyFrom?: number; // The key the data coming from the service will start from
   keyTo?: number; // The key the data coming from the service will end at
-  errorAfterChunkNo?: number; // The chunk that the error should come after
   chunksPerResponse: number; // The total number of chunks the server should send
   debugLog: DebugLog;
 }
