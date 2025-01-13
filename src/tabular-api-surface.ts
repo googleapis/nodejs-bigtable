@@ -518,13 +518,23 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on(
           'metadata',
           (metadata: {internalRepr: Map<string, Buffer>; options: {}}) => {
-            console.log(metadata);
+            const mappedEntries = Array.from(
+              metadata.internalRepr.entries(),
+              ([key, value]) => [key, value.toString()]
+            );
+            console.log(mappedEntries);
           }
         )
         .on(
           'status',
-          (status: {internalRepr: Map<string, Buffer>; options: {}}) => {
-            console.log(status);
+          (status: {
+            metadata: {internalRepr: Map<string, Buffer>; options: {}};
+          }) => {
+            const mappedEntries = Array.from(
+              status.metadata.internalRepr.entries(),
+              ([key, value]) => [key, value.toString()]
+            );
+            console.log(mappedEntries);
           }
         );
       rowStream
