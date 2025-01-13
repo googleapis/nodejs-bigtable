@@ -22,6 +22,7 @@ import {
 } from './readRowsServiceParameters';
 import {google} from '../../protos/protos';
 import IRowRange = google.bigtable.v2.IRowRange;
+import { request } from 'http';
 
 // Generate documentation for this function
 /** Pretty prints the request object.
@@ -349,6 +350,11 @@ export class ReadRowsImpl {
    */
   private async handleRequest(stream: ReadRowsWritableStream) {
     const debugLog = this.serviceParameters.debugLog;
+    const hook = this.serviceParameters.hook;
+    if (hook) {
+      hook(stream.request);
+    }
+
     prettyPrintRequest(stream.request, debugLog);
     const readRowsRequestHandler = new ReadRowsRequestHandler(stream, debugLog);
     stream.on('cancelled', () => {
@@ -375,7 +381,6 @@ export class ReadRowsImpl {
     const stream = readRowsRequestHandler.stream;
     const debugLog = readRowsRequestHandler.debugLog;
     const deadlineExceededError = this.serviceParameters.deadlineExceededError;
-    const hook = this.serviceParameters.hook;
 
     let chunksSent = 0;
     let lastScannedRowKey: string | undefined;
@@ -437,10 +442,6 @@ export class ReadRowsImpl {
           stream.emit('error', error);
           readRowsRequestHandler.cancelled = true;
           break;
-        }
-
-        if (hook) {
-          hook();
         }
 
         if (deadlineExceededError) {

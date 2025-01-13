@@ -463,7 +463,7 @@ describe('Bigtable/ReadRows', () => {
   });
 
   it('pitfall: should not request full table scan during a retry on a transient error', () => {
-    let requests = 0;
+    const requests = [];
 
     const TRANSIENT_ERROR_SERVICE: ReadRowsServiceParameters = {
       chunkSize: CHUNK_SIZE,
@@ -472,8 +472,8 @@ describe('Bigtable/ReadRows', () => {
       keyFrom: STANDARD_KEY_FROM,
       keyTo: STANDARD_KEY_TO,
       deadlineExceededError: true,
-      hook: () => {
-        requests = requests++;
+      hook: request => {
+        requests.push(request);
       },
       debugLog,
     };
@@ -497,7 +497,7 @@ describe('Bigtable/ReadRows', () => {
       }
 
       // Assert that the no retry attempted.
-      assert.strictEqual(requests, 1);
+      assert.strictEqual(requests.length, 1);
     }
   });
 
