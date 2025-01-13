@@ -33,6 +33,7 @@ export interface ReadRowsServiceParameters extends SharedReadRowsParameters {
   keyTo?: number; // The key the data coming from the service will end at
   chunksPerResponse: number; // The total number of chunks the server should send
   debugLog: DebugLog;
+  hook?: () => void;
 }
 
 export interface ChunkGeneratorParameters extends SharedReadRowsParameters {

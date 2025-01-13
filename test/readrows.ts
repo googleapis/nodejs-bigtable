@@ -462,7 +462,9 @@ describe('Bigtable/ReadRows', () => {
     })();
   });
 
-  it.skip('pitfall: should not request full table scan during a retry on a transient error', () => {
+  it('pitfall: should not request full table scan during a retry on a transient error', () => {
+    let requests = 0;
+
     const TRANSIENT_ERROR_SERVICE: ReadRowsServiceParameters = {
       chunkSize: CHUNK_SIZE,
       valueSize: VALUE_SIZE,
@@ -470,6 +472,9 @@ describe('Bigtable/ReadRows', () => {
       keyFrom: STANDARD_KEY_FROM,
       keyTo: STANDARD_KEY_TO,
       deadlineExceededError: true,
+      hook: () => {
+        requests = requests++;
+      },
       debugLog,
     };
 
@@ -482,8 +487,6 @@ describe('Bigtable/ReadRows', () => {
 
       table.createReadStream();
     }
-    // Spy on the retry mechanism.
-    const retrySpy = sinon.spy(table, 'createReadStream');
 
     try {
       readRowsWithDeadline();
@@ -493,11 +496,8 @@ describe('Bigtable/ReadRows', () => {
         assert.equal(err.code, 'DEADLINE_EXCEEDED');
       }
 
-      // Assert that the retry was attempted with an empty RowSet and limit 0
-      assert.strictEqual(retrySpy.callCount, 0);
-      const retryRequest = retrySpy.getCall(0).args[0];
-      assert.deepStrictEqual(retryRequest?.ranges, undefined); // Empty RowSet
-      assert.strictEqual(retryRequest?.limit, undefined); // No limit
+      // Assert that the no retry attempted.
+      assert.strictEqual(requests, 1);
     }
   });
 

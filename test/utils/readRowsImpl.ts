@@ -375,6 +375,7 @@ export class ReadRowsImpl {
     const stream = readRowsRequestHandler.stream;
     const debugLog = readRowsRequestHandler.debugLog;
     const deadlineExceededError = this.serviceParameters.deadlineExceededError;
+    const hook = this.serviceParameters.hook;
 
     let chunksSent = 0;
     let lastScannedRowKey: string | undefined;
@@ -436,6 +437,10 @@ export class ReadRowsImpl {
           stream.emit('error', error);
           readRowsRequestHandler.cancelled = true;
           break;
+        }
+
+        if (hook) {
+          hook();
         }
 
         if (deadlineExceededError) {
