@@ -559,12 +559,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             //onCallComplete();
           }
         })
-        .on('data', _ => {
+        .on('data', (something: any) => {
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
         })
-        .on('end', () => {
+        .on('metadata', (something: any) => {
+          console.log(something);
+        })
+        .on('end', (something: any) => {
           activeRequestStream = null;
           //onCallComplete();
         });

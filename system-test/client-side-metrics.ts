@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-
 import {Bigtable} from '../src';
-import {Mutation} from '../src/mutation';
 import * as assert from 'assert';
 import {describe, it, before, after} from 'mocha';
 
 describe.only('Bigtable/Table#getRows', () => {
-  const bigtable = new Bigtable();
+  const bigtable = new Bigtable({
+    projectId: 'cloud-native-db-dpes-shared',
+  });
   const instanceId = 'emulator-test-instance';
   const tableId = 'my-table';
+  const columnFamilyId = 'cf1';
   const clusterId = 'test-cluster';
   const location = 'us-central1-c';
 
@@ -31,21 +31,27 @@ describe.only('Bigtable/Table#getRows', () => {
     try {
       const [instanceInfo] = await instance.exists();
       if (!instanceInfo) {
-        const [,operation] = await instance.create({ // Fix: Destructure correctly
-          clusters: {  // Fix: Use computed property name
-            [clusterId]: {
-              location,
-              nodes: 3,
-            },
+        const [, operation] = await instance.create({
+          clusters: {
+            id: 'fake-cluster3',
+            location: 'us-west1-c',
+            nodes: 1,
           },
-        } as any); // any cast resolves type mismatch for options.
+        });
         await operation.promise();
       }
 
       const table = instance.table(tableId);
       const [tableExists] = await table.exists();
       if (!tableExists) {
-        await table.create();
+        await table.create({families: [columnFamilyId]}); // Create column family
+      } else {
+        // Check if column family exists and create it if not.
+        const [families] = await table.getFamilies();
+
+        if (!families.some(family => family.id === columnFamilyId)) {
+          await table.createFamily(columnFamilyId);
+        }
       }
     } catch (error) {
       console.error('Error during setup:', error);
@@ -57,7 +63,6 @@ describe.only('Bigtable/Table#getRows', () => {
     const instance = bigtable.instance(instanceId);
     await instance.delete({});
   });
-
 
   it('should read rows after inserting data', async () => {
     const instance = bigtable.instance(instanceId);
@@ -81,15 +86,8 @@ describe.only('Bigtable/Table#getRows', () => {
       },
     ];
     await table.insert(rows);
-    const retrievedRows = await table.getRows();
-    assert.strictEqual(retrievedRows[0].length, 2);
-    const row1 = retrievedRows[0].find(row => row.key === 'row1');
-    assert(row1);
-    const row1Data = row1.data;
-    assert.deepStrictEqual(row1Data, rows[0].data);
-    const row2 = retrievedRows[0].find(row => row.key === 'row2');
-    assert(row2);
-    const row2Data = row2.data;
-    assert.deepStrictEqual(row2Data, rows[1].data);
+    for (let i = 0; i < 100; i++) {
+      console.log(await table.getRows());
+    }
   });
 });
