@@ -210,7 +210,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * region_tag:bigtable_api_table_readstream
    */
   createReadStream(opts?: GetRowsOptions) {
-    const metricsTracer = this.bigtable.metricsTracerFactory.getMetricsTracer();
+    // Initialize objects for collecting client side metrics.
+    const metricsTracer = this.bigtable.metricsTracerFactory.getMetricsTracer(
+      this,
+      'readRows'
+    );
+    function onCallComplete(finalOperationStatus: string) {
+      metricsTracer.onOperationComplete({
+        retries: numRequestsMade - 1,
+        finalOperationStatus,
+      });
+    }
+
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
     let activeRequestStream: AbortableDuplex | null;
@@ -507,22 +518,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
         return false;
       };
-      /*
-      function onCallComplete() {
-        this.metricsTracer.onOperationComplete({
-          retries: numConsecutiveErrors,
-        });
-      }
-       */
       requestStream
         .on(
           'metadata',
           (metadata: {internalRepr: Map<string, Buffer>; options: {}}) => {
-            const mappedEntries = Array.from(
-              metadata.internalRepr.entries(),
-              ([key, value]) => [key, value.toString()]
-            );
-            console.log(mappedEntries);
+            metricsTracer.onMetadataReceived(metadata);
           }
         )
         .on(
@@ -530,11 +530,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           (status: {
             metadata: {internalRepr: Map<string, Buffer>; options: {}};
           }) => {
-            const mappedEntries = Array.from(
-              status.metadata.internalRepr.entries(),
-              ([key, value]) => [key, value.toString()]
-            );
-            console.log(mappedEntries);
+            metricsTracer.onStatusReceived(status);
           }
         );
       rowStream
@@ -578,17 +574,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               error.code = grpc.status.CANCELLED;
             }
             userStream.emit('error', error);
-            //onCallComplete();
+            onCallComplete('ERROR');
           }
         })
-        .on('data', (something: any) => {
+        .on('data', () => {
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
         })
-        .on('end', (something: any) => {
+        .on('end', () => {
+          numRequestsMade++;
           activeRequestStream = null;
-          //onCallComplete();
+          onCallComplete('SUCCESS');
         });
       rowStreamPipe(rowStream, userStream);
     };
