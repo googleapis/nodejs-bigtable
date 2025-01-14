@@ -496,7 +496,7 @@ describe('Bigtable/ReadRows', () => {
         assert.equal(err.code, 'DEADLINE_EXCEEDED');
       }
 
-      // Assert that the no retry attempted.
+      // Assert that no retry attempted.
       assert.strictEqual(requests.length, 1);
     }
   });
