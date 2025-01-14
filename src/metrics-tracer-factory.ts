@@ -86,6 +86,10 @@ class MetricsTracer {
     console.log('onAttemptComplete');
   }
 
+  onAttemptStart() {
+    console.log('onAttemptStart');
+  }
+
   onOperationComplete(info: OperationInfo) {
     const endTime = new Date();
     const totalTime = endTime.getTime() - this.startTime.getTime();
