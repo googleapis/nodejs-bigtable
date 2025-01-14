@@ -22,7 +22,6 @@ import {
 } from './readRowsServiceParameters';
 import {google} from '../../protos/protos';
 import IRowRange = google.bigtable.v2.IRowRange;
-import { request } from 'http';
 
 // Generate documentation for this function
 /** Pretty prints the request object.
