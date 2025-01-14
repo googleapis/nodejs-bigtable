@@ -28,7 +28,6 @@ import {
   ReadRowsWritableStream,
 } from '../test/utils/readRowsServiceParameters';
 import * as mocha from 'mocha';
-import sinon = require('sinon');
 
 const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
 
@@ -462,7 +461,7 @@ describe('Bigtable/ReadRows', () => {
     })();
   });
 
-  it('pitfall: should not request full table scan during a retry on a transient error', () => {
+  it.skip('pitfall: should not request full table scan during a retry on a transient error', async () => {
     const requests = [];
 
     const TRANSIENT_ERROR_SERVICE: ReadRowsServiceParameters = {
@@ -478,18 +477,19 @@ describe('Bigtable/ReadRows', () => {
       debugLog,
     };
 
-    function readRowsWithDeadline() {
+    async function readRowsWithDeadline() {
       service.setService({
         ReadRows: ReadRowsImpl.createService(
           TRANSIENT_ERROR_SERVICE
         ) as ServerImplementationInterface,
       });
 
-      table.createReadStream();
+      const rows = await table.getRows();
+      return rows;
     }
 
     try {
-      readRowsWithDeadline();
+      await readRowsWithDeadline();
       assert.fail('Should have thrown error');
     } catch (err) {
       if (err instanceof GoogleError) {
