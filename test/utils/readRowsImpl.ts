@@ -433,7 +433,6 @@ export class ReadRowsImpl {
         chunksSent += currentResponseChunks.length;
         await readRowsRequestHandler.sendResponse(response);
         currentResponseChunks = [];
-        console.log(currentResponseChunks)
 
         if (chunkIdx === this.errorAfterChunkNo) {
           debugLog(`sending error after chunk #${chunkIdx}`);
