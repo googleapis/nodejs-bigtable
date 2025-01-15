@@ -53,6 +53,7 @@ class MetricsTracer {
   private methodName: string;
   private receivedFirstResponse: boolean;
   private serverTimeRead: boolean;
+  private lastReadTime: Date | null;
 
   constructor(
     metrics: Metrics,
@@ -67,6 +68,7 @@ class MetricsTracer {
     this.operationStartTime = null;
     this.attemptStartTime = null;
     this.receivedFirstResponse = false;
+    this.lastReadTime = null;
     this.serverTimeRead = false;
   }
 
@@ -106,6 +108,28 @@ class MetricsTracer {
 
   onOperationStart() {
     this.operationStartTime = new Date();
+  }
+
+  onRead() {
+    const currentTime = new Date();
+    if (this.lastReadTime) {
+      this.tabularApiSurface.bigtable.getProjectId_(
+        (err: Error | null, projectId?: string) => {
+          if (projectId && this.lastReadTime) {
+            const dimensions = this.getAttemptDimensions(projectId, 'PENDING');
+            const difference =
+              currentTime.getTime() - this.lastReadTime.getTime();
+            this.metrics.applicationBlockingLatencies.record(
+              difference,
+              dimensions
+            );
+            this.lastReadTime = currentTime;
+          }
+        }
+      );
+    } else {
+      this.lastReadTime = currentTime;
+    }
   }
 
   onAttemptComplete(info: OperationInfo) {

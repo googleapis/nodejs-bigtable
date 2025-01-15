@@ -315,6 +315,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         rowsRead++;
         callback(null, row);
       },
+      read(size) {
+        metricsTracer.onRead();
+        return this.read(size);
+      },
     });
 
     // The caller should be able to call userStream.end() to stop receiving
