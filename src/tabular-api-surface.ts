@@ -219,6 +219,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       metricsTracer.onOperationComplete({
         retries: numRequestsMade - 1,
         finalOperationStatus,
+        connectivityErrorCount,
       });
     }
 
@@ -230,6 +231,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const rowsLimit = options.limit || 0;
     const hasLimit = rowsLimit !== 0;
 
+    let connectivityErrorCount = 0;
     let numConsecutiveErrors = 0;
     let numRequestsMade = 0;
     let retryTimer: NodeJS.Timeout | null;
@@ -345,7 +347,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       return originalEnd(chunk, encoding, cb);
     };
 
+    metricsTracer.onOperationStart();
     const makeNewRequest = () => {
+      metricsTracer.onAttemptStart();
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
       retryTimer = null;
@@ -537,6 +541,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
+          if (new Set([10, 14, 15]).has(error.code)) {
+            // The following grpc errors will be considered connectivity errors:
+            // ABORTED, UNAVAILABLE, DATA_LOSS
+            connectivityErrorCount++;
+          }
           if (IGNORED_STATUS_CODES.has(error.code)) {
             // We ignore the `cancelled` "error", since we are the ones who cause
             // it when the user calls `.abort()`.
@@ -558,6 +567,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               numConsecutiveErrors,
               backOffSettings
             );
+            metricsTracer.onAttemptComplete({finalOperationStatus: 'ERROR'}); // TODO: Replace ERROR with enum
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
             if (
@@ -581,6 +591,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
+          metricsTracer.onFirstResponse();
         })
         .on('end', () => {
           numRequestsMade++;

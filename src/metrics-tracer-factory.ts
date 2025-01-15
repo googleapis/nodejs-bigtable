@@ -14,12 +14,11 @@ import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
 import {TabularApiSurface} from './tabular-api-surface';
 
 interface OperationInfo {
-  retries: number;
+  retries?: number;
   finalOperationStatus: string;
+  connectivityErrorCount?: number;
 }
 
-const buckets = [0.001, 0.01, 0.1, 1, 10, 100];
-const count = 0;
 interface Dimensions {
   projectId: string;
   instanceId: string;
@@ -45,12 +44,15 @@ interface Metrics {
 
 class MetricsTracer {
   // TODO: Consider rename.
-  private startTime: Date;
+  private operationStartTime: Date | null;
+  private attemptStartTime: Date | null;
   private metrics: Metrics;
   private zone: string | null | undefined;
   private cluster: string | null | undefined;
   private tabularApiSurface: TabularApiSurface;
   private methodName: string;
+  private receivedFirstResponse: boolean;
+  private serverTimeRead: boolean;
 
   constructor(
     metrics: Metrics,
@@ -60,15 +62,15 @@ class MetricsTracer {
     this.metrics = metrics;
     this.zone = null;
     this.cluster = null;
-    this.startTime = new Date();
     this.tabularApiSurface = tabularApiSurface;
     this.methodName = methodName;
+    this.operationStartTime = null;
+    this.attemptStartTime = null;
+    this.receivedFirstResponse = false;
+    this.serverTimeRead = false;
   }
 
-  private getDimensions(
-    projectId: string,
-    finalOperationStatus: string
-  ): Dimensions {
+  private getBasicDimensions(projectId: string) {
     return {
       projectId,
       instanceId: this.tabularApiSurface.instance.id,
@@ -77,35 +79,98 @@ class MetricsTracer {
       zone: this.zone,
       appProfileId: this.tabularApiSurface.bigtable.appProfileId,
       methodName: this.methodName,
-      finalOperationStatus: finalOperationStatus,
       clientName: 'nodejs-bigtable',
     };
   }
 
+  private getFinalOperationDimensions(
+    projectId: string,
+    finalOperationStatus: string
+  ): Dimensions {
+    return Object.assign(
+      {
+        finalOperationStatus: finalOperationStatus,
+      },
+      this.getBasicDimensions(projectId)
+    );
+  }
+
+  private getAttemptDimensions(projectId: string, attemptStatus: string) {
+    return Object.assign(
+      {
+        attemptStatus: attemptStatus,
+      },
+      this.getBasicDimensions(projectId)
+    );
+  }
+
+  onOperationStart() {
+    this.operationStartTime = new Date();
+  }
+
   onAttemptComplete(info: OperationInfo) {
-    console.log('onAttemptComplete');
+    const endTime = new Date();
+    this.tabularApiSurface.bigtable.getProjectId_(
+      (err: Error | null, projectId?: string) => {
+        if (projectId && this.attemptStartTime) {
+          const dimensions = this.getAttemptDimensions(
+            projectId,
+            info.finalOperationStatus
+          );
+          const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
+          this.metrics.operationLatencies.record(totalTime, dimensions);
+        }
+      }
+    );
   }
 
   onAttemptStart() {
-    console.log('onAttemptStart');
+    this.attemptStartTime = new Date();
+  }
+
+  onFirstResponse() {
+    const endTime = new Date();
+    this.tabularApiSurface.bigtable.getProjectId_(
+      (err: Error | null, projectId?: string) => {
+        if (projectId && this.operationStartTime) {
+          const dimensions = this.getFinalOperationDimensions(
+            projectId,
+            'PENDING'
+          );
+          const totalTime =
+            endTime.getTime() - this.operationStartTime.getTime();
+          if (!this.receivedFirstResponse) {
+            this.receivedFirstResponse = true;
+            this.metrics.operationLatencies.record(totalTime, dimensions);
+          }
+        }
+      }
+    );
   }
 
   onOperationComplete(info: OperationInfo) {
     const endTime = new Date();
-    const totalTime = endTime.getTime() - this.startTime.getTime();
+    this.onAttemptComplete(info);
     this.tabularApiSurface.bigtable.getProjectId_(
       (err: Error | null, projectId?: string) => {
-        if (projectId) {
-          const dimensions = this.getDimensions(
+        if (projectId && this.operationStartTime) {
+          const totalTime =
+            endTime.getTime() - this.operationStartTime.getTime();
+          const dimensions = this.getFinalOperationDimensions(
             projectId,
             info.finalOperationStatus
           );
           this.metrics.operationLatencies.record(totalTime, dimensions);
           this.metrics.retryCount.add(info.retries, dimensions);
+          if (info.connectivityErrorCount) {
+            this.metrics.connectivityErrorCount.record(
+              info.connectivityErrorCount,
+              dimensions
+            );
+          }
         }
       }
     );
-    console.log('onOperationComplete');
   }
 
   onMetadataReceived(metadata: {
@@ -120,9 +185,22 @@ class MetricsTracer {
     );
     const durationValues = mappedEntries.get('server-timing')?.split('dur=');
     if (durationValues && durationValues[1]) {
-      const serverTime = parseInt(durationValues[1]);
+      if (!this.serverTimeRead) {
+        this.serverTimeRead = true;
+        const serverTime = parseInt(durationValues[1]);
+        this.tabularApiSurface.bigtable.getProjectId_(
+          (err: Error | null, projectId?: string) => {
+            if (projectId) {
+              const dimensions = this.getAttemptDimensions(
+                projectId,
+                'PENDING' // TODO: Adjust this
+              );
+              this.metrics.operationLatencies.record(serverTime, dimensions);
+            }
+          }
+        );
+      }
     }
-    console.log(mappedEntries);
   }
 
   onStatusReceived(status: {
