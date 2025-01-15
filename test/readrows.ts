@@ -461,6 +461,46 @@ describe('Bigtable/ReadRows', () => {
     })();
   });
 
+  it.skip('pitfall: should not request full table scan during a retry on a transient error', async () => {
+    const requests = [];
+
+    const TRANSIENT_ERROR_SERVICE: ReadRowsServiceParameters = {
+      chunkSize: CHUNK_SIZE,
+      valueSize: VALUE_SIZE,
+      chunksPerResponse: CHUNKS_PER_RESPONSE,
+      keyFrom: STANDARD_KEY_FROM,
+      keyTo: STANDARD_KEY_TO,
+      deadlineExceededError: true,
+      hook: request => {
+        requests.push(request);
+      },
+      debugLog,
+    };
+
+    async function readRowsWithDeadline() {
+      service.setService({
+        ReadRows: ReadRowsImpl.createService(
+          TRANSIENT_ERROR_SERVICE
+        ) as ServerImplementationInterface,
+      });
+
+      const rows = await table.getRows();
+      return rows;
+    }
+
+    try {
+      await readRowsWithDeadline();
+      assert.fail('Should have thrown error');
+    } catch (err) {
+      if (err instanceof GoogleError) {
+        assert.equal(err.code, 'DEADLINE_EXCEEDED');
+      }
+
+      // Assert that no retry attempted.
+      assert.strictEqual(requests.length, 1);
+    }
+  });
+
   after(async () => {
     server.shutdown(() => {});
   });
