@@ -1,5 +1,6 @@
 import {describe} from 'mocha';
 import {MetricsTracerFactory} from '../src/metrics-tracer-factory';
+import {TestMeterProvider} from '../common/test-meter-provider';
 
 // TODO: Shared folder
 
@@ -40,59 +41,6 @@ class TestDateProvider {
   }
 }
 
-class TestMeterProvider {
-  private logger: Logger;
-  constructor(logger: Logger) {
-    this.logger = logger;
-  }
-  getMeter(name: string) {
-    return new TestMeter(this.logger, name);
-  }
-}
-
-class TestMeter {
-  private logger: Logger;
-  private name: string;
-  constructor(logger: Logger, name: string) {
-    this.logger = logger;
-    this.name = name;
-  }
-  createHistogram(instrument: string) {
-    return new TestHistogram(this.logger, `${this.name}:${instrument}`);
-  }
-  createCounter(instrument: string) {
-    return new TestCounter(this.logger, `${this.name}:${instrument}`);
-  }
-}
-
-class TestCounter {
-  private logger: Logger;
-  private name: string;
-  constructor(logger: Logger, name: string) {
-    this.logger = logger;
-    this.name = name;
-  }
-  add(value: number) {
-    this.logger.log(
-      `Value added to counter ${this.name} = ${value.toString()} `
-    );
-  }
-}
-
-class TestHistogram {
-  private logger: Logger;
-  private name: string;
-  constructor(logger: Logger, name: string) {
-    this.logger = logger;
-    this.name = name;
-  }
-  record(value: number) {
-    this.logger.log(
-      `Value added to histogram ${this.name} = ${value.toString()} `
-    );
-  }
-}
-
 class FakeBigtable {
   appProfileId?: string;
   metricsTracerFactory: MetricsTracerFactory;
@@ -115,19 +63,6 @@ class FakeInstance {
   id = 'fakeInstanceId';
 }
 
-class FakeTable {
-  private logger: Logger;
-  id = 'fakeTableId';
-  instance = new FakeInstance();
-  bigtable: FakeBigtable;
-
-  constructor(logger: Logger) {
-    this.logger = logger;
-    this.bigtable = new FakeBigtable({
-      meterProvider: new TestMeterProvider(this.logger),
-    });
-  }
-}
 // TODO: Check that there is a server latency for each attempt
 
 describe.only('Bigtable/MetricsTracer', () => {
