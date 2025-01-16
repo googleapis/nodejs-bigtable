@@ -1,6 +1,7 @@
 import {describe} from 'mocha';
 import {MetricsTracerFactory} from '../src/metrics-tracer-factory';
 import {TestMeterProvider} from '../common/test-meter-provider';
+import {TestDateProvider} from '../common/test-date-provider';
 
 // TODO: Shared folder
 
@@ -13,31 +14,6 @@ class Logger {
 
   getMessages() {
     return this.messages;
-  }
-}
-
-class TestDateLike {
-  private fakeDate;
-  constructor(fakeDate: number) {
-    this.fakeDate = fakeDate;
-  }
-  getTime() {
-    return this.fakeDate;
-  }
-}
-
-class TestDateProvider {
-  private dateCounter = 0;
-  private logger: Logger;
-
-  constructor(logger: Logger) {
-    this.logger = logger;
-  }
-  getDate() {
-    // The test assumes exactly 1ms passes between each getDate call.
-    this.dateCounter++;
-    this.logger.log(`getDate call returns ${this.dateCounter.toString()} ms`);
-    return new TestDateLike(this.dateCounter);
   }
 }
 
