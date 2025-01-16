@@ -44,23 +44,77 @@ interface Metrics {
   clientBlockingLatencies: typeof Histogram;
 }
 
+interface DateLike {
+  getTime(): number;
+}
+
+interface DateProvider {
+  getDate(): DateLike;
+}
+
+class DefaultDateProvider {
+  getDate() {
+    return new Date();
+  }
+}
+
+interface ICounter {
+  add(retries: number, dimensions: {}): void;
+}
+
+interface IHistogram {
+  record(value: number, dimensions: {}): void;
+}
+
+interface IMeter {
+  createCounter(instrument: string, attributes: {}): ICounter;
+  createHistogram(instrument: string, attributes: {}): IHistogram;
+}
+
+interface IMeterProvider {
+  getMeter(name: string): IMeter;
+}
+
+export interface ObservabilityOptions {
+  meterProvider: IMeterProvider;
+}
+
+interface IBigtable {
+  appProfileId?: string;
+  getProjectId_(
+    callback: (err: Error | null, projectId?: string) => void
+  ): void;
+}
+
+interface IInstance {
+  id: string;
+}
+
+interface ITabularApiSurface {
+  instance: IInstance;
+  id: string;
+  bigtable: IBigtable;
+}
+
 class MetricsTracer {
   // TODO: Consider rename.
-  private operationStartTime: Date | null;
-  private attemptStartTime: Date | null;
+  private operationStartTime: DateLike | null;
+  private attemptStartTime: DateLike | null;
   private metrics: Metrics;
   private zone: string | null | undefined;
   private cluster: string | null | undefined;
-  private tabularApiSurface: TabularApiSurface;
+  private tabularApiSurface: ITabularApiSurface;
   private methodName: string;
   private receivedFirstResponse: boolean;
   private serverTimeRead: boolean;
-  private lastReadTime: Date | null;
+  private lastReadTime: DateLike | null;
+  private dateProvider: DateProvider;
 
   constructor(
     metrics: Metrics,
-    tabularApiSurface: TabularApiSurface,
-    methodName: string
+    tabularApiSurface: ITabularApiSurface,
+    methodName: string,
+    dateProvider?: DateProvider
   ) {
     this.metrics = metrics;
     this.zone = null;
@@ -72,6 +126,11 @@ class MetricsTracer {
     this.receivedFirstResponse = false;
     this.lastReadTime = null;
     this.serverTimeRead = false;
+    if (dateProvider) {
+      this.dateProvider = dateProvider;
+    } else {
+      this.dateProvider = new DefaultDateProvider();
+    }
   }
 
   private getBasicDimensions(projectId: string) {
@@ -109,11 +168,11 @@ class MetricsTracer {
   }
 
   onOperationStart() {
-    this.operationStartTime = new Date();
+    this.operationStartTime = this.dateProvider.getDate();
   }
 
   onRead() {
-    const currentTime = new Date();
+    const currentTime = this.dateProvider.getDate();
     if (this.lastReadTime) {
       this.tabularApiSurface.bigtable.getProjectId_(
         (err: Error | null, projectId?: string) => {
@@ -135,7 +194,7 @@ class MetricsTracer {
   }
 
   onAttemptComplete(info: OperationInfo) {
-    const endTime = new Date();
+    const endTime = this.dateProvider.getDate();
     this.tabularApiSurface.bigtable.getProjectId_(
       (err: Error | null, projectId?: string) => {
         if (projectId && this.attemptStartTime) {
@@ -151,11 +210,11 @@ class MetricsTracer {
   }
 
   onAttemptStart() {
-    this.attemptStartTime = new Date();
+    this.attemptStartTime = this.dateProvider.getDate();
   }
 
-  onFirstResponse() {
-    const endTime = new Date();
+  onResponse() {
+    const endTime = this.dateProvider.getDate();
     this.tabularApiSurface.bigtable.getProjectId_(
       (err: Error | null, projectId?: string) => {
         if (projectId && this.operationStartTime) {
@@ -167,7 +226,7 @@ class MetricsTracer {
             endTime.getTime() - this.operationStartTime.getTime();
           if (!this.receivedFirstResponse) {
             this.receivedFirstResponse = true;
-            this.metrics.operationLatencies.record(totalTime, dimensions);
+            this.metrics.firstResponseLatencies.record(totalTime, dimensions);
           }
         }
       }
@@ -175,7 +234,7 @@ class MetricsTracer {
   }
 
   onOperationComplete(info: OperationInfo) {
-    const endTime = new Date();
+    const endTime = this.dateProvider.getDate();
     this.onAttemptComplete(info);
     this.tabularApiSurface.bigtable.getProjectId_(
       (err: Error | null, projectId?: string) => {
@@ -221,7 +280,7 @@ class MetricsTracer {
                 projectId,
                 'PENDING' // TODO: Adjust this
               );
-              this.metrics.operationLatencies.record(serverTime, dimensions);
+              this.metrics.serverLatencies.record(serverTime, dimensions);
             }
           }
         );
@@ -248,39 +307,43 @@ class MetricsTracer {
     if (instanceInformation && instanceInformation[1]) {
       this.cluster = instanceInformation[0];
     }
-    console.log(mappedEntries);
   }
 }
 
 export class MetricsTracerFactory {
   private metrics: Metrics;
 
-  constructor() {
+  constructor(observabilityOptions?: ObservabilityOptions) {
     // Create MeterProvider
-    const meterProvider = new MeterProvider({
-      // Create a resource. Fill the `service.*` attributes in with real values for your service.
-      // GcpDetectorSync will add in resource information about the current environment if you are
-      // running on GCP. These resource attributes will be translated to a specific GCP monitored
-      // resource if running on GCP. Otherwise, metrics will be sent with monitored resource
-      // `generic_task`.
-      resource: new Resources.Resource({
-        'service.name': 'example-metric-service',
-        'service.namespace': 'samples',
-        'service.instance.id': '12345',
-        'cloud.resource_manager.project_id': 'cloud-native-db-dpes-shared',
-      }).merge(new ResourceUtil.GcpDetectorSync().detect()),
-      readers: [
-        // Register the exporter
-        new PeriodicExportingMetricReader({
-          // Export metrics every 10 seconds. 5 seconds is the smallest sample period allowed by
-          // Cloud Monitoring.
-          exportIntervalMillis: 10_000,
-          exporter: new MetricExporter({
-            projectId: 'cloud-native-db-dpes-shared', // TODO: Replace later
-          }),
-        }),
-      ],
-    });
+    const meterProvider =
+      observabilityOptions && observabilityOptions.meterProvider
+        ? observabilityOptions.meterProvider
+        : new MeterProvider({
+            // This is the default meter provider
+            // Create a resource. Fill the `service.*` attributes in with real values for your service.
+            // GcpDetectorSync will add in resource information about the current environment if you are
+            // running on GCP. These resource attributes will be translated to a specific GCP monitored
+            // resource if running on GCP. Otherwise, metrics will be sent with monitored resource
+            // `generic_task`.
+            resource: new Resources.Resource({
+              'service.name': 'example-metric-service',
+              'service.namespace': 'samples',
+              'service.instance.id': '12345',
+              'cloud.resource_manager.project_id':
+                'cloud-native-db-dpes-shared',
+            }).merge(new ResourceUtil.GcpDetectorSync().detect()),
+            readers: [
+              // Register the exporter
+              new PeriodicExportingMetricReader({
+                // Export metrics every 10 seconds. 5 seconds is the smallest sample period allowed by
+                // Cloud Monitoring.
+                exportIntervalMillis: 10_000,
+                exporter: new MetricExporter({
+                  projectId: 'cloud-native-db-dpes-shared', // TODO: Replace later
+                }),
+              }),
+            ],
+          });
     const meter = meterProvider.getMeter('bigtable.googleapis.com');
     this.metrics = {
       operationLatencies: meter.createHistogram('operation_latencies', {
@@ -334,7 +397,16 @@ export class MetricsTracerFactory {
     };
   }
 
-  getMetricsTracer(tabularApiSurface: TabularApiSurface, methodName: string) {
-    return new MetricsTracer(this.metrics, tabularApiSurface, methodName);
+  getMetricsTracer(
+    tabularApiSurface: ITabularApiSurface,
+    methodName: string,
+    dateProvider?: DateProvider
+  ) {
+    return new MetricsTracer(
+      this.metrics,
+      tabularApiSurface,
+      methodName,
+      dateProvider
+    );
   }
 }

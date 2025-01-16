@@ -595,7 +595,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
-          metricsTracer.onFirstResponse();
+          metricsTracer.onResponse();
         })
         .on('end', () => {
           numRequestsMade++;
