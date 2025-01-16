@@ -203,7 +203,7 @@ class MetricsTracer {
             info.finalOperationStatus
           );
           const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
-          this.metrics.operationLatencies.record(totalTime, dimensions);
+          this.metrics.attemptLatencies.record(totalTime, dimensions);
         }
       }
     );
