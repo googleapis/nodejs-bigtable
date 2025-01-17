@@ -35,7 +35,7 @@ import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
-import {MetricsTracerFactory} from './client-side-metrics/metrics-tracer-factory';
+// import {MetricsTracerFactory} from './client-side-metrics/metrics-tracer-factory';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
