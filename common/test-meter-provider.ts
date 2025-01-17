@@ -1,24 +1,12 @@
-export class TestMeterProvider {
-  private logger: ILogger;
-  constructor(logger: ILogger) {
-    this.logger = logger;
-  }
+import {WithLogger, WithLoggerAndName} from './logger';
+
+export class TestMeterProvider extends WithLogger {
   getMeter(name: string) {
     return new TestMeter(this.logger, name);
   }
 }
 
-interface ILogger {
-  log(message: string): void;
-}
-
-class TestMeter {
-  private logger: ILogger;
-  private name: string;
-  constructor(logger: ILogger, name: string) {
-    this.logger = logger;
-    this.name = name;
-  }
+class TestMeter extends WithLoggerAndName {
   createHistogram(instrument: string) {
     return new TestHistogram(this.logger, `${this.name}:${instrument}`);
   }
@@ -27,13 +15,7 @@ class TestMeter {
   }
 }
 
-class TestCounter {
-  private logger: ILogger;
-  private name: string;
-  constructor(logger: ILogger, name: string) {
-    this.logger = logger;
-    this.name = name;
-  }
+class TestCounter extends WithLoggerAndName {
   add(value: number) {
     this.logger.log(
       `Value added to counter ${this.name} = ${value.toString()}`
@@ -41,13 +23,7 @@ class TestCounter {
   }
 }
 
-class TestHistogram {
-  private logger: ILogger;
-  private name: string;
-  constructor(logger: ILogger, name: string) {
-    this.logger = logger;
-    this.name = name;
-  }
+class TestHistogram extends WithLoggerAndName {
   record(value: number) {
     this.logger.log(
       `Value added to histogram ${this.name} = ${value.toString()}`

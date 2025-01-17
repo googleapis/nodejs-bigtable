@@ -1,6 +1,4 @@
-interface ILogger {
-  log(message: string): void;
-}
+import {WithLogger} from './logger';
 
 class TestDateLike {
   private fakeDate;
@@ -13,13 +11,8 @@ class TestDateLike {
 }
 
 // TODO: ILogger in separate file
-export class TestDateProvider {
+export class TestDateProvider extends WithLogger {
   private dateCounter = 0;
-  private logger: ILogger;
-
-  constructor(logger: ILogger) {
-    this.logger = logger;
-  }
   getDate() {
     // The test assumes exactly 1s passes between each getDate call.
     this.dateCounter = this.dateCounter + 1000;
