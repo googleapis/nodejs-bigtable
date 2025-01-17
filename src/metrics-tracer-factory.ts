@@ -9,11 +9,9 @@ const {
   Counter,
   PeriodicExportingMetricReader,
 } = require('@opentelemetry/sdk-metrics');
-// import { MeterProvider, PeriodicExportingMetricReader, Histogram} from '@opentelemetry/sdk-metrics';
 import * as Resources from '@opentelemetry/resources';
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
-import {TabularApiSurface} from './tabular-api-surface';
 
 interface OperationInfo {
   retries?: number;
