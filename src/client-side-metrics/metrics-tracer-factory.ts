@@ -9,12 +9,28 @@ import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-expor
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
 import {ObservabilityOptions} from './observability-options';
 
+/**
+ * Information about a Bigtable operation.
+ */
 interface OperationInfo {
+  /**
+   * The number of retries attempted for the operation.
+   */
   retries?: number;
+  /**
+   * The final status of the operation (e.g., 'OK', 'ERROR').
+   */
   finalOperationStatus: string;
+  /**
+   * Number of times a connectivity error occurred during the operation.
+   */
   connectivityErrorCount?: number;
 }
 
+/**
+ * Dimensions (labels) associated with a Bigtable metric. These
+ * dimensions provide context for the metric values.
+ */
 interface Dimensions {
   projectId: string;
   instanceId: string;
@@ -27,6 +43,10 @@ interface Dimensions {
   clientName: string;
 }
 
+/**
+ * A collection of OpenTelemetry metric instruments used to record
+ * Bigtable client-side metrics.
+ */
 interface Metrics {
   operationLatencies: typeof Histogram;
   attemptLatencies: typeof Histogram;
@@ -38,20 +58,46 @@ interface Metrics {
   clientBlockingLatencies: typeof Histogram;
 }
 
+/**
+ * An interface representing a Date-like object.  Provides a `getTime` method
+ * for retrieving the time value in milliseconds.  Used for abstracting time
+ * in tests.
+ */
 interface DateLike {
+  /**
+   * Returns the time value in milliseconds.
+   * @returns The time value in milliseconds.
+   */
   getTime(): number;
 }
 
+/**
+ * Interface for a provider that returns DateLike objects. Used for mocking dates in tests.
+ */
 interface DateProvider {
+  /**
+   * Returns a DateLike object.
+   * @returns A DateLike object representing the current time or a fake time value.
+   */
   getDate(): DateLike;
 }
 
+/**
+ * The default DateProvider implementation.  Returns the current date and time.
+ */
 class DefaultDateProvider {
+  /**
+   * Returns a new Date object representing the current time.
+   * @returns {Date} The current date and time.
+   */
   getDate() {
     return new Date();
   }
 }
 
+/**
+ * An interface representing a tabular API surface, such as a Bigtable table.
+ */
 export interface ITabularApiSurface {
   instance: {
     id: string;
@@ -65,6 +111,9 @@ export interface ITabularApiSurface {
   };
 }
 
+/**
+ * A class for tracing and recording client-side metrics related to Bigtable operations.
+ */
 class MetricsTracer {
   private operationStartTime: DateLike | null;
   private attemptStartTime: DateLike | null;
@@ -78,6 +127,12 @@ class MetricsTracer {
   private lastReadTime: DateLike | null;
   private dateProvider: DateProvider;
 
+  /**
+   * @param metrics The metrics instruments to record data with.
+   * @param tabularApiSurface Information about the Bigtable table being accessed.
+   * @param methodName The name of the method being traced.
+   * @param dateProvider A provider for date/time information (for testing).
+   */
   constructor(
     metrics: Metrics,
     tabularApiSurface: ITabularApiSurface,
@@ -135,10 +190,16 @@ class MetricsTracer {
     );
   }
 
+  /**
+   * Called when the operation starts. Records the start time.
+   */
   onOperationStart() {
     this.operationStartTime = this.dateProvider.getDate();
   }
 
+  /**
+   * Called after the client reads a row. Records application blocking latencies.
+   */
   onRead() {
     const currentTime = this.dateProvider.getDate();
     if (this.lastReadTime) {
@@ -161,6 +222,10 @@ class MetricsTracer {
     }
   }
 
+  /**
+   * Called when an attempt (e.g., an RPC attempt) completes. Records attempt latencies.
+   * @param info Information about the completed attempt.
+   */
   onAttemptComplete(info: OperationInfo) {
     const endTime = this.dateProvider.getDate();
     this.tabularApiSurface.bigtable.getProjectId_(
@@ -177,10 +242,16 @@ class MetricsTracer {
     );
   }
 
+  /**
+   * Called when a new attempt starts. Records the start time of the attempt.
+   */
   onAttemptStart() {
     this.attemptStartTime = this.dateProvider.getDate();
   }
 
+  /**
+   * Called when the first response is received. Records first response latencies.
+   */
   onResponse() {
     const endTime = this.dateProvider.getDate();
     this.tabularApiSurface.bigtable.getProjectId_(
@@ -201,6 +272,11 @@ class MetricsTracer {
     );
   }
 
+  /**
+   * Called when an operation completes (successfully or unsuccessfully).
+   * Records operation latencies, retry counts, and connectivity error counts.
+   * @param info Information about the completed operation.
+   */
   onOperationComplete(info: OperationInfo) {
     const endTime = this.dateProvider.getDate();
     this.onAttemptComplete(info);
@@ -226,6 +302,10 @@ class MetricsTracer {
     );
   }
 
+  /**
+   * Called when metadata is received. Extracts server timing information if available.
+   * @param metadata The received metadata.
+   */
   onMetadataReceived(metadata: {
     internalRepr: Map<string, Buffer>;
     options: {};
@@ -256,6 +336,10 @@ class MetricsTracer {
     }
   }
 
+  /**
+   * Called when status information is received. Extracts zone and cluster information.
+   * @param status The received status information.
+   */
   onStatusReceived(status: {
     metadata: {internalRepr: Map<string, Buffer>; options: {}};
   }) {
@@ -278,9 +362,16 @@ class MetricsTracer {
   }
 }
 
+/**
+ * A factory class for creating MetricsTracer instances. Initializes
+ * OpenTelemetry metrics instruments.
+ */
 export class MetricsTracerFactory {
   private metrics: Metrics;
 
+  /**
+   * @param observabilityOptions Options for configuring client-side metrics observability.
+   */
   constructor(observabilityOptions?: ObservabilityOptions) {
     // Create MeterProvider
     const meterProvider =
@@ -365,6 +456,13 @@ export class MetricsTracerFactory {
     };
   }
 
+  /**
+   * Creates a new MetricsTracer instance.
+   * @param tabularApiSurface The Bigtable table being accessed.
+   * @param methodName The name of the method being traced.
+   * @param dateProvider An optional DateProvider for testing purposes.
+   * @returns A new MetricsTracer instance.
+   */
   getMetricsTracer(
     tabularApiSurface: ITabularApiSurface,
     methodName: string,
