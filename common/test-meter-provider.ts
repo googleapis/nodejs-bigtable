@@ -1,21 +1,52 @@
 import {WithLogger, WithLoggerAndName} from './logger';
 
+/**
+ * A test implementation of a MeterProvider.  This MeterProvider is used for testing purposes.
+ * It doesn't send metrics to a backend, but instead logs metric updates for verification.
+ */
 export class TestMeterProvider extends WithLogger {
+  /**
+   * Returns a TestMeter, that logs metric updates for verification.
+   * @param {string} name The name of the meter.
+   * @returns {TestMeter}
+   */
   getMeter(name: string) {
     return new TestMeter(this.logger, name);
   }
 }
 
+/**
+ * A test implementation of a Meter.  Used for testing purposes.  It doesn't send metrics to a backend,
+ * but instead logs metric updates for verification.
+ */
 class TestMeter extends WithLoggerAndName {
+  /**
+   * Creates a test histogram.  The TestHistogram logs when values are recorded.
+   * @param {string} instrument The name of the instrument.
+   * @returns {TestHistogram}
+   */
   createHistogram(instrument: string) {
     return new TestHistogram(this.logger, `${this.name}:${instrument}`);
   }
+  /**
+   * Creates a test counter. The TestCounter logs when values are added.
+   * @param {string} instrument The name of the instrument.
+   * @returns {TestCounter}
+   */
   createCounter(instrument: string) {
     return new TestCounter(this.logger, `${this.name}:${instrument}`);
   }
 }
 
+/**
+ * A test implementation of a Counter. Used for testing purposes. It doesn't send metrics to a backend,
+ * but instead logs value additions for verification.
+ */
 class TestCounter extends WithLoggerAndName {
+  /**
+   * Simulates adding a value to the counter. Logs the value and the counter name.
+   * @param {number} value The value to be added to the counter.
+   */
   add(value: number) {
     this.logger.log(
       `Value added to counter ${this.name} = ${value.toString()}`
@@ -23,7 +54,15 @@ class TestCounter extends WithLoggerAndName {
   }
 }
 
+/**
+ * A test implementation of a Histogram. Used for testing purposes. It doesn't send metrics to a backend,
+ * but instead logs recorded values for verification.
+ */
 class TestHistogram extends WithLoggerAndName {
+  /**
+   * Simulates recording a value in the histogram. Logs the value and the histogram name.
+   * @param {number} value The value to be recorded in the histogram.
+   */
   record(value: number) {
     this.logger.log(
       `Value added to histogram ${this.name} = ${value.toString()}`
