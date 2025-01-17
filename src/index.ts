@@ -35,6 +35,7 @@ import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
+// TODO: Uncomment the next line after client-side metrics are well tested.
 // import {MetricsTracerFactory} from './client-side-metrics/metrics-tracer-factory';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -396,10 +397,13 @@ export class Bigtable {
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
+  // TODO: Uncomment the next line after client-side metrics are well tested.
   // metricsTracerFactory: MetricsTracerFactory;
 
   constructor(options: BigtableOptions = {}) {
+    // TODO: Uncomment the next line after client-side metrics are well tested.
     // this.metricsTracerFactory = new MetricsTracerFactory();
+
     // Determine what scopes are needed.
     // It is the union of the scopes on all three clients.
     const scopes: string[] = [];
@@ -871,6 +875,7 @@ export class Bigtable {
         gaxStream
           .on('error', stream.destroy.bind(stream))
           .on('metadata', stream.emit.bind(stream, 'metadata'))
+          // TODO: Uncomment the next line after client-side metrics are well tested.
           // .on('status', stream.emit.bind(stream, 'status'))
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
