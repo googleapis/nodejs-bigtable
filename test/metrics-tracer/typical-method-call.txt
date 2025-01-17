@@ -1,0 +1,43 @@
+1. The operation starts
+getDate call returns 1 ms
+2. The attempt starts.
+getDate call returns 2 ms
+3. Client receives status information.
+4. Client receives metadata.
+Value added to histogram bigtable.googleapis.com:server_latencies = 1001
+5. Client receives first row.
+getDate call returns 3 ms
+Value added to histogram bigtable.googleapis.com:first_response_latencies = 2
+6. Client receives metadata.
+7. Client receives second row.
+getDate call returns 4 ms
+8. A transient error occurs.
+getDate call returns 5 ms
+Value added to histogram bigtable.googleapis.com:attempt_latencies = 3
+9. After a timeout, the second attempt is made.
+getDate call returns 6 ms
+10. Client receives status information.
+11. Client receives metadata.
+12. Client receives third row.
+getDate call returns 7 ms
+13. Client receives metadata.
+14. Client receives fourth row.
+getDate call returns 8 ms
+15. User reads row 1
+getDate call returns 9 ms
+16. User reads row 2
+getDate call returns 10 ms
+Value added to histogram bigtable.googleapis.com:application_blocking_latencies = 1
+17. User reads row 3
+getDate call returns 11 ms
+Value added to histogram bigtable.googleapis.com:application_blocking_latencies = 1
+18. User reads row 4
+getDate call returns 12 ms
+Value added to histogram bigtable.googleapis.com:application_blocking_latencies = 1
+19. Stream ends, operation completes
+getDate call returns 13 ms
+getDate call returns 14 ms
+Value added to histogram bigtable.googleapis.com:attempt_latencies = 8
+Value added to histogram bigtable.googleapis.com:operation_latencies = 12
+Value added to counter bigtable.googleapis.com:retry_count = 1
+Value added to histogram bigtable.googleapis.com:connectivity_error_count = 1

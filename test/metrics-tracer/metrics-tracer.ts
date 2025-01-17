@@ -1,7 +1,9 @@
 import {describe} from 'mocha';
-import {MetricsTracerFactory} from '../src/metrics-tracer-factory';
-import {TestMeterProvider} from '../common/test-meter-provider';
-import {TestDateProvider} from '../common/test-date-provider';
+import {MetricsTracerFactory} from '../../src/metrics-tracer-factory';
+import {TestMeterProvider} from '../../common/test-meter-provider';
+import {TestDateProvider} from '../../common/test-date-provider';
+import * as assert from 'assert';
+import * as fs from 'fs';
 
 // TODO: Shared folder
 
@@ -123,7 +125,12 @@ describe.only('Bigtable/MetricsTracer', () => {
     }
     const table = new FakeTable();
     table.fakeMethod();
+    const expectedOutput = fs.readFileSync(
+      './test/metrics-tracer/typical-method-call.txt',
+      'utf8'
+    );
     // Ensure events occurred in the right order here:
+    assert.strictEqual(logger.getMessages().join('\n'), expectedOutput);
     console.log('test');
   });
 });
