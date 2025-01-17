@@ -210,6 +210,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * region_tag:bigtable_api_table_readstream
    */
   createReadStream(opts?: GetRowsOptions) {
+    /*
     // Initialize objects for collecting client side metrics.
     const metricsTracer = this.bigtable.metricsTracerFactory.getMetricsTracer(
       this,
@@ -222,6 +223,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         connectivityErrorCount,
       });
     }
+     */
 
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
@@ -315,10 +317,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         rowsRead++;
         callback(null, row);
       },
+      /*
       read(size) {
         metricsTracer.onRead();
         return this.read(size);
       },
+       */
     });
 
     // The caller should be able to call userStream.end() to stop receiving
@@ -351,9 +355,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       return originalEnd(chunk, encoding, cb);
     };
 
-    metricsTracer.onOperationStart();
+    // metricsTracer.onOperationStart();
     const makeNewRequest = () => {
-      metricsTracer.onAttemptStart();
+      // metricsTracer.onAttemptStart();
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
       retryTimer = null;
@@ -526,6 +530,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
         return false;
       };
+      /*
       requestStream
         .on(
           'metadata',
@@ -541,6 +546,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             metricsTracer.onStatusReceived(status);
           }
         );
+       */
       rowStream
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
@@ -571,7 +577,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               numConsecutiveErrors,
               backOffSettings
             );
-            metricsTracer.onAttemptComplete({finalOperationStatus: 'ERROR'}); // TODO: Replace ERROR with enum
+            // metricsTracer.onAttemptComplete({finalOperationStatus: 'ERROR'}); // TODO: Replace ERROR with enum
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
             if (
@@ -588,19 +594,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               error.code = grpc.status.CANCELLED;
             }
             userStream.emit('error', error);
-            onCallComplete('ERROR');
+            // onCallComplete('ERROR');
           }
         })
         .on('data', () => {
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
-          metricsTracer.onResponse();
+          // metricsTracer.onResponse();
         })
         .on('end', () => {
           numRequestsMade++;
           activeRequestStream = null;
-          onCallComplete('SUCCESS');
+          // onCallComplete('SUCCESS');
         });
       rowStreamPipe(rowStream, userStream);
     };
