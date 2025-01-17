@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {Dimensions} from '../../common/client-side-metrics-dimensions';
+
 const {
   MeterProvider,
   Histogram,
@@ -39,28 +41,12 @@ interface OperationInfo {
    * Number of times a connectivity error occurred during the operation.
    */
   connectivityErrorCount?: number;
-  isStreaming: string;
+  streamingOperation: string;
 }
 
 interface AttemptInfo {
   finalOperationStatus: string;
-  isStreaming: string;
-}
-
-/**
- * Dimensions (labels) associated with a Bigtable metric. These
- * dimensions provide context for the metric values.
- */
-interface Dimensions {
-  projectId: string;
-  instanceId: string;
-  table: string;
-  cluster?: string | null;
-  zone?: string | null;
-  appProfileId?: string;
-  methodName: string;
-  finalOperationStatus: string;
-  clientName: string;
+  streamingOperation: string;
 }
 
 /**
@@ -189,7 +175,21 @@ class MetricsTracer {
     };
   }
 
-  private getFinalOperationDimensions(
+  private getOperationLatencyDimensions(
+    projectId: string,
+    finalOperationStatus: string,
+    streamOperation?: string
+  ): Dimensions {
+    return Object.assign(
+      {
+        finalOperationStatus: finalOperationStatus,
+        streamingOperation: streamOperation,
+      },
+      this.getBasicDimensions(projectId)
+    );
+  }
+
+  private getFinalOpDimensions(
     projectId: string,
     finalOperationStatus: string
   ): Dimensions {
@@ -201,7 +201,21 @@ class MetricsTracer {
     );
   }
 
-  private getAttemptDimensions(projectId: string, attemptStatus: string) {
+  private getAttemptDimensions(
+    projectId: string,
+    attemptStatus: string,
+    streamingOperation: string
+  ) {
+    return Object.assign(
+      {
+        attemptStatus: attemptStatus,
+        streamingOperation: streamingOperation,
+      },
+      this.getBasicDimensions(projectId)
+    );
+  }
+
+  private getAttemptStatusDimensions(projectId: string, attemptStatus: string) {
     return Object.assign(
       {
         attemptStatus: attemptStatus,
@@ -226,7 +240,7 @@ class MetricsTracer {
       this.tabularApiSurface.bigtable.getProjectId_(
         (err: Error | null, projectId?: string) => {
           if (projectId && this.lastReadTime) {
-            const dimensions = this.getAttemptDimensions(projectId, 'PENDING');
+            const dimensions = this.getBasicDimensions(projectId);
             const difference =
               currentTime.getTime() - this.lastReadTime.getTime();
             this.metrics.applicationBlockingLatencies.record(
@@ -253,7 +267,8 @@ class MetricsTracer {
         if (projectId && this.attemptStartTime) {
           const dimensions = this.getAttemptDimensions(
             projectId,
-            info.finalOperationStatus
+            info.finalOperationStatus,
+            info.streamingOperation
           );
           const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
           this.metrics.attemptLatencies.record(totalTime, dimensions);
@@ -272,14 +287,14 @@ class MetricsTracer {
   /**
    * Called when the first response is received. Records first response latencies.
    */
-  onResponse() {
+  onResponse(finalOperationStatus: string) {
     const endTime = this.dateProvider.getDate();
     this.tabularApiSurface.bigtable.getProjectId_(
       (err: Error | null, projectId?: string) => {
         if (projectId && this.operationStartTime) {
-          const dimensions = this.getFinalOperationDimensions(
+          const dimensions = this.getFinalOpDimensions(
             projectId,
-            'PENDING'
+            finalOperationStatus
           );
           const totalTime =
             endTime.getTime() - this.operationStartTime.getTime();
@@ -305,16 +320,36 @@ class MetricsTracer {
         if (projectId && this.operationStartTime) {
           const totalTime =
             endTime.getTime() - this.operationStartTime.getTime();
-          const dimensions = this.getFinalOperationDimensions(
-            projectId,
-            info.finalOperationStatus
-          );
-          this.metrics.operationLatencies.record(totalTime, dimensions);
-          this.metrics.retryCount.add(info.retries, dimensions);
+          {
+            // This block records operation latency metrics.
+            const operationLatencyDimensions =
+              this.getOperationLatencyDimensions(
+                projectId,
+                info.finalOperationStatus,
+                info.streamingOperation
+              );
+            this.metrics.operationLatencies.record(
+              totalTime,
+              operationLatencyDimensions
+            );
+          }
+          if (info.retries) {
+            // This block records the retry count metrics
+            const retryCountDimensions = this.getFinalOpDimensions(
+              projectId,
+              info.finalOperationStatus
+            );
+            this.metrics.retryCount.add(info.retries, retryCountDimensions);
+          }
           if (info.connectivityErrorCount) {
+            // This block records the connectivity error count metrics
+            const connectivityCountDimensions = this.getAttemptStatusDimensions(
+              projectId,
+              info.finalOperationStatus
+            );
             this.metrics.connectivityErrorCount.record(
               info.connectivityErrorCount,
-              dimensions
+              connectivityCountDimensions
             );
           }
         }
@@ -324,12 +359,16 @@ class MetricsTracer {
 
   /**
    * Called when metadata is received. Extracts server timing information if available.
+   * @param info Information about the completed attempt.
    * @param metadata The received metadata.
    */
-  onMetadataReceived(metadata: {
-    internalRepr: Map<string, Buffer>;
-    options: {};
-  }) {
+  onMetadataReceived(
+    info: AttemptInfo,
+    metadata: {
+      internalRepr: Map<string, Buffer>;
+      options: {};
+    }
+  ) {
     const mappedEntries = new Map(
       Array.from(metadata.internalRepr.entries(), ([key, value]) => [
         key,
@@ -346,7 +385,8 @@ class MetricsTracer {
             if (projectId) {
               const dimensions = this.getAttemptDimensions(
                 projectId,
-                'PENDING' // TODO: Adjust this
+                info.finalOperationStatus,
+                info.streamingOperation
               );
               this.metrics.serverLatencies.record(serverTime, dimensions);
             }

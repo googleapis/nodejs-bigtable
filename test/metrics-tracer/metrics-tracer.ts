@@ -62,6 +62,10 @@ describe('Bigtable/MetricsTracer', () => {
       });
 
       fakeMethod(): void {
+        const standardAttemptInfo = {
+          finalOperationStatus: 'PENDING',
+          streamingOperation: 'YES',
+        };
         function createMetadata(duration: string) {
           return {
             internalRepr: new Map([
@@ -94,27 +98,42 @@ describe('Bigtable/MetricsTracer', () => {
         logger.log('3. Client receives status information.');
         metricsTracer.onStatusReceived(status);
         logger.log('4. Client receives metadata.');
-        metricsTracer.onMetadataReceived(createMetadata('101'));
+        metricsTracer.onMetadataReceived(
+          standardAttemptInfo,
+          createMetadata('101')
+        );
         logger.log('5. Client receives first row.');
-        metricsTracer.onResponse();
+        metricsTracer.onResponse('PENDING');
         logger.log('6. Client receives metadata.');
-        metricsTracer.onMetadataReceived(createMetadata('102'));
+        metricsTracer.onMetadataReceived(
+          standardAttemptInfo,
+          createMetadata('102')
+        );
         logger.log('7. Client receives second row.');
-        metricsTracer.onResponse();
+        metricsTracer.onResponse('PENDING');
         logger.log('8. A transient error occurs.');
-        metricsTracer.onAttemptComplete({finalOperationStatus: 'ERROR'});
+        metricsTracer.onAttemptComplete({
+          finalOperationStatus: 'ERROR',
+          streamingOperation: 'YES',
+        });
         logger.log('9. After a timeout, the second attempt is made.');
         metricsTracer.onAttemptStart();
         logger.log('10. Client receives status information.');
         metricsTracer.onStatusReceived(status);
         logger.log('11. Client receives metadata.');
-        metricsTracer.onMetadataReceived(createMetadata('103'));
+        metricsTracer.onMetadataReceived(
+          standardAttemptInfo,
+          createMetadata('103')
+        );
         logger.log('12. Client receives third row.');
-        metricsTracer.onResponse();
+        metricsTracer.onResponse('PENDING');
         logger.log('13. Client receives metadata.');
-        metricsTracer.onMetadataReceived(createMetadata('104'));
+        metricsTracer.onMetadataReceived(
+          {finalOperationStatus: 'PENDING', streamingOperation: 'YES'},
+          createMetadata('104')
+        );
         logger.log('14. Client receives fourth row.');
-        metricsTracer.onResponse();
+        metricsTracer.onResponse('PENDING');
         logger.log('15. User reads row 1');
         metricsTracer.onRead();
         logger.log('16. User reads row 2');
@@ -128,6 +147,7 @@ describe('Bigtable/MetricsTracer', () => {
           retries: 1,
           finalOperationStatus: 'SUCCESS',
           connectivityErrorCount: 1,
+          streamingOperation: 'YES',
         });
       }
     }
