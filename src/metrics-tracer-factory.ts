@@ -95,7 +95,6 @@ interface ITabularApiSurface {
 }
 
 class MetricsTracer {
-  // TODO: Consider rename.
   private operationStartTime: DateLike | null;
   private attemptStartTime: DateLike | null;
   private metrics: Metrics;
