@@ -86,11 +86,11 @@ describe.only('Bigtable/MetricsTracer', () => {
         logger.log('3. Client receives status information.');
         metricsTracer.onStatusReceived(status);
         logger.log('4. Client receives metadata.');
-        metricsTracer.onMetadataReceived(createMetadata('1001'));
+        metricsTracer.onMetadataReceived(createMetadata('101'));
         logger.log('5. Client receives first row.');
         metricsTracer.onResponse();
         logger.log('6. Client receives metadata.');
-        metricsTracer.onMetadataReceived(createMetadata('1002'));
+        metricsTracer.onMetadataReceived(createMetadata('102'));
         logger.log('7. Client receives second row.');
         metricsTracer.onResponse();
         logger.log('8. A transient error occurs.');
@@ -100,11 +100,11 @@ describe.only('Bigtable/MetricsTracer', () => {
         logger.log('10. Client receives status information.');
         metricsTracer.onStatusReceived(status);
         logger.log('11. Client receives metadata.');
-        metricsTracer.onMetadataReceived(createMetadata('1003'));
+        metricsTracer.onMetadataReceived(createMetadata('103'));
         logger.log('12. Client receives third row.');
         metricsTracer.onResponse();
         logger.log('13. Client receives metadata.');
-        metricsTracer.onMetadataReceived(createMetadata('1004'));
+        metricsTracer.onMetadataReceived(createMetadata('104'));
         logger.log('14. Client receives fourth row.');
         metricsTracer.onResponse();
         logger.log('15. User reads row 1');
@@ -130,7 +130,7 @@ describe.only('Bigtable/MetricsTracer', () => {
       'utf8'
     );
     // Ensure events occurred in the right order here:
-    assert.strictEqual(logger.getMessages().join('\n'), expectedOutput);
+    assert.strictEqual(logger.getMessages().join('\n') + '\n', expectedOutput);
     console.log('test');
   });
 });

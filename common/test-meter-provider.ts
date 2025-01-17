@@ -36,7 +36,7 @@ class TestCounter {
   }
   add(value: number) {
     this.logger.log(
-      `Value added to counter ${this.name} = ${value.toString()} `
+      `Value added to counter ${this.name} = ${value.toString()}`
     );
   }
 }
@@ -50,7 +50,7 @@ class TestHistogram {
   }
   record(value: number) {
     this.logger.log(
-      `Value added to histogram ${this.name} = ${value.toString()} `
+      `Value added to histogram ${this.name} = ${value.toString()}`
     );
   }
 }
