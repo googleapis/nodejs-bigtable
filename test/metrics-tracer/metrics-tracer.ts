@@ -46,14 +46,10 @@ class FakeBigtable {
     callback(null, 'my-project');
   }
 }
-// TODO: Put fixtures into a shared folder that are going to be used
-// by system tests.
 
 class FakeInstance {
   id = 'fakeInstanceId';
 }
-
-// TODO: Check that there is a server latency for each attempt
 
 describe('Bigtable/MetricsTracer', () => {
   it('should record the right metrics with a typical method call', () => {
