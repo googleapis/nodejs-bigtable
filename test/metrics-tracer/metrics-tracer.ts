@@ -5,8 +5,6 @@ import {TestDateProvider} from '../../common/test-date-provider';
 import * as assert from 'assert';
 import * as fs from 'fs';
 
-// TODO: Shared folder
-
 class Logger {
   private messages: string[] = [];
 
@@ -43,7 +41,7 @@ class FakeInstance {
 
 // TODO: Check that there is a server latency for each attempt
 
-describe.only('Bigtable/MetricsTracer', () => {
+describe('Bigtable/MetricsTracer', () => {
   it('should record the right metrics with a typical method call', () => {
     const logger = new Logger();
     class FakeTable {
