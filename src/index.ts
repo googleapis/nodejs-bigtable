@@ -396,10 +396,10 @@ export class Bigtable {
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
-  metricsTracerFactory: MetricsTracerFactory;
+  // metricsTracerFactory: MetricsTracerFactory;
 
   constructor(options: BigtableOptions = {}) {
-    this.metricsTracerFactory = new MetricsTracerFactory();
+    // this.metricsTracerFactory = new MetricsTracerFactory();
     // Determine what scopes are needed.
     // It is the union of the scopes on all three clients.
     const scopes: string[] = [];
@@ -871,7 +871,7 @@ export class Bigtable {
         gaxStream
           .on('error', stream.destroy.bind(stream))
           .on('metadata', stream.emit.bind(stream, 'metadata'))
-          .on('status', stream.emit.bind(stream, 'status'))
+          // .on('status', stream.emit.bind(stream, 'status'))
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
       });
