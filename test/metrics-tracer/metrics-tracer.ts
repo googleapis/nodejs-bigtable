@@ -1,5 +1,5 @@
 import {describe} from 'mocha';
-import {MetricsTracerFactory} from '../../src/metrics-tracer-factory';
+import {MetricsTracerFactory} from '../../src/client-side-metrics/metrics-tracer-factory';
 import {TestMeterProvider} from '../../common/test-meter-provider';
 import {TestDateProvider} from '../../common/test-date-provider';
 import * as assert from 'assert';

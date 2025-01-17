@@ -1,5 +1,5 @@
 // import * as SDKMetrics from '@opentelemetry/sdk-metrics';
-import {Table} from './table';
+import {Table} from '../table';
 
 // TODO: Mock out Date - ie. DateWrapper
 
@@ -12,6 +12,7 @@ const {
 import * as Resources from '@opentelemetry/resources';
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
+import {ObservabilityOptions} from './observability-options';
 
 interface OperationInfo {
   retries?: number;
@@ -54,27 +55,6 @@ class DefaultDateProvider {
   getDate() {
     return new Date();
   }
-}
-
-interface ICounter {
-  add(retries: number, dimensions: {}): void;
-}
-
-interface IHistogram {
-  record(value: number, dimensions: {}): void;
-}
-
-interface IMeter {
-  createCounter(instrument: string, attributes: {}): ICounter;
-  createHistogram(instrument: string, attributes: {}): IHistogram;
-}
-
-interface IMeterProvider {
-  getMeter(name: string): IMeter;
-}
-
-export interface ObservabilityOptions {
-  meterProvider: IMeterProvider;
 }
 
 interface IBigtable {
