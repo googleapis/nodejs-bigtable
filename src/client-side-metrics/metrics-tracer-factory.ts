@@ -39,6 +39,12 @@ interface OperationInfo {
    * Number of times a connectivity error occurred during the operation.
    */
   connectivityErrorCount?: number;
+  isStreaming: string;
+}
+
+interface AttemptInfo {
+  finalOperationStatus: string;
+  isStreaming: string;
 }
 
 /**
@@ -240,7 +246,7 @@ class MetricsTracer {
    * Called when an attempt (e.g., an RPC attempt) completes. Records attempt latencies.
    * @param info Information about the completed attempt.
    */
-  onAttemptComplete(info: OperationInfo) {
+  onAttemptComplete(info: AttemptInfo) {
     const endTime = this.dateProvider.getDate();
     this.tabularApiSurface.bigtable.getProjectId_(
       (err: Error | null, projectId?: string) => {
