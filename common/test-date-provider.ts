@@ -21,8 +21,8 @@ export class TestDateProvider {
     this.logger = logger;
   }
   getDate() {
-    // The test assumes exactly 1ms passes between each getDate call.
-    this.dateCounter++;
+    // The test assumes exactly 1s passes between each getDate call.
+    this.dateCounter = this.dateCounter + 1000;
     this.logger.log(`getDate call returns ${this.dateCounter.toString()} ms`);
     return new TestDateLike(this.dateCounter);
   }
