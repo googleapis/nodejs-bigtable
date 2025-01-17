@@ -1,8 +1,3 @@
-// import * as SDKMetrics from '@opentelemetry/sdk-metrics';
-import {Table} from '../table';
-
-// TODO: Mock out Date - ie. DateWrapper
-
 const {
   MeterProvider,
   Histogram,
@@ -57,21 +52,17 @@ class DefaultDateProvider {
   }
 }
 
-interface IBigtable {
-  appProfileId?: string;
-  getProjectId_(
-    callback: (err: Error | null, projectId?: string) => void
-  ): void;
-}
-
-interface IInstance {
+export interface ITabularApiSurface {
+  instance: {
+    id: string;
+  };
   id: string;
-}
-
-interface ITabularApiSurface {
-  instance: IInstance;
-  id: string;
-  bigtable: IBigtable;
+  bigtable: {
+    appProfileId?: string;
+    getProjectId_(
+      callback: (err: Error | null, projectId?: string) => void
+    ): void;
+  };
 }
 
 class MetricsTracer {
