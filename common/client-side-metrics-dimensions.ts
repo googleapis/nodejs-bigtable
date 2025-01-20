@@ -30,6 +30,15 @@ export interface Dimensions {
   clientName: string;
 }
 
+/**
+ * Converts a Dimensions object to a string representation.
+ * This string representation is suitable for use as labels or tags.
+ * The order of dimensions in the output string is fixed:
+ * projectId;instanceId;table;cluster;zone;appProfileId;methodName;attemptStatus;finalOperationStatus;streamingOperation;clientName
+ * If a dimension is null or undefined, the empty string is used.
+ * @param {Dimensions} d The Dimensions object to convert.
+ * @returns A string representation of the dimensions.
+ */
 export function dimensionsToString(d: Dimensions) {
   const p = (dimension?: string | null) => (dimension ? dimension : '');
   return `${p(d.projectId)};${p(d.instanceId)};${p(d.table)};${p(d.cluster)};${p(d.zone)};${p(d.appProfileId)};${p(d.methodName)};${p(d.attemptStatus)};${p(d.finalOperationStatus)};${p(d.streamingOperation)};${p(d.clientName)}`;
