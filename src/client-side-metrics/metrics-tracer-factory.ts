@@ -172,6 +172,12 @@ class MetricsTracer {
     }
   }
 
+  /**
+   * Assembles the basic dimensions for metrics. These dimensions provide
+   * context about the Bigtable environment and the operation being performed.
+   * @param {string} projectId The Google Cloud project ID.
+   * @returns {object} An object containing the basic dimensions.
+   */
   private getBasicDimensions(projectId: string) {
     return {
       projectId,
@@ -185,6 +191,15 @@ class MetricsTracer {
     };
   }
 
+  /**
+   * Assembles the dimensions for operation latency metrics.  These dimensions
+   * provide context about the Bigtable environment, the operation being performed, and the final status of the operation.
+   * Includes whether the operation was a streaming operation or not.
+   * @param {string} projectId The Google Cloud project ID.
+   * @param {string} finalOperationStatus The final status of the operation.
+   * @param {string} streamOperation Whether the operation was a streaming operation or not.
+   * @returns An object containing the dimensions for operation latency metrics.
+   */
   private getOperationLatencyDimensions(
     projectId: string,
     finalOperationStatus: string,
