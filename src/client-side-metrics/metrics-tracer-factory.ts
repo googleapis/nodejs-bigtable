@@ -445,7 +445,7 @@ class MetricsTracer {
       this.zone = instanceInformation[0];
     }
     if (instanceInformation && instanceInformation[1]) {
-      this.cluster = instanceInformation[0];
+      this.cluster = instanceInformation[1];
     }
   }
 }
