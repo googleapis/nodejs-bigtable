@@ -192,6 +192,5 @@ describe.only('Bigtable/MetricsTracer', () => {
     );
     // Ensure events occurred in the right order here:
     assert.strictEqual(logger.getMessages().join('\n') + '\n', expectedOutput);
-    console.log('test');
   });
 });
