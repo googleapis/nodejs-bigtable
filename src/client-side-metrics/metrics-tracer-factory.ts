@@ -121,9 +121,6 @@ export interface ITabularApiSurface {
   id: string;
   bigtable: {
     appProfileId?: string;
-    getProjectId_(
-      callback: (err: Error | null, projectId?: string) => void
-    ): void;
   };
 }
 
@@ -141,6 +138,7 @@ class MetricsTracer {
   private cluster: string | null | undefined;
   private tabularApiSurface: ITabularApiSurface;
   private methodName: string;
+  private projectId?: string;
   private receivedFirstResponse: boolean;
   private serverTimeRead: boolean;
   private lastReadTime: DateLike | null;
@@ -156,6 +154,7 @@ class MetricsTracer {
     metrics: Metrics,
     tabularApiSurface: ITabularApiSurface,
     methodName: string,
+    projectId?: string,
     dateProvider?: DateProvider
   ) {
     this.metrics = metrics;
@@ -168,6 +167,7 @@ class MetricsTracer {
     this.receivedFirstResponse = false;
     this.lastReadTime = null;
     this.serverTimeRead = false;
+    this.projectId = projectId;
     if (dateProvider) {
       this.dateProvider = dateProvider;
     } else {
@@ -287,21 +287,17 @@ class MetricsTracer {
    */
   onRead() {
     const currentTime = this.dateProvider.getDate();
+    const projectId = this.projectId;
     if (this.lastReadTime) {
-      this.tabularApiSurface.bigtable.getProjectId_(
-        (err: Error | null, projectId?: string) => {
-          if (projectId && this.lastReadTime) {
-            const dimensions = this.getBasicDimensions(projectId);
-            const difference =
-              currentTime.getTime() - this.lastReadTime.getTime();
-            this.metrics.applicationBlockingLatencies.record(
-              difference,
-              dimensions
-            );
-            this.lastReadTime = currentTime;
-          }
-        }
-      );
+      if (projectId && this.lastReadTime) {
+        const dimensions = this.getBasicDimensions(projectId);
+        const difference = currentTime.getTime() - this.lastReadTime.getTime();
+        this.metrics.applicationBlockingLatencies.record(
+          difference,
+          dimensions
+        );
+        this.lastReadTime = currentTime;
+      }
     } else {
       this.lastReadTime = currentTime;
     }
@@ -313,19 +309,16 @@ class MetricsTracer {
    */
   onAttemptComplete(info: AttemptInfo) {
     const endTime = this.dateProvider.getDate();
-    this.tabularApiSurface.bigtable.getProjectId_(
-      (err: Error | null, projectId?: string) => {
-        if (projectId && this.attemptStartTime) {
-          const dimensions = this.getAttemptDimensions(
-            projectId,
-            info.finalOperationStatus,
-            info.streamingOperation
-          );
-          const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
-          this.metrics.attemptLatencies.record(totalTime, dimensions);
-        }
-      }
-    );
+    const projectId = this.projectId;
+    if (projectId && this.attemptStartTime) {
+      const dimensions = this.getAttemptDimensions(
+        projectId,
+        info.finalOperationStatus,
+        info.streamingOperation
+      );
+      const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
+      this.metrics.attemptLatencies.record(totalTime, dimensions);
+    }
   }
 
   /**
@@ -340,22 +333,18 @@ class MetricsTracer {
    */
   onResponse(finalOperationStatus: string) {
     const endTime = this.dateProvider.getDate();
-    this.tabularApiSurface.bigtable.getProjectId_(
-      (err: Error | null, projectId?: string) => {
-        if (projectId && this.operationStartTime) {
-          const dimensions = this.getFinalOpDimensions(
-            projectId,
-            finalOperationStatus
-          );
-          const totalTime =
-            endTime.getTime() - this.operationStartTime.getTime();
-          if (!this.receivedFirstResponse) {
-            this.receivedFirstResponse = true;
-            this.metrics.firstResponseLatencies.record(totalTime, dimensions);
-          }
-        }
+    const projectId = this.projectId;
+    if (projectId && this.operationStartTime) {
+      const dimensions = this.getFinalOpDimensions(
+        projectId,
+        finalOperationStatus
+      );
+      const totalTime = endTime.getTime() - this.operationStartTime.getTime();
+      if (!this.receivedFirstResponse) {
+        this.receivedFirstResponse = true;
+        this.metrics.firstResponseLatencies.record(totalTime, dimensions);
       }
-    );
+    }
   }
 
   /**
@@ -365,47 +354,42 @@ class MetricsTracer {
    */
   onOperationComplete(info: OperationInfo) {
     const endTime = this.dateProvider.getDate();
+    const projectId = this.projectId;
     this.onAttemptComplete(info);
-    this.tabularApiSurface.bigtable.getProjectId_(
-      (err: Error | null, projectId?: string) => {
-        if (projectId && this.operationStartTime) {
-          const totalTime =
-            endTime.getTime() - this.operationStartTime.getTime();
-          {
-            // This block records operation latency metrics.
-            const operationLatencyDimensions =
-              this.getOperationLatencyDimensions(
-                projectId,
-                info.finalOperationStatus,
-                info.streamingOperation
-              );
-            this.metrics.operationLatencies.record(
-              totalTime,
-              operationLatencyDimensions
-            );
-          }
-          if (info.retries) {
-            // This block records the retry count metrics
-            const retryCountDimensions = this.getFinalOpDimensions(
-              projectId,
-              info.finalOperationStatus
-            );
-            this.metrics.retryCount.add(info.retries, retryCountDimensions);
-          }
-          if (info.connectivityErrorCount) {
-            // This block records the connectivity error count metrics
-            const connectivityCountDimensions = this.getAttemptStatusDimensions(
-              projectId,
-              info.finalOperationStatus
-            );
-            this.metrics.connectivityErrorCount.record(
-              info.connectivityErrorCount,
-              connectivityCountDimensions
-            );
-          }
-        }
+    if (projectId && this.operationStartTime) {
+      const totalTime = endTime.getTime() - this.operationStartTime.getTime();
+      {
+        // This block records operation latency metrics.
+        const operationLatencyDimensions = this.getOperationLatencyDimensions(
+          projectId,
+          info.finalOperationStatus,
+          info.streamingOperation
+        );
+        this.metrics.operationLatencies.record(
+          totalTime,
+          operationLatencyDimensions
+        );
       }
-    );
+      if (info.retries) {
+        // This block records the retry count metrics
+        const retryCountDimensions = this.getFinalOpDimensions(
+          projectId,
+          info.finalOperationStatus
+        );
+        this.metrics.retryCount.add(info.retries, retryCountDimensions);
+      }
+      if (info.connectivityErrorCount) {
+        // This block records the connectivity error count metrics
+        const connectivityCountDimensions = this.getAttemptStatusDimensions(
+          projectId,
+          info.finalOperationStatus
+        );
+        this.metrics.connectivityErrorCount.record(
+          info.connectivityErrorCount,
+          connectivityCountDimensions
+        );
+      }
+    }
   }
 
   /**
@@ -431,18 +415,15 @@ class MetricsTracer {
       if (!this.serverTimeRead) {
         this.serverTimeRead = true;
         const serverTime = parseInt(durationValues[1]);
-        this.tabularApiSurface.bigtable.getProjectId_(
-          (err: Error | null, projectId?: string) => {
-            if (projectId) {
-              const dimensions = this.getAttemptDimensions(
-                projectId,
-                info.finalOperationStatus,
-                info.streamingOperation
-              );
-              this.metrics.serverLatencies.record(serverTime, dimensions);
-            }
-          }
-        );
+        const projectId = this.projectId;
+        if (projectId) {
+          const dimensions = this.getAttemptDimensions(
+            projectId,
+            info.finalOperationStatus,
+            info.streamingOperation
+          );
+          this.metrics.serverLatencies.record(serverTime, dimensions);
+        }
       }
     }
   }
@@ -600,6 +581,7 @@ export class MetricsTracerFactory {
       metrics,
       tabularApiSurface,
       methodName,
+      projectId,
       this.dateProvider
     );
   }
