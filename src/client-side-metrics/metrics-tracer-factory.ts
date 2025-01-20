@@ -171,7 +171,7 @@ class MetricsTracer {
       zone: this.zone,
       appProfileId: this.tabularApiSurface.bigtable.appProfileId,
       methodName: this.methodName,
-      clientName: 'nodejs-bigtable',
+      clientName: 'nodejs-bigtable', // TODO: Add version
     };
   }
 
@@ -446,11 +446,7 @@ export class MetricsTracerFactory {
             // resource if running on GCP. Otherwise, metrics will be sent with monitored resource
             // `generic_task`.
             resource: new Resources.Resource({
-              'service.name': 'example-metric-service',
-              'service.namespace': 'samples',
-              'service.instance.id': '12345',
-              'cloud.resource_manager.project_id':
-                'cloud-native-db-dpes-shared',
+              'service.name': 'bigtable-metrics',
             }).merge(new ResourceUtil.GcpDetectorSync().detect()),
             readers: [
               // Register the exporter
