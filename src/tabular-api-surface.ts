@@ -332,6 +332,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
+
     const makeNewRequest = () => {
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
