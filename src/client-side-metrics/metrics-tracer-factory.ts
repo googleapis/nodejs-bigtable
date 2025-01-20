@@ -24,7 +24,7 @@ import * as Resources from '@opentelemetry/resources';
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
 import {ObservabilityOptions} from './observability-options';
-const {version} = require('../../package.json');
+import * as fs from 'fs';
 
 /**
  * Information about a Bigtable operation.
@@ -126,6 +126,9 @@ export interface ITabularApiSurface {
     ): void;
   };
 }
+
+const packageJSON = fs.readFileSync('package.json');
+const version = JSON.parse(packageJSON.toString()).version;
 
 /**
  * A class for tracing and recording client-side metrics related to Bigtable operations.
