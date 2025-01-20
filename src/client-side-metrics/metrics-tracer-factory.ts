@@ -217,6 +217,13 @@ class MetricsTracer {
     );
   }
 
+  /**
+   * Assembles the dimensions for final operation metrics. These dimensions provide
+   * context about the Bigtable environment and the operation being performed.
+   * @param projectId The Google Cloud project ID.
+   * @param finalOperationStatus The final status of the operation.
+   * @returns An object containing the dimensions for final operation metrics.
+   */
   private getFinalOpDimensions(
     projectId: string,
     finalOperationStatus: string
@@ -229,6 +236,15 @@ class MetricsTracer {
     );
   }
 
+  /**
+   * Assembles the dimensions for attempt metrics. These dimensions provide context
+   * about the Bigtable environment, the operation being performed, and the status of the attempt.
+   * Includes whether the operation was a streaming operation or not.
+   * @param projectId The Google Cloud project ID.
+   * @param attemptStatus The status of the attempt.
+   * @param streamingOperation Whether the operation was a streaming operation or not.
+   * @returns An object containing the dimensions for attempt metrics.
+   */
   private getAttemptDimensions(
     projectId: string,
     attemptStatus: string,
@@ -243,6 +259,13 @@ class MetricsTracer {
     );
   }
 
+  /**
+   * Assembles the dimensions for attempt status metrics. These dimensions provide context
+   * about the Bigtable environment and the operation being performed.
+   * @param projectId The Google Cloud project ID.
+   * @param attemptStatus The status of the attempt.
+   * @returns An object containing the dimensions for attempt status metrics.
+   */
   private getAttemptStatusDimensions(projectId: string, attemptStatus: string) {
     return Object.assign(
       {
