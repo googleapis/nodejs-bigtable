@@ -210,22 +210,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * region_tag:bigtable_api_table_readstream
    */
   createReadStream(opts?: GetRowsOptions) {
-    // TODO: Uncomment the next line after client-side metrics are well tested.
-    /*
-    // Initialize objects for collecting client side metrics.
-    const metricsTracer = this.bigtable.metricsTracerFactory.getMetricsTracer(
-      this,
-      'readRows'
-    );
-    function onCallComplete(finalOperationStatus: string) {
-      metricsTracer.onOperationComplete({
-        retries: numRequestsMade - 1,
-        finalOperationStatus,
-        connectivityErrorCount,
-      });
-    }
-     */
-
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
     let activeRequestStream: AbortableDuplex | null;
@@ -234,8 +218,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const rowsLimit = options.limit || 0;
     const hasLimit = rowsLimit !== 0;
 
-    // TODO: Uncomment the next line after client-side metrics are well tested.
-    // let connectivityErrorCount = 0;
     let numConsecutiveErrors = 0;
     let numRequestsMade = 0;
     let retryTimer: NodeJS.Timeout | null;
@@ -319,13 +301,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         rowsRead++;
         callback(null, row);
       },
-      // TODO: Uncomment the next line after client-side metrics are well tested.
-      /*
-      read(size) {
-        metricsTracer.onRead();
-        return this.read(size);
-      },
-       */
     });
 
     // The caller should be able to call userStream.end() to stop receiving
@@ -357,13 +332,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
-
-    // TODO: Uncomment the next line after client-side metrics are well tested.
-    // metricsTracer.onOperationStart();
     const makeNewRequest = () => {
-      // TODO: Uncomment the next line after client-side metrics are well tested.
-      // metricsTracer.onAttemptStart();
-
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
       retryTimer = null;
@@ -537,36 +506,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return false;
       };
 
-      // TODO: Uncomment the next line after client-side metrics are well tested.
-      /*
-      requestStream
-        .on(
-          'metadata',
-          (metadata: {internalRepr: Map<string, Buffer>; options: {}}) => {
-            metricsTracer.onMetadataReceived(metadata);
-          }
-        )
-        .on(
-          'status',
-          (status: {
-            metadata: {internalRepr: Map<string, Buffer>; options: {}};
-          }) => {
-            metricsTracer.onStatusReceived(status);
-          }
-        );
-       */
       rowStream
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
-          // TODO: Uncomment the next line after client-side metrics are well tested.
-          /*
-          if (new Set([10, 14, 15]).has(error.code)) {
-            // The following grpc errors will be considered connectivity errors:
-            // ABORTED, UNAVAILABLE, DATA_LOSS
-            connectivityErrorCount++;
-          }
-           */
           if (IGNORED_STATUS_CODES.has(error.code)) {
             // We ignore the `cancelled` "error", since we are the ones who cause
             // it when the user calls `.abort()`.
@@ -588,8 +531,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               numConsecutiveErrors,
               backOffSettings
             );
-            // TODO: Uncomment the next line after client-side metrics are well tested.
-            // metricsTracer.onAttemptComplete({finalOperationStatus: 'ERROR'}); // TODO: Replace ERROR with enum
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
             if (
@@ -606,23 +547,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               error.code = grpc.status.CANCELLED;
             }
             userStream.emit('error', error);
-            // TODO: Uncomment the next line after client-side metrics are well tested.
-            // onCallComplete('ERROR');
           }
         })
         .on('data', _ => {
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
-          // TODO: Uncomment the next line after client-side metrics are well tested.
-          // metricsTracer.onResponse();
         })
         .on('end', () => {
-          // TODO: Uncomment the next line after client-side metrics are well tested.
-          // numRequestsMade++;
           activeRequestStream = null;
-          // TODO: Uncomment the next line after client-side metrics are well tested.
-          // onCallComplete('SUCCESS');
         });
       rowStreamPipe(rowStream, userStream);
     };
