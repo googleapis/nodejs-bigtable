@@ -24,7 +24,7 @@ import * as Resources from '@opentelemetry/resources';
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
 import {ObservabilityOptions} from './observability-options';
-const { version } = require('../../package.json');
+const {version} = require('../../package.json');
 
 /**
  * Information about a Bigtable operation.
