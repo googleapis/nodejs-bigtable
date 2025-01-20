@@ -99,7 +99,7 @@ describe.only('Bigtable/MetricsTracer', () => {
         function createMetadata(duration: string) {
           return {
             internalRepr: new Map([
-              ['server-timing', Buffer.from(`dur=${duration}`)],
+              ['server-timing', Buffer.from(`gfet4t7; dur=${duration}`)],
             ]),
             options: {},
           };
@@ -107,7 +107,10 @@ describe.only('Bigtable/MetricsTracer', () => {
         const status = {
           metadata: {
             internalRepr: new Map([
-              ['x-goog-ext-425905942-bin', Buffer.from('doLater')],
+              [
+                'x-goog-ext-425905942-bin',
+                Buffer.from('\n\nus-west1-c \rfake-cluster3'),
+              ],
             ]),
             options: {},
           },
