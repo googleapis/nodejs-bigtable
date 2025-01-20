@@ -42,15 +42,28 @@ class Logger {
   }
 }
 
+/**
+ * A fake implementation of the Bigtable client for testing purposes.  Provides a
+ * metricsTracerFactory and a stubbed getProjectId_ method.
+ */
 class FakeBigtable {
   appProfileId?: string;
   metricsTracerFactory: MetricsTracerFactory;
+  /**
+   * @param observabilityOptions Options for configuring client-side metrics
+   *     observability, including a TestMeterProvider.
+   */
   constructor(observabilityOptions: {meterProvider: TestMeterProvider}) {
     this.metricsTracerFactory = new MetricsTracerFactory({
       meterProvider: observabilityOptions.meterProvider,
     });
   }
 
+  /**
+   * A stubbed method that simulates retrieving the project ID.  Always returns
+   * 'my-project'.
+   * @param callback A callback function that receives the project ID (or an error).
+   */
   getProjectId_(
     callback: (err: Error | null, projectId?: string) => void
   ): void {
@@ -58,7 +71,13 @@ class FakeBigtable {
   }
 }
 
+/**
+ * A fake implementation of a Bigtable instance for testing purposes.  Provides only an ID.
+ */
 class FakeInstance {
+  /**
+   * The ID of the fake instance.
+   */
   id = 'fakeInstanceId';
 }
 
