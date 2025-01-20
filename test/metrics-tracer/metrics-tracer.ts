@@ -19,13 +19,24 @@ import {TestDateProvider} from '../../common/test-date-provider';
 import * as assert from 'assert';
 import * as fs from 'fs';
 
+/**
+ * A basic logger class that stores log messages in an array. Useful for testing.
+ */
 class Logger {
   private messages: string[] = [];
 
+  /**
+   * Logs a message by adding it to the internal message array.
+   * @param message The message to be logged.
+   */
   log(message: string) {
     this.messages.push(message);
   }
 
+  /**
+   * Retrieves all logged messages.
+   * @returns An array of logged messages.
+   */
   getMessages() {
     return this.messages;
   }
