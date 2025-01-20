@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {Attributes} from '../../common/client-side-metrics-attributes';
+
 /**
  * The Counter interface for recording increments of a metric.
  */
@@ -19,9 +21,9 @@ interface ICounter {
   /**
    * Adds a value to the counter.
    * @param retries The value to be added to the counter.
-   * @param dimensions The dimensions associated with this value.
+   * @param attributes The attributes associated with this value.
    */
-  add(retries: number, dimensions: {}): void;
+  add(retries: number, attributes: Attributes): void;
 }
 
 /**
@@ -30,10 +32,10 @@ interface ICounter {
 interface IHistogram {
   /**
    * Records a value in the histogram.
-   * @param value The value to be recorded in the histogram.
-   * @param dimensions The dimensions associated with this value.
+   * @param {number} value The value to be recorded in the histogram.
+   * @param attributes The attributes associated with this value.
    */
-  record(value: number, dimensions: {}): void;
+  record(value: number, attributes: Attributes): void;
 }
 
 /**
@@ -42,18 +44,18 @@ interface IHistogram {
 interface IMeter {
   /**
    * Creates a Counter instrument, which counts increments of a given metric.
-   * @param instrument The name of the counter instrument.
-   * @param attributes The attributes associated with this counter.
+   * @param {string} instrument The name of the counter instrument.
+   * @param {Attributes} attributes The attributes associated with this counter.
    * @returns {ICounter} A Counter instance.
    */
-  createCounter(instrument: string, attributes: {}): ICounter;
+  createCounter(instrument: string, attributes: Attributes): ICounter;
   /**
    * Creates a Histogram instrument, which records distributions of values for a given metric.
-   * @param instrument The name of the histogram instrument.
-   * @param attributes The attributes associated with this histogram.
+   * @param {string} instrument The name of the histogram instrument.
+   * @param {Attributes} attributes The attributes associated with this histogram.
    * @returns {IHistogram} A Histogram instance.
    */
-  createHistogram(instrument: string, attributes: {}): IHistogram;
+  createHistogram(instrument: string, attributes: Attributes): IHistogram;
 }
 
 /**
@@ -62,7 +64,7 @@ interface IMeter {
 interface IMeterProvider {
   /**
    * Returns a Meter, which can be used to create instruments for recording measurements.
-   * @param name The name of the Meter.
+   * @param {string} name The name of the Meter.
    * @returns {IMeter} A Meter instance.
    */
   getMeter(name: string): IMeter;

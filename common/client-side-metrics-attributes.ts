@@ -13,8 +13,8 @@
 // limitations under the License.
 
 /**
- * Dimensions (labels) associated with a Bigtable metric. These
- * dimensions provide context for the metric values.
+ * Attributes (labels) associated with a Bigtable metric. These
+ * attributes provide context for the metric values.
  */
 export interface Attributes {
   projectId: string;
@@ -31,13 +31,13 @@ export interface Attributes {
 }
 
 /**
- * Converts a Dimensions object to a string representation.
+ * Converts an Attributes object to a string representation.
  * This string representation is suitable for use as labels or tags.
- * The order of dimensions in the output string is fixed:
+ * The order of attributes in the output string is fixed:
  * projectId;instanceId;table;cluster;zone;appProfileId;methodName;attemptStatus;finalOperationStatus;streamingOperation;clientName
- * If a dimension is null or undefined, the empty string is used.
- * @param {Attributes} a The Dimensions object to convert.
- * @returns A string representation of the dimensions.
+ * If an attribute is null or undefined, the empty string is used.
+ * @param {Attributes} a The Attributes object to convert.
+ * @returns A string representation of the attribute.
  */
 export function attributesToString(a: Attributes) {
   const p = (attribute?: string | null) => (attribute ? attribute : '');
