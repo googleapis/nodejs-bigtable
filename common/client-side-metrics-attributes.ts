@@ -16,7 +16,7 @@
  * Dimensions (labels) associated with a Bigtable metric. These
  * dimensions provide context for the metric values.
  */
-export interface Dimensions {
+export interface Attributes {
   projectId: string;
   instanceId: string;
   table: string;
@@ -36,10 +36,10 @@ export interface Dimensions {
  * The order of dimensions in the output string is fixed:
  * projectId;instanceId;table;cluster;zone;appProfileId;methodName;attemptStatus;finalOperationStatus;streamingOperation;clientName
  * If a dimension is null or undefined, the empty string is used.
- * @param {Dimensions} d The Dimensions object to convert.
+ * @param {Attributes} a The Dimensions object to convert.
  * @returns A string representation of the dimensions.
  */
-export function dimensionsToString(d: Dimensions) {
-  const p = (dimension?: string | null) => (dimension ? dimension : '');
-  return `${p(d.projectId)};${p(d.instanceId)};${p(d.table)};${p(d.cluster)};${p(d.zone)};${p(d.appProfileId)};${p(d.methodName)};${p(d.attemptStatus)};${p(d.finalOperationStatus)};${p(d.streamingOperation)};nodejs-bigtable`;
+export function attributesToString(a: Attributes) {
+  const p = (attribute?: string | null) => (attribute ? attribute : '');
+  return `${p(a.projectId)};${p(a.instanceId)};${p(a.table)};${p(a.cluster)};${p(a.zone)};${p(a.appProfileId)};${p(a.methodName)};${p(a.attemptStatus)};${p(a.finalOperationStatus)};${p(a.streamingOperation)};nodejs-bigtable`;
 }

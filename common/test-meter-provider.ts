@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {WithLogger, WithLoggerAndName} from './logger';
-import {Dimensions, dimensionsToString} from './client-side-metrics-dimensions';
+import {Attributes, attributesToString} from './client-side-metrics-attributes';
 
 /**
  * A test implementation of a MeterProvider.  This MeterProvider is used for testing purposes.
@@ -61,11 +61,11 @@ class TestCounter extends WithLoggerAndName {
   /**
    * Simulates adding a value to the counter. Logs the value and the counter name.
    * @param {number} value The value to be added to the counter.
-   * @param {Dimensions} dimensions The dimensions associated with the value.
+   * @param {Attributes} attributes The attributes associated with the value.
    */
-  add(value: number, dimensions: Dimensions) {
+  add(value: number, attributes: Attributes) {
     this.logger.log(
-      `Value added to counter ${this.name} = ${value.toString()} with dimensions ${dimensionsToString(dimensions)}`
+      `Value added to counter ${this.name} = ${value.toString()} with attributes ${attributesToString(attributes)}`
     );
   }
 }
@@ -78,11 +78,11 @@ class TestHistogram extends WithLoggerAndName {
   /**
    * Simulates recording a value in the histogram. Logs the value and the histogram name.
    * @param {number} value The value to be recorded in the histogram.
-   * @param {Dimensions} dimensions The dimensions associated with the value.
+   * @param {Attributes} attributes The attributes associated with the value.
    */
-  record(value: number, dimensions: Dimensions) {
+  record(value: number, attributes: Attributes) {
     this.logger.log(
-      `Value added to histogram ${this.name} = ${value.toString()} with dimensions ${dimensionsToString(dimensions)}`
+      `Value added to histogram ${this.name} = ${value.toString()} with attributes ${attributesToString(attributes)}`
     );
   }
 }

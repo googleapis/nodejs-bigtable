@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Dimensions} from '../../common/client-side-metrics-dimensions';
+import {Attributes} from '../../common/client-side-metrics-attributes';
 
 const {
   MeterProvider,
@@ -176,12 +176,12 @@ class MetricsTracer {
   }
 
   /**
-   * Assembles the basic dimensions for metrics. These dimensions provide
+   * Assembles the basic attributes for metrics. These attributes provide
    * context about the Bigtable environment and the operation being performed.
    * @param {string} projectId The Google Cloud project ID.
-   * @returns {object} An object containing the basic dimensions.
+   * @returns {object} An object containing the basic attributes.
    */
-  private getBasicDimensions(projectId: string) {
+  private getBasicAttributes(projectId: string) {
     return {
       projectId,
       instanceId: this.tabularApiSurface.instance.id,
@@ -195,57 +195,57 @@ class MetricsTracer {
   }
 
   /**
-   * Assembles the dimensions for operation latency metrics.  These dimensions
+   * Assembles the attributes for operation latency metrics.  These attributes
    * provide context about the Bigtable environment, the operation being performed, and the final status of the operation.
    * Includes whether the operation was a streaming operation or not.
    * @param {string} projectId The Google Cloud project ID.
    * @param {string} finalOperationStatus The final status of the operation.
    * @param {string} streamOperation Whether the operation was a streaming operation or not.
-   * @returns An object containing the dimensions for operation latency metrics.
+   * @returns An object containing the attributes for operation latency metrics.
    */
-  private getOperationLatencyDimensions(
+  private getOperationLatencyAttributes(
     projectId: string,
     finalOperationStatus: string,
     streamOperation?: string
-  ): Dimensions {
+  ): Attributes {
     return Object.assign(
       {
         finalOperationStatus: finalOperationStatus,
         streamingOperation: streamOperation,
       },
-      this.getBasicDimensions(projectId)
+      this.getBasicAttributes(projectId)
     );
   }
 
   /**
-   * Assembles the dimensions for final operation metrics. These dimensions provide
+   * Assembles the attributes for final operation metrics. These attributes provide
    * context about the Bigtable environment and the operation being performed.
    * @param projectId The Google Cloud project ID.
    * @param finalOperationStatus The final status of the operation.
-   * @returns An object containing the dimensions for final operation metrics.
+   * @returns An object containing the attributes for final operation metrics.
    */
-  private getFinalOpDimensions(
+  private getFinalOpAttributes(
     projectId: string,
     finalOperationStatus: string
-  ): Dimensions {
+  ): Attributes {
     return Object.assign(
       {
         finalOperationStatus: finalOperationStatus,
       },
-      this.getBasicDimensions(projectId)
+      this.getBasicAttributes(projectId)
     );
   }
 
   /**
-   * Assembles the dimensions for attempt metrics. These dimensions provide context
+   * Assembles the attributes for attempt metrics. These attributes provide context
    * about the Bigtable environment, the operation being performed, and the status of the attempt.
    * Includes whether the operation was a streaming operation or not.
    * @param projectId The Google Cloud project ID.
    * @param attemptStatus The status of the attempt.
    * @param streamingOperation Whether the operation was a streaming operation or not.
-   * @returns An object containing the dimensions for attempt metrics.
+   * @returns An object containing the attributes for attempt metrics.
    */
-  private getAttemptDimensions(
+  private getAttemptAttributes(
     projectId: string,
     attemptStatus: string,
     streamingOperation: string
@@ -255,23 +255,23 @@ class MetricsTracer {
         attemptStatus: attemptStatus,
         streamingOperation: streamingOperation,
       },
-      this.getBasicDimensions(projectId)
+      this.getBasicAttributes(projectId)
     );
   }
 
   /**
-   * Assembles the dimensions for attempt status metrics. These dimensions provide context
+   * Assembles the attributes for attempt status metrics. These attributes provide context
    * about the Bigtable environment and the operation being performed.
    * @param projectId The Google Cloud project ID.
    * @param attemptStatus The status of the attempt.
-   * @returns An object containing the dimensions for attempt status metrics.
+   * @returns An object containing the attributes for attempt status metrics.
    */
-  private getAttemptStatusDimensions(projectId: string, attemptStatus: string) {
+  private getAttemptStatusAttributes(projectId: string, attemptStatus: string) {
     return Object.assign(
       {
         attemptStatus: attemptStatus,
       },
-      this.getBasicDimensions(projectId)
+      this.getBasicAttributes(projectId)
     );
   }
 
@@ -290,11 +290,11 @@ class MetricsTracer {
     const projectId = this.projectId;
     if (this.lastReadTime) {
       if (projectId && this.lastReadTime) {
-        const dimensions = this.getBasicDimensions(projectId);
+        const attributes = this.getBasicAttributes(projectId);
         const difference = currentTime.getTime() - this.lastReadTime.getTime();
         this.metrics.applicationBlockingLatencies.record(
           difference,
-          dimensions
+          attributes
         );
         this.lastReadTime = currentTime;
       }
@@ -311,13 +311,13 @@ class MetricsTracer {
     const endTime = this.dateProvider.getDate();
     const projectId = this.projectId;
     if (projectId && this.attemptStartTime) {
-      const dimensions = this.getAttemptDimensions(
+      const attributes = this.getAttemptAttributes(
         projectId,
         info.finalOperationStatus,
         info.streamingOperation
       );
       const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
-      this.metrics.attemptLatencies.record(totalTime, dimensions);
+      this.metrics.attemptLatencies.record(totalTime, attributes);
     }
   }
 
@@ -335,14 +335,14 @@ class MetricsTracer {
     const endTime = this.dateProvider.getDate();
     const projectId = this.projectId;
     if (projectId && this.operationStartTime) {
-      const dimensions = this.getFinalOpDimensions(
+      const attributes = this.getFinalOpAttributes(
         projectId,
         finalOperationStatus
       );
       const totalTime = endTime.getTime() - this.operationStartTime.getTime();
       if (!this.receivedFirstResponse) {
         this.receivedFirstResponse = true;
-        this.metrics.firstResponseLatencies.record(totalTime, dimensions);
+        this.metrics.firstResponseLatencies.record(totalTime, attributes);
       }
     }
   }
@@ -360,33 +360,33 @@ class MetricsTracer {
       const totalTime = endTime.getTime() - this.operationStartTime.getTime();
       {
         // This block records operation latency metrics.
-        const operationLatencyDimensions = this.getOperationLatencyDimensions(
+        const operationLatencyAttributes = this.getOperationLatencyAttributes(
           projectId,
           info.finalOperationStatus,
           info.streamingOperation
         );
         this.metrics.operationLatencies.record(
           totalTime,
-          operationLatencyDimensions
+          operationLatencyAttributes
         );
       }
       if (info.retries) {
         // This block records the retry count metrics
-        const retryCountDimensions = this.getFinalOpDimensions(
+        const retryCountAttributes = this.getFinalOpAttributes(
           projectId,
           info.finalOperationStatus
         );
-        this.metrics.retryCount.add(info.retries, retryCountDimensions);
+        this.metrics.retryCount.add(info.retries, retryCountAttributes);
       }
       if (info.connectivityErrorCount) {
         // This block records the connectivity error count metrics
-        const connectivityCountDimensions = this.getAttemptStatusDimensions(
+        const connectivityCountAttributes = this.getAttemptStatusAttributes(
           projectId,
           info.finalOperationStatus
         );
         this.metrics.connectivityErrorCount.record(
           info.connectivityErrorCount,
-          connectivityCountDimensions
+          connectivityCountAttributes
         );
       }
     }
@@ -417,12 +417,12 @@ class MetricsTracer {
         const serverTime = parseInt(durationValues[1]);
         const projectId = this.projectId;
         if (projectId) {
-          const dimensions = this.getAttemptDimensions(
+          const attributes = this.getAttemptAttributes(
             projectId,
             info.finalOperationStatus,
             info.streamingOperation
           );
-          this.metrics.serverLatencies.record(serverTime, dimensions);
+          this.metrics.serverLatencies.record(serverTime, attributes);
         }
       }
     }
