@@ -45,8 +45,17 @@ interface OperationInfo {
   streamingOperation: string;
 }
 
+/**
+ * Information about a single attempt of a Bigtable operation.
+ */
 interface AttemptInfo {
+  /**
+   * The final status of the attempt (e.g., 'OK', 'ERROR').
+   */
   finalOperationStatus: string;
+  /**
+   * Whether the operation is a streaming operation or not
+   */
   streamingOperation: string;
 }
 
