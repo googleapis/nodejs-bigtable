@@ -20,8 +20,8 @@ import {Attributes} from '../../common/client-side-metrics-attributes';
 interface ICounter {
   /**
    * Adds a value to the counter.
-   * @param retries The value to be added to the counter.
-   * @param attributes The attributes associated with this value.
+   * @param {number} retries The value to be added to the counter.
+   * @param {Attributes} attributes The attributes associated with this value.
    */
   add(retries: number, attributes: Attributes): void;
 }
@@ -33,7 +33,7 @@ interface IHistogram {
   /**
    * Records a value in the histogram.
    * @param {number} value The value to be recorded in the histogram.
-   * @param attributes The attributes associated with this value.
+   * @param {Attributes} attributes The attributes associated with this value.
    */
   record(value: number, attributes: Attributes): void;
 }
