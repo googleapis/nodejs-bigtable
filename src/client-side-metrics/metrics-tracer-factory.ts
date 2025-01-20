@@ -480,12 +480,17 @@ class MetricsTracer {
 export class MetricsTracerFactory {
   private metrics?: Metrics;
   private observabilityOptions?: ObservabilityOptions;
+  private dateProvider: DateProvider;
 
   /**
    * @param observabilityOptions Options for configuring client-side metrics observability.
    */
-  constructor(observabilityOptions?: ObservabilityOptions) {
+  constructor(
+    dateProvider: DateProvider,
+    observabilityOptions?: ObservabilityOptions
+  ) {
     this.observabilityOptions = observabilityOptions;
+    this.dateProvider = dateProvider;
   }
 
   private initialize(
@@ -588,15 +593,14 @@ export class MetricsTracerFactory {
   getMetricsTracer(
     tabularApiSurface: ITabularApiSurface,
     methodName: string,
-    projectId?: string,
-    dateProvider?: DateProvider
+    projectId?: string
   ) {
     const metrics = this.initialize(projectId, this.observabilityOptions);
     return new MetricsTracer(
       metrics,
       tabularApiSurface,
       methodName,
-      dateProvider
+      this.dateProvider
     );
   }
 }

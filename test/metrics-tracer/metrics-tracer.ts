@@ -53,8 +53,11 @@ class FakeBigtable {
    * @param observabilityOptions Options for configuring client-side metrics
    *     observability, including a TestMeterProvider.
    */
-  constructor(observabilityOptions: {meterProvider: TestMeterProvider}) {
-    this.metricsTracerFactory = new MetricsTracerFactory({
+  constructor(
+    observabilityOptions: {meterProvider: TestMeterProvider},
+    dateProvider: TestDateProvider
+  ) {
+    this.metricsTracerFactory = new MetricsTracerFactory(dateProvider, {
       meterProvider: observabilityOptions.meterProvider,
     });
   }
@@ -87,9 +90,12 @@ describe.only('Bigtable/MetricsTracer', () => {
     class FakeTable {
       id = 'fakeTableId';
       instance = new FakeInstance();
-      bigtable = new FakeBigtable({
-        meterProvider: new TestMeterProvider(logger),
-      });
+      bigtable = new FakeBigtable(
+        {
+          meterProvider: new TestMeterProvider(logger),
+        },
+        new TestDateProvider(logger)
+      );
 
       async fakeMethod(): Promise<void> {
         return new Promise((resolve, reject) => {
@@ -123,8 +129,7 @@ describe.only('Bigtable/MetricsTracer', () => {
               this.bigtable.metricsTracerFactory.getMetricsTracer(
                 this,
                 'fakeMethod',
-                projectId,
-                new TestDateProvider(logger)
+                projectId
               );
             // In this method we simulate a series of events that might happen
             // when a user calls one of the Table methods.
