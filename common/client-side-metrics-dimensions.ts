@@ -41,5 +41,5 @@ export interface Dimensions {
  */
 export function dimensionsToString(d: Dimensions) {
   const p = (dimension?: string | null) => (dimension ? dimension : '');
-  return `${p(d.projectId)};${p(d.instanceId)};${p(d.table)};${p(d.cluster)};${p(d.zone)};${p(d.appProfileId)};${p(d.methodName)};${p(d.attemptStatus)};${p(d.finalOperationStatus)};${p(d.streamingOperation)};${p(d.clientName)}`;
+  return `${p(d.projectId)};${p(d.instanceId)};${p(d.table)};${p(d.cluster)};${p(d.zone)};${p(d.appProfileId)};${p(d.methodName)};${p(d.attemptStatus)};${p(d.finalOperationStatus)};${p(d.streamingOperation)};nodejs-bigtable`;
 }
