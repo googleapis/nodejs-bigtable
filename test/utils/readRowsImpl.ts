@@ -349,6 +349,11 @@ export class ReadRowsImpl {
    */
   private async handleRequest(stream: ReadRowsWritableStream) {
     const debugLog = this.serviceParameters.debugLog;
+    const hook = this.serviceParameters.hook;
+    if (hook) {
+      hook(stream.request);
+    }
+
     prettyPrintRequest(stream.request, debugLog);
     const readRowsRequestHandler = new ReadRowsRequestHandler(stream, debugLog);
     stream.on('cancelled', () => {
@@ -374,12 +379,15 @@ export class ReadRowsImpl {
   ) {
     const stream = readRowsRequestHandler.stream;
     const debugLog = readRowsRequestHandler.debugLog;
+    const deadlineExceededError = this.serviceParameters.deadlineExceededError;
+
     let chunksSent = 0;
     let lastScannedRowKey: string | undefined;
     let currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] =
       [];
     let chunkIdx = 0;
     let skipThisRow = false;
+
     for (const chunk of chunks) {
       if (readRowsRequestHandler.cancelled) {
         break;
@@ -409,12 +417,14 @@ export class ReadRowsImpl {
         currentResponseChunks.push(chunk);
         ++chunkIdx;
       }
+
       if (
         currentResponseChunks.length ===
           this.serviceParameters.chunksPerResponse ||
         chunkIdx === this.errorAfterChunkNo ||
         // if we skipped a row and set lastScannedRowKey, dump everything and send a separate message with lastScannedRowKey
-        lastScannedRowKey
+        lastScannedRowKey ||
+        deadlineExceededError
       ) {
         const response: protos.google.bigtable.v2.IReadRowsResponse = {
           chunks: currentResponseChunks,
@@ -422,6 +432,7 @@ export class ReadRowsImpl {
         chunksSent += currentResponseChunks.length;
         await readRowsRequestHandler.sendResponse(response);
         currentResponseChunks = [];
+
         if (chunkIdx === this.errorAfterChunkNo) {
           debugLog(`sending error after chunk #${chunkIdx}`);
           this.errorAfterChunkNo = undefined; // do not send error for the second time
@@ -431,7 +442,17 @@ export class ReadRowsImpl {
           readRowsRequestHandler.cancelled = true;
           break;
         }
+
+        if (deadlineExceededError) {
+          debugLog('sending deadline exceeded error');
+          const error = new GoogleError('Deadline exceeded');
+          error.code = Status.DEADLINE_EXCEEDED;
+          stream.emit('error', error);
+          readRowsRequestHandler.cancelled = true;
+          break;
+        }
       }
+
       if (lastScannedRowKey) {
         const response: protos.google.bigtable.v2.IReadRowsResponse = {
           lastScannedRowKey,
