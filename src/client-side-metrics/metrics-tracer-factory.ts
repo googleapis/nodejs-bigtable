@@ -433,7 +433,8 @@ export class MetricsTracerFactory {
    * @param observabilityOptions Options for configuring client-side metrics observability.
    */
   constructor(observabilityOptions?: ObservabilityOptions) {
-    // Create MeterProvider
+    // Use MeterProvider provided by user
+    // If MeterProvider was not provided then use the default meter provider.
     const meterProvider =
       observabilityOptions && observabilityOptions.meterProvider
         ? observabilityOptions.meterProvider
