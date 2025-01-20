@@ -15,34 +15,16 @@
 import {Bigtable} from '../src';
 import * as assert from 'assert';
 import {describe, it, before, after} from 'mocha';
-import {TestMeterProvider} from '../common/test-meter-provider';
-import * as fs from 'node:fs';
-
-class Logger {
-  private messages = '';
-
-  log(message: string) {
-    console.log(message);
-    this.messages = this.messages + message + '\n';
-  }
-
-  getMessages() {
-    return this.messages;
-  }
-}
 
 describe.only('Bigtable/Table#getRows', () => {
-  const logger = new Logger();
-  const meterProvider = new TestMeterProvider(logger);
   const bigtable = new Bigtable({
     projectId: 'cloud-native-db-dpes-shared',
-    observabilityOptions: {
-      meterProvider,
-    },
   });
   const instanceId = 'emulator-test-instance';
   const tableId = 'my-table';
   const columnFamilyId = 'cf1';
+  const clusterId = 'test-cluster';
+  const location = 'us-central1-c';
 
   before(async () => {
     const instance = bigtable.instance(instanceId);
@@ -104,16 +86,8 @@ describe.only('Bigtable/Table#getRows', () => {
       },
     ];
     await table.insert(rows);
-    for (let i = 0; i < 30; i++) {
-      console.log(`Doing attempt ${i}`);
-      const rows = await table.getRows();
-      console.log(`Done attempt ${i}`);
-      logger.log(`Done attempt ${i}`);
+    for (let i = 0; i < 100; i++) {
+      console.log(await table.getRows());
     }
-    const myString = logger.getMessages(); // 'This is the string I want to write to the file.';
-    const filename = 'myFile.txt';
-
-    // Write the string to the file
-    fs.writeFileSync(filename, myString);
   });
 });

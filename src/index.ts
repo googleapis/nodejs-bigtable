@@ -36,8 +36,7 @@ import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
 // TODO: Uncomment the next line after client-side metrics are well tested.
-import {MetricsTracerFactory} from './client-side-metrics/metrics-tracer-factory';
-import {ObservabilityOptions} from './client-side-metrics/observability-options';
+// import {MetricsTracerFactory} from './client-side-metrics/metrics-tracer-factory';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -103,8 +102,6 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
    * Internal only.
    */
   BigtableTableAdminClient?: gax.ClientOptions;
-
-  observabilityOptions?: ObservabilityOptions;
 }
 
 /**
@@ -401,13 +398,11 @@ export class Bigtable {
   static Instance: Instance;
   static Cluster: Cluster;
   // TODO: Uncomment the next line after client-side metrics are well tested.
-  metricsTracerFactory: MetricsTracerFactory;
+  // metricsTracerFactory: MetricsTracerFactory;
 
   constructor(options: BigtableOptions = {}) {
     // TODO: Uncomment the next line after client-side metrics are well tested.
-    this.metricsTracerFactory = new MetricsTracerFactory(
-      options.observabilityOptions
-    );
+    // this.metricsTracerFactory = new MetricsTracerFactory();
 
     // Determine what scopes are needed.
     // It is the union of the scopes on all three clients.
@@ -881,7 +876,7 @@ export class Bigtable {
           .on('error', stream.destroy.bind(stream))
           .on('metadata', stream.emit.bind(stream, 'metadata'))
           // TODO: Uncomment the next line after client-side metrics are well tested.
-          .on('status', stream.emit.bind(stream, 'status'))
+          // .on('status', stream.emit.bind(stream, 'status'))
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
       });
