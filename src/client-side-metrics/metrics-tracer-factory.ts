@@ -179,7 +179,7 @@ class MetricsTracer {
    * Assembles the basic attributes for metrics. These attributes provide
    * context about the Bigtable environment and the operation being performed.
    * @param {string} projectId The Google Cloud project ID.
-   * @returns {object} An object containing the basic attributes.
+   * @returns {Attributes} An object containing the basic attributes.
    */
   private getBasicAttributes(projectId: string) {
     return {
@@ -201,7 +201,7 @@ class MetricsTracer {
    * @param {string} projectId The Google Cloud project ID.
    * @param {string} finalOperationStatus The final status of the operation.
    * @param {string} streamOperation Whether the operation was a streaming operation or not.
-   * @returns An object containing the attributes for operation latency metrics.
+   * @returns {Attributes} An object containing the attributes for operation latency metrics.
    */
   private getOperationLatencyAttributes(
     projectId: string,
@@ -220,9 +220,9 @@ class MetricsTracer {
   /**
    * Assembles the attributes for final operation metrics. These attributes provide
    * context about the Bigtable environment and the operation being performed.
-   * @param projectId The Google Cloud project ID.
-   * @param finalOperationStatus The final status of the operation.
-   * @returns An object containing the attributes for final operation metrics.
+   * @param {string} projectId The Google Cloud project ID.
+   * @param {string} finalOperationStatus The final status of the operation.
+   * @returns {Attributes} An object containing the attributes for final operation metrics.
    */
   private getFinalOpAttributes(
     projectId: string,
@@ -240,10 +240,10 @@ class MetricsTracer {
    * Assembles the attributes for attempt metrics. These attributes provide context
    * about the Bigtable environment, the operation being performed, and the status of the attempt.
    * Includes whether the operation was a streaming operation or not.
-   * @param projectId The Google Cloud project ID.
-   * @param attemptStatus The status of the attempt.
-   * @param streamingOperation Whether the operation was a streaming operation or not.
-   * @returns An object containing the attributes for attempt metrics.
+   * @param {string} projectId The Google Cloud project ID.
+   * @param {string} attemptStatus The status of the attempt.
+   * @param {string} streamingOperation Whether the operation was a streaming operation or not.
+   * @returns {Attributes} An object containing the attributes for attempt metrics.
    */
   private getAttemptAttributes(
     projectId: string,
@@ -262,9 +262,9 @@ class MetricsTracer {
   /**
    * Assembles the attributes for attempt status metrics. These attributes provide context
    * about the Bigtable environment and the operation being performed.
-   * @param projectId The Google Cloud project ID.
-   * @param attemptStatus The status of the attempt.
-   * @returns An object containing the attributes for attempt status metrics.
+   * @param {string} projectId The Google Cloud project ID.
+   * @param {string} attemptStatus The status of the attempt.
+   * @returns {Attributes} An object containing the attributes for attempt status metrics.
    */
   private getAttemptStatusAttributes(projectId: string, attemptStatus: string) {
     return Object.assign(
@@ -305,7 +305,7 @@ class MetricsTracer {
 
   /**
    * Called when an attempt (e.g., an RPC attempt) completes. Records attempt latencies.
-   * @param info Information about the completed attempt.
+   * @param {AttemptInfo} info Information about the completed attempt.
    */
   onAttemptComplete(info: AttemptInfo) {
     const endTime = this.dateProvider.getDate();
@@ -330,6 +330,7 @@ class MetricsTracer {
 
   /**
    * Called when the first response is received. Records first response latencies.
+   * @param {string} finalOperationStatus The final status of the operation.
    */
   onResponse(finalOperationStatus: string) {
     const endTime = this.dateProvider.getDate();
@@ -350,7 +351,7 @@ class MetricsTracer {
   /**
    * Called when an operation completes (successfully or unsuccessfully).
    * Records operation latencies, retry counts, and connectivity error counts.
-   * @param info Information about the completed operation.
+   * @param {OperationInfo} info Information about the completed operation.
    */
   onOperationComplete(info: OperationInfo) {
     const endTime = this.dateProvider.getDate();
@@ -394,8 +395,8 @@ class MetricsTracer {
 
   /**
    * Called when metadata is received. Extracts server timing information if available.
-   * @param info Information about the completed attempt.
-   * @param metadata The received metadata.
+   * @param {AttemptInfo} info Information about the completed attempt.
+   * @param {object} metadata The received metadata.
    */
   onMetadataReceived(
     info: AttemptInfo,
@@ -430,7 +431,7 @@ class MetricsTracer {
 
   /**
    * Called when status information is received. Extracts zone and cluster information.
-   * @param status The received status information.
+   * @param {object} status The received status information.
    */
   onStatusReceived(status: {
     metadata: {internalRepr: Map<string, Buffer>; options: {}};
@@ -464,7 +465,8 @@ export class MetricsTracerFactory {
   private dateProvider: DateProvider;
 
   /**
-   * @param observabilityOptions Options for configuring client-side metrics observability.
+   * @param {DateProvider} dateProvider An object that provides dates for latency measurement.
+   * @param {ObservabilityOptions} observabilityOptions Options for configuring client-side metrics observability.
    */
   constructor(
     dateProvider: DateProvider,
@@ -474,6 +476,16 @@ export class MetricsTracerFactory {
     this.dateProvider = dateProvider;
   }
 
+  /**
+   * Initializes the OpenTelemetry metrics instruments if they haven't been already.
+   * If metrics already exist, this method returns early.  Otherwise, it creates and registers
+   * metric instruments (histograms and counters) for various Bigtable client metrics.
+   * It handles the creation of a MeterProvider, either using a user-provided one or creating a default one, and
+   * configures a PeriodicExportingMetricReader for exporting metrics.
+   * @param {string} [projectId] The Google Cloud project ID.  Used for metric export.
+   * @param {ObservabilityOptions} [observabilityOptions] Options for configuring client-side metrics observability, including a custom MeterProvider.
+   * @returns {Metrics} An object containing the initialized OpenTelemetry metric instruments.
+   */
   private initialize(
     projectId?: string,
     observabilityOptions?: ObservabilityOptions

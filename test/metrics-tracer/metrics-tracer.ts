@@ -18,6 +18,7 @@ import {TestMeterProvider} from '../../common/test-meter-provider';
 import {TestDateProvider} from '../../common/test-date-provider';
 import * as assert from 'assert';
 import * as fs from 'fs';
+import {ObservabilityOptions} from '../../src/client-side-metrics/observability-options';
 
 /**
  * A basic logger class that stores log messages in an array. Useful for testing.
@@ -27,7 +28,7 @@ class Logger {
 
   /**
    * Logs a message by adding it to the internal message array.
-   * @param message The message to be logged.
+   * @param {string} message The message to be logged.
    */
   log(message: string) {
     this.messages.push(message);
@@ -35,7 +36,7 @@ class Logger {
 
   /**
    * Retrieves all logged messages.
-   * @returns An array of logged messages.
+   * @returns {string[]} An array of logged messages.
    */
   getMessages() {
     return this.messages;
@@ -50,11 +51,11 @@ class FakeBigtable {
   appProfileId?: string;
   metricsTracerFactory: MetricsTracerFactory;
   /**
-   * @param observabilityOptions Options for configuring client-side metrics
+   * @param {ObservabilityOptions} observabilityOptions Options for configuring client-side metrics
    *     observability, including a TestMeterProvider.
    */
   constructor(
-    observabilityOptions: {meterProvider: TestMeterProvider},
+    observabilityOptions: ObservabilityOptions,
     dateProvider: TestDateProvider
   ) {
     this.metricsTracerFactory = new MetricsTracerFactory(dateProvider, {
@@ -65,7 +66,7 @@ class FakeBigtable {
   /**
    * A stubbed method that simulates retrieving the project ID.  Always returns
    * 'my-project'.
-   * @param callback A callback function that receives the project ID (or an error).
+   * @param {function} callback A callback function that receives the project ID (or an error).
    */
   getProjectId_(
     callback: (err: Error | null, projectId?: string) => void
