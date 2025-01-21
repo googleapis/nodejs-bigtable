@@ -107,10 +107,11 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *
  * This function retrieves the domain from gax.ClientOptions passed in or via an environment variable.
  * It defaults to 'googleapis.com' if none has been set.
+ * @param {string} [prefix] The prefix for the domain.
  * @param {gax.ClientOptions} [opts] The gax client options
  * @returns {string} The universe domain.
  */
-function getDomain(opts?: gax.ClientOptions) {
+function getDomain(prefix: string, opts?: gax.ClientOptions) {
   // From https://github.com/googleapis/nodejs-bigtable/blob/589540475b0b2a055018a1cb6e475800fdd46a37/src/v2/bigtable_client.ts#L120-L128.
   // This code for universe domain was taken from the Gapic Layer.
   // It is reused here to build the service path.
@@ -118,12 +119,12 @@ function getDomain(opts?: gax.ClientOptions) {
     typeof process === 'object' && typeof process.env === 'object'
       ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
       : undefined;
-  return (
+  return `${prefix}.${
     opts?.universeDomain ??
     opts?.universe_domain ??
     universeDomainEnvVar ??
     'googleapis.com'
-  );
+  }`;
 }
 
 /**
@@ -468,7 +469,7 @@ export class Bigtable {
       {
         servicePath:
           customEndpointBaseUrl ||
-          `bigtable.${getDomain(options.BigtableClient)}`,
+          getDomain('bigtable', options.BigtableClient),
         'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
         'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
         'grpc.gcpApiConfig': grpcGcp.createGcpApiConfig({
@@ -489,7 +490,7 @@ export class Bigtable {
       {
         servicePath:
           customEndpointBaseUrl ||
-          `bigtableadmin.${getDomain(options.BigtableTableAdminClient)}`,
+          getDomain('bigtableadmin', options.BigtableClient),
       },
       options
     );
@@ -499,7 +500,7 @@ export class Bigtable {
       {
         servicePath:
           customEndpointBaseUrl ||
-          `bigtableadmin.${getDomain(options.BigtableInstanceAdminClient)}`,
+          getDomain('bigtableadmin', options.BigtableClient),
       },
       options
     );
