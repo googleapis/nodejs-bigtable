@@ -204,6 +204,9 @@ describe('Bigtable/MetricsTracer', () => {
       'utf8'
     );
     // Ensure events occurred in the right order here:
-    assert.strictEqual(logger.getMessages().join('\n') + '\n', expectedOutput);
+    assert.strictEqual(
+      logger.getMessages().join('\n') + '\n',
+      expectedOutput.replace(/\r/g, '')
+    );
   });
 });
