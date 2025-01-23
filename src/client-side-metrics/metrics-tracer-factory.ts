@@ -24,7 +24,6 @@ import * as Resources from '@opentelemetry/resources';
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
 import {ObservabilityOptions} from './observability-options';
-import * as fs from 'fs';
 
 /**
  * Information about a Bigtable operation.
@@ -73,59 +72,6 @@ interface Metrics {
   connectivityErrorCount: typeof Histogram;
   clientBlockingLatencies: typeof Histogram;
 }
-
-/**
- * An interface representing a Date-like object.  Provides a `getTime` method
- * for retrieving the time value in milliseconds.  Used for abstracting time
- * in tests.
- */
-interface DateLike {
-  /**
-   * Returns the time value in milliseconds.
-   * @returns The time value in milliseconds.
-   */
-  getTime(): number;
-}
-
-/**
- * Interface for a provider that returns DateLike objects. Used for mocking dates in tests.
- */
-interface DateProvider {
-  /**
-   * Returns a DateLike object.
-   * @returns A DateLike object representing the current time or a fake time value.
-   */
-  getDate(): DateLike;
-}
-
-/**
- * The default DateProvider implementation.  Returns the current date and time.
- */
-class DefaultDateProvider {
-  /**
-   * Returns a new Date object representing the current time.
-   * @returns {Date} The current date and time.
-   */
-  getDate() {
-    return new Date();
-  }
-}
-
-/**
- * An interface representing a tabular API surface, such as a Bigtable table.
- */
-export interface ITabularApiSurface {
-  instance: {
-    id: string;
-  };
-  id: string;
-  bigtable: {
-    appProfileId?: string;
-  };
-}
-
-const packageJSON = fs.readFileSync('package.json');
-const version = JSON.parse(packageJSON.toString()).version;
 
 /**
  * A class for tracing and recording client-side metrics related to Bigtable operations.
