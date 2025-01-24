@@ -16,8 +16,8 @@ interface StandardAttributes {
   projectId: string;
   instanceId: string;
   table: string;
-  cluster?: string | null;
-  zone?: string | null;
+  cluster?: string;
+  zone?: string;
   appProfileId?: string;
   methodName: string;
   clientName: string;

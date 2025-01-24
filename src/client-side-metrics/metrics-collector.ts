@@ -67,8 +67,8 @@ const version = JSON.parse(packageJSON.toString()).version;
 export class MetricsCollector {
   private operationStartTime: DateLike | null;
   private attemptStartTime: DateLike | null;
-  private zone: string | null | undefined;
-  private cluster: string | null | undefined;
+  private zone: string | undefined;
+  private cluster: string | undefined;
   private tabularApiSurface: ITabularApiSurface;
   private methodName: string;
   private projectId?: string;
@@ -94,8 +94,8 @@ export class MetricsCollector {
     projectId?: string,
     dateProvider?: DateProvider
   ) {
-    this.zone = null;
-    this.cluster = null;
+    this.zone = undefined;
+    this.cluster = undefined;
     this.tabularApiSurface = tabularApiSurface;
     this.methodName = methodName;
     this.operationStartTime = null;
