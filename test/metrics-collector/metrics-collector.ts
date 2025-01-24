@@ -152,7 +152,7 @@ describe('Bigtable/MetricsCollector', () => {
             logger.log('14. Client receives fourth row.');
             metricsCollector.onResponse();
             logger.log('15. User reads row 1');
-            logger.log('19. Stream ends, operation completes');
+            logger.log('16. Stream ends, operation completes');
             metricsCollector.onAttemptComplete({
               finalOperationStatus: FinalOperationStatus.ERROR,
               attemptStatus: AttemptStatus.OK,
