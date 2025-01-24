@@ -206,9 +206,9 @@ export class MetricsCollector {
           metricsHandler.onAttemptComplete(
             {
               attemptLatency: totalTime,
-              serverLatency: this.serverTime,
+              serverLatency: this.serverTime ?? undefined,
               connectivityErrorCount: info.connectivityErrorCount,
-              firstResponseLatency: this.firstResponseLatency,
+              firstResponseLatency: this.firstResponseLatency ?? undefined,
             },
             attributes
           );

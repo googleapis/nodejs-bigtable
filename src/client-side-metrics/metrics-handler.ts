@@ -28,7 +28,7 @@ import {
  */
 export interface OnOperationCompleteMetrics {
   operationLatency: number;
-  retryCount: number | null;
+  retryCount?: number;
 }
 
 /**
@@ -36,9 +36,9 @@ export interface OnOperationCompleteMetrics {
  */
 export interface OnAttemptCompleteMetrics {
   attemptLatency: number;
-  serverLatency: number | null;
-  firstResponseLatency: number | null;
-  connectivityErrorCount: number | null;
+  serverLatency?: number;
+  firstResponseLatency?: number;
+  connectivityErrorCount: number;
 }
 
 // TODO: Trim attributes so only necessary attributes are required.

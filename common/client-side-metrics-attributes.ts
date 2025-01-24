@@ -76,5 +76,5 @@ export interface OnAttemptCompleteAttributes
     AttemptOnlyAttributes {}
 
 export interface OnAttemptCompleteInfo extends AttemptOnlyAttributes {
-  connectivityErrorCount: number | null;
+  connectivityErrorCount: number;
 }
