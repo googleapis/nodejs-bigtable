@@ -18,11 +18,17 @@ import {
 } from '../../common/client-side-metrics-attributes';
 
 /**
+ * The interfaces below use null instead of undefined to gain the advantage
+ * of being able to use the compiler to tell us when a property isn't being
+ * provided for easier debugging.
+ */
+
+/**
  * Metrics related to the completion of a Bigtable operation.
  */
 export interface OnOperationCompleteMetrics {
   operationLatency: number;
-  retryCount?: number;
+  retryCount: number | null;
 }
 
 /**
@@ -30,9 +36,9 @@ export interface OnOperationCompleteMetrics {
  */
 export interface OnAttemptCompleteMetrics {
   attemptLatency: number;
-  serverLatency?: number;
-  firstResponseLatency?: number;
-  connectivityErrorCount?: number;
+  serverLatency: number | null;
+  firstResponseLatency: number | null;
+  connectivityErrorCount: number | null;
 }
 
 // TODO: Trim attributes so only necessary attributes are required.

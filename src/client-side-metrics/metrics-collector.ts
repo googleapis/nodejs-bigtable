@@ -90,9 +90,9 @@ export class MetricsCollector {
   private attemptCount = 0;
   private receivedFirstResponse: boolean;
   private metricsHandlers: IMetricsHandler[];
-  private firstResponseLatency?: number;
+  private firstResponseLatency: number | null;
   private serverTimeRead: boolean;
-  private serverTime?: number;
+  private serverTime: number | null;
   private dateProvider: DateProvider;
 
   /**
@@ -117,7 +117,9 @@ export class MetricsCollector {
     this.attemptStartTime = null;
     this.receivedFirstResponse = false;
     this.metricsHandlers = metricsHandlers;
+    this.firstResponseLatency = null;
     this.serverTimeRead = false;
+    this.serverTime = null;
     this.projectId = projectId;
     if (dateProvider) {
       this.dateProvider = dateProvider;
@@ -205,6 +207,8 @@ export class MetricsCollector {
             {
               attemptLatency: totalTime,
               serverLatency: this.serverTime,
+              connectivityErrorCount: info.connectivityErrorCount,
+              firstResponseLatency: this.firstResponseLatency,
             },
             attributes
           );
@@ -218,9 +222,9 @@ export class MetricsCollector {
    */
   onAttemptStart() {
     this.attemptStartTime = this.dateProvider.getDate();
-    this.serverTime = undefined;
+    this.serverTime = null;
     this.serverTimeRead = false;
-    this.firstResponseLatency = undefined;
+    this.firstResponseLatency = null;
     this.receivedFirstResponse = false;
   }
 
