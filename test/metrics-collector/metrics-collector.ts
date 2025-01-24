@@ -76,7 +76,7 @@ class FakeInstance {
   id = 'fakeInstanceId';
 }
 
-describe.only('Bigtable/MetricsCollector', () => {
+describe('Bigtable/MetricsCollector', () => {
   it('should record the right metrics with a typical method call', async () => {
     const logger = new Logger();
     const metricsHandlers = [new TestMetricsHandler(logger)];
