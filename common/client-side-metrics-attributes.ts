@@ -30,8 +30,8 @@ export interface OperationOnlyAttributes {
   /**
    * The final status of the operation (e.g., 'OK', 'ERROR').
    */
-  finalOperationStatus: string;
-  streamingOperation: string;
+  finalOperationStatus: FinalOperationStatus;
+  streamingOperation: StreamingOperation;
 }
 
 /**
@@ -41,28 +41,40 @@ export interface AttemptOnlyAttributes {
   /**
    * The final status of the operation (e.g., 'OK', 'ERROR').
    */
-  finalOperationStatus: string; // TODO: enum
+  finalOperationStatus: FinalOperationStatus;
   /**
    * Whether the operation is a streaming operation or not.
    */
-  streamingOperation: string; // TODO: enum
+  streamingOperation: StreamingOperation;
   /**
    * The attempt status of the operation.
    */
-  attemptStatus: string; // TODO: enum
+  attemptStatus: AttemptStatus;
+}
+
+export enum FinalOperationStatus {
+  OK = 'OK',
+  ERROR = 'ERROR',
+}
+
+export enum AttemptStatus {
+  OK = 'OK',
+  ERROR = 'ERROR',
+}
+
+export enum StreamingOperation {
+  YES = 'YES',
+  NO = 'NO',
 }
 
 export interface OnOperationCompleteAttributes
   extends StandardAttributes,
-    OperationOnlyAttributes {
-  finalOperationStatus: string;
-  streamingOperation: string;
-}
+    OperationOnlyAttributes {}
 
 export interface OnAttemptCompleteAttributes
   extends StandardAttributes,
-    AttemptOnlyAttributes {
-  attemptStatus: string;
-  finalOperationStatus: string;
-  streamingOperation: string;
+    AttemptOnlyAttributes {}
+
+export interface OnAttemptCompleteInfo extends AttemptOnlyAttributes {
+  connectivityErrorCount: number;
 }

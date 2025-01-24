@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import {IMetricsHandler} from './metrics-handler';
 import {
   AttemptOnlyAttributes,
+  OnAttemptCompleteInfo,
   OnOperationCompleteAttributes,
   OperationOnlyAttributes,
 } from '../../common/client-side-metrics-attributes';
@@ -177,7 +178,7 @@ export class MetricsCollector {
    * Called when an attempt (e.g., an RPC attempt) completes. Records attempt latencies.
    * @param {AttemptOnlyAttributes} info Information about the completed attempt.
    */
-  onAttemptComplete(info: AttemptOnlyAttributes) {
+  onAttemptComplete(info: OnAttemptCompleteInfo) {
     this.attemptCount++;
     const endTime = this.dateProvider.getDate();
     const projectId = this.projectId;

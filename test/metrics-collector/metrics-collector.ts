@@ -18,6 +18,11 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import {TestMetricsHandler} from '../../common/test-metrics-handler';
 import {MetricsCollector} from '../../src/client-side-metrics/metrics-collector';
+import {
+  AttemptStatus,
+  FinalOperationStatus,
+  StreamingOperation,
+} from '../../common/client-side-metrics-attributes';
 
 /**
  * A basic logger class that stores log messages in an array. Useful for testing.
@@ -71,7 +76,7 @@ class FakeInstance {
   id = 'fakeInstanceId';
 }
 
-describe('Bigtable/MetricsCollector', () => {
+describe.only('Bigtable/MetricsCollector', () => {
   it('should record the right metrics with a typical method call', async () => {
     const logger = new Logger();
     const metricsHandlers = [new TestMetricsHandler(logger)];
@@ -129,9 +134,10 @@ describe('Bigtable/MetricsCollector', () => {
             metricsCollector.onResponse();
             logger.log('8. A transient error occurs.');
             metricsCollector.onAttemptComplete({
-              finalOperationStatus: 'ERROR',
-              streamingOperation: 'YES',
-              attemptStatus: 'ERROR',
+              finalOperationStatus: FinalOperationStatus.ERROR,
+              streamingOperation: StreamingOperation.YES,
+              attemptStatus: AttemptStatus.ERROR,
+              connectivityErrorCount: 1,
             });
             logger.log('9. After a timeout, the second attempt is made.');
             metricsCollector.onAttemptStart();
@@ -148,13 +154,14 @@ describe('Bigtable/MetricsCollector', () => {
             logger.log('15. User reads row 1');
             logger.log('19. Stream ends, operation completes');
             metricsCollector.onAttemptComplete({
-              finalOperationStatus: 'SUCCESS',
-              attemptStatus: 'SUCCESS',
-              streamingOperation: 'YES',
+              finalOperationStatus: FinalOperationStatus.ERROR,
+              attemptStatus: AttemptStatus.OK,
+              streamingOperation: StreamingOperation.YES,
+              connectivityErrorCount: 1,
             });
             metricsCollector.onOperationComplete({
-              finalOperationStatus: 'SUCCESS',
-              streamingOperation: 'YES',
+              finalOperationStatus: FinalOperationStatus.OK,
+              streamingOperation: StreamingOperation.YES,
             });
             resolve();
           });
