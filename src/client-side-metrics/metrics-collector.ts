@@ -57,10 +57,6 @@ export interface ITabularApiSurface {
  */
 interface OperationInfo {
   /**
-   * The number of retries attempted for the operation.
-   */
-  retries?: number;
-  /**
    * The final status of the operation (e.g., 'OK', 'ERROR').
    */
   finalOperationStatus: string;
@@ -101,6 +97,7 @@ export class MetricsCollector {
   private tabularApiSurface: ITabularApiSurface;
   private methodName: string;
   private projectId?: string;
+  private attemptCount = 0;
   private receivedFirstResponse: boolean;
   private metricsHandlers: IMetricsHandler[];
   private firstResponseLatency?: number;
@@ -216,6 +213,7 @@ export class MetricsCollector {
    * @param {AttemptInfo} info Information about the completed attempt.
    */
   onAttemptComplete(info: AttemptInfo) {
+    this.attemptCount++;
     const endTime = this.dateProvider.getDate();
     const projectId = this.projectId;
     if (projectId && this.attemptStartTime) {
@@ -287,7 +285,7 @@ export class MetricsCollector {
         const metrics = {
           operationLatency: totalTime,
           firstResponseLatency: this.firstResponseLatency,
-          retryCount: info.retries,
+          retryCount: this.attemptCount - 1,
           connectivityErrorCount: info.connectivityErrorCount,
         };
         this.metricsHandlers.forEach(metricsHandler => {
@@ -307,13 +305,10 @@ export class MetricsCollector {
    * @param {AttemptInfo} info Information about the completed attempt.
    * @param {object} metadata The received metadata.
    */
-  onMetadataReceived(
-    info: AttemptInfo,
-    metadata: {
-      internalRepr: Map<string, Buffer>;
-      options: {};
-    }
-  ) {
+  onMetadataReceived(metadata: {
+    internalRepr: Map<string, Buffer>;
+    options: {};
+  }) {
     const mappedEntries = new Map(
       Array.from(metadata.internalRepr.entries(), ([key, value]) => [
         key,

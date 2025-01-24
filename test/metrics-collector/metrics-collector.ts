@@ -125,17 +125,11 @@ describe('Bigtable/MetricsCollector', () => {
             logger.log('3. Client receives status information.');
             metricsCollector.onStatusReceived(status);
             logger.log('4. Client receives metadata.');
-            metricsCollector.onMetadataReceived(
-              standardAttemptInfo,
-              createMetadata('101')
-            );
+            metricsCollector.onMetadataReceived(createMetadata('101'));
             logger.log('5. Client receives first row.');
             metricsCollector.onResponse();
             logger.log('6. Client receives metadata.');
-            metricsCollector.onMetadataReceived(
-              standardAttemptInfo,
-              createMetadata('102')
-            );
+            metricsCollector.onMetadataReceived(createMetadata('102'));
             logger.log('7. Client receives second row.');
             metricsCollector.onResponse();
             logger.log('8. A transient error occurs.');
@@ -148,23 +142,16 @@ describe('Bigtable/MetricsCollector', () => {
             logger.log('10. Client receives status information.');
             metricsCollector.onStatusReceived(status);
             logger.log('11. Client receives metadata.');
-            metricsCollector.onMetadataReceived(
-              standardAttemptInfo,
-              createMetadata('103')
-            );
+            metricsCollector.onMetadataReceived(createMetadata('103'));
             logger.log('12. Client receives third row.');
             metricsCollector.onResponse();
             logger.log('13. Client receives metadata.');
-            metricsCollector.onMetadataReceived(
-              {finalOperationStatus: 'PENDING', streamingOperation: 'YES'},
-              createMetadata('104')
-            );
+            metricsCollector.onMetadataReceived(createMetadata('104'));
             logger.log('14. Client receives fourth row.');
             metricsCollector.onResponse();
             logger.log('15. User reads row 1');
             logger.log('19. Stream ends, operation completes');
             metricsCollector.onOperationComplete({
-              retries: 1,
               finalOperationStatus: 'SUCCESS',
               connectivityErrorCount: 1,
               streamingOperation: 'YES',
