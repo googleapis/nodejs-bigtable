@@ -3,7 +3,10 @@ import {
   OnAttemptCompleteMetrics,
   OnOperationCompleteMetrics,
 } from '../src/client-side-metrics/metrics-handler';
-import {OnAttemptCompleteAttributes, OnOperationCompleteAttributes} from './client-side-metrics-attributes';
+import {
+  OnAttemptCompleteAttributes,
+  OnOperationCompleteAttributes,
+} from './client-side-metrics-attributes';
 
 /**
  * A test implementation of the IMetricsHandler interface.  Used for testing purposes.

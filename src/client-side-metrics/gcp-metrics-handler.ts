@@ -6,7 +6,10 @@ import {
 import * as Resources from '@opentelemetry/resources';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
-import {OnAttemptCompleteAttributes, OnOperationCompleteAttributes} from '../../common/client-side-metrics-attributes';
+import {
+  OnAttemptCompleteAttributes,
+  OnOperationCompleteAttributes,
+} from '../../common/client-side-metrics-attributes';
 const {
   MeterProvider,
   Histogram,
