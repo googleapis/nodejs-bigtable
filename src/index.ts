@@ -103,6 +103,31 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
 }
 
 /**
+ * Retrieves the domain to be used for the service path.
+ *
+ * This function retrieves the domain from gax.ClientOptions passed in or via an environment variable.
+ * It defaults to 'googleapis.com' if none has been set.
+ * @param {string} [prefix] The prefix for the domain.
+ * @param {gax.ClientOptions} [opts] The gax client options
+ * @returns {string} The universe domain.
+ */
+function getDomain(prefix: string, opts?: gax.ClientOptions) {
+  // From https://github.com/googleapis/nodejs-bigtable/blob/589540475b0b2a055018a1cb6e475800fdd46a37/src/v2/bigtable_client.ts#L120-L128.
+  // This code for universe domain was taken from the Gapic Layer.
+  // It is reused here to build the service path.
+  const universeDomainEnvVar =
+    typeof process === 'object' && typeof process.env === 'object'
+      ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
+      : undefined;
+  return `${prefix}.${
+    opts?.universeDomain ??
+    opts?.universe_domain ??
+    universeDomainEnvVar ??
+    'googleapis.com'
+  }`;
+}
+
+/**
  * @typedef {object} ClientConfig
  * @property {string} [apiEndpoint] Override the default API endpoint used
  *     to reach Bigtable. This is useful for connecting to your local Bigtable
@@ -413,9 +438,6 @@ export class Bigtable {
       }
     }
 
-    const defaultBaseUrl = 'bigtable.googleapis.com';
-    const defaultAdminBaseUrl = 'bigtableadmin.googleapis.com';
-
     const customEndpoint =
       options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
     this.customEndpoint = customEndpoint;
@@ -445,7 +467,9 @@ export class Bigtable {
       {},
       baseOptions,
       {
-        servicePath: customEndpointBaseUrl || defaultBaseUrl,
+        servicePath:
+          customEndpointBaseUrl ||
+          getDomain('bigtable', options.BigtableClient),
         'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
         'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
         'grpc.gcpApiConfig': grpcGcp.createGcpApiConfig({
@@ -464,14 +488,26 @@ export class Bigtable {
       {},
       baseOptions,
       {
-        servicePath: customEndpointBaseUrl || defaultAdminBaseUrl,
+        servicePath:
+          customEndpointBaseUrl ||
+          getDomain('bigtableadmin', options.BigtableClient),
+      },
+      options
+    );
+    const instanceAdminOptions = Object.assign(
+      {},
+      baseOptions,
+      {
+        servicePath:
+          customEndpointBaseUrl ||
+          getDomain('bigtableadmin', options.BigtableClient),
       },
       options
     );
 
     this.options = {
       BigtableClient: dataOptions,
-      BigtableInstanceAdminClient: adminOptions,
+      BigtableInstanceAdminClient: instanceAdminOptions,
       BigtableTableAdminClient: adminOptions,
     };
 
