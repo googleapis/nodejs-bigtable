@@ -262,7 +262,6 @@ export class MetricsCollector {
         );
         const metrics = {
           operationLatency: totalTime,
-          firstResponseLatency: this.firstResponseLatency,
           retryCount: this.attemptCount - 1,
         };
         this.metricsHandlers.forEach(metricsHandler => {
