@@ -29,17 +29,3 @@ export interface Attributes {
   streamingOperation?: string;
   clientName: string;
 }
-
-/**
- * Converts an Attributes object to a string representation.
- * This string representation is suitable for use as labels or tags.
- * The order of attributes in the output string is fixed:
- * projectId;instanceId;table;cluster;zone;appProfileId;methodName;attemptStatus;finalOperationStatus;streamingOperation;clientName
- * If an attribute is null or undefined, the empty string is used.
- * @param {Attributes} a The Attributes object to convert.
- * @returns A string representation of the attribute.
- */
-export function attributesToString(a: Attributes) {
-  const p = (attribute?: string | null) => (attribute ? attribute : '');
-  return `${p(a.projectId)};${p(a.instanceId)};${p(a.table)};${p(a.cluster)};${p(a.zone)};${p(a.appProfileId)};${p(a.methodName)};${p(a.attemptStatus)};${p(a.finalOperationStatus)};${p(a.streamingOperation)};nodejs-bigtable`;
-}
