@@ -18,9 +18,9 @@ import {
 } from '../../common/client-side-metrics-attributes';
 
 /**
- * The interfaces below use null instead of undefined to gain the advantage
- * of being able to use the compiler to tell us when a property isn't being
- * provided for easier debugging.
+ * The interfaces below use undefined instead of null to indicate a metric is
+ * not available yet. The benefit of this is that new metrics can be added
+ * without requiring users to change the methods in their metrics handler.
  */
 
 /**

@@ -74,8 +74,6 @@ export interface ITabularApiSurface {
 const packageJSON = fs.readFileSync('package.json');
 const version = JSON.parse(packageJSON.toString()).version;
 
-// TODO: Check if metrics tracer method exists.
-
 /**
  * A class for tracing and recording client-side metrics related to Bigtable operations.
  */
