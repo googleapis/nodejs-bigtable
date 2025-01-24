@@ -13,12 +13,11 @@
 // limitations under the License.
 
 import {describe} from 'mocha';
-import {MetricsTracerFactory} from '../../src/client-side-metrics/metrics-tracer-factory';
-import {TestMeterProvider} from '../../common/test-meter-provider';
 import {TestDateProvider} from '../../common/test-date-provider';
 import * as assert from 'assert';
 import * as fs from 'fs';
-import {ObservabilityOptions} from '../../src/client-side-metrics/observability-options';
+import {TestMetricsHandler} from '../../common/test-metrics-handler';
+import {MetricsCollector} from '../../src/client-side-metrics/metrics-collector';
 
 /**
  * A basic logger class that stores log messages in an array. Useful for testing.
@@ -49,19 +48,6 @@ class Logger {
  */
 class FakeBigtable {
   appProfileId?: string;
-  metricsTracerFactory: MetricsTracerFactory;
-  /**
-   * @param {ObservabilityOptions} observabilityOptions Options for configuring client-side metrics
-   *     observability, including a TestMeterProvider.
-   */
-  constructor(
-    observabilityOptions: ObservabilityOptions,
-    dateProvider: TestDateProvider
-  ) {
-    this.metricsTracerFactory = new MetricsTracerFactory(dateProvider, {
-      meterProvider: observabilityOptions.meterProvider,
-    });
-  }
 
   /**
    * A stubbed method that simulates retrieving the project ID.  Always returns
@@ -85,21 +71,17 @@ class FakeInstance {
   id = 'fakeInstanceId';
 }
 
-describe('Bigtable/MetricsTracer', () => {
+describe.only('Bigtable/MetricsCollector', () => {
   it('should record the right metrics with a typical method call', async () => {
     const logger = new Logger();
+    const metricsHandlers = [new TestMetricsHandler(logger)];
     class FakeTable {
       id = 'fakeTableId';
       instance = new FakeInstance();
-      bigtable = new FakeBigtable(
-        {
-          meterProvider: new TestMeterProvider(logger),
-        },
-        new TestDateProvider(logger)
-      );
+      bigtable = new FakeBigtable();
 
       async fakeMethod(): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
           this.bigtable.getProjectId_((err, projectId) => {
             const standardAttemptInfo = {
               finalOperationStatus: 'PENDING',
@@ -126,68 +108,62 @@ describe('Bigtable/MetricsTracer', () => {
                 options: {},
               },
             };
-            const metricsTracer =
-              this.bigtable.metricsTracerFactory.getMetricsTracer(
-                this,
-                'fakeMethod',
-                projectId
-              );
+            const metricsCollector = new MetricsCollector(
+              this,
+              metricsHandlers,
+              'fakeMethod',
+              projectId,
+              new TestDateProvider(logger)
+            );
             // In this method we simulate a series of events that might happen
             // when a user calls one of the Table methods.
             // Here is an example of what might happen in a method call:
             logger.log('1. The operation starts');
-            metricsTracer.onOperationStart();
+            metricsCollector.onOperationStart();
             logger.log('2. The attempt starts.');
-            metricsTracer.onAttemptStart();
+            metricsCollector.onAttemptStart();
             logger.log('3. Client receives status information.');
-            metricsTracer.onStatusReceived(status);
+            metricsCollector.onStatusReceived(status);
             logger.log('4. Client receives metadata.');
-            metricsTracer.onMetadataReceived(
+            metricsCollector.onMetadataReceived(
               standardAttemptInfo,
               createMetadata('101')
             );
             logger.log('5. Client receives first row.');
-            metricsTracer.onResponse('PENDING');
+            metricsCollector.onResponse();
             logger.log('6. Client receives metadata.');
-            metricsTracer.onMetadataReceived(
+            metricsCollector.onMetadataReceived(
               standardAttemptInfo,
               createMetadata('102')
             );
             logger.log('7. Client receives second row.');
-            metricsTracer.onResponse('PENDING');
+            metricsCollector.onResponse();
             logger.log('8. A transient error occurs.');
-            metricsTracer.onAttemptComplete({
+            metricsCollector.onAttemptComplete({
               finalOperationStatus: 'ERROR',
               streamingOperation: 'YES',
             });
             logger.log('9. After a timeout, the second attempt is made.');
-            metricsTracer.onAttemptStart();
+            metricsCollector.onAttemptStart();
             logger.log('10. Client receives status information.');
-            metricsTracer.onStatusReceived(status);
+            metricsCollector.onStatusReceived(status);
             logger.log('11. Client receives metadata.');
-            metricsTracer.onMetadataReceived(
+            metricsCollector.onMetadataReceived(
               standardAttemptInfo,
               createMetadata('103')
             );
             logger.log('12. Client receives third row.');
-            metricsTracer.onResponse('PENDING');
+            metricsCollector.onResponse();
             logger.log('13. Client receives metadata.');
-            metricsTracer.onMetadataReceived(
+            metricsCollector.onMetadataReceived(
               {finalOperationStatus: 'PENDING', streamingOperation: 'YES'},
               createMetadata('104')
             );
             logger.log('14. Client receives fourth row.');
-            metricsTracer.onResponse('PENDING');
+            metricsCollector.onResponse();
             logger.log('15. User reads row 1');
-            metricsTracer.onRead();
-            logger.log('16. User reads row 2');
-            metricsTracer.onRead();
-            logger.log('17. User reads row 3');
-            metricsTracer.onRead();
-            logger.log('18. User reads row 4');
-            metricsTracer.onRead();
             logger.log('19. Stream ends, operation completes');
-            metricsTracer.onOperationComplete({
+            metricsCollector.onOperationComplete({
               retries: 1,
               finalOperationStatus: 'SUCCESS',
               connectivityErrorCount: 1,
@@ -201,7 +177,7 @@ describe('Bigtable/MetricsTracer', () => {
     const table = new FakeTable();
     await table.fakeMethod();
     const expectedOutput = fs.readFileSync(
-      './test/metrics-tracer/typical-method-call.txt',
+      './test/metrics-collector/typical-method-call.txt',
       'utf8'
     );
     // Ensure events occurred in the right order here:

@@ -1,19 +1,15 @@
 import {Attributes} from '../../common/client-side-metrics-attributes';
 
-interface onOperationCompleteMetrics {
+export interface onOperationCompleteMetrics {
   operationLatency: number;
   retryCount?: number;
 }
 
-interface onAttemptCompleteMetrics {
+export interface onAttemptCompleteMetrics {
   attemptLatency: number;
   serverLatency?: number;
   firstResponseLatency?: number;
   connectivityErrorCount?: number;
-}
-
-interface onReadMetrics {
-  latency: number;
 }
 
 // TODO: Trim attributes so only necessary attributes are required.
@@ -22,7 +18,6 @@ export interface IMetricsHandler {
     metrics: onOperationCompleteMetrics,
     attributes: Attributes
   ): void;
-  onRead?(metrics: onReadMetrics, attributes: Attributes): void;
   onAttemptComplete?(
     metrics: onAttemptCompleteMetrics,
     attributes: Attributes

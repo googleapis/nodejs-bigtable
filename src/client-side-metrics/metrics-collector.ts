@@ -106,7 +106,6 @@ export class MetricsCollector {
   private firstResponseLatency?: number;
   private serverTimeRead: boolean;
   private serverTime?: number;
-  private lastReadTime: DateLike | null;
   private dateProvider: DateProvider;
 
   /**
@@ -130,7 +129,6 @@ export class MetricsCollector {
     this.attemptStartTime = null;
     this.receivedFirstResponse = false;
     this.metricsHandlers = metricsHandlers;
-    this.lastReadTime = null;
     this.serverTimeRead = false;
     this.projectId = projectId;
     if (dateProvider) {
@@ -210,28 +208,6 @@ export class MetricsCollector {
    */
   onOperationStart() {
     this.operationStartTime = this.dateProvider.getDate();
-  }
-
-  /**
-   * Called after the client reads a row. Records application blocking latencies.
-   */
-  onRead() {
-    const currentTime = this.dateProvider.getDate();
-    const projectId = this.projectId;
-    if (this.lastReadTime) {
-      if (projectId && this.lastReadTime) {
-        const attributes = this.getBasicAttributes(projectId);
-        const difference = currentTime.getTime() - this.lastReadTime.getTime();
-        this.metricsHandlers.forEach(metricsHandler => {
-          if (metricsHandler.onRead) {
-            metricsHandler.onRead({latency: difference}, attributes);
-          }
-        });
-        this.lastReadTime = currentTime;
-      }
-    } else {
-      this.lastReadTime = currentTime;
-    }
   }
 
   /**
