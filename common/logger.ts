@@ -33,20 +33,3 @@ export abstract class WithLogger {
     this.logger = logger;
   }
 }
-
-/**
- * An abstract base class that provides a logger instance and a name. Subclasses
- * can use the logger for logging messages, incorporating the name for context.
- */
-export abstract class WithLoggerAndName {
-  protected logger: ILogger;
-  protected name: string;
-  /**
-   * @param {ILogger} logger The logger instance to be used by this object.
-   * @param {string} name The name associated with this object.
-   */
-  constructor(logger: ILogger, name: string) {
-    this.logger = logger;
-    this.name = name;
-  }
-}
