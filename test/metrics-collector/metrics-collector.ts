@@ -83,11 +83,6 @@ describe('Bigtable/MetricsCollector', () => {
       async fakeMethod(): Promise<void> {
         return new Promise(resolve => {
           this.bigtable.getProjectId_((err, projectId) => {
-            const standardAttemptInfo = {
-              finalOperationStatus: 'PENDING',
-              streamingOperation: 'YES',
-            };
-
             function createMetadata(duration: string) {
               return {
                 internalRepr: new Map([
@@ -136,6 +131,7 @@ describe('Bigtable/MetricsCollector', () => {
             metricsCollector.onAttemptComplete({
               finalOperationStatus: 'ERROR',
               streamingOperation: 'YES',
+              attemptStatus: 'ERROR',
             });
             logger.log('9. After a timeout, the second attempt is made.');
             metricsCollector.onAttemptStart();
@@ -151,9 +147,13 @@ describe('Bigtable/MetricsCollector', () => {
             metricsCollector.onResponse();
             logger.log('15. User reads row 1');
             logger.log('19. Stream ends, operation completes');
+            metricsCollector.onAttemptComplete({
+              finalOperationStatus: 'SUCCESS',
+              attemptStatus: 'SUCCESS',
+              streamingOperation: 'YES',
+            });
             metricsCollector.onOperationComplete({
               finalOperationStatus: 'SUCCESS',
-              connectivityErrorCount: 1,
               streamingOperation: 'YES',
             });
             resolve();

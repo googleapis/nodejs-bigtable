@@ -1,9 +1,12 @@
-import {Attributes} from '../../common/client-side-metrics-attributes';
+import {
+  OnAttemptCompleteAttributes,
+  OnOperationCompleteAttributes,
+} from '../../common/client-side-metrics-attributes';
 
 /**
  * Metrics related to the completion of a Bigtable operation.
  */
-export interface onOperationCompleteMetrics {
+export interface OnOperationCompleteMetrics {
   operationLatency: number;
   retryCount?: number;
 }
@@ -11,7 +14,7 @@ export interface onOperationCompleteMetrics {
 /**
  * Metrics related to the completion of a single attempt of a Bigtable operation.
  */
-export interface onAttemptCompleteMetrics {
+export interface OnAttemptCompleteMetrics {
   attemptLatency: number;
   serverLatency?: number;
   firstResponseLatency?: number;
@@ -26,20 +29,20 @@ export interface onAttemptCompleteMetrics {
 export interface IMetricsHandler {
   /**
    * Called when an operation completes (successfully or unsuccessfully).
-   * @param {onOperationCompleteMetrics} metrics Metrics related to the completed operation.
-   * @param {Attributes} attributes Attributes associated with the completed operation.
+   * @param {OnOperationCompleteMetrics} metrics Metrics related to the completed operation.
+   * @param {OnOperationCompleteAttributes} attributes Attributes associated with the completed operation.
    */
   onOperationComplete?(
-    metrics: onOperationCompleteMetrics,
-    attributes: Attributes
+    metrics: OnOperationCompleteMetrics,
+    attributes: OnOperationCompleteAttributes
   ): void;
   /**
    * Called when an attempt (e.g., an RPC attempt) completes.
-   * @param {onAttemptCompleteMetrics} metrics Metrics related to the completed attempt.
-   * @param {Attributes} attributes Attributes associated with the completed attempt.
+   * @param {OnAttemptCompleteMetrics} metrics Metrics related to the completed attempt.
+   * @param {OnAttemptCompleteAttributes} attributes Attributes associated with the completed attempt.
    */
   onAttemptComplete?(
-    metrics: onAttemptCompleteMetrics,
-    attributes: Attributes
+    metrics: OnAttemptCompleteMetrics,
+    attributes: OnAttemptCompleteAttributes
   ): void;
 }

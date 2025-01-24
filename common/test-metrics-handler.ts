@@ -1,9 +1,9 @@
 import {WithLogger} from './logger';
 import {
-  onAttemptCompleteMetrics,
-  onOperationCompleteMetrics,
+  OnAttemptCompleteMetrics,
+  OnOperationCompleteMetrics,
 } from '../src/client-side-metrics/metrics-handler';
-import {Attributes} from './client-side-metrics-attributes';
+import {OnAttemptCompleteAttributes, OnOperationCompleteAttributes} from './client-side-metrics-attributes';
 
 /**
  * A test implementation of the IMetricsHandler interface.  Used for testing purposes.
@@ -12,12 +12,12 @@ import {Attributes} from './client-side-metrics-attributes';
 export class TestMetricsHandler extends WithLogger {
   /**
    * Logs the metrics and attributes received for an operation completion.
-   * @param {onOperationCompleteMetrics} metrics Metrics related to the completed operation.
+   * @param {OnOperationCompleteMetrics} metrics Metrics related to the completed operation.
    * @param {Attributes} attributes Attributes associated with the completed operation.
    */
   onOperationComplete(
-    metrics: onOperationCompleteMetrics,
-    attributes: Attributes
+    metrics: OnOperationCompleteMetrics,
+    attributes: OnOperationCompleteAttributes
   ) {
     attributes.clientName = 'nodejs-bigtable';
     this.logger.log('Recording parameters for onOperationComplete:');
@@ -27,10 +27,13 @@ export class TestMetricsHandler extends WithLogger {
 
   /**
    * Logs the metrics and attributes received for an attempt completion.
-   * @param {onAttemptCompleteMetrics} metrics Metrics related to the completed attempt.
+   * @param {OnAttemptCompleteMetrics} metrics Metrics related to the completed attempt.
    * @param {Attributes} attributes Attributes associated with the completed attempt.
    */
-  onAttemptComplete(metrics: onAttemptCompleteMetrics, attributes: Attributes) {
+  onAttemptComplete(
+    metrics: OnAttemptCompleteMetrics,
+    attributes: OnAttemptCompleteAttributes
+  ) {
     attributes.clientName = 'nodejs-bigtable';
     this.logger.log('Recording parameters for onAttemptComplete:');
     this.logger.log(`metrics: ${JSON.stringify(metrics)}`);

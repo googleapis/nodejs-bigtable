@@ -1,6 +1,10 @@
-import {Attributes} from '../../common/client-side-metrics-attributes';
 import * as fs from 'fs';
 import {IMetricsHandler} from './metrics-handler';
+import {
+  AttemptOnlyAttributes,
+  OnOperationCompleteAttributes,
+  OperationOnlyAttributes,
+} from '../../common/client-side-metrics-attributes';
 
 /**
  * An interface representing a Date-like object.  Provides a `getTime` method
@@ -50,35 +54,6 @@ export interface ITabularApiSurface {
   bigtable: {
     appProfileId?: string;
   };
-}
-
-/**
- * Information about a Bigtable operation.
- */
-interface OperationInfo {
-  /**
-   * The final status of the operation (e.g., 'OK', 'ERROR').
-   */
-  finalOperationStatus: string;
-  /**
-   * Number of times a connectivity error occurred during the operation.
-   */
-  connectivityErrorCount?: number;
-  streamingOperation: string;
-}
-
-/**
- * Information about a single attempt of a Bigtable operation.
- */
-interface AttemptInfo {
-  /**
-   * The final status of the attempt (e.g., 'OK', 'ERROR').
-   */
-  finalOperationStatus: string;
-  /**
-   * Whether the operation is a streaming operation or not
-   */
-  streamingOperation: string;
 }
 
 const packageJSON = fs.readFileSync('package.json');
@@ -160,20 +135,15 @@ export class MetricsCollector {
    * provide context about the Bigtable environment, the operation being performed, and the final status of the operation.
    * Includes whether the operation was a streaming operation or not.
    * @param {string} projectId The Google Cloud project ID.
-   * @param {string} finalOperationStatus The final status of the operation.
-   * @param {string} streamOperation Whether the operation was a streaming operation or not.
-   * @returns {Attributes} An object containing the attributes for operation latency metrics.
+   * @param {OperationOnlyAttributes} operationOnlyAttributes The attributes of the operation.
+   * @returns {OnOperationCompleteAttributes} An object containing the attributes for operation latency metrics.
    */
   private getOperationLatencyAttributes(
     projectId: string,
-    finalOperationStatus: string,
-    streamOperation?: string
-  ): Attributes {
+    operationOnlyAttributes: OperationOnlyAttributes
+  ): OnOperationCompleteAttributes {
     return Object.assign(
-      {
-        finalOperationStatus: finalOperationStatus,
-        streamingOperation: streamOperation,
-      },
+      operationOnlyAttributes,
       this.getBasicAttributes(projectId)
     );
   }
@@ -183,20 +153,15 @@ export class MetricsCollector {
    * about the Bigtable environment, the operation being performed, and the status of the attempt.
    * Includes whether the operation was a streaming operation or not.
    * @param {string} projectId The Google Cloud project ID.
-   * @param {string} attemptStatus The status of the attempt.
-   * @param {string} streamingOperation Whether the operation was a streaming operation or not.
-   * @returns {Attributes} An object containing the attributes for attempt metrics.
+   * @param {AttemptOnlyAttributes} attemptOnlyAttributes The attributes of the attempt.
+   * @returns {OnAttemptCompleteAttributes} An object containing the attributes for attempt metrics.
    */
   private getAttemptAttributes(
     projectId: string,
-    attemptStatus: string,
-    streamingOperation: string
+    attemptOnlyAttributes: AttemptOnlyAttributes
   ) {
     return Object.assign(
-      {
-        attemptStatus: attemptStatus,
-        streamingOperation: streamingOperation,
-      },
+      attemptOnlyAttributes,
       this.getBasicAttributes(projectId)
     );
   }
@@ -210,18 +175,14 @@ export class MetricsCollector {
 
   /**
    * Called when an attempt (e.g., an RPC attempt) completes. Records attempt latencies.
-   * @param {AttemptInfo} info Information about the completed attempt.
+   * @param {AttemptOnlyAttributes} info Information about the completed attempt.
    */
-  onAttemptComplete(info: AttemptInfo) {
+  onAttemptComplete(info: AttemptOnlyAttributes) {
     this.attemptCount++;
     const endTime = this.dateProvider.getDate();
     const projectId = this.projectId;
     if (projectId && this.attemptStartTime) {
-      const attributes = this.getAttemptAttributes(
-        projectId,
-        info.finalOperationStatus,
-        info.streamingOperation
-      );
+      const attributes = this.getAttemptAttributes(projectId, info);
       const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
       this.metricsHandlers.forEach(metricsHandler => {
         if (metricsHandler.onAttemptComplete) {
@@ -267,26 +228,23 @@ export class MetricsCollector {
   /**
    * Called when an operation completes (successfully or unsuccessfully).
    * Records operation latencies, retry counts, and connectivity error counts.
-   * @param {OperationInfo} info Information about the completed operation.
+   * @param {OperationOnlyAttributes} info Information about the completed operation.
    */
-  onOperationComplete(info: OperationInfo) {
+  onOperationComplete(info: OperationOnlyAttributes) {
     const endTime = this.dateProvider.getDate();
     const projectId = this.projectId;
-    this.onAttemptComplete(info);
     if (projectId && this.operationStartTime) {
       const totalTime = endTime.getTime() - this.operationStartTime.getTime();
       {
         // This block records operation latency metrics.
         const operationLatencyAttributes = this.getOperationLatencyAttributes(
           projectId,
-          info.finalOperationStatus,
-          info.streamingOperation
+          info
         );
         const metrics = {
           operationLatency: totalTime,
           firstResponseLatency: this.firstResponseLatency,
           retryCount: this.attemptCount - 1,
-          connectivityErrorCount: info.connectivityErrorCount,
         };
         this.metricsHandlers.forEach(metricsHandler => {
           if (metricsHandler.onOperationComplete) {
@@ -302,7 +260,7 @@ export class MetricsCollector {
 
   /**
    * Called when metadata is received. Extracts server timing information if available.
-   * @param {AttemptInfo} info Information about the completed attempt.
+   * @param {AttemptOnlyAttributes} info Information about the completed attempt.
    * @param {object} metadata The received metadata.
    */
   onMetadataReceived(metadata: {

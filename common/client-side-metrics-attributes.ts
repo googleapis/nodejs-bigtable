@@ -12,11 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * Attributes (labels) associated with a Bigtable metric. These
- * attributes provide context for the metric values.
- */
-export interface Attributes {
+interface StandardAttributes {
   projectId: string;
   instanceId: string;
   table: string;
@@ -24,8 +20,49 @@ export interface Attributes {
   zone?: string | null;
   appProfileId?: string;
   methodName: string;
-  attemptStatus?: string;
-  finalOperationStatus?: string;
-  streamingOperation?: string;
   clientName: string;
+}
+
+/**
+ * Information about a Bigtable operation.
+ */
+export interface OperationOnlyAttributes {
+  /**
+   * The final status of the operation (e.g., 'OK', 'ERROR').
+   */
+  finalOperationStatus: string;
+  streamingOperation: string;
+}
+
+/**
+ * Information about a single attempt of a Bigtable operation.
+ */
+export interface AttemptOnlyAttributes {
+  /**
+   * The final status of the operation (e.g., 'OK', 'ERROR').
+   */
+  finalOperationStatus: string; // TODO: enum
+  /**
+   * Whether the operation is a streaming operation or not.
+   */
+  streamingOperation: string; // TODO: enum
+  /**
+   * The attempt status of the operation.
+   */
+  attemptStatus: string; // TODO: enum
+}
+
+export interface OnOperationCompleteAttributes
+  extends StandardAttributes,
+    OperationOnlyAttributes {
+  finalOperationStatus: string;
+  streamingOperation: string;
+}
+
+export interface OnAttemptCompleteAttributes
+  extends StandardAttributes,
+    AttemptOnlyAttributes {
+  attemptStatus: string;
+  finalOperationStatus: string;
+  streamingOperation: string;
 }
