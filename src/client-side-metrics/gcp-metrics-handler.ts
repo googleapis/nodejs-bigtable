@@ -29,10 +29,21 @@ interface Metrics {
   clientBlockingLatencies: typeof Histogram;
 }
 
+/**
+ * A metrics handler implementation that uses OpenTelemetry to export metrics to Google Cloud Monitoring.
+ * This handler records metrics such as operation latency, attempt latency, retry count, and more,
+ * associating them with relevant attributes for detailed analysis in Cloud Monitoring.
+ */
 export class GCPMetricsHandler implements IMetricsHandler {
   private initialized = false;
   private otelMetrics?: Metrics;
 
+  /**
+   * Initializes the OpenTelemetry metrics instruments if they haven't been already.
+   * Creates and registers metric instruments (histograms and counters) for various Bigtable client metrics.
+   * Sets up a MeterProvider and configures a PeriodicExportingMetricReader for exporting metrics to Cloud Monitoring.
+   * @param {string} [projectId] The Google Cloud project ID. Used for metric export. If not provided, it will attempt to detect it from the environment.
+   */
   private initialize(projectId?: string) {
     if (!this.initialized) {
       this.initialized = true;
@@ -114,6 +125,12 @@ export class GCPMetricsHandler implements IMetricsHandler {
     }
   }
 
+  /**
+   * Records metrics for a completed Bigtable operation.
+   * This method records the operation latency and retry count, associating them with provided attributes.
+   * @param {onOperationCompleteMetrics} metrics Metrics related to the completed operation.
+   * @param {Attributes} attributes Attributes associated with the completed operation.
+   */
   onOperationComplete(
     metrics: onOperationCompleteMetrics,
     attributes: Attributes
@@ -125,6 +142,14 @@ export class GCPMetricsHandler implements IMetricsHandler {
     );
     this.otelMetrics?.retryCount.add(metrics.retryCount, attributes);
   }
+
+  /**
+   * Records metrics for a completed attempt of a Bigtable operation.
+   * This method records attempt latency, connectivity error count, server latency, and first response latency,
+   * along with the provided attributes.
+   * @param {onAttemptCompleteMetrics} metrics Metrics related to the completed attempt.
+   * @param {Attributes} attributes Attributes associated with the completed attempt.
+   */
   onAttemptComplete(metrics: onAttemptCompleteMetrics, attributes: Attributes) {
     this.initialize();
     this.otelMetrics?.attemptLatencies.record(
