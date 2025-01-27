@@ -233,8 +233,8 @@ export class MetricsCollector {
   onResponse() {
     const endTime = this.dateProvider.getDate();
     const projectId = this.projectId;
-    if (projectId && this.operationStartTime) {
-      const totalTime = endTime.getTime() - this.operationStartTime.getTime();
+    if (projectId && this.attemptStartTime) {
+      const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
       if (!this.receivedFirstResponse) {
         this.receivedFirstResponse = true;
         this.firstResponseLatency = totalTime;
