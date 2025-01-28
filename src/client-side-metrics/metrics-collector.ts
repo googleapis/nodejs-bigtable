@@ -37,7 +37,7 @@ interface DateLike {
 /**
  * Interface for a provider that returns DateLike objects. Used for mocking dates in tests.
  */
-interface DateProvider {
+export interface DateProvider {
   /**
    * Returns a DateLike object.
    * @returns A DateLike object representing the current time or a fake time value.

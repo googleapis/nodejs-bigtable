@@ -13,10 +13,18 @@
 // limitations under the License.
 
 import {Bigtable} from '../src';
-import * as assert from 'assert';
 import {describe, it, before, after} from 'mocha';
-import {TestMeterProvider} from '../common/test-meter-provider';
 import * as fs from 'node:fs';
+import {TestMetricsHandler} from '../common/test-metrics-handler';
+import {
+  ITabularApiSurface,
+  MetricsCollector,
+} from '../src/client-side-metrics/metrics-collector';
+import {IMetricsHandler} from '../src/client-side-metrics/metrics-handler';
+import {TestDateProvider} from '../common/test-date-provider';
+import * as proxyquire from 'proxyquire';
+import {FakeCluster} from './common';
+import * as pumpify from 'pumpify';
 
 class Logger {
   private messages = '';
@@ -31,20 +39,48 @@ class Logger {
   }
 }
 
+const logger = new Logger();
+
+class TestMetricsCollector extends MetricsCollector {
+  constructor(
+    tabularApiSurface: ITabularApiSurface,
+    metricsHandlers: IMetricsHandler[],
+    methodName: string,
+    projectId?: string
+  ) {
+    super(
+      tabularApiSurface,
+      metricsHandlers,
+      methodName,
+      projectId,
+      new TestDateProvider(logger)
+    );
+  }
+}
+
 describe.only('Bigtable/Table#getRows', () => {
-  const logger = new Logger();
-  const meterProvider = new TestMeterProvider(logger);
   const bigtable = new Bigtable({
-    projectId: 'cloud-native-db-dpes-shared',
-    observabilityOptions: {
-      meterProvider,
-    },
+    metricsHandlers: [new TestMetricsHandler(logger)],
   });
   const instanceId = 'emulator-test-instance';
   const tableId = 'my-table';
   const columnFamilyId = 'cf1';
 
   before(async () => {
+    const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
+      './table.js': {Table: FakeInstance},
+    }).Instance;
+    const FakeTable = proxyquire('../src/table.js', {
+      './table.js': {Table: FakeInstance},
+    }).Instance;
+    const FakeInstance = proxyquire('../src/instance.js', {
+      './table.js': {Table: FakeInstance},
+    }).Instance;
+    const Bigtable = proxyquire('../src/index.js', {
+      './instance.js': {Table: FakeTable},
+      pumpify,
+    }).Instance;
+
     const instance = bigtable.instance(instanceId);
     try {
       const [instanceInfo] = await instance.exists();
