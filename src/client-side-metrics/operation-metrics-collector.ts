@@ -147,14 +147,16 @@ export class OperationMetricsCollector {
   }
 
   /**
-   * Assembles the attributes for operation latency metrics.  These attributes
-   * provide context about the Bigtable environment, the operation being performed, and the final status of the operation.
-   * Includes whether the operation was a streaming operation or not.
+   * Assembles the attributes for an entire operation.  These attributes
+   * provide context about the Bigtable environment, the operation being
+   * performed, and the final status of the operation. Includes whether the
+   * operation was a streaming operation or not.
+   *
    * @param {string} projectId The Google Cloud project ID.
    * @param {OperationOnlyAttributes} operationOnlyAttributes The attributes of the operation.
    * @returns {OnOperationCompleteAttributes} An object containing the attributes for operation latency metrics.
    */
-  private getOperationLatencyAttributes(
+  private getOperationAttributes(
     projectId: string,
     operationOnlyAttributes: OperationOnlyAttributes
   ): OnOperationCompleteAttributes {
@@ -255,7 +257,7 @@ export class OperationMetricsCollector {
       const totalTime = endTime.getTime() - this.operationStartTime.getTime();
       {
         // This block records operation latency metrics.
-        const operationLatencyAttributes = this.getOperationLatencyAttributes(
+        const operationLatencyAttributes = this.getOperationAttributes(
           projectId,
           info
         );
