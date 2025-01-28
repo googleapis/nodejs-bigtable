@@ -154,7 +154,8 @@ export class OperationMetricsCollector {
    *
    * @param {string} projectId The Google Cloud project ID.
    * @param {OperationOnlyAttributes} operationOnlyAttributes The attributes of the operation.
-   * @returns {OnOperationCompleteAttributes} An object containing the attributes for operation latency metrics.
+   * @returns {OnOperationCompleteAttributes} An object containing the attributes
+   * for operation latency metrics.
    */
   private getOperationAttributes(
     projectId: string,
@@ -168,11 +169,13 @@ export class OperationMetricsCollector {
 
   /**
    * Assembles the attributes for attempt metrics. These attributes provide context
-   * about the Bigtable environment, the operation being performed, and the status of the attempt.
-   * Includes whether the operation was a streaming operation or not.
+   * about the Bigtable environment, the operation being performed, the status
+   * of the attempt and whether the operation was a streaming operation or not.
+   *
    * @param {string} projectId The Google Cloud project ID.
    * @param {AttemptOnlyAttributes} attemptOnlyAttributes The attributes of the attempt.
-   * @returns {OnAttemptCompleteAttributes} An object containing the attributes for attempt metrics.
+   * @returns {OnAttemptCompleteAttributes} The attributes all metrics recorded
+   * in the onAttemptComplete handler.
    */
   private getAttemptAttributes(
     projectId: string,
