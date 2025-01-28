@@ -78,3 +78,12 @@ export interface OnAttemptCompleteAttributes
 export interface OnAttemptCompleteInfo extends AttemptOnlyAttributes {
   connectivityErrorCount: number;
 }
+
+export enum MethodName {
+  READ_ROWS = 'readRows',
+  MUTATE_ROW = 'mutateRow',
+  CHECK_AND_MUTATE_ROW = 'checkAndMutateRow',
+  READ_MODIFY_WRITE_ROW = 'readModifyWriteRow',
+  SAMPLE_ROW_KEYS = 'sampleRowKeys',
+  MUTATE_ROWS = 'mutateRows',
+}

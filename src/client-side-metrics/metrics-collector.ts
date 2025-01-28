@@ -16,6 +16,7 @@ import * as fs from 'fs';
 import {IMetricsHandler} from './metrics-handler';
 import {
   AttemptOnlyAttributes,
+  MethodName,
   OnAttemptCompleteInfo,
   OnOperationCompleteAttributes,
   OperationOnlyAttributes,
@@ -83,7 +84,7 @@ export class MetricsCollector {
   private zone: string | undefined;
   private cluster: string | undefined;
   private tabularApiSurface: ITabularApiSurface;
-  private methodName: string;
+  private methodName: MethodName;
   private projectId?: string;
   private attemptCount = 0;
   private receivedFirstResponse: boolean;
@@ -96,14 +97,14 @@ export class MetricsCollector {
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
    * @param {IMetricsHandler[]} metricsHandlers The metrics handlers used for recording metrics.
-   * @param {string} methodName The name of the method being traced.
+   * @param {MethodName} methodName The name of the method being traced.
    * @param {string} projectId The id of the project.
    * @param {DateProvider} dateProvider A provider for date/time information (for testing).
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
     metricsHandlers: IMetricsHandler[],
-    methodName: string,
+    methodName: MethodName,
     projectId?: string,
     dateProvider?: DateProvider
   ) {
