@@ -31,7 +31,7 @@ export interface OperationOnlyAttributes {
    * The final status of the operation (e.g., 'OK', 'ERROR').
    */
   finalOperationStatus: FinalOperationStatus;
-  streamingOperation: StreamingOperation;
+  streamingOperation: boolean;
 }
 
 /**
@@ -45,7 +45,7 @@ export interface AttemptOnlyAttributes {
   /**
    * Whether the operation is a streaming operation or not.
    */
-  streamingOperation: StreamingOperation;
+  streamingOperation: boolean;
   /**
    * The attempt status of the operation.
    */
@@ -60,11 +60,6 @@ export enum FinalOperationStatus {
 export enum AttemptStatus {
   OK = 'OK',
   ERROR = 'ERROR',
-}
-
-export enum StreamingOperation {
-  YES = 'YES',
-  NO = 'NO',
 }
 
 export interface OnOperationCompleteAttributes

@@ -21,7 +21,6 @@ import {MetricsCollector} from '../../src/client-side-metrics/metrics-collector'
 import {
   AttemptStatus,
   FinalOperationStatus,
-  StreamingOperation,
 } from '../../common/client-side-metrics-attributes';
 
 /**
@@ -135,7 +134,7 @@ describe('Bigtable/MetricsCollector', () => {
             logger.log('8. A transient error occurs.');
             metricsCollector.onAttemptComplete({
               finalOperationStatus: FinalOperationStatus.ERROR,
-              streamingOperation: StreamingOperation.YES,
+              streamingOperation: true,
               attemptStatus: AttemptStatus.ERROR,
               connectivityErrorCount: 1,
             });
@@ -156,12 +155,12 @@ describe('Bigtable/MetricsCollector', () => {
             metricsCollector.onAttemptComplete({
               finalOperationStatus: FinalOperationStatus.ERROR,
               attemptStatus: AttemptStatus.OK,
-              streamingOperation: StreamingOperation.YES,
+              streamingOperation: true,
               connectivityErrorCount: 1,
             });
             metricsCollector.onOperationComplete({
               finalOperationStatus: FinalOperationStatus.OK,
-              streamingOperation: StreamingOperation.YES,
+              streamingOperation: true,
             });
             resolve();
           });
