@@ -18,7 +18,11 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import {TestMetricsHandler} from '../../common/test-metrics-handler';
 import {OperationMetricsCollector} from '../../src/client-side-metrics/operation-metrics-collector';
-import {AttemptStatus, FinalOperationStatus, MethodName,} from '../../common/client-side-metrics-attributes';
+import {
+  AttemptStatus,
+  FinalOperationStatus,
+  MethodName,
+} from '../../common/client-side-metrics-attributes';
 
 /**
  * A basic logger class that stores log messages in an array. Useful for testing.
