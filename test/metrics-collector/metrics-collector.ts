@@ -17,11 +17,8 @@ import {TestDateProvider} from '../../common/test-date-provider';
 import * as assert from 'assert';
 import * as fs from 'fs';
 import {TestMetricsHandler} from '../../common/test-metrics-handler';
-import {MetricsCollector} from '../../src/client-side-metrics/metrics-collector';
-import {
-  AttemptStatus,
-  FinalOperationStatus,
-} from '../../common/client-side-metrics-attributes';
+import {OperationMetricsCollector} from '../../src/client-side-metrics/operation-metrics-collector';
+import {AttemptStatus, FinalOperationStatus, MethodName,} from '../../common/client-side-metrics-attributes';
 
 /**
  * A basic logger class that stores log messages in an array. Useful for testing.
@@ -107,10 +104,10 @@ describe('Bigtable/MetricsCollector', () => {
                 options: {},
               },
             };
-            const metricsCollector = new MetricsCollector(
+            const metricsCollector = new OperationMetricsCollector(
               this,
               metricsHandlers,
-              'fakeMethod',
+              MethodName.READ_ROWS,
               projectId,
               new TestDateProvider(logger)
             );

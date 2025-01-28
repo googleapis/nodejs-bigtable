@@ -78,7 +78,7 @@ const version = JSON.parse(packageJSON.toString()).version;
 /**
  * A class for tracing and recording client-side metrics related to Bigtable operations.
  */
-export class MetricsCollector {
+export class OperationMetricsCollector {
   private operationStartTime: DateLike | null;
   private attemptStartTime: DateLike | null;
   private zone: string | undefined;
