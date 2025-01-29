@@ -129,8 +129,18 @@ describe('Bigtable/Table', () => {
   });
 
   beforeEach(() => {
+    const bigtable = {
+      getProjectId_: (
+        callback: (err: Error | null, projectId?: string) => void
+      ) => {
+        callback(null, 'my-project');
+      },
+      options: {
+        metricsHandlers: [],
+      },
+    } as unknown as Bigtable;
     INSTANCE = {
-      bigtable: {} as Bigtable,
+      bigtable,
       name: 'a/b/c/d',
     } as inst.Instance;
     TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;

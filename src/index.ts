@@ -513,6 +513,7 @@ export class Bigtable {
     );
 
     this.options = {
+      metricsHandlers: options.metricsHandlers,
       BigtableClient: dataOptions,
       BigtableInstanceAdminClient: instanceAdminOptions,
       BigtableTableAdminClient: adminOptions,

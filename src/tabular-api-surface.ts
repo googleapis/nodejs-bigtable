@@ -43,6 +43,7 @@ import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {TableUtils} from './utils/table';
+import {IMetricsHandler} from './client-side-metrics/metrics-handler';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -214,106 +215,94 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * region_tag:bigtable_api_table_readstream
    */
   createReadStream(opts?: GetRowsOptions) {
-    this.bigtable.getProjectId_((err, projectId) => {
-      attemptCounter++;
-      // Initialize objects for collecting client side metrics.
-      const metricsTracer = this.bigtable.metricsTracerFactory.getMetricsTracer(
-        this,
-        'readRows'
-      );
-      const metricsCollector = new MetricsCollector(
-        this,
-        this.bigtable.options.metricsHandlers,
-        'readRows'
-      );
+    attemptCounter++;
+    /*
+    metricsTracer.onOperationComplete({
+      retries: numRequestsMade - 1,
+      finalOperationStatus,
+      connectivityErrorCount,
+      streamingOperation: 'YES',
+    });
+     */
 
-      function onCallComplete(finalOperationStatus: string) {
-        metricsTracer.onOperationComplete({
-          retries: numRequestsMade - 1,
-          finalOperationStatus,
-          connectivityErrorCount,
-          streamingOperation: 'YES',
-        });
-      }
+    const options = opts || {};
+    const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
+    let activeRequestStream: AbortableDuplex | null;
+    let rowKeys: string[];
+    let filter: {} | null;
+    const rowsLimit = options.limit || 0;
+    const hasLimit = rowsLimit !== 0;
 
-      const options = opts || {};
-      const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
-      let activeRequestStream: AbortableDuplex | null;
-      let rowKeys: string[];
-      let filter: {} | null;
-      const rowsLimit = options.limit || 0;
-      const hasLimit = rowsLimit !== 0;
+    // TODO: Uncomment the next line after client-side metrics are well tested.
+    let connectivityErrorCount = 0;
+    let numConsecutiveErrors = 0;
+    let numRequestsMade = 0;
+    let retryTimer: NodeJS.Timeout | null;
 
-      // TODO: Uncomment the next line after client-side metrics are well tested.
-      let connectivityErrorCount = 0;
-      let numConsecutiveErrors = 0;
-      let numRequestsMade = 0;
-      let retryTimer: NodeJS.Timeout | null;
+    rowKeys = options.keys || [];
 
-      rowKeys = options.keys || [];
-
-      /*
+    /*
       The following line of code sets the timeout if it was provided while
       creating the client. This will be used to determine if the client should
       retry on DEADLINE_EXCEEDED errors. Eventually, this will be handled
       downstream in google-gax.
        */
-      const timeout =
-        opts?.gaxOptions?.timeout ||
-        (this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces &&
-          this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces[
-            'google.bigtable.v2.Bigtable'
-          ]?.methods['ReadRows']?.timeout_millis);
-      const callTimeMillis = new Date().getTime();
+    const timeout =
+      opts?.gaxOptions?.timeout ||
+      (this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces &&
+        this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces[
+          'google.bigtable.v2.Bigtable'
+        ]?.methods['ReadRows']?.timeout_millis);
+    const callTimeMillis = new Date().getTime();
 
-      const ranges = TableUtils.getRanges(options);
+    const ranges = TableUtils.getRanges(options);
 
-      // If rowKeys and ranges are both empty, the request is a full table scan.
-      // Add an empty range to simplify the resumption logic.
-      if (rowKeys.length === 0 && ranges.length === 0) {
-        ranges.push({});
-      }
+    // If rowKeys and ranges are both empty, the request is a full table scan.
+    // Add an empty range to simplify the resumption logic.
+    if (rowKeys.length === 0 && ranges.length === 0) {
+      ranges.push({});
+    }
 
-      if (options.filter) {
-        filter = Filter.parse(options.filter);
-      }
+    if (options.filter) {
+      filter = Filter.parse(options.filter);
+    }
 
-      let chunkTransformer: ChunkTransformer;
-      let rowStream: Duplex;
+    let chunkTransformer: ChunkTransformer;
+    let rowStream: Duplex;
 
-      let userCanceled = false;
-      // The key of the last row that was emitted by the per attempt pipeline
-      // Note: this must be updated from the operation level userStream to avoid referencing buffered rows that will be
-      // discarded in the per attempt subpipeline (rowStream)
-      let lastRowKey = '';
-      let rowsRead = 0;
-      const userStream = new PassThrough({
-        objectMode: true,
-        readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
-        writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
-        transform(event, _encoding, callback) {
-          if (userCanceled) {
-            callback();
-            return;
-          }
-          if (event.eventType === DataEvent.LAST_ROW_KEY_UPDATE) {
-            /**
-             * This code will run when receiving an event containing
-             * lastScannedRowKey data that the chunk transformer sent. When the
-             * chunk transformer gets lastScannedRowKey data, this code
-             * updates the lastRowKey to ensure row ids with the lastScannedRowKey
-             * aren't re-requested in retries. The lastRowKey needs to be updated
-             * here and not in the chunk transformer to ensure the update is
-             * queued behind all events that deliver data to the user stream
-             * first.
-             */
-            lastRowKey = event.lastScannedRowKey;
-            callback();
-            return;
-          }
-          const row = event;
-          if (TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
-            /*
+    let userCanceled = false;
+    // The key of the last row that was emitted by the per attempt pipeline
+    // Note: this must be updated from the operation level userStream to avoid referencing buffered rows that will be
+    // discarded in the per attempt subpipeline (rowStream)
+    let lastRowKey = '';
+    let rowsRead = 0;
+    const userStream = new PassThrough({
+      objectMode: true,
+      readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
+      writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
+      transform(event, _encoding, callback) {
+        if (userCanceled) {
+          callback();
+          return;
+        }
+        if (event.eventType === DataEvent.LAST_ROW_KEY_UPDATE) {
+          /**
+           * This code will run when receiving an event containing
+           * lastScannedRowKey data that the chunk transformer sent. When the
+           * chunk transformer gets lastScannedRowKey data, this code
+           * updates the lastRowKey to ensure row ids with the lastScannedRowKey
+           * aren't re-requested in retries. The lastRowKey needs to be updated
+           * here and not in the chunk transformer to ensure the update is
+           * queued behind all events that deliver data to the user stream
+           * first.
+           */
+          lastRowKey = event.lastScannedRowKey;
+          callback();
+          return;
+        }
+        const row = event;
+        if (TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
+          /*
             Sometimes duplicate rows reach this point. To avoid delivering
             duplicate rows to the user, rows are thrown away if they don't exceed
             the last row key. We can expect each row to reach this point and rows
@@ -322,57 +311,62 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             and been delivered to the user. In this case we want to throw the row
             away and we do not want to deliver this row to the user again.
              */
-            callback();
-            return;
-          }
-          lastRowKey = row.id;
-          rowsRead++;
-          callback(null, row);
-        },
-        // TODO: Uncomment the next line after client-side metrics are well tested.
-        /*
+          callback();
+          return;
+        }
+        lastRowKey = row.id;
+        rowsRead++;
+        callback(null, row);
+      },
+      // TODO: Uncomment the next line after client-side metrics are well tested.
+      /*
         read(size) {
           metricsTracer.onRead();
           return this.read(size);
         },
          */
-      });
+    });
 
-      // The caller should be able to call userStream.end() to stop receiving
-      // more rows and cancel the stream prematurely. But also, the 'end' event
-      // will be emitted if the stream ended normally. To tell these two
-      // situations apart, we'll save the "original" end() function, and
-      // will call it on rowStream.on('end').
-      const originalEnd = userStream.end.bind(userStream);
+    // The caller should be able to call userStream.end() to stop receiving
+    // more rows and cancel the stream prematurely. But also, the 'end' event
+    // will be emitted if the stream ended normally. To tell these two
+    // situations apart, we'll save the "original" end() function, and
+    // will call it on rowStream.on('end').
+    const originalEnd = userStream.end.bind(userStream);
 
-      // Taking care of this extra listener when piping and unpiping userStream:
-      const rowStreamPipe = (rowStream: Duplex, userStream: PassThrough) => {
-        rowStream.pipe(userStream, {end: false});
-        rowStream.on('end', originalEnd);
-      };
-      const rowStreamUnpipe = (rowStream: Duplex, userStream: PassThrough) => {
-        rowStream?.unpipe(userStream);
-        rowStream?.removeListener('end', originalEnd);
-      };
+    // Taking care of this extra listener when piping and unpiping userStream:
+    const rowStreamPipe = (rowStream: Duplex, userStream: PassThrough) => {
+      rowStream.pipe(userStream, {end: false});
+      rowStream.on('end', originalEnd);
+    };
+    const rowStreamUnpipe = (rowStream: Duplex, userStream: PassThrough) => {
+      rowStream?.unpipe(userStream);
+      rowStream?.removeListener('end', originalEnd);
+    };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
-        rowStreamUnpipe(rowStream, userStream);
-        userCanceled = true;
-        if (activeRequestStream) {
-          activeRequestStream.abort();
-        }
-        if (retryTimer) {
-          clearTimeout(retryTimer);
-        }
-        return originalEnd(chunk, encoding, cb);
-      };
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
+      rowStreamUnpipe(rowStream, userStream);
+      userCanceled = true;
+      if (activeRequestStream) {
+        activeRequestStream.abort();
+      }
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+      }
+      return originalEnd(chunk, encoding, cb);
+    };
+    this.bigtable.getProjectId_((err, projectId) => {
+      const metricsCollector = new MetricsCollector(
+        this,
+        this.bigtable.options.metricsHandlers as IMetricsHandler[],
+        'readRows'
+      );
       // TODO: Uncomment the next line after client-side metrics are well tested.
-      metricsTracer.onOperationStart();
+      // metricsTracer.onOperationStart();
       const makeNewRequest = () => {
         // TODO: Uncomment the next line after client-side metrics are well tested.
-        metricsTracer.onAttemptStart();
+        // metricsTracer.onAttemptStart();
 
         // Avoid cancelling an expired timer if user
         // cancelled the stream in the middle of a retry
@@ -550,6 +544,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         };
 
         // TODO: Uncomment the next line after client-side metrics are well tested.
+        /*
         requestStream
           .on(
             'metadata',
@@ -571,6 +566,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               metricsTracer.onStatusReceived(status);
             }
           );
+         */
         rowStream
           .on('error', (error: ServiceError) => {
             rowStreamUnpipe(rowStream, userStream);
@@ -603,10 +599,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
                 backOffSettings
               );
               // TODO: Uncomment the next line after client-side metrics are well tested.
+              /*
               metricsTracer.onAttemptComplete({
                 finalOperationStatus: 'ERROR',
                 streamingOperation: 'YES',
               }); // TODO: Replace ERROR with enum
+               */
               retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
             } else {
               if (
@@ -624,7 +622,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               }
               userStream.emit('error', error);
               // TODO: Uncomment the next line after client-side metrics are well tested.
-              onCallComplete('ERROR');
+              // onCallComplete('ERROR');
             }
           })
           .on('data', _ => {
@@ -632,21 +630,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             // time won't keep increasing when as stream had multiple errors
             numConsecutiveErrors = 0;
             // TODO: Uncomment the next line after client-side metrics are well tested.
-            metricsTracer.onResponse('PENDING');
+            // metricsTracer.onResponse('PENDING');
           })
           .on('end', () => {
             // TODO: Uncomment the next line after client-side metrics are well tested.
             numRequestsMade++;
             activeRequestStream = null;
             // TODO: Uncomment the next line after client-side metrics are well tested.
-            onCallComplete('SUCCESS');
+            // onCallComplete('SUCCESS');
           });
         rowStreamPipe(rowStream, userStream);
       };
-
       makeNewRequest();
-      return userStream;
     });
+    return userStream;
   }
 
   getRows(options?: GetRowsOptions): Promise<GetRowsResponse>;
