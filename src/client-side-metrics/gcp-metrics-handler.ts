@@ -24,7 +24,10 @@ import {
   OnAttemptCompleteAttributes,
   OnOperationCompleteAttributes,
 } from '../../common/client-side-metrics-attributes';
+import {View} from '@opentelemetry/sdk-metrics';
 const {
+  Aggregation,
+  ExplicitBucketHistogramAggregation,
   MeterProvider,
   Histogram,
   Counter,
@@ -64,15 +67,31 @@ export class GCPMetricsHandler implements IMetricsHandler {
   private initialize(projectId?: string) {
     if (!this.initialized) {
       this.initialized = true;
-      // Use MeterProvider provided by user
-      // If MeterProvider was not provided then use the default meter provider.
+      const sumAggregation = Aggregation.Sum();
+      const histogramAggregation = new ExplicitBucketHistogramAggregation([
+        0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20,
+        25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250, 300, 400, 500, 650,
+        800, 1000, 2000, 5000, 10000, 20000, 50000, 100000,
+      ]);
+      const viewList = [
+        'operation_latencies',
+        'first_response_latencies',
+        'attempt_latencies',
+        'retry_count',
+        'server_latencies',
+        'connectivity_error_count',
+        'application_latencies',
+        'throttling_latencies',
+      ].map(
+        name =>
+          new View({
+            instrumentName: name,
+            name,
+            aggregation: name.slice(-9) ? sumAggregation : histogramAggregation,
+          })
+      );
       const meterProvider = new MeterProvider({
-        // This is the default meter provider
-        // Create a resource. Fill the `service.*` attributes in with real values for your service.
-        // GcpDetectorSync will add in resource information about the current environment if you are
-        // running on GCP. These resource attributes will be translated to a specific GCP monitored
-        // resource if running on GCP. Otherwise, metrics will be sent with monitored resource
-        // `generic_task`.
+        views: viewList,
         resource: new Resources.Resource({
           'service.name': 'bigtable-metrics',
         }).merge(new ResourceUtil.GcpDetectorSync().detect()),

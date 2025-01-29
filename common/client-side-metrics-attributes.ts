@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {grpc} from 'google-gax';
+
 interface StandardAttributes {
   projectId: string;
   instanceId: string;
@@ -31,7 +33,7 @@ export interface OperationOnlyAttributes {
    * The final status of the operation (e.g., 'OK', 'ERROR').
    */
   finalOperationStatus: FinalOperationStatus;
-  streamingOperation: StreamingOperation;
+  streamingOperation: boolean;
 }
 
 /**
@@ -45,27 +47,16 @@ export interface AttemptOnlyAttributes {
   /**
    * Whether the operation is a streaming operation or not.
    */
-  streamingOperation: StreamingOperation;
+  streamingOperation: boolean;
   /**
    * The attempt status of the operation.
    */
   attemptStatus: AttemptStatus;
 }
 
-export enum FinalOperationStatus {
-  OK = 'OK',
-  ERROR = 'ERROR',
-}
+export type FinalOperationStatus = grpc.status;
 
-export enum AttemptStatus {
-  OK = 'OK',
-  ERROR = 'ERROR',
-}
-
-export enum StreamingOperation {
-  YES = 'YES',
-  NO = 'NO',
-}
+export type AttemptStatus = grpc.status;
 
 export interface OnOperationCompleteAttributes
   extends StandardAttributes,
@@ -77,4 +68,13 @@ export interface OnAttemptCompleteAttributes
 
 export interface OnAttemptCompleteInfo extends AttemptOnlyAttributes {
   connectivityErrorCount: number;
+}
+
+export enum MethodName {
+  READ_ROWS = 'readRows',
+  MUTATE_ROW = 'mutateRow',
+  CHECK_AND_MUTATE_ROW = 'checkAndMutateRow',
+  READ_MODIFY_WRITE_ROW = 'readModifyWriteRow',
+  SAMPLE_ROW_KEYS = 'sampleRowKeys',
+  MUTATE_ROWS = 'mutateRows',
 }

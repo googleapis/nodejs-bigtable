@@ -41,7 +41,6 @@ export interface OnAttemptCompleteMetrics {
   connectivityErrorCount: number;
 }
 
-// TODO: Trim attributes so only necessary attributes are required.
 /**
  * An interface for handling client-side metrics related to Bigtable operations.
  * Implementations of this interface can define how metrics are recorded and processed.

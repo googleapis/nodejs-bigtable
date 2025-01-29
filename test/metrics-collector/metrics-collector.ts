@@ -17,12 +17,13 @@ import {TestDateProvider} from '../../common/test-date-provider';
 import * as assert from 'assert';
 import * as fs from 'fs';
 import {TestMetricsHandler} from '../../common/test-metrics-handler';
-import {MetricsCollector} from '../../src/client-side-metrics/metrics-collector';
+import {OperationMetricsCollector} from '../../src/client-side-metrics/operation-metrics-collector';
 import {
   AttemptStatus,
   FinalOperationStatus,
-  StreamingOperation,
+  MethodName,
 } from '../../common/client-side-metrics-attributes';
+import {grpc} from 'google-gax';
 
 /**
  * A basic logger class that stores log messages in an array. Useful for testing.
@@ -108,10 +109,10 @@ describe('Bigtable/MetricsCollector', () => {
                 options: {},
               },
             };
-            const metricsCollector = new MetricsCollector(
+            const metricsCollector = new OperationMetricsCollector(
               this,
               metricsHandlers,
-              'fakeMethod',
+              MethodName.READ_ROWS,
               projectId,
               new TestDateProvider(logger)
             );
@@ -134,9 +135,9 @@ describe('Bigtable/MetricsCollector', () => {
             metricsCollector.onResponse();
             logger.log('8. A transient error occurs.');
             metricsCollector.onAttemptComplete({
-              finalOperationStatus: FinalOperationStatus.ERROR,
-              streamingOperation: StreamingOperation.YES,
-              attemptStatus: AttemptStatus.ERROR,
+              finalOperationStatus: grpc.status.DEADLINE_EXCEEDED,
+              streamingOperation: true,
+              attemptStatus: grpc.status.DEADLINE_EXCEEDED,
               connectivityErrorCount: 1,
             });
             logger.log('9. After a timeout, the second attempt is made.');
@@ -154,14 +155,14 @@ describe('Bigtable/MetricsCollector', () => {
             logger.log('15. User reads row 1');
             logger.log('16. Stream ends, operation completes');
             metricsCollector.onAttemptComplete({
-              finalOperationStatus: FinalOperationStatus.ERROR,
-              attemptStatus: AttemptStatus.OK,
-              streamingOperation: StreamingOperation.YES,
+              finalOperationStatus: grpc.status.OK,
+              attemptStatus: grpc.status.OK,
+              streamingOperation: true,
               connectivityErrorCount: 1,
             });
             metricsCollector.onOperationComplete({
-              finalOperationStatus: FinalOperationStatus.OK,
-              streamingOperation: StreamingOperation.YES,
+              finalOperationStatus: grpc.status.OK,
+              streamingOperation: true,
             });
             resolve();
           });
