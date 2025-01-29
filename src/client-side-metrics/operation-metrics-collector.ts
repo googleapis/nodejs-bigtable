@@ -49,7 +49,7 @@ export interface DateProvider {
 /**
  * The default DateProvider implementation.  Returns the current date and time.
  */
-class DefaultDateProvider {
+export class DefaultDateProvider {
   /**
    * Returns a new Date object representing the current time.
    * @returns {Date} The current date and time.

@@ -44,6 +44,8 @@ import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {TableUtils} from './utils/table';
 import {IMetricsHandler} from './client-side-metrics/metrics-handler';
+import {TestDateProvider} from '../common/test-date-provider';
+import {DefaultDateProvider} from './client-side-metrics/operation-metrics-collector';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -353,13 +355,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       const metricsCollector = new MetricsCollector(
         this,
         this.bigtable.options.metricsHandlers as IMetricsHandler[],
-        'readRows'
+        'readRows',
+        projectId,
+        new DefaultDateProvider()
       );
-      // TODO: Uncomment the next line after client-side metrics are well tested.
-      // metricsTracer.onOperationStart();
+      metricsCollector.onOperationStart();
       const makeNewRequest = () => {
-        // TODO: Uncomment the next line after client-side metrics are well tested.
-        // metricsTracer.onAttemptStart();
+        metricsCollector.onAttemptStart();
 
         // Avoid cancelling an expired timer if user
         // cancelled the stream in the middle of a retry
@@ -536,13 +538,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           return false;
         };
 
-        // TODO: Uncomment the next line after client-side metrics are well tested.
-        /*
         requestStream
           .on(
             'metadata',
             (metadata: {internalRepr: Map<string, Buffer>; options: {}}) => {
-              metricsTracer.onMetadataReceived(
+              metricsCollector.onMetadataReceived(
                 {
                   finalOperationStatus: 'PENDING',
                   streamingOperation: 'YES',
@@ -556,10 +556,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             (status: {
               metadata: {internalRepr: Map<string, Buffer>; options: {}};
             }) => {
-              metricsTracer.onStatusReceived(status);
+              metricsCollector.onStatusReceived(status);
             }
           );
-         */
         rowStream
           .on('error', (error: ServiceError) => {
             rowStreamUnpipe(rowStream, userStream);
