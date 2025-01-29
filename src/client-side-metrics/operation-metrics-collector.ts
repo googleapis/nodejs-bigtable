@@ -276,7 +276,6 @@ export class OperationMetricsCollector {
 
   /**
    * Called when the first response is received. Records first response latencies.
-   * @param {string} finalOperationStatus The final status of the operation.
    */
   onResponse() {
     const endTime = this.dateProvider.getDate();
@@ -332,7 +331,6 @@ export class OperationMetricsCollector {
 
   /**
    * Called when metadata is received. Extracts server timing information if available.
-   * @param {AttemptOnlyAttributes} info Information about the completed attempt.
    * @param {object} metadata The received metadata.
    */
   onMetadataReceived(metadata: {
