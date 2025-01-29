@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Bigtable} from '../src';
 import {describe, it, before, after} from 'mocha';
 import * as fs from 'node:fs';
 import {TestMetricsHandler} from '../common/test-metrics-handler';
@@ -23,8 +22,7 @@ import {
 import {IMetricsHandler} from '../src/client-side-metrics/metrics-handler';
 import {TestDateProvider} from '../common/test-date-provider';
 import * as proxyquire from 'proxyquire';
-import {FakeCluster} from './common';
-import * as pumpify from 'pumpify';
+import {TabularApiSurface} from '../src/tabular-api-surface';
 
 class Logger {
   private messages = '';
@@ -58,8 +56,22 @@ class TestMetricsCollector extends MetricsCollector {
   }
 }
 
-describe.only('Bigtable/Table#getRows', () => {
-  const bigtable = new Bigtable({
+describe.only('Bigtable/MetricsCollector', () => {
+  const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
+    './client-side-metrics/metrics-collector': {
+      MetricsCollector: TestMetricsCollector,
+    },
+  }).TabularApiSurface;
+  const FakeTable: TabularApiSurface = proxyquire('../src/table.js', {
+    './tabular-api-surface.js': {Table: FakeTabularApiSurface},
+  }).Table;
+  const FakeInstance = proxyquire('../src/instance.js', {
+    './table.js': {Table: FakeTable},
+  }).Instance;
+  const FakeBigtable = proxyquire('../src/index.js', {
+    './instance.js': {Table: FakeInstance},
+  }).Bigtable;
+  const bigtable = new FakeBigtable({
     metricsHandlers: [new TestMetricsHandler(logger)],
   });
   const instanceId = 'emulator-test-instance';
@@ -67,20 +79,7 @@ describe.only('Bigtable/Table#getRows', () => {
   const columnFamilyId = 'cf1';
 
   before(async () => {
-    const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
-      './table.js': {Table: FakeInstance},
-    }).Instance;
-    const FakeTable = proxyquire('../src/table.js', {
-      './table.js': {Table: FakeInstance},
-    }).Instance;
-    const FakeInstance = proxyquire('../src/instance.js', {
-      './table.js': {Table: FakeInstance},
-    }).Instance;
-    const Bigtable = proxyquire('../src/index.js', {
-      './instance.js': {Table: FakeTable},
-      pumpify,
-    }).Instance;
-
+    // TODO: Change `any`
     const instance = bigtable.instance(instanceId);
     try {
       const [instanceInfo] = await instance.exists();
@@ -103,7 +102,9 @@ describe.only('Bigtable/Table#getRows', () => {
         // Check if column family exists and create it if not.
         const [families] = await table.getFamilies();
 
-        if (!families.some(family => family.id === columnFamilyId)) {
+        if (
+          !families.some((family: {id: string}) => family.id === columnFamilyId)
+        ) {
           await table.createFamily(columnFamilyId);
         }
       }
@@ -121,33 +122,9 @@ describe.only('Bigtable/Table#getRows', () => {
   it('should read rows after inserting data', async () => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
-    const rows = [
-      {
-        key: 'row1',
-        data: {
-          cf1: {
-            q1: 'value1',
-          },
-        },
-      },
-      {
-        key: 'row2',
-        data: {
-          cf1: {
-            q2: 'value2',
-          },
-        },
-      },
-    ];
-    await table.insert(rows);
-    for (let i = 0; i < 30; i++) {
-      console.log(`Doing attempt ${i}`);
-      const rows = await table.getRows();
-      console.log(`Done attempt ${i}`);
-      logger.log(`Done attempt ${i}`);
-    }
+    await table.getRows();
     const myString = logger.getMessages(); // 'This is the string I want to write to the file.';
-    const filename = 'myFile.txt';
+    const filename = 'metricsCollected.txt';
 
     // Write the string to the file
     fs.writeFileSync(filename, myString);
