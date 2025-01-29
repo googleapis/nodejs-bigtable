@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {grpc} from 'google-gax';
+
 interface StandardAttributes {
   projectId: string;
   instanceId: string;
@@ -52,15 +54,9 @@ export interface AttemptOnlyAttributes {
   attemptStatus: AttemptStatus;
 }
 
-export enum FinalOperationStatus {
-  OK = 'OK',
-  ERROR = 'ERROR',
-}
+export type FinalOperationStatus = grpc.status;
 
-export enum AttemptStatus {
-  OK = 'OK',
-  ERROR = 'ERROR',
-}
+export type AttemptStatus = grpc.status;
 
 export interface OnOperationCompleteAttributes
   extends StandardAttributes,

@@ -23,6 +23,7 @@ import {
   FinalOperationStatus,
   MethodName,
 } from '../../common/client-side-metrics-attributes';
+import {grpc} from 'google-gax';
 
 /**
  * A basic logger class that stores log messages in an array. Useful for testing.
@@ -134,9 +135,9 @@ describe('Bigtable/MetricsCollector', () => {
             metricsCollector.onResponse();
             logger.log('8. A transient error occurs.');
             metricsCollector.onAttemptComplete({
-              finalOperationStatus: FinalOperationStatus.ERROR,
+              finalOperationStatus: grpc.status.DEADLINE_EXCEEDED,
               streamingOperation: true,
-              attemptStatus: AttemptStatus.ERROR,
+              attemptStatus: grpc.status.DEADLINE_EXCEEDED,
               connectivityErrorCount: 1,
             });
             logger.log('9. After a timeout, the second attempt is made.');
@@ -154,13 +155,13 @@ describe('Bigtable/MetricsCollector', () => {
             logger.log('15. User reads row 1');
             logger.log('16. Stream ends, operation completes');
             metricsCollector.onAttemptComplete({
-              finalOperationStatus: FinalOperationStatus.ERROR,
-              attemptStatus: AttemptStatus.OK,
+              finalOperationStatus: grpc.status.OK,
+              attemptStatus: grpc.status.OK,
               streamingOperation: true,
               connectivityErrorCount: 1,
             });
             metricsCollector.onOperationComplete({
-              finalOperationStatus: FinalOperationStatus.OK,
+              finalOperationStatus: grpc.status.OK,
               streamingOperation: true,
             });
             resolve();
