@@ -1336,9 +1336,6 @@ export namespace google {
                 /** MutateRowsResponse rateLimitInfo. */
                 public rateLimitInfo?: (google.bigtable.v2.IRateLimitInfo|null);
 
-                /** MutateRowsResponse _rateLimitInfo. */
-                public _rateLimitInfo?: "rateLimitInfo";
-
                 /**
                  * Creates a new MutateRowsResponse instance using the specified properties.
                  * @param [properties] Properties to set
@@ -10282,12 +10279,6 @@ export namespace google {
 
                 /** ResponseParams clusterId. */
                 public clusterId?: (string|null);
-
-                /** ResponseParams _zoneId. */
-                public _zoneId?: "zoneId";
-
-                /** ResponseParams _clusterId. */
-                public _clusterId?: "clusterId";
 
                 /**
                  * Creates a new ResponseParams instance using the specified properties.

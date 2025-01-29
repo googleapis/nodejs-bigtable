@@ -2826,7 +2826,7 @@ export class BigtableTableAdminClient {
   }
 
 /**
- * Equivalent to `method.name.toCamelCase()`, but returns a NodeJS Stream object.
+ * Equivalent to `listTables`, but returns a NodeJS Stream object.
  * @param {Object} request
  *   The request object that will be sent.
  * @param {string} request.parent
@@ -3033,7 +3033,7 @@ export class BigtableTableAdminClient {
   }
 
 /**
- * Equivalent to `method.name.toCamelCase()`, but returns a NodeJS Stream object.
+ * Equivalent to `listAuthorizedViews`, but returns a NodeJS Stream object.
  * @param {Object} request
  *   The request object that will be sent.
  * @param {string} request.parent
@@ -3240,7 +3240,7 @@ export class BigtableTableAdminClient {
   }
 
 /**
- * Equivalent to `method.name.toCamelCase()`, but returns a NodeJS Stream object.
+ * Equivalent to `listSnapshots`, but returns a NodeJS Stream object.
  * @param {Object} request
  *   The request object that will be sent.
  * @param {string} request.parent
@@ -3486,7 +3486,7 @@ export class BigtableTableAdminClient {
   }
 
 /**
- * Equivalent to `method.name.toCamelCase()`, but returns a NodeJS Stream object.
+ * Equivalent to `listBackups`, but returns a NodeJS Stream object.
  * @param {Object} request
  *   The request object that will be sent.
  * @param {string} request.parent

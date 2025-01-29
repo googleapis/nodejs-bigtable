@@ -288,7 +288,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.GetInstanceRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.Instance()
             );
@@ -315,7 +315,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.GetInstanceRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.Instance()
             );
@@ -353,7 +353,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.GetInstanceRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.getInstance = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.getInstance(request), expectedError);
@@ -396,7 +396,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListInstancesRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.ListInstancesResponse()
             );
@@ -423,7 +423,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListInstancesRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.ListInstancesResponse()
             );
@@ -461,7 +461,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListInstancesRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.listInstances = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.listInstances(request), expectedError);
@@ -504,7 +504,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.Instance', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.Instance()
             );
@@ -531,7 +531,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.Instance', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.Instance()
             );
@@ -569,7 +569,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.Instance', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.updateInstance = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.updateInstance(request), expectedError);
@@ -612,7 +612,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteInstanceRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.protobuf.Empty()
             );
@@ -639,7 +639,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteInstanceRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.protobuf.Empty()
             );
@@ -677,7 +677,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteInstanceRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.deleteInstance = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.deleteInstance(request), expectedError);
@@ -720,7 +720,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.GetClusterRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.Cluster()
             );
@@ -747,7 +747,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.GetClusterRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.Cluster()
             );
@@ -785,7 +785,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.GetClusterRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.getCluster = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.getCluster(request), expectedError);
@@ -828,7 +828,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListClustersRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.ListClustersResponse()
             );
@@ -855,7 +855,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListClustersRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.ListClustersResponse()
             );
@@ -893,7 +893,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListClustersRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.listClusters = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.listClusters(request), expectedError);
@@ -936,7 +936,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteClusterRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.protobuf.Empty()
             );
@@ -963,7 +963,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteClusterRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.protobuf.Empty()
             );
@@ -1001,7 +1001,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteClusterRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.deleteCluster = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.deleteCluster(request), expectedError);
@@ -1044,7 +1044,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.CreateAppProfileRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.AppProfile()
             );
@@ -1071,7 +1071,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.CreateAppProfileRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.AppProfile()
             );
@@ -1109,7 +1109,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.CreateAppProfileRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.createAppProfile = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.createAppProfile(request), expectedError);
@@ -1152,7 +1152,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.GetAppProfileRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.AppProfile()
             );
@@ -1179,7 +1179,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.GetAppProfileRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.admin.v2.AppProfile()
             );
@@ -1217,7 +1217,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.GetAppProfileRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.getAppProfile = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.getAppProfile(request), expectedError);
@@ -1260,7 +1260,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteAppProfileRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.protobuf.Empty()
             );
@@ -1287,7 +1287,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteAppProfileRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.protobuf.Empty()
             );
@@ -1325,7 +1325,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteAppProfileRequest', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.deleteAppProfile = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.deleteAppProfile(request), expectedError);
@@ -1368,7 +1368,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.iam.v1.GetIamPolicyRequest', ['resource']);
             request.resource = defaultValue1;
-            const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+            const expectedHeaderRequestParams = `resource=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.iam.v1.Policy()
             );
@@ -1395,7 +1395,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.iam.v1.GetIamPolicyRequest', ['resource']);
             request.resource = defaultValue1;
-            const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+            const expectedHeaderRequestParams = `resource=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.iam.v1.Policy()
             );
@@ -1433,7 +1433,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.iam.v1.GetIamPolicyRequest', ['resource']);
             request.resource = defaultValue1;
-            const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+            const expectedHeaderRequestParams = `resource=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.getIamPolicy = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.getIamPolicy(request), expectedError);
@@ -1476,7 +1476,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.iam.v1.SetIamPolicyRequest', ['resource']);
             request.resource = defaultValue1;
-            const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+            const expectedHeaderRequestParams = `resource=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.iam.v1.Policy()
             );
@@ -1503,7 +1503,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.iam.v1.SetIamPolicyRequest', ['resource']);
             request.resource = defaultValue1;
-            const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+            const expectedHeaderRequestParams = `resource=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.iam.v1.Policy()
             );
@@ -1541,7 +1541,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.iam.v1.SetIamPolicyRequest', ['resource']);
             request.resource = defaultValue1;
-            const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+            const expectedHeaderRequestParams = `resource=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.setIamPolicy = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.setIamPolicy(request), expectedError);
@@ -1584,7 +1584,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.iam.v1.TestIamPermissionsRequest', ['resource']);
             request.resource = defaultValue1;
-            const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+            const expectedHeaderRequestParams = `resource=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.iam.v1.TestIamPermissionsResponse()
             );
@@ -1611,7 +1611,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.iam.v1.TestIamPermissionsRequest', ['resource']);
             request.resource = defaultValue1;
-            const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+            const expectedHeaderRequestParams = `resource=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.iam.v1.TestIamPermissionsResponse()
             );
@@ -1649,7 +1649,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.iam.v1.TestIamPermissionsRequest', ['resource']);
             request.resource = defaultValue1;
-            const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+            const expectedHeaderRequestParams = `resource=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.testIamPermissions = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.testIamPermissions(request), expectedError);
@@ -1692,7 +1692,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.CreateInstanceRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.longrunning.Operation()
             );
@@ -1720,7 +1720,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.CreateInstanceRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.longrunning.Operation()
             );
@@ -1761,7 +1761,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.CreateInstanceRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.createInstance = stubLongRunningCall(undefined, expectedError);
             await assert.rejects(client.createInstance(request), expectedError);
@@ -1785,7 +1785,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.CreateInstanceRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.createInstance = stubLongRunningCall(undefined, undefined, expectedError);
             const [operation] = await client.createInstance(request);
@@ -1847,7 +1847,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.PartialUpdateInstanceRequest', ['instance', 'name']);
             request.instance.name = defaultValue1;
-            const expectedHeaderRequestParams = `instance.name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `instance.name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.longrunning.Operation()
             );
@@ -1876,7 +1876,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.PartialUpdateInstanceRequest', ['instance', 'name']);
             request.instance.name = defaultValue1;
-            const expectedHeaderRequestParams = `instance.name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `instance.name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.longrunning.Operation()
             );
@@ -1918,7 +1918,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.PartialUpdateInstanceRequest', ['instance', 'name']);
             request.instance.name = defaultValue1;
-            const expectedHeaderRequestParams = `instance.name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `instance.name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.partialUpdateInstance = stubLongRunningCall(undefined, expectedError);
             await assert.rejects(client.partialUpdateInstance(request), expectedError);
@@ -1943,7 +1943,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.PartialUpdateInstanceRequest', ['instance', 'name']);
             request.instance.name = defaultValue1;
-            const expectedHeaderRequestParams = `instance.name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `instance.name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.partialUpdateInstance = stubLongRunningCall(undefined, undefined, expectedError);
             const [operation] = await client.partialUpdateInstance(request);
@@ -2004,7 +2004,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.CreateClusterRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.longrunning.Operation()
             );
@@ -2032,7 +2032,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.CreateClusterRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.longrunning.Operation()
             );
@@ -2073,7 +2073,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.CreateClusterRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.createCluster = stubLongRunningCall(undefined, expectedError);
             await assert.rejects(client.createCluster(request), expectedError);
@@ -2097,7 +2097,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.CreateClusterRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.createCluster = stubLongRunningCall(undefined, undefined, expectedError);
             const [operation] = await client.createCluster(request);
@@ -2158,7 +2158,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.Cluster', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.longrunning.Operation()
             );
@@ -2186,7 +2186,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.Cluster', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.longrunning.Operation()
             );
@@ -2227,7 +2227,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.Cluster', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.updateCluster = stubLongRunningCall(undefined, expectedError);
             await assert.rejects(client.updateCluster(request), expectedError);
@@ -2251,7 +2251,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.Cluster', ['name']);
             request.name = defaultValue1;
-            const expectedHeaderRequestParams = `name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.updateCluster = stubLongRunningCall(undefined, undefined, expectedError);
             const [operation] = await client.updateCluster(request);
@@ -2313,7 +2313,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.PartialUpdateClusterRequest', ['cluster', 'name']);
             request.cluster.name = defaultValue1;
-            const expectedHeaderRequestParams = `cluster.name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `cluster.name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.longrunning.Operation()
             );
@@ -2342,7 +2342,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.PartialUpdateClusterRequest', ['cluster', 'name']);
             request.cluster.name = defaultValue1;
-            const expectedHeaderRequestParams = `cluster.name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `cluster.name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.longrunning.Operation()
             );
@@ -2384,7 +2384,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.PartialUpdateClusterRequest', ['cluster', 'name']);
             request.cluster.name = defaultValue1;
-            const expectedHeaderRequestParams = `cluster.name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `cluster.name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.partialUpdateCluster = stubLongRunningCall(undefined, expectedError);
             await assert.rejects(client.partialUpdateCluster(request), expectedError);
@@ -2409,7 +2409,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.PartialUpdateClusterRequest', ['cluster', 'name']);
             request.cluster.name = defaultValue1;
-            const expectedHeaderRequestParams = `cluster.name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `cluster.name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.partialUpdateCluster = stubLongRunningCall(undefined, undefined, expectedError);
             const [operation] = await client.partialUpdateCluster(request);
@@ -2471,7 +2471,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.UpdateAppProfileRequest', ['appProfile', 'name']);
             request.appProfile.name = defaultValue1;
-            const expectedHeaderRequestParams = `app_profile.name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `app_profile.name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.longrunning.Operation()
             );
@@ -2500,7 +2500,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.UpdateAppProfileRequest', ['appProfile', 'name']);
             request.appProfile.name = defaultValue1;
-            const expectedHeaderRequestParams = `app_profile.name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `app_profile.name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.longrunning.Operation()
             );
@@ -2542,7 +2542,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.UpdateAppProfileRequest', ['appProfile', 'name']);
             request.appProfile.name = defaultValue1;
-            const expectedHeaderRequestParams = `app_profile.name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `app_profile.name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.updateAppProfile = stubLongRunningCall(undefined, expectedError);
             await assert.rejects(client.updateAppProfile(request), expectedError);
@@ -2567,7 +2567,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.UpdateAppProfileRequest', ['appProfile', 'name']);
             request.appProfile.name = defaultValue1;
-            const expectedHeaderRequestParams = `app_profile.name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `app_profile.name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.updateAppProfile = stubLongRunningCall(undefined, undefined, expectedError);
             const [operation] = await client.updateAppProfile(request);
@@ -2628,7 +2628,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListAppProfilesRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;const expectedResponse = [
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;const expectedResponse = [
               generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
               generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
               generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
@@ -2656,7 +2656,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListAppProfilesRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;const expectedResponse = [
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;const expectedResponse = [
               generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
               generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
               generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
@@ -2695,7 +2695,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListAppProfilesRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.listAppProfiles = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.listAppProfiles(request), expectedError);
@@ -2719,7 +2719,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListAppProfilesRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = [
               generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
               generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
@@ -2763,7 +2763,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListAppProfilesRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.descriptors.page.listAppProfiles.createStream = stubPageStreamingCall(undefined, expectedError);
             const stream = client.listAppProfilesStream(request);
@@ -2802,7 +2802,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListAppProfilesRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = [
               generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
               generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
@@ -2838,7 +2838,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListAppProfilesRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.descriptors.page.listAppProfiles.asyncIterate = stubAsyncIterationCall(undefined, expectedError);
             const iterable = client.listAppProfilesAsync(request);
@@ -2873,7 +2873,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListHotTabletsRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;const expectedResponse = [
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;const expectedResponse = [
               generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
               generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
               generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
@@ -2901,7 +2901,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListHotTabletsRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;const expectedResponse = [
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;const expectedResponse = [
               generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
               generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
               generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
@@ -2940,7 +2940,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListHotTabletsRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.listHotTablets = stubSimpleCall(undefined, expectedError);
             await assert.rejects(client.listHotTablets(request), expectedError);
@@ -2964,7 +2964,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListHotTabletsRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = [
               generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
               generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
@@ -3008,7 +3008,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListHotTabletsRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.descriptors.page.listHotTablets.createStream = stubPageStreamingCall(undefined, expectedError);
             const stream = client.listHotTabletsStream(request);
@@ -3047,7 +3047,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListHotTabletsRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedResponse = [
               generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
               generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
@@ -3083,7 +3083,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.admin.v2.ListHotTabletsRequest', ['parent']);
             request.parent = defaultValue1;
-            const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.descriptors.page.listHotTablets.asyncIterate = stubAsyncIterationCall(undefined, expectedError);
             const iterable = client.listHotTabletsAsync(request);

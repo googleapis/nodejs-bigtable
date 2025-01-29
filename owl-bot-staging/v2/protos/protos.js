@@ -3208,12 +3208,7 @@
                     // OneOf field names bound to virtual getters and setters
                     var $oneOfFields;
     
-                    /**
-                     * MutateRowsResponse _rateLimitInfo.
-                     * @member {"rateLimitInfo"|undefined} _rateLimitInfo
-                     * @memberof google.bigtable.v2.MutateRowsResponse
-                     * @instance
-                     */
+                    // Virtual OneOf for proto3 optional field
                     Object.defineProperty(MutateRowsResponse.prototype, "_rateLimitInfo", {
                         get: $util.oneOfGetter($oneOfFields = ["rateLimitInfo"]),
                         set: $util.oneOfSetter($oneOfFields)
@@ -25071,23 +25066,13 @@
                     // OneOf field names bound to virtual getters and setters
                     var $oneOfFields;
     
-                    /**
-                     * ResponseParams _zoneId.
-                     * @member {"zoneId"|undefined} _zoneId
-                     * @memberof google.bigtable.v2.ResponseParams
-                     * @instance
-                     */
+                    // Virtual OneOf for proto3 optional field
                     Object.defineProperty(ResponseParams.prototype, "_zoneId", {
                         get: $util.oneOfGetter($oneOfFields = ["zoneId"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
     
-                    /**
-                     * ResponseParams _clusterId.
-                     * @member {"clusterId"|undefined} _clusterId
-                     * @memberof google.bigtable.v2.ResponseParams
-                     * @instance
-                     */
+                    // Virtual OneOf for proto3 optional field
                     Object.defineProperty(ResponseParams.prototype, "_clusterId", {
                         get: $util.oneOfGetter($oneOfFields = ["clusterId"]),
                         set: $util.oneOfSetter($oneOfFields)

@@ -1051,7 +1051,7 @@ describe('v2.BigtableClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest', ['tableName']);
             request.tableName = defaultValue1;
-            const expectedHeaderRequestParams = `table_name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `table_name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse()
             );
@@ -1084,7 +1084,7 @@ describe('v2.BigtableClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest', ['tableName']);
             request.tableName = defaultValue1;
-            const expectedHeaderRequestParams = `table_name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `table_name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse()
             );
@@ -1120,7 +1120,7 @@ describe('v2.BigtableClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest', ['tableName']);
             request.tableName = defaultValue1;
-            const expectedHeaderRequestParams = `table_name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `table_name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.generateInitialChangeStreamPartitions = stubServerStreamingCall(undefined, expectedError);
             const stream = client.generateInitialChangeStreamPartitions(request);
@@ -1187,7 +1187,7 @@ describe('v2.BigtableClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.v2.ReadChangeStreamRequest', ['tableName']);
             request.tableName = defaultValue1;
-            const expectedHeaderRequestParams = `table_name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `table_name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.v2.ReadChangeStreamResponse()
             );
@@ -1220,7 +1220,7 @@ describe('v2.BigtableClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.v2.ReadChangeStreamRequest', ['tableName']);
             request.tableName = defaultValue1;
-            const expectedHeaderRequestParams = `table_name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `table_name=${defaultValue1 ?? '' }`;
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.v2.ReadChangeStreamResponse()
             );
@@ -1256,7 +1256,7 @@ describe('v2.BigtableClient', () => {
             const defaultValue1 =
               getTypeDefaultValue('.google.bigtable.v2.ReadChangeStreamRequest', ['tableName']);
             request.tableName = defaultValue1;
-            const expectedHeaderRequestParams = `table_name=${defaultValue1}`;
+            const expectedHeaderRequestParams = `table_name=${defaultValue1 ?? '' }`;
             const expectedError = new Error('expected');
             client.innerApiCalls.readChangeStream = stubServerStreamingCall(undefined, expectedError);
             const stream = client.readChangeStream(request);

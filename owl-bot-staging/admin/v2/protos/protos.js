@@ -7734,12 +7734,7 @@
                         // OneOf field names bound to virtual getters and setters
                         var $oneOfFields;
     
-                        /**
-                         * Instance _satisfiesPzs.
-                         * @member {"satisfiesPzs"|undefined} _satisfiesPzs
-                         * @memberof google.bigtable.admin.v2.Instance
-                         * @instance
-                         */
+                        // Virtual OneOf for proto3 optional field
                         Object.defineProperty(Instance.prototype, "_satisfiesPzs", {
                             get: $util.oneOfGetter($oneOfFields = ["satisfiesPzs"]),
                             set: $util.oneOfSetter($oneOfFields)
@@ -11162,12 +11157,7 @@
                             // OneOf field names bound to virtual getters and setters
                             var $oneOfFields;
     
-                            /**
-                             * DataBoostIsolationReadOnly _computeBillingOwner.
-                             * @member {"computeBillingOwner"|undefined} _computeBillingOwner
-                             * @memberof google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly
-                             * @instance
-                             */
+                            // Virtual OneOf for proto3 optional field
                             Object.defineProperty(DataBoostIsolationReadOnly.prototype, "_computeBillingOwner", {
                                 get: $util.oneOfGetter($oneOfFields = ["computeBillingOwner"]),
                                 set: $util.oneOfSetter($oneOfFields)

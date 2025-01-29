@@ -2135,7 +2135,7 @@ export class BigtableInstanceAdminClient {
   }
 
 /**
- * Equivalent to `method.name.toCamelCase()`, but returns a NodeJS Stream object.
+ * Equivalent to `listAppProfiles`, but returns a NodeJS Stream object.
  * @param {Object} request
  *   The request object that will be sent.
  * @param {string} request.parent
@@ -2349,7 +2349,7 @@ export class BigtableInstanceAdminClient {
   }
 
 /**
- * Equivalent to `method.name.toCamelCase()`, but returns a NodeJS Stream object.
+ * Equivalent to `listHotTablets`, but returns a NodeJS Stream object.
  * @param {Object} request
  *   The request object that will be sent.
  * @param {string} request.parent
