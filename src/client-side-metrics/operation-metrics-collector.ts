@@ -75,10 +75,29 @@ export interface ITabularApiSurface {
 const packageJSON = fs.readFileSync('package.json');
 const version = JSON.parse(packageJSON.toString()).version;
 
+// MetricsCollectorState is a list of states that the metrics collector can be in.
+// Tracking the OperationMetricsCollector state is done so that the
+// OperationMetricsCollector methods are not called in the wrong order. If the
+// methods are called in the wrong order they will not execute and they will
+// throw warnings.
+//
+// The following state transitions are allowed:
+// OPERATION_NOT_STARTED -> OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
+// OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS -> OPERATION_STARTED_ATTEMPT_IN_PROGRESS
+// OPERATION_STARTED_ATTEMPT_IN_PROGRESS -> OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
+// OPERATION_STARTED_ATTEMPT_IN_PROGRESS -> OPERATION_COMPLETE
+enum MetricsCollectorState {
+  OPERATION_NOT_STARTED,
+  OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS,
+  OPERATION_STARTED_ATTEMPT_IN_PROGRESS,
+  OPERATION_COMPLETE,
+}
+
 /**
  * A class for tracing and recording client-side metrics related to Bigtable operations.
  */
 export class OperationMetricsCollector {
+  private state: MetricsCollectorState;
   private operationStartTime: DateLike | null;
   private attemptStartTime: DateLike | null;
   private zone: string | undefined;
@@ -108,6 +127,7 @@ export class OperationMetricsCollector {
     projectId?: string,
     dateProvider?: DateProvider
   ) {
+    this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
     this.cluster = undefined;
     this.tabularApiSurface = tabularApiSurface;
@@ -191,7 +211,13 @@ export class OperationMetricsCollector {
    * Called when the operation starts. Records the start time.
    */
   onOperationStart() {
-    this.operationStartTime = this.dateProvider.getDate();
+    if (this.state === MetricsCollectorState.OPERATION_NOT_STARTED) {
+      this.operationStartTime = this.dateProvider.getDate();
+      this.state =
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
+    } else {
+      console.warn('Invalid state transition');
+    }
   }
 
   /**
@@ -199,25 +225,33 @@ export class OperationMetricsCollector {
    * @param {AttemptOnlyAttributes} info Information about the completed attempt.
    */
   onAttemptComplete(info: OnAttemptCompleteInfo) {
-    this.attemptCount++;
-    const endTime = this.dateProvider.getDate();
-    const projectId = this.projectId;
-    if (projectId && this.attemptStartTime) {
-      const attributes = this.getAttemptAttributes(projectId, info);
-      const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
-      this.metricsHandlers.forEach(metricsHandler => {
-        if (metricsHandler.onAttemptComplete) {
-          metricsHandler.onAttemptComplete(
-            {
-              attemptLatency: totalTime,
-              serverLatency: this.serverTime ?? undefined,
-              connectivityErrorCount: info.connectivityErrorCount,
-              firstResponseLatency: this.firstResponseLatency ?? undefined,
-            },
-            attributes
-          );
-        }
-      });
+    if (
+      this.state === MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS
+    ) {
+      this.state =
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
+      this.attemptCount++;
+      const endTime = this.dateProvider.getDate();
+      const projectId = this.projectId;
+      if (projectId && this.attemptStartTime) {
+        const attributes = this.getAttemptAttributes(projectId, info);
+        const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
+        this.metricsHandlers.forEach(metricsHandler => {
+          if (metricsHandler.onAttemptComplete) {
+            metricsHandler.onAttemptComplete(
+              {
+                attemptLatency: totalTime,
+                serverLatency: this.serverTime ?? undefined,
+                connectivityErrorCount: info.connectivityErrorCount,
+                firstResponseLatency: this.firstResponseLatency ?? undefined,
+              },
+              attributes
+            );
+          }
+        });
+      }
+    } else {
+      console.warn('Invalid state transition attempted');
     }
   }
 
@@ -225,11 +259,19 @@ export class OperationMetricsCollector {
    * Called when a new attempt starts. Records the start time of the attempt.
    */
   onAttemptStart() {
-    this.attemptStartTime = this.dateProvider.getDate();
-    this.serverTime = null;
-    this.serverTimeRead = false;
-    this.firstResponseLatency = null;
-    this.receivedFirstResponse = false;
+    if (
+      this.state ===
+      MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
+    ) {
+      this.state = MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS;
+      this.attemptStartTime = this.dateProvider.getDate();
+      this.serverTime = null;
+      this.serverTimeRead = false;
+      this.firstResponseLatency = null;
+      this.receivedFirstResponse = false;
+    } else {
+      console.warn('Invalid state transition attempted');
+    }
   }
 
   /**
@@ -254,29 +296,37 @@ export class OperationMetricsCollector {
    * @param {OperationOnlyAttributes} info Information about the completed operation.
    */
   onOperationComplete(info: OperationOnlyAttributes) {
-    const endTime = this.dateProvider.getDate();
-    const projectId = this.projectId;
-    if (projectId && this.operationStartTime) {
-      const totalTime = endTime.getTime() - this.operationStartTime.getTime();
-      {
-        // This block records operation latency metrics.
-        const operationLatencyAttributes = this.getOperationAttributes(
-          projectId,
-          info
-        );
-        const metrics = {
-          operationLatency: totalTime,
-          retryCount: this.attemptCount - 1,
-        };
-        this.metricsHandlers.forEach(metricsHandler => {
-          if (metricsHandler.onOperationComplete) {
-            metricsHandler.onOperationComplete(
-              metrics,
-              operationLatencyAttributes
-            );
-          }
-        });
+    if (
+      this.state ===
+      MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
+    ) {
+      this.state = MetricsCollectorState.OPERATION_COMPLETE;
+      const endTime = this.dateProvider.getDate();
+      const projectId = this.projectId;
+      if (projectId && this.operationStartTime) {
+        const totalTime = endTime.getTime() - this.operationStartTime.getTime();
+        {
+          // This block records operation latency metrics.
+          const operationLatencyAttributes = this.getOperationAttributes(
+            projectId,
+            info
+          );
+          const metrics = {
+            operationLatency: totalTime,
+            retryCount: this.attemptCount - 1,
+          };
+          this.metricsHandlers.forEach(metricsHandler => {
+            if (metricsHandler.onOperationComplete) {
+              metricsHandler.onOperationComplete(
+                metrics,
+                operationLatencyAttributes
+              );
+            }
+          });
+        }
       }
+    } else {
+      console.warn('Invalid state transition attempted');
     }
   }
 
