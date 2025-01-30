@@ -27,6 +27,7 @@ import {
  * Metrics related to the completion of a Bigtable operation.
  */
 export interface OnOperationCompleteMetrics {
+  firstResponseLatency?: number;
   operationLatency: number;
   retryCount?: number;
 }
@@ -37,7 +38,6 @@ export interface OnOperationCompleteMetrics {
 export interface OnAttemptCompleteMetrics {
   attemptLatency: number;
   serverLatency?: number;
-  firstResponseLatency?: number;
   connectivityErrorCount: number;
 }
 
