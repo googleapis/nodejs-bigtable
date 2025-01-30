@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {MetricsCollector} from './client-side-metrics/metrics-collector';
-
-let attemptCounter = 0;
-
+import {
+  DefaultDateProvider,
+  OperationMetricsCollector,
+} from './client-side-metrics/operation-metrics-collector';
 import {promisifyAll} from '@google-cloud/promisify';
-import arrify = require('arrify');
 import {Instance} from './instance';
 import {Mutation} from './mutation';
 import {
@@ -28,7 +27,7 @@ import {
   SampleRowKeysCallback,
   SampleRowsKeysResponse,
 } from './index';
-import {Filter, BoundData, RawFilter} from './filter';
+import {BoundData, Filter, RawFilter} from './filter';
 import {Row} from './row';
 import {
   ChunkPushData,
@@ -44,8 +43,11 @@ import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {TableUtils} from './utils/table';
 import {IMetricsHandler} from './client-side-metrics/metrics-handler';
-import {TestDateProvider} from '../common/test-date-provider';
-import {DefaultDateProvider} from './client-side-metrics/operation-metrics-collector';
+import {MethodName} from '../common/client-side-metrics-attributes';
+
+let attemptCounter = 0;
+
+import arrify = require('arrify');
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -352,10 +354,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       return originalEnd(chunk, encoding, cb);
     };
     this.bigtable.getProjectId_((err, projectId) => {
-      const metricsCollector = new MetricsCollector(
+      const metricsCollector = new OperationMetricsCollector(
         this,
         this.bigtable.options.metricsHandlers as IMetricsHandler[],
-        'readRows',
+        MethodName.READ_ROWS,
         projectId,
         new DefaultDateProvider()
       );
@@ -542,13 +544,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           .on(
             'metadata',
             (metadata: {internalRepr: Map<string, Buffer>; options: {}}) => {
-              metricsCollector.onMetadataReceived(
-                {
-                  finalOperationStatus: 'PENDING',
-                  streamingOperation: 'YES',
-                },
-                metadata
-              );
+              metricsCollector.onMetadataReceived(metadata);
             }
           )
           .on(
@@ -591,12 +587,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
                 backOffSettings
               );
               // TODO: Uncomment the next line after client-side metrics are well tested.
-              /*
-              metricsTracer.onAttemptComplete({
-                finalOperationStatus: 'ERROR',
-                streamingOperation: 'YES',
-              }); // TODO: Replace ERROR with enum
-               */
+              metricsCollector.onAttemptComplete({
+                attemptStatus: error.code,
+                streamingOperation: true,
+                connectivityErrorCount: 0, // TODO: Fill this in.
+              });
               retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
             } else {
               if (
