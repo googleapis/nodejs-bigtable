@@ -31,5 +31,5 @@ metrics: {"attemptLatency":3000,"serverLatency":103,"connectivityErrorCount":1}
 attributes: {"finalOperationStatus":0,"attemptStatus":0,"streamingOperation":true,"connectivityErrorCount":1,"projectId":"my-project","instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c ","methodName":"readRows","clientName":"nodejs-bigtable"}
 getDate call returns 10000 ms
 Recording parameters for onOperationComplete:
-metrics: {"operationLatency":9000,"retryCount":1,"firstResponseLatency":1000}
+metrics: {"operationLatency":9000,"retryCount":1,"firstResponseLatency":2000}
 attributes: {"finalOperationStatus":0,"streamingOperation":true,"projectId":"my-project","instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c ","methodName":"readRows","clientName":"nodejs-bigtable"}
