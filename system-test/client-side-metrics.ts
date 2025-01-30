@@ -17,12 +17,13 @@ import * as fs from 'node:fs';
 import {TestMetricsHandler} from '../common/test-metrics-handler';
 import {
   ITabularApiSurface,
-  MetricsCollector,
-} from '../src/client-side-metrics/metrics-collector';
+  OperationMetricsCollector,
+} from '../src/client-side-metrics/operation-metrics-collector';
 import {IMetricsHandler} from '../src/client-side-metrics/metrics-handler';
 import {TestDateProvider} from '../common/test-date-provider';
 import * as proxyquire from 'proxyquire';
 import {TabularApiSurface} from '../src/tabular-api-surface';
+import {MethodName} from '../common/client-side-metrics-attributes';
 
 class Logger {
   private messages = '';
@@ -39,11 +40,11 @@ class Logger {
 
 const logger = new Logger();
 
-class TestMetricsCollector extends MetricsCollector {
+class TestMetricsCollector extends OperationMetricsCollector {
   constructor(
     tabularApiSurface: ITabularApiSurface,
     metricsHandlers: IMetricsHandler[],
-    methodName: string,
+    methodName: MethodName,
     projectId?: string
   ) {
     super(
@@ -58,7 +59,7 @@ class TestMetricsCollector extends MetricsCollector {
 
 describe.only('Bigtable/MetricsCollector', () => {
   const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
-    './client-side-metrics/metrics-collector': {
+    './client-side-metrics/operation-metrics-collector': {
       MetricsCollector: TestMetricsCollector,
     },
   }).TabularApiSurface;

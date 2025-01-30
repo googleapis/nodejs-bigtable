@@ -220,15 +220,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    */
   createReadStream(opts?: GetRowsOptions) {
     attemptCounter++;
-    /*
-    metricsTracer.onOperationComplete({
-      retries: numRequestsMade - 1,
-      finalOperationStatus,
-      connectivityErrorCount,
-      streamingOperation: 'YES',
-    });
-     */
-
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
     let activeRequestStream: AbortableDuplex | null;
@@ -237,8 +228,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const rowsLimit = options.limit || 0;
     const hasLimit = rowsLimit !== 0;
 
-    // TODO: Uncomment the next line after client-side metrics are well tested.
-    let connectivityErrorCount = 0;
     let numConsecutiveErrors = 0;
     let numRequestsMade = 0;
     let retryTimer: NodeJS.Timeout | null;
@@ -559,12 +548,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           .on('error', (error: ServiceError) => {
             rowStreamUnpipe(rowStream, userStream);
             activeRequestStream = null;
-            // TODO: Uncomment the next line after client-side metrics are well tested.
-            if (new Set([10, 14, 15]).has(error.code)) {
-              // The following grpc errors will be considered connectivity errors:
-              // ABORTED, UNAVAILABLE, DATA_LOSS
-              connectivityErrorCount++;
-            }
             if (IGNORED_STATUS_CODES.has(error.code)) {
               // We ignore the `cancelled` "error", since we are the ones who cause
               // it when the user calls `.abort()`.
@@ -586,11 +569,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
                 numConsecutiveErrors,
                 backOffSettings
               );
-              // TODO: Uncomment the next line after client-side metrics are well tested.
               metricsCollector.onAttemptComplete({
                 attemptStatus: error.code,
                 streamingOperation: true,
-                connectivityErrorCount: 0, // TODO: Fill this in.
               });
               retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
             } else {
@@ -607,24 +588,34 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
                 //
                 error.code = grpc.status.CANCELLED;
               }
+              metricsCollector.onAttemptComplete({
+                attemptStatus: error.code,
+                streamingOperation: true,
+              });
+              metricsCollector.onOperationComplete({
+                finalOperationStatus: error.code,
+                streamingOperation: true,
+              });
               userStream.emit('error', error);
-              // TODO: Uncomment the next line after client-side metrics are well tested.
-              // onCallComplete('ERROR');
             }
           })
           .on('data', _ => {
             // Reset error count after a successful read so the backoff
             // time won't keep increasing when as stream had multiple errors
             numConsecutiveErrors = 0;
-            // TODO: Uncomment the next line after client-side metrics are well tested.
-            // metricsTracer.onResponse('PENDING');
+            metricsCollector.onResponse();
           })
           .on('end', () => {
-            // TODO: Uncomment the next line after client-side metrics are well tested.
             numRequestsMade++;
             activeRequestStream = null;
-            // TODO: Uncomment the next line after client-side metrics are well tested.
-            // onCallComplete('SUCCESS');
+            metricsCollector.onAttemptComplete({
+              attemptStatus: 0, // Grpc OK status
+              streamingOperation: true,
+            });
+            metricsCollector.onOperationComplete({
+              finalOperationStatus: 0, // Grpc OK status
+              streamingOperation: true,
+            });
           });
         rowStreamPipe(rowStream, userStream);
       };

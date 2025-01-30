@@ -112,6 +112,7 @@ export class OperationMetricsCollector {
   private serverTimeRead: boolean;
   private serverTime: number | null;
   private dateProvider: DateProvider;
+  private connectivityErrorCount = 0;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -244,7 +245,7 @@ export class OperationMetricsCollector {
               {
                 attemptLatency: totalTime,
                 serverLatency: this.serverTime ?? undefined,
-                connectivityErrorCount: info.connectivityErrorCount,
+                connectivityErrorCount: this.connectivityErrorCount,
               },
               attributes
             );
@@ -268,6 +269,7 @@ export class OperationMetricsCollector {
       this.attemptStartTime = this.dateProvider.getDate();
       this.serverTime = null;
       this.serverTimeRead = false;
+      this.connectivityErrorCount = 0;
     } else {
       console.warn('Invalid state transition attempted');
     }
@@ -353,6 +355,9 @@ export class OperationMetricsCollector {
           this.serverTime = serverTime;
         }
       }
+    } else {
+      // TODO: Handle directPath traffic
+      this.connectivityErrorCount++;
     }
   }
 

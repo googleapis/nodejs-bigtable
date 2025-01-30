@@ -156,7 +156,6 @@ export type OnAttemptCompleteAttributes =
  * This information is used for recording metrics.
  */
 export interface OnAttemptCompleteInfo {
-  connectivityErrorCount: number;
   /**
    * Whether the operation is a streaming operation or not.
    */
