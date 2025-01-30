@@ -158,10 +158,6 @@ export type OnAttemptCompleteAttributes =
 export interface OnAttemptCompleteInfo {
   connectivityErrorCount: number;
   /**
-   * The final status of the operation (e.g., 'OK', 'ERROR').
-   */
-  finalOperationStatus: FinalOperationStatus;
-  /**
    * Whether the operation is a streaming operation or not.
    */
   streamingOperation: boolean;

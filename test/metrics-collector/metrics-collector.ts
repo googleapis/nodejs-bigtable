@@ -135,7 +135,6 @@ describe('Bigtable/MetricsCollector', () => {
             metricsCollector.onResponse();
             logger.log('8. A transient error occurs.');
             metricsCollector.onAttemptComplete({
-              finalOperationStatus: grpc.status.DEADLINE_EXCEEDED,
               streamingOperation: true,
               attemptStatus: grpc.status.DEADLINE_EXCEEDED,
               connectivityErrorCount: 1,
@@ -155,7 +154,6 @@ describe('Bigtable/MetricsCollector', () => {
             logger.log('15. User reads row 1');
             logger.log('16. Stream ends, operation completes');
             metricsCollector.onAttemptComplete({
-              finalOperationStatus: grpc.status.OK,
               attemptStatus: grpc.status.OK,
               streamingOperation: true,
               connectivityErrorCount: 1,
