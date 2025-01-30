@@ -137,7 +137,6 @@ describe('Bigtable/MetricsCollector', () => {
             metricsCollector.onAttemptComplete({
               streamingOperation: true,
               attemptStatus: grpc.status.DEADLINE_EXCEEDED,
-              connectivityErrorCount: 1,
             });
             logger.log('9. After a timeout, the second attempt is made.');
             metricsCollector.onAttemptStart();
@@ -156,7 +155,6 @@ describe('Bigtable/MetricsCollector', () => {
             metricsCollector.onAttemptComplete({
               attemptStatus: grpc.status.OK,
               streamingOperation: true,
-              connectivityErrorCount: 1,
             });
             metricsCollector.onOperationComplete({
               finalOperationStatus: grpc.status.OK,
