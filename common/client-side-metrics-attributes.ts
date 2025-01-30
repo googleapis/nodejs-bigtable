@@ -25,6 +25,42 @@ interface StandardAttributes {
   clientName: string;
 }
 
+interface OperationLatencyAttributes extends StandardAttributes {
+  finalOperationStatus: FinalOperationStatus;
+  StreamingOperation: boolean;
+}
+
+interface AttemptLatencyAttributes extends StandardAttributes {
+  attemptStatus: AttemptStatus;
+  streamingOperation: boolean;
+}
+
+interface RetryCountAttributes extends StandardAttributes {
+  finalOperationStatus: FinalOperationStatus;
+}
+
+type ApplicationBlockingLatenciesAttributes = StandardAttributes;
+
+interface FirstResponseLatencyAttributes extends StandardAttributes {
+  finalOperationStatus: FinalOperationStatus;
+}
+
+interface ServerLatenciesAttributes extends StandardAttributes {
+  attemptStatus: AttemptStatus;
+  streamingOperation: boolean;
+}
+
+interface ConnectivityErrorCountAttributes extends StandardAttributes {
+  attemptStatus: AttemptStatus;
+}
+
+type ClientBlockingLatenciesAttributes = StandardAttributes;
+
+export interface AttemptOnlyAttributes {
+  attemptStatus: AttemptStatus;
+  streamingOperation: boolean;
+}
+
 /**
  * Information about a Bigtable operation.
  */
@@ -36,10 +72,23 @@ export interface OperationOnlyAttributes {
   streamingOperation: boolean;
 }
 
-/**
- * Information about a single attempt of a Bigtable operation.
- */
-export interface AttemptOnlyAttributes {
+export type FinalOperationStatus = grpc.status;
+
+export type AttemptStatus = grpc.status;
+
+export type OnOperationCompleteAttributes =
+  | OperationLatencyAttributes
+  | FirstResponseLatencyAttributes
+  | RetryCountAttributes;
+
+export type OnAttemptCompleteAttributes =
+  | AttemptLatencyAttributes
+  | ConnectivityErrorCountAttributes
+  | ServerLatenciesAttributes
+  | ClientBlockingLatenciesAttributes;
+
+export interface OnAttemptCompleteInfo {
+  connectivityErrorCount: number;
   /**
    * The final status of the operation (e.g., 'OK', 'ERROR').
    */
@@ -52,22 +101,6 @@ export interface AttemptOnlyAttributes {
    * The attempt status of the operation.
    */
   attemptStatus: AttemptStatus;
-}
-
-export type FinalOperationStatus = grpc.status;
-
-export type AttemptStatus = grpc.status;
-
-export interface OnOperationCompleteAttributes
-  extends StandardAttributes,
-    OperationOnlyAttributes {}
-
-export interface OnAttemptCompleteAttributes
-  extends StandardAttributes,
-    AttemptOnlyAttributes {}
-
-export interface OnAttemptCompleteInfo extends AttemptOnlyAttributes {
-  connectivityErrorCount: number;
 }
 
 export enum MethodName {

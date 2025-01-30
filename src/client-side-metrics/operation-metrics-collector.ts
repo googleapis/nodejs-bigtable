@@ -213,6 +213,8 @@ export class OperationMetricsCollector {
   onOperationStart() {
     if (this.state === MetricsCollectorState.OPERATION_NOT_STARTED) {
       this.operationStartTime = this.dateProvider.getDate();
+      this.firstResponseLatency = null;
+      this.receivedFirstResponse = false;
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
     } else {
@@ -222,7 +224,7 @@ export class OperationMetricsCollector {
 
   /**
    * Called when an attempt (e.g., an RPC attempt) completes. Records attempt latencies.
-   * @param {AttemptOnlyAttributes} info Information about the completed attempt.
+   * @param {OnAttemptCompleteInfo} info Information about the completed attempt.
    */
   onAttemptComplete(info: OnAttemptCompleteInfo) {
     if (
@@ -243,7 +245,6 @@ export class OperationMetricsCollector {
                 attemptLatency: totalTime,
                 serverLatency: this.serverTime ?? undefined,
                 connectivityErrorCount: info.connectivityErrorCount,
-                firstResponseLatency: this.firstResponseLatency ?? undefined,
               },
               attributes
             );
@@ -267,8 +268,6 @@ export class OperationMetricsCollector {
       this.attemptStartTime = this.dateProvider.getDate();
       this.serverTime = null;
       this.serverTimeRead = false;
-      this.firstResponseLatency = null;
-      this.receivedFirstResponse = false;
     } else {
       console.warn('Invalid state transition attempted');
     }
@@ -313,6 +312,7 @@ export class OperationMetricsCollector {
           const metrics = {
             operationLatency: totalTime,
             retryCount: this.attemptCount - 1,
+            firstResponseLatency: this.firstResponseLatency ?? undefined,
           };
           this.metricsHandlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {

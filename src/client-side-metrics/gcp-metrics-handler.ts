@@ -177,6 +177,10 @@ export class GCPMetricsHandler implements IMetricsHandler {
       attributes
     );
     this.otelMetrics?.retryCount.add(metrics.retryCount, attributes);
+    this.otelMetrics?.firstResponseLatencies.record(
+      metrics.firstResponseLatency,
+      attributes
+    );
   }
 
   /**
@@ -200,9 +204,5 @@ export class GCPMetricsHandler implements IMetricsHandler {
       attributes
     );
     this.otelMetrics?.serverLatencies.record(metrics.serverLatency, attributes);
-    this.otelMetrics?.firstResponseLatencies.record(
-      metrics.firstResponseLatency,
-      attributes
-    );
   }
 }
