@@ -15,7 +15,6 @@
 import * as fs from 'fs';
 import {IMetricsHandler} from './metrics-handler';
 import {
-  AttemptOnlyAttributes,
   AttemptStatus,
   MethodName,
   OnOperationCompleteAttributes,
@@ -86,6 +85,15 @@ interface OnAttemptCompleteInfo {
    * The attempt status of the operation.
    */
   attemptStatus: AttemptStatus;
+}
+
+/**
+ * Attributes specific to a single attempt of a Bigtable operation. These attributes
+ * provide information about the attempt's status and whether it was part of a streaming operation.
+ */
+interface AttemptOnlyAttributes {
+  attemptStatus: AttemptStatus;
+  streamingOperation: boolean;
 }
 
 const packageJSON = fs.readFileSync('package.json');

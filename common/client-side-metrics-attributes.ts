@@ -93,15 +93,6 @@ interface ConnectivityErrorCountAttributes extends StandardAttributes {
 type ClientBlockingLatenciesAttributes = StandardAttributes;
 
 /**
- * Attributes specific to a single attempt of a Bigtable operation. These attributes
- * provide information about the attempt's status and whether it was part of a streaming operation.
- */
-export interface AttemptOnlyAttributes {
-  attemptStatus: AttemptStatus;
-  streamingOperation: boolean;
-}
-
-/**
  * Information about a Bigtable operation.
  */
 export interface OperationOnlyAttributes {
