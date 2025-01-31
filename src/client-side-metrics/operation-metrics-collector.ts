@@ -16,8 +16,8 @@ import * as fs from 'fs';
 import {IMetricsHandler} from './metrics-handler';
 import {
   AttemptOnlyAttributes,
+  AttemptStatus,
   MethodName,
-  OnAttemptCompleteInfo,
   OnOperationCompleteAttributes,
   OperationOnlyAttributes,
 } from '../../common/client-side-metrics-attributes';
@@ -70,6 +70,22 @@ export interface ITabularApiSurface {
   bigtable: {
     appProfileId?: string;
   };
+}
+
+/**
+ * Information about the completion of a single attempt of a Bigtable operation.
+ * This information is used for recording metrics.
+ */
+interface OnAttemptCompleteInfo {
+  connectivityErrorCount: number;
+  /**
+   * Whether the operation is a streaming operation or not.
+   */
+  streamingOperation: boolean;
+  /**
+   * The attempt status of the operation.
+   */
+  attemptStatus: AttemptStatus;
 }
 
 const packageJSON = fs.readFileSync('package.json');

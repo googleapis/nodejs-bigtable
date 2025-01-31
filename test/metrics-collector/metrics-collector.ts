@@ -18,11 +18,7 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import {TestMetricsHandler} from '../../common/test-metrics-handler';
 import {OperationMetricsCollector} from '../../src/client-side-metrics/operation-metrics-collector';
-import {
-  AttemptStatus,
-  FinalOperationStatus,
-  MethodName,
-} from '../../common/client-side-metrics-attributes';
+import {MethodName} from '../../common/client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 
 /**

@@ -152,22 +152,6 @@ export type OnAttemptCompleteAttributes =
   | ClientBlockingLatenciesAttributes;
 
 /**
- * Information about the completion of a single attempt of a Bigtable operation.
- * This information is used for recording metrics.
- */
-export interface OnAttemptCompleteInfo {
-  connectivityErrorCount: number;
-  /**
-   * Whether the operation is a streaming operation or not.
-   */
-  streamingOperation: boolean;
-  /**
-   * The attempt status of the operation.
-   */
-  attemptStatus: AttemptStatus;
-}
-
-/**
  * Represents the names of Bigtable methods. These are used as attributes for
  * metrics, allowing for differentiation of performance by method.
  */
