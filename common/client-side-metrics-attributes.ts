@@ -29,13 +29,18 @@ interface StandardAttributes {
   clientName: string;
 }
 
+export enum StreamingState {
+  STREAMING = 'streaming',
+  UNARY = 'unary',
+}
+
 /**
  * Attributes associated with operation latency metrics for Bigtable client operations.
  * These attributes provide context about the Bigtable environment and the completed operation.
  */
 interface OperationLatencyAttributes extends StandardAttributes {
   finalOperationStatus: FinalOperationStatus;
-  StreamingOperation: boolean;
+  streamingOperation: StreamingState;
 }
 
 /**
@@ -44,7 +49,7 @@ interface OperationLatencyAttributes extends StandardAttributes {
  */
 interface AttemptLatencyAttributes extends StandardAttributes {
   attemptStatus: AttemptStatus;
-  streamingOperation: boolean;
+  streamingOperation: StreamingState;
 }
 
 /**
@@ -75,7 +80,7 @@ interface FirstResponseLatencyAttributes extends StandardAttributes {
  */
 interface ServerLatenciesAttributes extends StandardAttributes {
   attemptStatus: AttemptStatus;
-  streamingOperation: boolean;
+  streamingOperation: StreamingState;
 }
 
 /**

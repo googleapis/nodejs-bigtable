@@ -19,6 +19,7 @@ import {
   FinalOperationStatus,
   MethodName,
   OnOperationCompleteAttributes,
+  StreamingState,
 } from '../../common/client-side-metrics-attributes';
 
 /**
@@ -80,7 +81,7 @@ interface OnAttemptCompleteInfo {
   /**
    * Whether the operation is a streaming operation or not.
    */
-  streamingOperation: boolean;
+  streamingOperation: StreamingState;
   /**
    * The attempt status of the operation.
    */
@@ -94,7 +95,7 @@ interface OnAttemptCompleteInfo {
  */
 interface AttemptOnlyAttributes {
   attemptStatus: AttemptStatus;
-  streamingOperation: boolean;
+  streamingOperation: StreamingState;
 }
 
 /**
@@ -102,7 +103,7 @@ interface AttemptOnlyAttributes {
  */
 interface OperationOnlyAttributes {
   finalOperationStatus: FinalOperationStatus;
-  streamingOperation: boolean;
+  streamingOperation: StreamingState;
 }
 
 const packageJSON = fs.readFileSync('package.json');

@@ -18,7 +18,7 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import {TestMetricsHandler} from '../../common/test-metrics-handler';
 import {OperationMetricsCollector} from '../../src/client-side-metrics/operation-metrics-collector';
-import {MethodName} from '../../common/client-side-metrics-attributes';
+import {MethodName, StreamingState} from '../../common/client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 
 /**
@@ -131,7 +131,7 @@ describe('Bigtable/MetricsCollector', () => {
             metricsCollector.onResponse();
             logger.log('8. A transient error occurs.');
             metricsCollector.onAttemptComplete({
-              streamingOperation: true,
+              streamingOperation: StreamingState.STREAMING,
               attemptStatus: grpc.status.DEADLINE_EXCEEDED,
               connectivityErrorCount: 1,
             });
@@ -151,12 +151,12 @@ describe('Bigtable/MetricsCollector', () => {
             logger.log('16. Stream ends, operation completes');
             metricsCollector.onAttemptComplete({
               attemptStatus: grpc.status.OK,
-              streamingOperation: true,
+              streamingOperation: StreamingState.STREAMING,
               connectivityErrorCount: 1,
             });
             metricsCollector.onOperationComplete({
               finalOperationStatus: grpc.status.OK,
-              streamingOperation: true,
+              streamingOperation: StreamingState.STREAMING,
             });
             resolve();
           });
