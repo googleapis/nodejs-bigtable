@@ -310,13 +310,13 @@ export class OperationMetricsCollector {
    * Called when the first response is received. Records first response latencies.
    */
   onResponse() {
-    const endTime = this.dateProvider.getDate();
-    const projectId = this.projectId;
-    if (projectId && this.operationStartTime) {
-      const totalTime = endTime.getTime() - this.operationStartTime.getTime();
-      if (!this.receivedFirstResponse) {
-        this.receivedFirstResponse = true;
-        this.firstResponseLatency = totalTime;
+    if (!this.receivedFirstResponse) {
+      this.receivedFirstResponse = true;
+      const endTime = this.dateProvider.getDate();
+      const projectId = this.projectId;
+      if (projectId && this.operationStartTime) {
+        this.firstResponseLatency =
+          endTime.getTime() - this.operationStartTime.getTime();
       }
     }
   }
