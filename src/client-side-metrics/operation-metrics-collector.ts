@@ -16,9 +16,9 @@ import * as fs from 'fs';
 import {IMetricsHandler} from './metrics-handler';
 import {
   AttemptStatus,
+  FinalOperationStatus,
   MethodName,
   OnOperationCompleteAttributes,
-  OperationOnlyAttributes,
 } from '../../common/client-side-metrics-attributes';
 
 /**
@@ -88,11 +88,20 @@ interface OnAttemptCompleteInfo {
 }
 
 /**
- * Attributes specific to a single attempt of a Bigtable operation. These attributes
- * provide information about the attempt's status and whether it was part of a streaming operation.
+ * Attributes specific to a single attempt of a Bigtable operation. These
+ * attributes provide information about the attempt's status and whether it was
+ * part of a streaming operation.
  */
 interface AttemptOnlyAttributes {
   attemptStatus: AttemptStatus;
+  streamingOperation: boolean;
+}
+
+/**
+ * Information about a Bigtable operation to be recorded in client side metrics.
+ */
+interface OperationOnlyAttributes {
+  finalOperationStatus: FinalOperationStatus;
   streamingOperation: boolean;
 }
 

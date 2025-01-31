@@ -93,17 +93,6 @@ interface ConnectivityErrorCountAttributes extends StandardAttributes {
 type ClientBlockingLatenciesAttributes = StandardAttributes;
 
 /**
- * Information about a Bigtable operation.
- */
-export interface OperationOnlyAttributes {
-  /**
-   * The final status of the operation (e.g., 'OK', 'ERROR').
-   */
-  finalOperationStatus: FinalOperationStatus;
-  streamingOperation: boolean;
-}
-
-/**
  * The final status of a Bigtable operation.  This represents the ultimate result
  * of the operation, regardless of individual attempt statuses. It's represented
  * as a gRPC status code.  See the `google-gax` library's documentation on
