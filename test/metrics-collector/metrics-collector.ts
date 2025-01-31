@@ -1,0 +1,181 @@
+// Copyright 2025 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import {describe} from 'mocha';
+import {TestDateProvider} from '../../common/test-date-provider';
+import * as assert from 'assert';
+import * as fs from 'fs';
+import {TestMetricsHandler} from '../../common/test-metrics-handler';
+import {OperationMetricsCollector} from '../../src/client-side-metrics/operation-metrics-collector';
+import {
+  MethodName,
+  StreamingState,
+} from '../../common/client-side-metrics-attributes';
+import {grpc} from 'google-gax';
+
+/**
+ * A basic logger class that stores log messages in an array. Useful for testing.
+ */
+class Logger {
+  private messages: string[] = [];
+
+  /**
+   * Logs a message by adding it to the internal message array.
+   * @param {string} message The message to be logged.
+   */
+  log(message: string) {
+    this.messages.push(message);
+  }
+
+  /**
+   * Retrieves all logged messages.
+   * @returns {string[]} An array of logged messages.
+   */
+  getMessages() {
+    return this.messages;
+  }
+}
+
+/**
+ * A fake implementation of the Bigtable client for testing purposes.  Provides a
+ * metricsTracerFactory and a stubbed getProjectId_ method.
+ */
+class FakeBigtable {
+  appProfileId?: string;
+
+  /**
+   * A stubbed method that simulates retrieving the project ID.  Always returns
+   * 'my-project'.
+   * @param {function} callback A callback function that receives the project ID (or an error).
+   */
+  getProjectId_(
+    callback: (err: Error | null, projectId?: string) => void
+  ): void {
+    callback(null, 'my-project');
+  }
+}
+
+/**
+ * A fake implementation of a Bigtable instance for testing purposes.  Provides only an ID.
+ */
+class FakeInstance {
+  /**
+   * The ID of the fake instance.
+   */
+  id = 'fakeInstanceId';
+}
+
+describe('Bigtable/MetricsCollector', () => {
+  it('should record the right metrics with a typical method call', async () => {
+    const logger = new Logger();
+    const metricsHandlers = [new TestMetricsHandler(logger)];
+    class FakeTable {
+      id = 'fakeTableId';
+      instance = new FakeInstance();
+      bigtable = new FakeBigtable();
+
+      async fakeMethod(): Promise<void> {
+        return new Promise(resolve => {
+          this.bigtable.getProjectId_((err, projectId) => {
+            function createMetadata(duration: string) {
+              return {
+                internalRepr: new Map([
+                  ['server-timing', Buffer.from(`gfet4t7; dur=${duration}`)],
+                ]),
+                options: {},
+              };
+            }
+
+            const status = {
+              metadata: {
+                internalRepr: new Map([
+                  [
+                    'x-goog-ext-425905942-bin',
+                    Buffer.from('\n\nus-west1-c \rfake-cluster3'),
+                  ],
+                ]),
+                options: {},
+              },
+            };
+            const metricsCollector = new OperationMetricsCollector(
+              this,
+              metricsHandlers,
+              MethodName.READ_ROWS,
+              projectId,
+              new TestDateProvider(logger)
+            );
+            // In this method we simulate a series of events that might happen
+            // when a user calls one of the Table methods.
+            // Here is an example of what might happen in a method call:
+            logger.log('1. The operation starts');
+            metricsCollector.onOperationStart();
+            logger.log('2. The attempt starts.');
+            metricsCollector.onAttemptStart();
+            logger.log('3. Client receives status information.');
+            metricsCollector.onStatusReceived(status);
+            logger.log('4. Client receives metadata.');
+            metricsCollector.onMetadataReceived(createMetadata('101'));
+            logger.log('5. Client receives first row.');
+            metricsCollector.onResponse();
+            logger.log('6. Client receives metadata.');
+            metricsCollector.onMetadataReceived(createMetadata('102'));
+            logger.log('7. Client receives second row.');
+            metricsCollector.onResponse();
+            logger.log('8. A transient error occurs.');
+            metricsCollector.onAttemptComplete({
+              streamingOperation: StreamingState.STREAMING,
+              attemptStatus: grpc.status.DEADLINE_EXCEEDED,
+              connectivityErrorCount: 1,
+            });
+            logger.log('9. After a timeout, the second attempt is made.');
+            metricsCollector.onAttemptStart();
+            logger.log('10. Client receives status information.');
+            metricsCollector.onStatusReceived(status);
+            logger.log('11. Client receives metadata.');
+            metricsCollector.onMetadataReceived(createMetadata('103'));
+            logger.log('12. Client receives third row.');
+            metricsCollector.onResponse();
+            logger.log('13. Client receives metadata.');
+            metricsCollector.onMetadataReceived(createMetadata('104'));
+            logger.log('14. Client receives fourth row.');
+            metricsCollector.onResponse();
+            logger.log('15. User reads row 1');
+            logger.log('16. Stream ends, operation completes');
+            metricsCollector.onAttemptComplete({
+              attemptStatus: grpc.status.OK,
+              streamingOperation: StreamingState.STREAMING,
+              connectivityErrorCount: 1,
+            });
+            metricsCollector.onOperationComplete({
+              finalOperationStatus: grpc.status.OK,
+              streamingOperation: StreamingState.STREAMING,
+            });
+            resolve();
+          });
+        });
+      }
+    }
+    const table = new FakeTable();
+    await table.fakeMethod();
+    const expectedOutput = fs.readFileSync(
+      './test/metrics-collector/typical-method-call.txt',
+      'utf8'
+    );
+    // Ensure events occurred in the right order here:
+    assert.strictEqual(
+      logger.getMessages().join('\n') + '\n',
+      expectedOutput.replace(/\r/g, '')
+    );
+  });
+});
