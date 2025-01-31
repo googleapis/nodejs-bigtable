@@ -13,8 +13,12 @@
 // limitations under the License.
 
 import {
-  OnAttemptCompleteAttributes,
-  OnOperationCompleteAttributes,
+  AttemptLatencyAttributes,
+  ConnectivityErrorCountAttributes,
+  FirstResponseLatencyAttributes,
+  OperationLatencyAttributes,
+  RetryCountAttributes,
+  ServerLatenciesAttributes,
 } from '../../common/client-side-metrics-attributes';
 
 /**
@@ -46,22 +50,33 @@ export interface OnAttemptCompleteMetrics {
  * Implementations of this interface can define how metrics are recorded and processed.
  */
 export interface IMetricsHandler {
-  /**
-   * Called when an operation completes (successfully or unsuccessfully).
-   * @param {OnOperationCompleteMetrics} metrics Metrics related to the completed operation.
-   * @param {OnOperationCompleteAttributes} attributes Attributes associated with the completed operation.
-   */
-  onOperationComplete?(
-    metrics: OnOperationCompleteMetrics,
-    attributes: OnOperationCompleteAttributes
+  onRecordAttemptLatency?(
+    attemptLatency: number,
+    attributes: AttemptLatencyAttributes
   ): void;
-  /**
-   * Called when an attempt (e.g., an RPC attempt) completes.
-   * @param {OnAttemptCompleteMetrics} metrics Metrics related to the completed attempt.
-   * @param {OnAttemptCompleteAttributes} attributes Attributes associated with the completed attempt.
-   */
-  onAttemptComplete?(
-    metrics: OnAttemptCompleteMetrics,
-    attributes: OnAttemptCompleteAttributes
+
+  onRecordConnectivityErrorCount?(
+    connectivityErrorCount: number,
+    attributes: ConnectivityErrorCountAttributes
+  ): void;
+
+  onRecordServerLatency?(
+    serverLatency: number,
+    attributes: ServerLatenciesAttributes
+  ): void;
+
+  onRecordOperationLatency?(
+    operationLatency: number,
+    attributes: OperationLatencyAttributes
+  ): void;
+
+  onRecordRetryCount?(
+    retryCount: number,
+    attributes: RetryCountAttributes
+  ): void;
+
+  onRecordFirstResponseLatency?(
+    firstResponseLatency: number,
+    attributes: FirstResponseLatencyAttributes
   ): void;
 }

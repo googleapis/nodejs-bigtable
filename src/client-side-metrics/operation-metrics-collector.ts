@@ -273,13 +273,15 @@ export class OperationMetricsCollector {
         const attributes = this.getAttemptAttributes(projectId, info);
         const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
         this.metricsHandlers.forEach(metricsHandler => {
-          if (metricsHandler.onAttemptComplete) {
-            metricsHandler.onAttemptComplete(
-              {
-                attemptLatency: totalTime,
-                serverLatency: this.serverTime ?? undefined,
-                connectivityErrorCount: info.connectivityErrorCount,
-              },
+          if (metricsHandler.onRecordAttemptLatency) {
+            metricsHandler.onRecordAttemptLatency(totalTime, attributes);
+          }
+          if (metricsHandler.onRecordServerLatency && this.serverTime) {
+            metricsHandler.onRecordServerLatency(this.serverTime, attributes);
+          }
+          if (metricsHandler.onRecordConnectivityErrorCount) {
+            metricsHandler.onRecordConnectivityErrorCount(
+              info.connectivityErrorCount,
               attributes
             );
           }
@@ -343,15 +345,25 @@ export class OperationMetricsCollector {
             projectId,
             info
           );
-          const metrics = {
-            operationLatency: totalTime,
-            retryCount: this.attemptCount - 1,
-            firstResponseLatency: this.firstResponseLatency ?? undefined,
-          };
           this.metricsHandlers.forEach(metricsHandler => {
-            if (metricsHandler.onOperationComplete) {
-              metricsHandler.onOperationComplete(
-                metrics,
+            if (metricsHandler.onRecordOperationLatency) {
+              metricsHandler.onRecordOperationLatency(
+                totalTime,
+                operationLatencyAttributes
+              );
+            }
+            if (metricsHandler.onRecordRetryCount) {
+              metricsHandler.onRecordRetryCount(
+                this.attemptCount - 1,
+                operationLatencyAttributes
+              );
+            }
+            if (
+              metricsHandler.onRecordFirstResponseLatency &&
+              this.firstResponseLatency
+            ) {
+              metricsHandler.onRecordFirstResponseLatency(
+                this.firstResponseLatency ?? undefined,
                 operationLatencyAttributes
               );
             }
