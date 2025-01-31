@@ -426,9 +426,6 @@ export class Bigtable {
   static Cluster: Cluster;
 
   constructor(options: BigtableOptions = {}) {
-    if (!options.metricsHandlers) {
-      options.metricsHandlers = [new GCPMetricsHandler()];
-    }
     // Determine what scopes are needed.
     // It is the union of the scopes on all three clients.
     const scopes: string[] = [];
@@ -512,8 +509,11 @@ export class Bigtable {
       options
     );
 
+    const metricsHandlers = options.metricsHandlers ?? [
+      new GCPMetricsHandler(),
+    ];
     this.options = {
-      metricsHandlers: options.metricsHandlers,
+      metricsHandlers,
       BigtableClient: dataOptions,
       BigtableInstanceAdminClient: instanceAdminOptions,
       BigtableTableAdminClient: adminOptions,
