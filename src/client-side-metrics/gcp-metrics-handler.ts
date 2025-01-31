@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {IMetricsHandler} from './metrics-handler';
+import {
+  IMetricsHandler,
+  OnAttemptCompleteMetrics,
+  OnOperationCompleteMetrics,
+} from './metrics-handler';
 import * as Resources from '@opentelemetry/resources';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import {
-  AttemptLatencyAttributes,
-  ConnectivityErrorCountAttributes,
-  FirstResponseLatencyAttributes,
-  OperationLatencyAttributes,
-  RetryCountAttributes,
-  ServerLatenciesAttributes,
+  OnAttemptCompleteAttributes,
+  OnOperationCompleteAttributes,
 } from '../../common/client-side-metrics-attributes';
 import {View} from '@opentelemetry/sdk-metrics';
 const {
@@ -161,54 +161,48 @@ export class GCPMetricsHandler implements IMetricsHandler {
     }
   }
 
-  onRecordAttemptLatency(
-    attemptLatency: number,
-    attributes: AttemptLatencyAttributes
+  /**
+   * Records metrics for a completed Bigtable operation.
+   * This method records the operation latency and retry count, associating them with provided attributes.
+   * @param {OnOperationCompleteMetrics} metrics Metrics related to the completed operation.
+   * @param {OnOperationCompleteAttributes} attributes Attributes associated with the completed operation.
+   */
+  onOperationComplete(
+    metrics: OnOperationCompleteMetrics,
+    attributes: OnOperationCompleteAttributes
   ) {
     this.initialize();
-    this.otelMetrics?.attemptLatencies.record(attemptLatency, attributes);
-  }
-
-  onRecordConnectivityErrorCount(
-    connectivityErrorCount: number,
-    attributes: ConnectivityErrorCountAttributes
-  ) {
-    this.initialize();
-    this.otelMetrics?.connectivityErrorCount.record(
-      connectivityErrorCount,
+    this.otelMetrics?.operationLatencies.record(
+      metrics.operationLatency,
       attributes
     );
-  }
-
-  onRecordServerLatency(
-    serverLatency: number,
-    attributes: ServerLatenciesAttributes
-  ) {
-    this.initialize();
-    this.otelMetrics?.serverLatencies.record(serverLatency, attributes);
-  }
-
-  onRecordOperationLatency(
-    operationLatency: number,
-    attributes: OperationLatencyAttributes
-  ) {
-    this.initialize();
-    this.otelMetrics?.operationLatencies.record(operationLatency, attributes);
-  }
-
-  onRecordRetryCount(retryCount: number, attributes: RetryCountAttributes) {
-    this.initialize();
-    this.otelMetrics?.retryCount.add(retryCount, attributes);
-  }
-
-  onRecordFirstResponseLatency(
-    firstResponseLatency: number,
-    attributes: FirstResponseLatencyAttributes
-  ) {
-    this.initialize();
+    this.otelMetrics?.retryCount.add(metrics.retryCount, attributes);
     this.otelMetrics?.firstResponseLatencies.record(
-      firstResponseLatency,
+      metrics.firstResponseLatency,
       attributes
     );
+  }
+
+  /**
+   * Records metrics for a completed attempt of a Bigtable operation.
+   * This method records attempt latency, connectivity error count, server latency, and first response latency,
+   * along with the provided attributes.
+   * @param {OnAttemptCompleteMetrics} metrics Metrics related to the completed attempt.
+   * @param {OnAttemptCompleteAttributes} attributes Attributes associated with the completed attempt.
+   */
+  onAttemptComplete(
+    metrics: OnAttemptCompleteMetrics,
+    attributes: OnAttemptCompleteAttributes
+  ) {
+    this.initialize();
+    this.otelMetrics?.attemptLatencies.record(
+      metrics.attemptLatency,
+      attributes
+    );
+    this.otelMetrics?.connectivityErrorCount.record(
+      metrics.connectivityErrorCount,
+      attributes
+    );
+    this.otelMetrics?.serverLatencies.record(metrics.serverLatency, attributes);
   }
 }

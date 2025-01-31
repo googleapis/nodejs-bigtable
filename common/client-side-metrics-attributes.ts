@@ -38,7 +38,7 @@ export enum StreamingState {
  * Attributes associated with operation latency metrics for Bigtable client operations.
  * These attributes provide context about the Bigtable environment and the completed operation.
  */
-export interface OperationLatencyAttributes extends StandardAttributes {
+interface OperationLatencyAttributes extends StandardAttributes {
   finalOperationStatus: FinalOperationStatus;
   streamingOperation: StreamingState;
 }
@@ -47,7 +47,7 @@ export interface OperationLatencyAttributes extends StandardAttributes {
  * Attributes associated with attempt latency metrics for Bigtable client operations.
  * These attributes provide context about the Bigtable environment, the specific attempt, and whether the operation was streaming.
  */
-export interface AttemptLatencyAttributes extends StandardAttributes {
+interface AttemptLatencyAttributes extends StandardAttributes {
   attemptStatus: AttemptStatus;
   streamingOperation: StreamingState;
 }
@@ -56,7 +56,7 @@ export interface AttemptLatencyAttributes extends StandardAttributes {
  * Attributes associated with retry count metrics for Bigtable client operations.  These attributes
  * provide context about the Bigtable environment and the final status of the operation.
  */
-export interface RetryCountAttributes extends StandardAttributes {
+interface RetryCountAttributes extends StandardAttributes {
   finalOperationStatus: FinalOperationStatus;
 }
 
@@ -70,7 +70,7 @@ type ApplicationBlockingLatenciesAttributes = StandardAttributes;
  * Attributes associated with first response latency metrics for Bigtable client operations.
  * These attributes provide context about the Bigtable environment and the final status of the operation.
  */
-export interface FirstResponseLatencyAttributes extends StandardAttributes {
+interface FirstResponseLatencyAttributes extends StandardAttributes {
   finalOperationStatus: FinalOperationStatus;
 }
 
@@ -78,7 +78,7 @@ export interface FirstResponseLatencyAttributes extends StandardAttributes {
  * Attributes associated with server latency metrics for Bigtable client operations.
  * These attributes provide context about the Bigtable environment, the specific attempt, and whether the operation was streaming.
  */
-export interface ServerLatenciesAttributes extends StandardAttributes {
+interface ServerLatenciesAttributes extends StandardAttributes {
   attemptStatus: AttemptStatus;
   streamingOperation: StreamingState;
 }
@@ -87,7 +87,7 @@ export interface ServerLatenciesAttributes extends StandardAttributes {
  * Attributes associated with connectivity error count metrics for Bigtable client operations.
  * These attributes provide context about the Bigtable environment and the status of the attempt.
  */
-export interface ConnectivityErrorCountAttributes extends StandardAttributes {
+interface ConnectivityErrorCountAttributes extends StandardAttributes {
   attemptStatus: AttemptStatus;
 }
 
@@ -118,9 +118,10 @@ export type AttemptStatus = grpc.status;
  * operation, and its final status.  They are used for recording metrics such as
  * operation latency, first response latency, and retry count.
  */
-export type OnOperationCompleteAttributes = OperationLatencyAttributes &
-  FirstResponseLatencyAttributes &
-  RetryCountAttributes;
+export type OnOperationCompleteAttributes =
+  | OperationLatencyAttributes
+  | FirstResponseLatencyAttributes
+  | RetryCountAttributes;
 
 /**
  * Attributes associated with the completion of a single attempt of a Bigtable
@@ -129,10 +130,11 @@ export type OnOperationCompleteAttributes = OperationLatencyAttributes &
  * are used for recording metrics such as attempt latency, server latency, and
  * connectivity errors.
  */
-export type OnAttemptCompleteAttributes = AttemptLatencyAttributes &
-  ConnectivityErrorCountAttributes &
-  ServerLatenciesAttributes &
-  ClientBlockingLatenciesAttributes;
+export type OnAttemptCompleteAttributes =
+  | AttemptLatencyAttributes
+  | ConnectivityErrorCountAttributes
+  | ServerLatenciesAttributes
+  | ClientBlockingLatenciesAttributes;
 
 /**
  * Represents the names of Bigtable methods. These are used as attributes for
