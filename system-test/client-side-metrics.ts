@@ -123,9 +123,18 @@ describe.only('Bigtable/MetricsCollector', () => {
   it('should read rows after inserting data', async () => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
-    await table.getRows();
+    for (let i = 0; i < 100; i++) {
+      await table.getRows();
+    }
     const myString = logger.getMessages(); // 'This is the string I want to write to the file.';
     const filename = 'metricsCollected.txt';
+    console.log('waiting');
+    await new Promise(resolve => {
+      setTimeout(async () => {
+        resolve('value');
+      }, 30_000);
+    });
+    console.log('stop waiting');
 
     // Write the string to the file
     fs.writeFileSync(filename, myString);

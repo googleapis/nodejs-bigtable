@@ -128,6 +128,8 @@ export class OperationMetricsCollector {
     projectId?: string,
     dateProvider?: DateProvider
   ) {
+    console.log('Metrics collector length');
+    console.log(metricsHandlers.length);
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
     this.cluster = undefined;
@@ -228,19 +230,25 @@ export class OperationMetricsCollector {
    * @param {OnAttemptCompleteInfo} info Information about the completed attempt.
    */
   onAttemptComplete(info: OnAttemptCompleteInfo) {
+    console.log('onAttemptComplete collector');
     if (
       this.state === MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS
     ) {
+      console.log('in state');
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
       this.attemptCount++;
       const endTime = this.dateProvider.getDate();
       const projectId = this.projectId;
       if (projectId && this.attemptStartTime) {
+        console.log('after attempt start time');
         const attributes = this.getAttemptAttributes(projectId, info);
         const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
         this.metricsHandlers.forEach(metricsHandler => {
+          console.log('metrics handler loop');
           if (metricsHandler.onAttemptComplete) {
+            console.log('calling onAttemptComplete');
+            console.log('calling onAttemptComplete');
             metricsHandler.onAttemptComplete(
               {
                 attemptLatency: totalTime,

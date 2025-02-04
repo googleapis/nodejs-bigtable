@@ -20,9 +20,9 @@ import {Mutation} from '../src/mutation';
 import * as mocha from 'mocha';
 import {Row} from '../src';
 
-describe('Bigtable/AuthorizedViews', () => {
+describe.only('Bigtable/AuthorizedViews', () => {
   describe('Authorized View methods should have requests that match Table and Row requests', () => {
-    const bigtable = new Bigtable({});
+    const bigtable = new Bigtable();
     const fakeTableName = 'fake-table';
     const fakeInstanceName = 'fake-instance';
     const fakeViewName = 'fake-view';
@@ -50,8 +50,12 @@ describe('Bigtable/AuthorizedViews', () => {
         try {
           requestCount++;
           delete config['retryOpts'];
+          console.log('Request options:');
+          console.log(`${config.reqOpts.tableName}`);
+          console.log(`${config.reqOpts.authorizedViewName}`);
           assert.deepStrictEqual(config, compareFn(requestCount));
         } catch (err: unknown) {
+          console.log('Done with error');
           done(err);
         }
         if (callback) {
@@ -162,8 +166,11 @@ describe('Bigtable/AuthorizedViews', () => {
               limit: 5,
               start: '7',
             };
+            console.log('table.getRows');
             await table.getRows(opts);
+            console.log('view.getRows');
             await view.getRows(opts);
+            console.log('Done getRows test');
             done();
           })();
         });

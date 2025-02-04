@@ -342,285 +342,291 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
-    this.bigtable.getProjectId_((err, projectId) => {
-      const metricsCollector = new OperationMetricsCollector(
-        this,
-        this.bigtable.options.metricsHandlers as IMetricsHandler[],
-        MethodName.READ_ROWS,
-        projectId,
-        new DefaultDateProvider()
-      );
-      metricsCollector.onOperationStart();
-      const makeNewRequest = () => {
-        metricsCollector.onAttemptStart();
+    // this.bigtable.getProjectId_((err, projectId) => {
+    const projectId = 'some-project';
+    const metricsCollector = new OperationMetricsCollector(
+      this,
+      this.bigtable.options.metricsHandlers as IMetricsHandler[],
+      MethodName.READ_ROWS,
+      projectId,
+      new DefaultDateProvider()
+    );
+    metricsCollector.onOperationStart();
+    const makeNewRequest = () => {
+      metricsCollector.onAttemptStart();
 
-        // Avoid cancelling an expired timer if user
-        // cancelled the stream in the middle of a retry
-        retryTimer = null;
+      // Avoid cancelling an expired timer if user
+      // cancelled the stream in the middle of a retry
+      retryTimer = null;
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        chunkTransformer = new ChunkTransformer({
-          decode: options.decode,
-        } as any);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      chunkTransformer = new ChunkTransformer({
+        decode: options.decode,
+      } as any);
 
-        // If the viewName is provided then request will be made for an
-        // authorized view. Otherwise, the request is made for a table.
-        const reqOpts = (
-          this.viewName
-            ? {
-                authorizedViewName: `${this.name}/authorizedViews/${this.viewName}`,
-                appProfileId: this.bigtable.appProfileId,
-              }
-            : {
-                tableName: this.name,
-                appProfileId: this.bigtable.appProfileId,
-              }
-        ) as google.bigtable.v2.IReadRowsRequest;
-
-        const retryOpts = {
-          currentRetryAttempt: 0, // was numConsecutiveErrors
-          // Handling retries in this client. Specify the retry options to
-          // make sure nothing is retried in retry-request.
-          noResponseRetries: 0,
-          shouldRetryFn: (_: any) => {
-            return false;
-          },
-        };
-
-        if (lastRowKey) {
-          // Readjust and/or remove ranges based on previous valid row reads.
-          // Iterate backward since items may need to be removed.
-          for (let index = ranges.length - 1; index >= 0; index--) {
-            const range = ranges[index];
-            const startValue = is.object(range.start)
-              ? (range.start as BoundData).value
-              : range.start;
-            const endValue = is.object(range.end)
-              ? (range.end as BoundData).value
-              : range.end;
-            const startKeyIsRead =
-              !startValue ||
-              TableUtils.lessThanOrEqualTo(
-                startValue as string,
-                lastRowKey as string
-              );
-            const endKeyIsNotRead =
-              !endValue ||
-              (endValue as Buffer).length === 0 ||
-              TableUtils.lessThan(lastRowKey as string, endValue as string);
-            if (startKeyIsRead) {
-              if (endKeyIsNotRead) {
-                // EndKey is not read, reset the range to start from lastRowKey open
-                range.start = {
-                  value: lastRowKey,
-                  inclusive: false,
-                };
-              } else {
-                // EndKey is read, remove this range
-                ranges.splice(index, 1);
-              }
+      // If the viewName is provided then request will be made for an
+      // authorized view. Otherwise, the request is made for a table.
+      const reqOpts = (
+        this.viewName
+          ? {
+              authorizedViewName: `${this.name}/authorizedViews/${this.viewName}`,
+              appProfileId: this.bigtable.appProfileId,
             }
-          }
-
-          // Remove rowKeys already read.
-          rowKeys = rowKeys.filter(rowKey =>
-            TableUtils.greaterThan(rowKey, lastRowKey as string)
-          );
-
-          // If there was a row limit in the original request and
-          // we've already read all the rows, end the stream and
-          // do not retry.
-          if (hasLimit && rowsLimit === rowsRead) {
-            userStream.end();
-            return;
-          }
-          // If all the row keys and ranges are read, end the stream
-          // and do not retry.
-          if (rowKeys.length === 0 && ranges.length === 0) {
-            userStream.end();
-            return;
-          }
-        }
-
-        // Create the new reqOpts
-        reqOpts.rows = {};
-
-        // TODO: preprocess all the keys and ranges to Bytes
-        reqOpts.rows.rowKeys = rowKeys.map(
-          Mutation.convertToBytes
-        ) as {} as Uint8Array[];
-
-        reqOpts.rows.rowRanges = ranges.map(range =>
-          Filter.createRange(
-            range.start as BoundData,
-            range.end as BoundData,
-            'Key'
-          )
-        );
-
-        if (filter) {
-          reqOpts.filter = filter;
-        }
-
-        if (hasLimit) {
-          reqOpts.rowsLimit = rowsLimit - rowsRead;
-        }
-
-        const gaxOpts = populateAttemptHeader(
-          numRequestsMade,
-          options.gaxOptions
-        );
-
-        const requestStream = this.bigtable.request({
-          client: 'BigtableClient',
-          method: 'readRows',
-          reqOpts,
-          gaxOpts,
-          retryOpts,
-        });
-
-        activeRequestStream = requestStream!;
-
-        const toRowStream = new Transform({
-          transform: (rowData: ChunkPushData, _, next) => {
-            if (
-              userCanceled ||
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (userStream as any)._writableState.ended
-            ) {
-              return next();
+          : {
+              tableName: this.name,
+              appProfileId: this.bigtable.appProfileId,
             }
-            if (
-              (rowData as ChunkPushLastScannedRowData).eventType ===
-              DataEvent.LAST_ROW_KEY_UPDATE
-            ) {
-              /**
-               * If the data is the chunk transformer communicating that the
-               * lastScannedRow was received then this message is passed along
-               * to the user stream to update the lastRowKey.
-               */
-              next(null, rowData);
-            } else {
-              /**
-               * If the data is just regular rows being pushed from the
-               * chunk transformer then the rows are encoded so that they
-               * can be consumed by the user stream.
-               */
-              const row = this.row((rowData as Row).key as string);
-              row.data = (rowData as Row).data;
-              next(null, row);
-            }
-          },
-          objectMode: true,
-        });
+      ) as google.bigtable.v2.IReadRowsRequest;
 
-        rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
-
-        // Retry on "received rst stream" errors
-        const isRstStreamError = (error: ServiceError): boolean => {
-          if (error.code === 13 && error.message) {
-            const error_message = (error.message || '').toLowerCase();
-            return (
-              error.code === 13 &&
-              (error_message.includes('rst_stream') ||
-                error_message.includes('rst stream'))
-            );
-          }
+      const retryOpts = {
+        currentRetryAttempt: 0, // was numConsecutiveErrors
+        // Handling retries in this client. Specify the retry options to
+        // make sure nothing is retried in retry-request.
+        noResponseRetries: 0,
+        shouldRetryFn: (_: any) => {
           return false;
-        };
+        },
+      };
 
-        requestStream
-          .on(
-            'metadata',
-            (metadata: {internalRepr: Map<string, Buffer>; options: {}}) => {
-              metricsCollector.onMetadataReceived(metadata);
-            }
-          )
-          .on(
-            'status',
-            (status: {
-              metadata: {internalRepr: Map<string, Buffer>; options: {}};
-            }) => {
-              metricsCollector.onStatusReceived(status);
-            }
-          );
-        rowStream
-          .on('error', (error: ServiceError) => {
-            rowStreamUnpipe(rowStream, userStream);
-            activeRequestStream = null;
-            if (IGNORED_STATUS_CODES.has(error.code)) {
-              // We ignore the `cancelled` "error", since we are the ones who cause
-              // it when the user calls `.abort()`.
-              userStream.end();
-              return;
-            }
-            numConsecutiveErrors++;
-            numRequestsMade++;
-            if (
-              numConsecutiveErrors <= maxRetries &&
-              (RETRYABLE_STATUS_CODES.has(error.code) ||
-                isRstStreamError(error)) &&
-              !(timeout && timeout < new Date().getTime() - callTimeMillis)
-            ) {
-              const backOffSettings =
-                options.gaxOptions?.retry?.backoffSettings ||
-                DEFAULT_BACKOFF_SETTINGS;
-              const nextRetryDelay = getNextDelay(
-                numConsecutiveErrors,
-                backOffSettings
-              );
-              metricsCollector.onAttemptComplete({
-                attemptStatus: error.code,
-                streamingOperation: true,
-              });
-              retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
+      if (lastRowKey) {
+        // Readjust and/or remove ranges based on previous valid row reads.
+        // Iterate backward since items may need to be removed.
+        for (let index = ranges.length - 1; index >= 0; index--) {
+          const range = ranges[index];
+          const startValue = is.object(range.start)
+            ? (range.start as BoundData).value
+            : range.start;
+          const endValue = is.object(range.end)
+            ? (range.end as BoundData).value
+            : range.end;
+          const startKeyIsRead =
+            !startValue ||
+            TableUtils.lessThanOrEqualTo(
+              startValue as string,
+              lastRowKey as string
+            );
+          const endKeyIsNotRead =
+            !endValue ||
+            (endValue as Buffer).length === 0 ||
+            TableUtils.lessThan(lastRowKey as string, endValue as string);
+          if (startKeyIsRead) {
+            if (endKeyIsNotRead) {
+              // EndKey is not read, reset the range to start from lastRowKey open
+              range.start = {
+                value: lastRowKey,
+                inclusive: false,
+              };
             } else {
-              if (
-                !error.code &&
-                error.message === 'The client has already been closed.'
-              ) {
-                //
-                // The TestReadRows_Generic_CloseClient conformance test requires
-                // a grpc code to be present when the client is closed. According
-                // to Gemini, the appropriate code for a closed client is
-                // CANCELLED since the user actually cancelled the call by closing
-                // the client.
-                //
-                error.code = grpc.status.CANCELLED;
-              }
-              metricsCollector.onAttemptComplete({
-                attemptStatus: error.code,
-                streamingOperation: true,
-              });
-              metricsCollector.onOperationComplete({
-                finalOperationStatus: error.code,
-                streamingOperation: true,
-              });
-              userStream.emit('error', error);
+              // EndKey is read, remove this range
+              ranges.splice(index, 1);
             }
-          })
-          .on('data', _ => {
-            // Reset error count after a successful read so the backoff
-            // time won't keep increasing when as stream had multiple errors
-            numConsecutiveErrors = 0;
-            metricsCollector.onResponse();
-          })
-          .on('end', () => {
-            numRequestsMade++;
-            activeRequestStream = null;
+          }
+        }
+
+        // Remove rowKeys already read.
+        rowKeys = rowKeys.filter(rowKey =>
+          TableUtils.greaterThan(rowKey, lastRowKey as string)
+        );
+
+        // If there was a row limit in the original request and
+        // we've already read all the rows, end the stream and
+        // do not retry.
+        if (hasLimit && rowsLimit === rowsRead) {
+          userStream.end();
+          return;
+        }
+        // If all the row keys and ranges are read, end the stream
+        // and do not retry.
+        if (rowKeys.length === 0 && ranges.length === 0) {
+          userStream.end();
+          return;
+        }
+      }
+
+      // Create the new reqOpts
+      reqOpts.rows = {};
+
+      // TODO: preprocess all the keys and ranges to Bytes
+      reqOpts.rows.rowKeys = rowKeys.map(
+        Mutation.convertToBytes
+      ) as {} as Uint8Array[];
+
+      reqOpts.rows.rowRanges = ranges.map(range =>
+        Filter.createRange(
+          range.start as BoundData,
+          range.end as BoundData,
+          'Key'
+        )
+      );
+
+      if (filter) {
+        reqOpts.filter = filter;
+      }
+
+      if (hasLimit) {
+        reqOpts.rowsLimit = rowsLimit - rowsRead;
+      }
+
+      const gaxOpts = populateAttemptHeader(
+        numRequestsMade,
+        options.gaxOptions
+      );
+
+      const requestStream = this.bigtable.request({
+        client: 'BigtableClient',
+        method: 'readRows',
+        reqOpts,
+        gaxOpts,
+        retryOpts,
+      });
+
+      activeRequestStream = requestStream!;
+
+      const toRowStream = new Transform({
+        transform: (rowData: ChunkPushData, _, next) => {
+          if (
+            userCanceled ||
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (userStream as any)._writableState.ended
+          ) {
+            return next();
+          }
+          if (
+            (rowData as ChunkPushLastScannedRowData).eventType ===
+            DataEvent.LAST_ROW_KEY_UPDATE
+          ) {
+            /**
+             * If the data is the chunk transformer communicating that the
+             * lastScannedRow was received then this message is passed along
+             * to the user stream to update the lastRowKey.
+             */
+            next(null, rowData);
+          } else {
+            /**
+             * If the data is just regular rows being pushed from the
+             * chunk transformer then the rows are encoded so that they
+             * can be consumed by the user stream.
+             */
+            const row = this.row((rowData as Row).key as string);
+            row.data = (rowData as Row).data;
+            next(null, row);
+          }
+        },
+        objectMode: true,
+      });
+
+      rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
+
+      // Retry on "received rst stream" errors
+      const isRstStreamError = (error: ServiceError): boolean => {
+        if (error.code === 13 && error.message) {
+          const error_message = (error.message || '').toLowerCase();
+          return (
+            error.code === 13 &&
+            (error_message.includes('rst_stream') ||
+              error_message.includes('rst stream'))
+          );
+        }
+        return false;
+      };
+
+      requestStream
+        .on(
+          'metadata',
+          (metadata: {internalRepr: Map<string, Buffer>; options: {}}) => {
+            console.log(`event metadata: ${this.bigtable.projectId}`);
+            metricsCollector.onMetadataReceived(metadata);
+          }
+        )
+        .on(
+          'status',
+          (status: {
+            metadata: {internalRepr: Map<string, Buffer>; options: {}};
+          }) => {
+            console.log(`event status: ${this.bigtable.projectId}`);
+            metricsCollector.onStatusReceived(status);
+          }
+        );
+      rowStream
+        .on('error', (error: ServiceError) => {
+          console.log(`event error: ${this.bigtable.projectId}`);
+          rowStreamUnpipe(rowStream, userStream);
+          activeRequestStream = null;
+          if (IGNORED_STATUS_CODES.has(error.code)) {
+            // We ignore the `cancelled` "error", since we are the ones who cause
+            // it when the user calls `.abort()`.
+            userStream.end();
+            return;
+          }
+          numConsecutiveErrors++;
+          numRequestsMade++;
+          if (
+            numConsecutiveErrors <= maxRetries &&
+            (RETRYABLE_STATUS_CODES.has(error.code) ||
+              isRstStreamError(error)) &&
+            !(timeout && timeout < new Date().getTime() - callTimeMillis)
+          ) {
+            const backOffSettings =
+              options.gaxOptions?.retry?.backoffSettings ||
+              DEFAULT_BACKOFF_SETTINGS;
+            const nextRetryDelay = getNextDelay(
+              numConsecutiveErrors,
+              backOffSettings
+            );
             metricsCollector.onAttemptComplete({
-              attemptStatus: 0, // Grpc OK status
+              attemptStatus: error.code,
+              streamingOperation: true,
+            });
+            retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
+          } else {
+            if (
+              !error.code &&
+              error.message === 'The client has already been closed.'
+            ) {
+              //
+              // The TestReadRows_Generic_CloseClient conformance test requires
+              // a grpc code to be present when the client is closed. According
+              // to Gemini, the appropriate code for a closed client is
+              // CANCELLED since the user actually cancelled the call by closing
+              // the client.
+              //
+              error.code = grpc.status.CANCELLED;
+            }
+            metricsCollector.onAttemptComplete({
+              attemptStatus: error.code,
               streamingOperation: true,
             });
             metricsCollector.onOperationComplete({
-              finalOperationStatus: 0, // Grpc OK status
+              finalOperationStatus: error.code,
               streamingOperation: true,
             });
+            userStream.emit('error', error);
+          }
+        })
+        .on('data', _ => {
+          console.log(`event data: ${this.bigtable.projectId}`);
+          // Reset error count after a successful read so the backoff
+          // time won't keep increasing when as stream had multiple errors
+          numConsecutiveErrors = 0;
+          metricsCollector.onResponse();
+        })
+        .on('end', () => {
+          console.log(`event end: ${this.bigtable.projectId}`);
+          numRequestsMade++;
+          activeRequestStream = null;
+          metricsCollector.onAttemptComplete({
+            attemptStatus: 0, // Grpc OK status
+            streamingOperation: true,
           });
-        rowStreamPipe(rowStream, userStream);
-      };
-      makeNewRequest();
-    });
+          metricsCollector.onOperationComplete({
+            finalOperationStatus: 0, // Grpc OK status
+            streamingOperation: true,
+          });
+        });
+      rowStreamPipe(rowStream, userStream);
+    };
+    makeNewRequest();
+    // });
     return userStream;
   }
 

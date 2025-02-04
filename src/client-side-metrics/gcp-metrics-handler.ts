@@ -66,6 +66,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    */
   private initialize(projectId?: string) {
     if (!this.initialized) {
+      console.log('initializing');
       this.initialized = true;
       const sumAggregation = Aggregation.Sum();
       const histogramAggregation = new ExplicitBucketHistogramAggregation([
@@ -94,15 +95,17 @@ export class GCPMetricsHandler implements IMetricsHandler {
         views: viewList,
         resource: new Resources.Resource({
           'service.name': 'bigtable-metrics',
+          'cloud.resource_manager.project_id': projectId,
         }).merge(new ResourceUtil.GcpDetectorSync().detect()),
         readers: [
           // Register the exporter
           new PeriodicExportingMetricReader({
             // Export metrics every 10 seconds. 5 seconds is the smallest sample period allowed by
             // Cloud Monitoring.
-            exportIntervalMillis: 100_000,
+            exportIntervalMillis: 10_000,
             exporter: new MetricExporter({
               projectId,
+              // apiEndpoint: 'bigtable.googleapis.com/internal/client/',
             }),
           }),
         ],
@@ -194,6 +197,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
     metrics: OnAttemptCompleteMetrics,
     attributes: OnAttemptCompleteAttributes
   ) {
+    console.log('onAttemptComplete handler');
     this.initialize();
     this.otelMetrics?.attemptLatencies.record(
       metrics.attemptLatency,
