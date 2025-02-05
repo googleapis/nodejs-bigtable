@@ -138,7 +138,6 @@ export class OperationMetricsCollector {
   private cluster: string | undefined;
   private tabularApiSurface: ITabularApiSurface;
   private methodName: MethodName;
-  private projectId?: string;
   private attemptCount = 0;
   private receivedFirstResponse: boolean;
   private metricsHandlers: IMetricsHandler[];
@@ -151,14 +150,12 @@ export class OperationMetricsCollector {
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
    * @param {IMetricsHandler[]} metricsHandlers The metrics handlers used for recording metrics.
    * @param {MethodName} methodName The name of the method being traced.
-   * @param {string} projectId The id of the project.
    * @param {DateProvider} dateProvider A provider for date/time information (for testing).
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
     metricsHandlers: IMetricsHandler[],
     methodName: MethodName,
-    projectId?: string,
     dateProvider?: DateProvider
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
@@ -173,7 +170,6 @@ export class OperationMetricsCollector {
     this.firstResponseLatency = null;
     this.serverTimeRead = false;
     this.serverTime = null;
-    this.projectId = projectId;
     if (dateProvider) {
       this.dateProvider = dateProvider;
     } else {
@@ -258,9 +254,10 @@ export class OperationMetricsCollector {
 
   /**
    * Called when an attempt (e.g., an RPC attempt) completes. Records attempt latencies.
+   * @param {string} projectId The id of the project.
    * @param {OnAttemptCompleteInfo} info Information about the completed attempt.
    */
-  onAttemptComplete(info: OnAttemptCompleteInfo) {
+  onAttemptComplete(projectId: string, info: OnAttemptCompleteInfo) {
     if (
       this.state === MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS
     ) {
@@ -268,7 +265,6 @@ export class OperationMetricsCollector {
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
       this.attemptCount++;
       const endTime = this.dateProvider.getDate();
-      const projectId = this.projectId;
       if (projectId && this.attemptStartTime) {
         const attributes = this.getAttemptAttributes(projectId, info);
         const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
@@ -310,11 +306,10 @@ export class OperationMetricsCollector {
   /**
    * Called when the first response is received. Records first response latencies.
    */
-  onResponse() {
+  onResponse(projectId: string) {
     if (!this.receivedFirstResponse) {
       this.receivedFirstResponse = true;
       const endTime = this.dateProvider.getDate();
-      const projectId = this.projectId;
       if (projectId && this.operationStartTime) {
         this.firstResponseLatency =
           endTime.getTime() - this.operationStartTime.getTime();
@@ -325,16 +320,16 @@ export class OperationMetricsCollector {
   /**
    * Called when an operation completes (successfully or unsuccessfully).
    * Records operation latencies, retry counts, and connectivity error counts.
+   * @param {string} projectId The id of the project.
    * @param {OperationOnlyAttributes} info Information about the completed operation.
    */
-  onOperationComplete(info: OperationOnlyAttributes) {
+  onOperationComplete(projectId: string, info: OperationOnlyAttributes) {
     if (
       this.state ===
       MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
     ) {
       this.state = MetricsCollectorState.OPERATION_COMPLETE;
       const endTime = this.dateProvider.getDate();
-      const projectId = this.projectId;
       if (projectId && this.operationStartTime) {
         const totalTime = endTime.getTime() - this.operationStartTime.getTime();
         {
@@ -365,12 +360,16 @@ export class OperationMetricsCollector {
 
   /**
    * Called when metadata is received. Extracts server timing information if available.
+   * @param {string} projectId The id of the project.
    * @param {object} metadata The received metadata.
    */
-  onMetadataReceived(metadata: {
-    internalRepr: Map<string, Buffer>;
-    options: {};
-  }) {
+  onMetadataReceived(
+    projectId: string,
+    metadata: {
+      internalRepr: Map<string, Buffer>;
+      options: {};
+    }
+  ) {
     const mappedEntries = new Map(
       Array.from(metadata.internalRepr.entries(), ([key, value]) => [
         key,
@@ -382,7 +381,6 @@ export class OperationMetricsCollector {
       if (!this.serverTimeRead) {
         this.serverTimeRead = true;
         const serverTime = parseInt(durationValues[1]);
-        const projectId = this.projectId;
         if (projectId) {
           this.serverTime = serverTime;
         }

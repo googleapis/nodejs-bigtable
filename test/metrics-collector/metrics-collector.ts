@@ -49,21 +49,11 @@ class Logger {
 
 /**
  * A fake implementation of the Bigtable client for testing purposes.  Provides a
- * metricsTracerFactory and a stubbed getProjectId_ method.
+ * metricsTracerFactory and a stubbed projectId method.
  */
 class FakeBigtable {
   appProfileId?: string;
-
-  /**
-   * A stubbed method that simulates retrieving the project ID.  Always returns
-   * 'my-project'.
-   * @param {function} callback A callback function that receives the project ID (or an error).
-   */
-  getProjectId_(
-    callback: (err: Error | null, projectId?: string) => void
-  ): void {
-    callback(null, 'my-project');
-  }
+  projectId = 'my-project';
 }
 
 /**
@@ -86,84 +76,91 @@ describe('Bigtable/MetricsCollector', () => {
       bigtable = new FakeBigtable();
 
       async fakeMethod(): Promise<void> {
-        return new Promise(resolve => {
-          this.bigtable.getProjectId_((err, projectId) => {
-            function createMetadata(duration: string) {
-              return {
-                internalRepr: new Map([
-                  ['server-timing', Buffer.from(`gfet4t7; dur=${duration}`)],
-                ]),
-                options: {},
-              };
-            }
-
-            const status = {
-              metadata: {
-                internalRepr: new Map([
-                  [
-                    'x-goog-ext-425905942-bin',
-                    Buffer.from('\n\nus-west1-c \rfake-cluster3'),
-                  ],
-                ]),
-                options: {},
-              },
-            };
-            const metricsCollector = new OperationMetricsCollector(
-              this,
-              metricsHandlers,
-              MethodName.READ_ROWS,
-              projectId,
-              new TestDateProvider(logger)
-            );
-            // In this method we simulate a series of events that might happen
-            // when a user calls one of the Table methods.
-            // Here is an example of what might happen in a method call:
-            logger.log('1. The operation starts');
-            metricsCollector.onOperationStart();
-            logger.log('2. The attempt starts.');
-            metricsCollector.onAttemptStart();
-            logger.log('3. Client receives status information.');
-            metricsCollector.onStatusReceived(status);
-            logger.log('4. Client receives metadata.');
-            metricsCollector.onMetadataReceived(createMetadata('101'));
-            logger.log('5. Client receives first row.');
-            metricsCollector.onResponse();
-            logger.log('6. Client receives metadata.');
-            metricsCollector.onMetadataReceived(createMetadata('102'));
-            logger.log('7. Client receives second row.');
-            metricsCollector.onResponse();
-            logger.log('8. A transient error occurs.');
-            metricsCollector.onAttemptComplete({
-              streamingOperation: StreamingState.STREAMING,
-              attemptStatus: grpc.status.DEADLINE_EXCEEDED,
-              connectivityErrorCount: 1,
-            });
-            logger.log('9. After a timeout, the second attempt is made.');
-            metricsCollector.onAttemptStart();
-            logger.log('10. Client receives status information.');
-            metricsCollector.onStatusReceived(status);
-            logger.log('11. Client receives metadata.');
-            metricsCollector.onMetadataReceived(createMetadata('103'));
-            logger.log('12. Client receives third row.');
-            metricsCollector.onResponse();
-            logger.log('13. Client receives metadata.');
-            metricsCollector.onMetadataReceived(createMetadata('104'));
-            logger.log('14. Client receives fourth row.');
-            metricsCollector.onResponse();
-            logger.log('15. User reads row 1');
-            logger.log('16. Stream ends, operation completes');
-            metricsCollector.onAttemptComplete({
-              attemptStatus: grpc.status.OK,
-              streamingOperation: StreamingState.STREAMING,
-              connectivityErrorCount: 1,
-            });
-            metricsCollector.onOperationComplete({
-              finalOperationStatus: grpc.status.OK,
-              streamingOperation: StreamingState.STREAMING,
-            });
-            resolve();
+        function createMetadata(duration: string) {
+          return {
+            internalRepr: new Map([
+              ['server-timing', Buffer.from(`gfet4t7; dur=${duration}`)],
+            ]),
+            options: {},
+          };
+        }
+        if (this.bigtable.projectId) {
+          const status = {
+            metadata: {
+              internalRepr: new Map([
+                [
+                  'x-goog-ext-425905942-bin',
+                  Buffer.from('\n\nus-west1-c \rfake-cluster3'),
+                ],
+              ]),
+              options: {},
+            },
+          };
+          const metricsCollector = new OperationMetricsCollector(
+            this,
+            metricsHandlers,
+            MethodName.READ_ROWS,
+            new TestDateProvider(logger)
+          );
+          // In this method we simulate a series of events that might happen
+          // when a user calls one of the Table methods.
+          // Here is an example of what might happen in a method call:
+          logger.log('1. The operation starts');
+          metricsCollector.onOperationStart();
+          logger.log('2. The attempt starts.');
+          metricsCollector.onAttemptStart();
+          logger.log('3. Client receives status information.');
+          metricsCollector.onStatusReceived(status);
+          logger.log('4. Client receives metadata.');
+          metricsCollector.onMetadataReceived(
+            this.bigtable.projectId,
+            createMetadata('101')
+          );
+          logger.log('5. Client receives first row.');
+          metricsCollector.onResponse(this.bigtable.projectId);
+          logger.log('6. Client receives metadata.');
+          metricsCollector.onMetadataReceived(
+            this.bigtable.projectId,
+            createMetadata('102')
+          );
+          logger.log('7. Client receives second row.');
+          metricsCollector.onResponse(this.bigtable.projectId);
+          logger.log('8. A transient error occurs.');
+          metricsCollector.onAttemptComplete(this.bigtable.projectId, {
+            streamingOperation: StreamingState.STREAMING,
+            attemptStatus: grpc.status.DEADLINE_EXCEEDED,
+            connectivityErrorCount: 1,
           });
-        });
+          logger.log('9. After a timeout, the second attempt is made.');
+          metricsCollector.onAttemptStart();
+          logger.log('10. Client receives status information.');
+          metricsCollector.onStatusReceived(status);
+          logger.log('11. Client receives metadata.');
+          metricsCollector.onMetadataReceived(
+            this.bigtable.projectId,
+            createMetadata('103')
+          );
+          logger.log('12. Client receives third row.');
+          metricsCollector.onResponse(this.bigtable.projectId);
+          logger.log('13. Client receives metadata.');
+          metricsCollector.onMetadataReceived(
+            this.bigtable.projectId,
+            createMetadata('104')
+          );
+          logger.log('14. Client receives fourth row.');
+          metricsCollector.onResponse(this.bigtable.projectId);
+          logger.log('15. User reads row 1');
+          logger.log('16. Stream ends, operation completes');
+          metricsCollector.onAttemptComplete(this.bigtable.projectId, {
+            attemptStatus: grpc.status.OK,
+            streamingOperation: StreamingState.STREAMING,
+            connectivityErrorCount: 1,
+          });
+          metricsCollector.onOperationComplete(this.bigtable.projectId, {
+            finalOperationStatus: grpc.status.OK,
+            streamingOperation: StreamingState.STREAMING,
+          });
+        }
       }
     }
     const table = new FakeTable();
