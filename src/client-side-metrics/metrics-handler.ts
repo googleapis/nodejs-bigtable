@@ -15,7 +15,7 @@
 import {
   OnAttemptCompleteAttributes,
   OnOperationCompleteAttributes,
-} from '../../common/client-side-metrics-attributes';
+} from './client-side-metrics-attributes';
 
 /**
  * The interfaces below use undefined instead of null to indicate a metric is

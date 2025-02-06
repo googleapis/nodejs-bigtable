@@ -21,7 +21,7 @@ import {OperationMetricsCollector} from '../../src/client-side-metrics/operation
 import {
   MethodName,
   StreamingState,
-} from '../../common/client-side-metrics-attributes';
+} from '../../src/client-side-metrics/client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 
 /**

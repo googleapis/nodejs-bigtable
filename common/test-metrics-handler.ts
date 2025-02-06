@@ -20,7 +20,7 @@ import {
 import {
   OnAttemptCompleteAttributes,
   OnOperationCompleteAttributes,
-} from './client-side-metrics-attributes';
+} from '../src/client-side-metrics/client-side-metrics-attributes';
 
 /**
  * A test implementation of the IMetricsHandler interface.  Used for testing purposes.

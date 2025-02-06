@@ -20,7 +20,7 @@ import {
   MethodName,
   OnOperationCompleteAttributes,
   StreamingState,
-} from '../../common/client-side-metrics-attributes';
+} from './client-side-metrics-attributes';
 
 /**
  * An interface representing a Date-like object.  Provides a `getTime` method
