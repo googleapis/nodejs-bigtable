@@ -25,7 +25,7 @@ getDate call returns 5000 ms
 getDate call returns 6000 ms
 Recording parameters for onAttemptComplete:
 metrics: {"attemptLatency":1000,"serverLatency":103,"connectivityErrorCount":1}
-attributes: {"attemptStatus":0,"streamingOperation":"streaming","connectivityErrorCount":1,"projectId":"my-project","instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c ","methodName":"readRows","clientName":"nodejs-bigtable"}
+attributes: {"streamingOperation":"streaming","attemptStatus":0,"connectivityErrorCount":1,"projectId":"my-project","instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c ","methodName":"readRows","clientName":"nodejs-bigtable"}
 getDate call returns 7000 ms
 Recording parameters for onOperationComplete:
 metrics: {"operationLatency":6000,"retryCount":1,"firstResponseLatency":2000}

@@ -177,66 +177,6 @@ export class OperationMetricsCollector {
   }
 
   /**
-   * Assembles the basic attributes for metrics. These attributes provide
-   * context about the Bigtable environment and the operation being performed.
-   * @param {string} projectId The Google Cloud project ID.
-   * @returns {Attributes} An object containing the basic attributes.
-   */
-  private getBasicAttributes(projectId: string) {
-    return {
-      projectId,
-      instanceId: this.tabularApiSurface.instance.id,
-      table: this.tabularApiSurface.id,
-      cluster: this.cluster,
-      zone: this.zone,
-      appProfileId: this.tabularApiSurface.bigtable.appProfileId,
-      methodName: this.methodName,
-      clientName: `nodejs-bigtable/${version}`,
-    };
-  }
-
-  /**
-   * Assembles the attributes for an entire operation.  These attributes
-   * provide context about the Bigtable environment, the operation being
-   * performed, and the final status of the operation. Includes whether the
-   * operation was a streaming operation or not.
-   *
-   * @param {string} projectId The Google Cloud project ID.
-   * @param {OperationOnlyAttributes} operationOnlyAttributes The attributes of the operation.
-   * @returns {OnOperationCompleteAttributes} An object containing the attributes
-   * for operation latency metrics.
-   */
-  private getOperationAttributes(
-    projectId: string,
-    operationOnlyAttributes: OperationOnlyAttributes
-  ): OnOperationCompleteAttributes {
-    return Object.assign(
-      operationOnlyAttributes,
-      this.getBasicAttributes(projectId)
-    );
-  }
-
-  /**
-   * Assembles the attributes for attempt metrics. These attributes provide context
-   * about the Bigtable environment, the operation being performed, the status
-   * of the attempt and whether the operation was a streaming operation or not.
-   *
-   * @param {string} projectId The Google Cloud project ID.
-   * @param {AttemptOnlyAttributes} attemptOnlyAttributes The attributes of the attempt.
-   * @returns {OnAttemptCompleteAttributes} The attributes all metrics recorded
-   * in the onAttemptComplete handler.
-   */
-  private getAttemptAttributes(
-    projectId: string,
-    attemptOnlyAttributes: AttemptOnlyAttributes
-  ) {
-    return Object.assign(
-      attemptOnlyAttributes,
-      this.getBasicAttributes(projectId)
-    );
-  }
-
-  /**
    * Called when the operation starts. Records the start time.
    */
   onOperationStart() {
@@ -265,7 +205,19 @@ export class OperationMetricsCollector {
       this.attemptCount++;
       const endTime = this.dateProvider.getDate();
       if (projectId && this.attemptStartTime) {
-        const attributes = this.getAttemptAttributes(projectId, info);
+        const attributes = {
+          streamingOperation: info.streamingOperation,
+          attemptStatus: info.attemptStatus,
+          connectivityErrorCount: info.connectivityErrorCount,
+          projectId,
+          instanceId: this.tabularApiSurface.instance.id,
+          table: this.tabularApiSurface.id,
+          cluster: this.cluster,
+          zone: this.zone,
+          appProfileId: this.tabularApiSurface.bigtable.appProfileId,
+          methodName: this.methodName,
+          clientName: `nodejs-bigtable/${version}`,
+        };
         const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
         this.metricsHandlers.forEach(metricsHandler => {
           if (metricsHandler.onAttemptComplete) {
@@ -332,11 +284,18 @@ export class OperationMetricsCollector {
       if (projectId && this.operationStartTime) {
         const totalTime = endTime.getTime() - this.operationStartTime.getTime();
         {
-          // This block records operation latency metrics.
-          const operationAttributes = this.getOperationAttributes(
+          const operationAttributes = {
+            finalOperationStatus: info.finalOperationStatus,
+            streamingOperation: info.streamingOperation,
             projectId,
-            info
-          );
+            instanceId: this.tabularApiSurface.instance.id,
+            table: this.tabularApiSurface.id,
+            cluster: this.cluster,
+            zone: this.zone,
+            appProfileId: this.tabularApiSurface.bigtable.appProfileId,
+            methodName: this.methodName,
+            clientName: `nodejs-bigtable/${version}`,
+          };
           const metrics = {
             operationLatency: totalTime,
             retryCount: this.attemptCount - 1,
@@ -344,10 +303,7 @@ export class OperationMetricsCollector {
           };
           this.metricsHandlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
-              metricsHandler.onOperationComplete(
-                metrics,
-                operationAttributes
-              );
+              metricsHandler.onOperationComplete(metrics, operationAttributes);
             }
           });
         }
