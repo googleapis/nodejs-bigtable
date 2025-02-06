@@ -333,7 +333,7 @@ export class OperationMetricsCollector {
         const totalTime = endTime.getTime() - this.operationStartTime.getTime();
         {
           // This block records operation latency metrics.
-          const operationLatencyAttributes = this.getOperationAttributes(
+          const operationAttributes = this.getOperationAttributes(
             projectId,
             info
           );
@@ -346,7 +346,7 @@ export class OperationMetricsCollector {
             if (metricsHandler.onOperationComplete) {
               metricsHandler.onOperationComplete(
                 metrics,
-                operationLatencyAttributes
+                operationAttributes
               );
             }
           });
