@@ -39,7 +39,7 @@ export enum StreamingState {
  * These attributes provide context about the Bigtable environment and the completed operation.
  */
 interface OperationLatencyAttributes extends StandardAttributes {
-  finalOperationStatus: FinalOperationStatus;
+  finalOperationStatus: grpc.status;
   streamingOperation: StreamingState;
 }
 
@@ -48,7 +48,7 @@ interface OperationLatencyAttributes extends StandardAttributes {
  * These attributes provide context about the Bigtable environment, the specific attempt, and whether the operation was streaming.
  */
 interface AttemptLatencyAttributes extends StandardAttributes {
-  attemptStatus: AttemptStatus;
+  attemptStatus: grpc.status;
   streamingOperation: StreamingState;
 }
 
@@ -57,7 +57,7 @@ interface AttemptLatencyAttributes extends StandardAttributes {
  * provide context about the Bigtable environment and the final status of the operation.
  */
 interface RetryCountAttributes extends StandardAttributes {
-  finalOperationStatus: FinalOperationStatus;
+  finalOperationStatus: grpc.status;
 }
 
 /**
@@ -71,7 +71,7 @@ type ApplicationBlockingLatenciesAttributes = StandardAttributes;
  * These attributes provide context about the Bigtable environment and the final status of the operation.
  */
 interface FirstResponseLatencyAttributes extends StandardAttributes {
-  finalOperationStatus: FinalOperationStatus;
+  finalOperationStatus: grpc.status;
 }
 
 /**
@@ -79,7 +79,7 @@ interface FirstResponseLatencyAttributes extends StandardAttributes {
  * These attributes provide context about the Bigtable environment, the specific attempt, and whether the operation was streaming.
  */
 interface ServerLatenciesAttributes extends StandardAttributes {
-  attemptStatus: AttemptStatus;
+  attemptStatus: grpc.status;
   streamingOperation: StreamingState;
 }
 
@@ -88,7 +88,7 @@ interface ServerLatenciesAttributes extends StandardAttributes {
  * These attributes provide context about the Bigtable environment and the status of the attempt.
  */
 interface ConnectivityErrorCountAttributes extends StandardAttributes {
-  attemptStatus: AttemptStatus;
+  attemptStatus: grpc.status;
 }
 
 /**
@@ -96,21 +96,6 @@ interface ConnectivityErrorCountAttributes extends StandardAttributes {
  * These attributes provide context about the Bigtable environment and the operation being performed.
  */
 type ClientBlockingLatenciesAttributes = StandardAttributes;
-
-/**
- * The final status of a Bigtable operation.  This represents the ultimate result
- * of the operation, regardless of individual attempt statuses. It's represented
- * as a gRPC status code.  See the `google-gax` library's documentation on
- * gRPC status codes for more information on specific values.
- */
-export type FinalOperationStatus = grpc.status;
-
-/**
- * The status of a single attempt of a Bigtable operation. This is represented as a
- * gRPC status code. See the `google-gax` library's documentation on gRPC status
- * codes for more information on specific values.
- */
-export type AttemptStatus = grpc.status;
 
 /**
  * Attributes associated with the completion of a Bigtable operation. These

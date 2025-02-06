@@ -15,12 +15,11 @@
 import * as fs from 'fs';
 import {IMetricsHandler} from './metrics-handler';
 import {
-  AttemptStatus,
-  FinalOperationStatus,
   MethodName,
   OnOperationCompleteAttributes,
   StreamingState,
 } from './client-side-metrics-attributes';
+import {grpc} from 'google-gax';
 
 /**
  * An interface representing a Date-like object.  Provides a `getTime` method
@@ -85,7 +84,7 @@ interface OnAttemptCompleteInfo {
   /**
    * The attempt status of the operation.
    */
-  attemptStatus: AttemptStatus;
+  attemptStatus: grpc.status;
 }
 
 /**
@@ -94,7 +93,7 @@ interface OnAttemptCompleteInfo {
  * part of a streaming operation.
  */
 interface AttemptOnlyAttributes {
-  attemptStatus: AttemptStatus;
+  attemptStatus: grpc.status;
   streamingOperation: StreamingState;
 }
 
@@ -102,7 +101,7 @@ interface AttemptOnlyAttributes {
  * Information about a Bigtable operation to be recorded in client side metrics.
  */
 interface OperationOnlyAttributes {
-  finalOperationStatus: FinalOperationStatus;
+  finalOperationStatus: grpc.status;
   streamingOperation: StreamingState;
 }
 
