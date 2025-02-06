@@ -25,7 +25,7 @@ interface StandardAttributes {
   cluster?: string;
   zone?: string;
   appProfileId?: string;
-  methodName: string;
+  methodName: MethodName;
   clientName: string;
 }
 
