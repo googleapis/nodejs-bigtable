@@ -25,29 +25,6 @@ import {
 import {grpc} from 'google-gax';
 
 /**
- * A basic logger class that stores log messages in an array. Useful for testing.
- */
-class Logger {
-  private messages: string[] = [];
-
-  /**
-   * Logs a message by adding it to the internal message array.
-   * @param {string} message The message to be logged.
-   */
-  log(message: string) {
-    this.messages.push(message);
-  }
-
-  /**
-   * Retrieves all logged messages.
-   * @returns {string[]} An array of logged messages.
-   */
-  getMessages() {
-    return this.messages;
-  }
-}
-
-/**
  * A fake implementation of the Bigtable client for testing purposes.  Provides a
  * metricsTracerFactory and a stubbed projectId method.
  */
