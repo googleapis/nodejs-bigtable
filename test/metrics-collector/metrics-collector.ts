@@ -66,9 +66,9 @@ class FakeInstance {
   id = 'fakeInstanceId';
 }
 
-describe('Bigtable/MetricsCollector', () => {
+describe.only('Bigtable/MetricsCollector', () => {
   it('should record the right metrics with a typical method call', async () => {
-    const logger = new Logger();
+    const logger = {value: ''};
     const metricsHandlers = [new TestMetricsHandler(logger)];
     class FakeTable {
       id = 'fakeTableId';
@@ -105,52 +105,52 @@ describe('Bigtable/MetricsCollector', () => {
           // In this method we simulate a series of events that might happen
           // when a user calls one of the Table methods.
           // Here is an example of what might happen in a method call:
-          logger.log('1. The operation starts');
+          logger.value += '1. The operation starts\n';
           metricsCollector.onOperationStart();
-          logger.log('2. The attempt starts.');
+          logger.value += '2. The attempt starts.\n';
           metricsCollector.onAttemptStart();
-          logger.log('3. Client receives status information.');
+          logger.value += '3. Client receives status information.\n';
           metricsCollector.onStatusReceived(status);
-          logger.log('4. Client receives metadata.');
+          logger.value += '4. Client receives metadata.\n';
           metricsCollector.onMetadataReceived(
             this.bigtable.projectId,
             createMetadata('101')
           );
-          logger.log('5. Client receives first row.');
+          logger.value += '5. Client receives first row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
-          logger.log('6. Client receives metadata.');
+          logger.value += '6. Client receives metadata.\n';
           metricsCollector.onMetadataReceived(
             this.bigtable.projectId,
             createMetadata('102')
           );
-          logger.log('7. Client receives second row.');
+          logger.value += '7. Client receives second row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
-          logger.log('8. A transient error occurs.');
+          logger.value += '8. A transient error occurs.\n';
           metricsCollector.onAttemptComplete(this.bigtable.projectId, {
             streamingOperation: StreamingState.STREAMING,
             attemptStatus: grpc.status.DEADLINE_EXCEEDED,
             connectivityErrorCount: 1,
           });
-          logger.log('9. After a timeout, the second attempt is made.');
+          logger.value += '9. After a timeout, the second attempt is made.\n';
           metricsCollector.onAttemptStart();
-          logger.log('10. Client receives status information.');
+          logger.value += '10. Client receives status information.\n';
           metricsCollector.onStatusReceived(status);
-          logger.log('11. Client receives metadata.');
+          logger.value += '11. Client receives metadata.\n';
           metricsCollector.onMetadataReceived(
             this.bigtable.projectId,
             createMetadata('103')
           );
-          logger.log('12. Client receives third row.');
+          logger.value += '12. Client receives third row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
-          logger.log('13. Client receives metadata.');
+          logger.value += '13. Client receives metadata.\n';
           metricsCollector.onMetadataReceived(
             this.bigtable.projectId,
             createMetadata('104')
           );
-          logger.log('14. Client receives fourth row.');
+          logger.value += '14. Client receives fourth row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
-          logger.log('15. User reads row 1');
-          logger.log('16. Stream ends, operation completes');
+          logger.value += '15. User reads row 1\n';
+          logger.value += '16. Stream ends, operation completes\n';
           metricsCollector.onAttemptComplete(this.bigtable.projectId, {
             attemptStatus: grpc.status.OK,
             streamingOperation: StreamingState.STREAMING,
@@ -170,9 +170,6 @@ describe('Bigtable/MetricsCollector', () => {
       'utf8'
     );
     // Ensure events occurred in the right order here:
-    assert.strictEqual(
-      logger.getMessages().join('\n') + '\n',
-      expectedOutput.replace(/\r/g, '')
-    );
+    assert.strictEqual(logger.value, expectedOutput.replace(/\r/g, ''));
   });
 });

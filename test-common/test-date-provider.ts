@@ -41,8 +41,13 @@ class TestDateLike {
  * a deterministic series of fake dates, with each call to getDate() returning a date 1000ms later than the last.
  * Logs each date value returned for verification purposes.
  */
-export class TestDateProvider extends WithLogger {
+export class TestDateProvider {
   private dateCounter = 0;
+  private messages: {value: string};
+
+  constructor(messages: {value: string}) {
+    this.messages = messages;
+  }
   /**
    * Returns a new fake date 1000ms later than the last. Logs the date for test verification.
    * @returns {TestDateLike} A fake date object.
@@ -50,7 +55,7 @@ export class TestDateProvider extends WithLogger {
   getDate() {
     // The test assumes exactly 1s passes between each getDate call.
     this.dateCounter = this.dateCounter + 1000;
-    this.logger.log(`getDate call returns ${this.dateCounter.toString()} ms`);
+    this.messages.value += `getDate call returns ${this.dateCounter.toString()} ms\n`;
     return new TestDateLike(this.dateCounter);
   }
 }

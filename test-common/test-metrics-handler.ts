@@ -26,7 +26,12 @@ import {
  * A test implementation of the IMetricsHandler interface.  Used for testing purposes.
  * It logs the metrics and attributes received by the onOperationComplete and onAttemptComplete methods.
  */
-export class TestMetricsHandler extends WithLogger {
+export class TestMetricsHandler {
+  private messages: {value: string};
+
+  constructor(messages: {value: string}) {
+    this.messages = messages;
+  }
   /**
    * Logs the metrics and attributes received for an operation completion.
    * @param {OnOperationCompleteMetrics} metrics Metrics related to the completed operation.
@@ -37,9 +42,9 @@ export class TestMetricsHandler extends WithLogger {
     attributes: OnOperationCompleteAttributes
   ) {
     attributes.clientName = 'nodejs-bigtable';
-    this.logger.log('Recording parameters for onOperationComplete:');
-    this.logger.log(`metrics: ${JSON.stringify(metrics)}`);
-    this.logger.log(`attributes: ${JSON.stringify(attributes)}`);
+    this.messages.value += 'Recording parameters for onOperationComplete:\n';
+    this.messages.value += `metrics: ${JSON.stringify(metrics)}\n`;
+    this.messages.value += `attributes: ${JSON.stringify(attributes)}\n`;
   }
 
   /**
@@ -52,8 +57,8 @@ export class TestMetricsHandler extends WithLogger {
     attributes: OnAttemptCompleteAttributes
   ) {
     attributes.clientName = 'nodejs-bigtable';
-    this.logger.log('Recording parameters for onAttemptComplete:');
-    this.logger.log(`metrics: ${JSON.stringify(metrics)}`);
-    this.logger.log(`attributes: ${JSON.stringify(attributes)}`);
+    this.messages.value += 'Recording parameters for onAttemptComplete:\n';
+    this.messages.value += `metrics: ${JSON.stringify(metrics)}\n`;
+    this.messages.value += `attributes: ${JSON.stringify(attributes)}\n`;
   }
 }
