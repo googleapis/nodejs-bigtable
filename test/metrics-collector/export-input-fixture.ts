@@ -15,17 +15,25 @@
 export const exportInput = {
   resource: {
     _attributes: {
-      'service.name': 'bigtable-metrics',
+      'service.name': 'Cloud Bigtable Table',
       'telemetry.sdk.language': 'nodejs',
       'telemetry.sdk.name': 'opentelemetry',
       'telemetry.sdk.version': '1.30.0',
+      'cloud.provider': 'gcp',
+      'cloud.platform': 'gce_instance',
+      'cloud.resource_manager.project_id': 'some-project',
+      'monitored_resource.type': 'bigtable_client_raw',
     },
     asyncAttributesPending: false,
     _syncAttributes: {
-      'service.name': 'bigtable-metrics',
+      'service.name': 'Cloud Bigtable Table',
       'telemetry.sdk.language': 'nodejs',
       'telemetry.sdk.name': 'opentelemetry',
       'telemetry.sdk.version': '1.30.0',
+      'cloud.provider': 'gcp',
+      'cloud.platform': 'gce_instance',
+      'cloud.resource_manager.project_id': 'some-project',
+      'monitored_resource.type': 'bigtable_client_raw',
     },
     _asyncAttributesPromise: {},
   },
@@ -36,38 +44,6 @@ export const exportInput = {
         version: '',
       },
       metrics: [
-        {
-          descriptor: {
-            name: 'operation_latencies',
-            description:
-              "The total end-to-end latency across all RPC attempts associated with a Bigtable operation. This metric measures an operation's round trip from the client to Bigtable and back to the client and includes all retries.",
-            type: 'HISTOGRAM',
-            unit: '',
-            valueType: 1,
-            advice: {},
-          },
-          aggregationTemporality: 1,
-          dataPointType: 3,
-          dataPoints: [
-            {
-              attributes: {
-                finalOperationStatus: 0,
-                streamingOperation: true,
-                projectId: 'some-project',
-                instanceId: 'emulator-test-instance',
-                table: 'my-table',
-                cluster: 'fake-cluster3',
-                zone: 'us-west1-c\u0012',
-                methodName: 'readRows',
-                clientName: 'nodejs-bigtable/5.1.2',
-              },
-              startTime: [1738943373, 943000000],
-              endTime: [1738943383, 940000000],
-              value: 11956,
-            },
-          ],
-          isMonotonic: true,
-        },
         {
           descriptor: {
             name: 'attempt_latencies',
@@ -93,25 +69,25 @@ export const exportInput = {
                 methodName: 'readRows',
                 clientName: 'nodejs-bigtable/5.1.2',
               },
-              startTime: [1738943373, 942000000],
-              endTime: [1738943383, 940000000],
-              value: 11830,
+              startTime: [1738946024, 950000000],
+              endTime: [1738946034, 948000000],
+              value: 10944,
             },
           ],
           isMonotonic: true,
         },
         {
           descriptor: {
-            name: 'retry_count',
-            description:
-              'A counter that records the number of attempts that an operation required to complete. Under normal circumstances, this value is empty.',
+            name: 'bigtable.googleapis.com/internal/client/operation_latencies',
             type: 'HISTOGRAM',
-            unit: 'ms',
+            description:
+              "The total end-to-end latency across all RPC attempts associated with a Bigtable operation. This metric measures an operation's round trip from the client to Bigtable and back to the client and includes all retries.",
+            unit: '',
             valueType: 1,
             advice: {},
           },
           aggregationTemporality: 1,
-          dataPointType: 3,
+          dataPointType: 0,
           dataPoints: [
             {
               attributes: {
@@ -125,25 +101,79 @@ export const exportInput = {
                 methodName: 'readRows',
                 clientName: 'nodejs-bigtable/5.1.2',
               },
-              startTime: [1738943373, 943000000],
-              endTime: [1738943383, 940000000],
-              value: 0,
+              startTime: [1738946024, 950000000],
+              endTime: [1738946034, 948000000],
+              value: {
+                min: 76,
+                max: 1337,
+                sum: 11027,
+                buckets: {
+                  boundaries: [
+                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
+                    7500, 10000,
+                  ],
+                  counts: [0, 0, 0, 0, 0, 0, 93, 0, 5, 0, 0, 1, 0, 0, 0, 0],
+                },
+                count: 99,
+              },
             },
           ],
-          isMonotonic: true,
         },
         {
           descriptor: {
-            name: 'server_latencies',
+            name: 'bigtable.googleapis.com/internal/client/retry_count',
+            type: 'HISTOGRAM',
+            description:
+              'A counter that records the number of attempts that an operation required to complete. Under normal circumstances, this value is empty.',
+            unit: 'ms',
+            valueType: 1,
+            advice: {},
+          },
+          aggregationTemporality: 1,
+          dataPointType: 0,
+          dataPoints: [
+            {
+              attributes: {
+                finalOperationStatus: 0,
+                streamingOperation: true,
+                projectId: 'some-project',
+                instanceId: 'emulator-test-instance',
+                table: 'my-table',
+                cluster: 'fake-cluster3',
+                zone: 'us-west1-c\u0012',
+                methodName: 'readRows',
+                clientName: 'nodejs-bigtable/5.1.2',
+              },
+              startTime: [1738946024, 951000000],
+              endTime: [1738946034, 948000000],
+              value: {
+                min: 0,
+                max: 0,
+                sum: 0,
+                buckets: {
+                  boundaries: [
+                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
+                    7500, 10000,
+                  ],
+                  counts: [99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                },
+                count: 99,
+              },
+            },
+          ],
+        },
+        {
+          descriptor: {
+            name: 'bigtable.googleapis.com/internal/client/server_latencies',
+            type: 'HISTOGRAM',
             description:
               'Latencies between the time when the Google frontend receives an RPC and when it sends the first byte of the response.',
-            type: 'HISTOGRAM',
             unit: '',
             valueType: 1,
             advice: {},
           },
           aggregationTemporality: 1,
-          dataPointType: 3,
+          dataPointType: 0,
           dataPoints: [
             {
               attributes: {
@@ -157,25 +187,36 @@ export const exportInput = {
                 methodName: 'readRows',
                 clientName: 'nodejs-bigtable/5.1.2',
               },
-              startTime: [1738943373, 943000000],
-              endTime: [1738943383, 940000000],
-              value: 7642,
+              startTime: [1738946024, 950000000],
+              endTime: [1738946034, 948000000],
+              value: {
+                min: 57,
+                max: 379,
+                sum: 7271,
+                buckets: {
+                  boundaries: [
+                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
+                    7500, 10000,
+                  ],
+                  counts: [0, 0, 0, 0, 0, 94, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0],
+                },
+                count: 99,
+              },
             },
           ],
-          isMonotonic: true,
         },
         {
           descriptor: {
-            name: 'connectivity_error_count',
+            name: 'bigtable.googleapis.com/internal/client/connectivity_error_count',
+            type: 'HISTOGRAM',
             description:
               "The number of requests that failed to reach Google's network. In normal cases, this number is 0. When the number is not 0, it can indicate connectivity issues between the application and the Google network.",
-            type: 'HISTOGRAM',
             unit: '',
             valueType: 1,
             advice: {},
           },
           aggregationTemporality: 1,
-          dataPointType: 3,
+          dataPointType: 0,
           dataPoints: [
             {
               attributes: {
@@ -189,12 +230,23 @@ export const exportInput = {
                 methodName: 'readRows',
                 clientName: 'nodejs-bigtable/5.1.2',
               },
-              startTime: [1738943373, 943000000],
-              endTime: [1738943383, 940000000],
-              value: 0,
+              startTime: [1738946024, 950000000],
+              endTime: [1738946034, 948000000],
+              value: {
+                min: 0,
+                max: 0,
+                sum: 0,
+                buckets: {
+                  boundaries: [
+                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
+                    7500, 10000,
+                  ],
+                  counts: [99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                },
+                count: 99,
+              },
             },
           ],
-          isMonotonic: true,
         },
       ],
     },
