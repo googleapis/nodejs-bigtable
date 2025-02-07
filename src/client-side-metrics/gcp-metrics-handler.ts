@@ -23,7 +23,7 @@ import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-expor
 import {
   OnAttemptCompleteAttributes,
   OnOperationCompleteAttributes,
-} from '../../common/client-side-metrics-attributes';
+} from './client-side-metrics-attributes';
 import {View} from '@opentelemetry/sdk-metrics';
 const {
   Aggregation,

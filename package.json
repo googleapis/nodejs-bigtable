@@ -47,6 +47,7 @@
     "precompile": "gts clean"
   },
   "dependencies": {
+    "@google-cloud/monitoring": "^4.1.0",
     "@google-cloud/opentelemetry-cloud-monitoring-exporter": "^0.20.0",
     "@google-cloud/opentelemetry-resource-util": "^2.4.0",
     "@google-cloud/precise-date": "^4.0.0",
