@@ -112,6 +112,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
         operationLatencies: meter.createHistogram('operation_latencies', {
           description:
             "The total end-to-end latency across all RPC attempts associated with a Bigtable operation. This metric measures an operation's round trip from the client to Bigtable and back to the client and includes all retries.",
+          unit: 'ms',
         }),
         attemptLatencies: meter.createHistogram('attempt_latencies', {
           description:
@@ -141,6 +142,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
         serverLatencies: meter.createHistogram('server_latencies', {
           description:
             'Latencies between the time when the Google frontend receives an RPC and when it sends the first byte of the response.',
+          unit: 'ms',
         }),
         connectivityErrorCount: meter.createHistogram(
           'connectivity_error_count',
