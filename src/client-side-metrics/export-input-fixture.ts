@@ -1,0 +1,202 @@
+// Copyright 2025 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+export const exportInput = {
+  resource: {
+    _attributes: {
+      'service.name': 'bigtable-metrics',
+      'telemetry.sdk.language': 'nodejs',
+      'telemetry.sdk.name': 'opentelemetry',
+      'telemetry.sdk.version': '1.30.0',
+    },
+    asyncAttributesPending: false,
+    _syncAttributes: {
+      'service.name': 'bigtable-metrics',
+      'telemetry.sdk.language': 'nodejs',
+      'telemetry.sdk.name': 'opentelemetry',
+      'telemetry.sdk.version': '1.30.0',
+    },
+    _asyncAttributesPromise: {},
+  },
+  scopeMetrics: [
+    {
+      scope: {
+        name: 'bigtable.googleapis.com',
+        version: '',
+      },
+      metrics: [
+        {
+          descriptor: {
+            name: 'operation_latencies',
+            description:
+              "The total end-to-end latency across all RPC attempts associated with a Bigtable operation. This metric measures an operation's round trip from the client to Bigtable and back to the client and includes all retries.",
+            type: 'HISTOGRAM',
+            unit: '',
+            valueType: 1,
+            advice: {},
+          },
+          aggregationTemporality: 1,
+          dataPointType: 3,
+          dataPoints: [
+            {
+              attributes: {
+                finalOperationStatus: 0,
+                streamingOperation: true,
+                projectId: 'some-project',
+                instanceId: 'emulator-test-instance',
+                table: 'my-table',
+                cluster: 'fake-cluster3',
+                zone: 'us-west1-c\u0012',
+                methodName: 'readRows',
+                clientName: 'nodejs-bigtable/5.1.2',
+              },
+              startTime: [1738943373, 943000000],
+              endTime: [1738943383, 940000000],
+              value: 11956,
+            },
+          ],
+          isMonotonic: true,
+        },
+        {
+          descriptor: {
+            name: 'attempt_latencies',
+            description:
+              'The latencies of a client RPC attempt. Under normal circumstances, this value is identical to operation_latencies. If the client receives transient errors, however, then operation_latencies is the sum of all attempt_latencies and the exponential delays.',
+            type: 'HISTOGRAM',
+            unit: 'ms',
+            valueType: 1,
+            advice: {},
+          },
+          aggregationTemporality: 1,
+          dataPointType: 3,
+          dataPoints: [
+            {
+              attributes: {
+                attemptStatus: 0,
+                streamingOperation: true,
+                projectId: 'some-project',
+                instanceId: 'emulator-test-instance',
+                table: 'my-table',
+                cluster: 'fake-cluster3',
+                zone: 'us-west1-c\u0012',
+                methodName: 'readRows',
+                clientName: 'nodejs-bigtable/5.1.2',
+              },
+              startTime: [1738943373, 942000000],
+              endTime: [1738943383, 940000000],
+              value: 11830,
+            },
+          ],
+          isMonotonic: true,
+        },
+        {
+          descriptor: {
+            name: 'retry_count',
+            description:
+              'A counter that records the number of attempts that an operation required to complete. Under normal circumstances, this value is empty.',
+            type: 'HISTOGRAM',
+            unit: 'ms',
+            valueType: 1,
+            advice: {},
+          },
+          aggregationTemporality: 1,
+          dataPointType: 3,
+          dataPoints: [
+            {
+              attributes: {
+                finalOperationStatus: 0,
+                streamingOperation: true,
+                projectId: 'some-project',
+                instanceId: 'emulator-test-instance',
+                table: 'my-table',
+                cluster: 'fake-cluster3',
+                zone: 'us-west1-c\u0012',
+                methodName: 'readRows',
+                clientName: 'nodejs-bigtable/5.1.2',
+              },
+              startTime: [1738943373, 943000000],
+              endTime: [1738943383, 940000000],
+              value: 0,
+            },
+          ],
+          isMonotonic: true,
+        },
+        {
+          descriptor: {
+            name: 'server_latencies',
+            description:
+              'Latencies between the time when the Google frontend receives an RPC and when it sends the first byte of the response.',
+            type: 'HISTOGRAM',
+            unit: '',
+            valueType: 1,
+            advice: {},
+          },
+          aggregationTemporality: 1,
+          dataPointType: 3,
+          dataPoints: [
+            {
+              attributes: {
+                attemptStatus: 0,
+                streamingOperation: true,
+                projectId: 'some-project',
+                instanceId: 'emulator-test-instance',
+                table: 'my-table',
+                cluster: 'fake-cluster3',
+                zone: 'us-west1-c\u0012',
+                methodName: 'readRows',
+                clientName: 'nodejs-bigtable/5.1.2',
+              },
+              startTime: [1738943373, 943000000],
+              endTime: [1738943383, 940000000],
+              value: 7642,
+            },
+          ],
+          isMonotonic: true,
+        },
+        {
+          descriptor: {
+            name: 'connectivity_error_count',
+            description:
+              "The number of requests that failed to reach Google's network. In normal cases, this number is 0. When the number is not 0, it can indicate connectivity issues between the application and the Google network.",
+            type: 'HISTOGRAM',
+            unit: '',
+            valueType: 1,
+            advice: {},
+          },
+          aggregationTemporality: 1,
+          dataPointType: 3,
+          dataPoints: [
+            {
+              attributes: {
+                attemptStatus: 0,
+                streamingOperation: true,
+                projectId: 'some-project',
+                instanceId: 'emulator-test-instance',
+                table: 'my-table',
+                cluster: 'fake-cluster3',
+                zone: 'us-west1-c\u0012',
+                methodName: 'readRows',
+                clientName: 'nodejs-bigtable/5.1.2',
+              },
+              startTime: [1738943373, 943000000],
+              endTime: [1738943383, 940000000],
+              value: 0,
+            },
+          ],
+          isMonotonic: true,
+        },
+      ],
+    },
+  ],
+};
