@@ -16,13 +16,15 @@ import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-expor
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import {ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
+import {google} from '@google-cloud/monitoring/build/protos/protos';
+import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
 
 interface ExportResult {
   code: number;
 }
 
 // TODO: Only involves the values that we care about
-interface ExportInput {
+export interface ExportInput {
   resource: {
     _attributes: {
       'cloud.resource_manager.project_id': string;
@@ -31,52 +33,54 @@ interface ExportInput {
       'monitored_resource.type': string;
     };
   };
-  scopeMetrics: [
-    {
-      metrics: [
-        {
-          descriptor: {
-            name: string;
-            unit: string;
+  scopeMetrics: {
+    scope: {
+      name: string;
+      version: string;
+    };
+    metrics: {
+      descriptor: {
+        name: string;
+        unit: string;
+        description?: string;
+        type?: string;
+        valueType?: number;
+        advice?: {};
+      };
+      aggregationTemporality?: number;
+      dataPointType?: number;
+      dataPoints: {
+        attributes: {
+          appProfileId?: string;
+          finalOperationStatus: number;
+          streamingOperation: string;
+          projectId: string;
+          instanceId: string;
+          table: string;
+          cluster: string;
+          zone: string;
+          methodName: string;
+          clientName: string;
+        };
+        startTime: number[];
+        endTime: number[];
+        value: {
+          min?: number;
+          max?: number;
+          sum: number;
+          count: number;
+          buckets: {
+            boundaries: number[];
+            counts: number[];
           };
-          dataPoints: [
-            {
-              attributes: {
-                appProfileId: string;
-                finalOperationStatus: number;
-                streamingOperation: string;
-                projectId: string;
-                instanceId: string;
-                table: string;
-                cluster: string;
-                zone: string;
-                methodName: string;
-                clientName: string;
-              };
-              startTime: [number, number];
-              endTime: [number, number];
-              value: {
-                sum: number;
-                count: number;
-                buckets: {
-                  boundaries: number[];
-                  counts: number[];
-                };
-              };
-            },
-          ];
-        },
-      ];
-    },
-  ];
+        };
+      }[];
+    }[];
+  }[];
 }
 
 export function metricsToRequest(exportArgs: ExportInput) {
-  const request = {
-    name: `projects/${exportArgs.resource._attributes['cloud.resource_manager.project_id']}`,
-    timeSeries: [],
-  };
-
+  const timeSeriesArray = [];
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const metric of scopeMetrics.metrics) {
       const metricName = metric.descriptor.name;
@@ -88,7 +92,7 @@ export function metricsToRequest(exportArgs: ExportInput) {
           app_profile: allAttributes.appProfileId,
           client_name: allAttributes.clientName,
           method: allAttributes.methodName,
-          finalOperationStatus: allAttributes.finalOperationStatus,
+          finalOperationStatus: allAttributes.finalOperationStatus.toString(),
           streaming: allAttributes.streamingOperation,
         };
         const resourceLabels = {
@@ -139,11 +143,14 @@ export function metricsToRequest(exportArgs: ExportInput) {
           ],
           unit: metric.descriptor.unit || 'ms', // Default to 'ms' if no unit is specified
         };
-        request.timeSeries.push(timeSeries);
+        timeSeriesArray.push(timeSeries);
       }
     }
   }
-  return request;
+  return {
+    name: `projects/${exportArgs.resource._attributes['cloud.resource_manager.project_id']}`,
+    timeSeries: timeSeriesArray,
+  };
 }
 
 export class CloudMonitoringExporter extends MetricExporter {
@@ -157,7 +164,9 @@ export class CloudMonitoringExporter extends MetricExporter {
       try {
         // TODO: Remove casting.
         const request = metricsToRequest(metrics as unknown as ExportInput);
-        await this.monitoringClient.createTimeSeries(request);
+        await this.monitoringClient.createTimeSeries(
+          request as ICreateTimeSeriesRequest
+        );
         const exportResult = {code: 0};
         resultCallback(exportResult);
       } catch (error) {
