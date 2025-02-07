@@ -14,11 +14,7 @@
 
 import * as fs from 'fs';
 import {IMetricsHandler} from './metrics-handler';
-import {
-  MethodName,
-  OnOperationCompleteAttributes,
-  StreamingState,
-} from './client-side-metrics-attributes';
+import {MethodName, StreamingState} from './client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 
 /**
