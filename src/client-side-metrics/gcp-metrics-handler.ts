@@ -41,7 +41,7 @@ const {
 interface Metrics {
   operationLatencies: typeof Histogram;
   attemptLatencies: typeof Histogram;
-  retryCount: typeof Counter;
+  retryCount: typeof Histogram;
   applicationBlockingLatencies: typeof Histogram;
   firstResponseLatencies: typeof Histogram;
   serverLatencies: typeof Histogram;
@@ -119,7 +119,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
             'The latencies of a client RPC attempt. Under normal circumstances, this value is identical to operation_latencies. If the client receives transient errors, however, then operation_latencies is the sum of all attempt_latencies and the exponential delays.',
           unit: 'ms',
         }),
-        retryCount: meter.createCounter('retry_count', {
+        retryCount: meter.createHistogram('retry_count', {
           description:
             'A counter that records the number of attempts that an operation required to complete. Under normal circumstances, this value is empty.',
         }),
@@ -178,7 +178,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
       metrics.operationLatency,
       attributes
     );
-    this.otelMetrics?.retryCount.add(metrics.retryCount, attributes);
+    this.otelMetrics?.retryCount.record(metrics.retryCount, attributes);
     this.otelMetrics?.firstResponseLatencies.record(
       metrics.firstResponseLatency,
       attributes
