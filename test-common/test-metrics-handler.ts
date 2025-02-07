@@ -21,12 +21,23 @@ import {
   OnOperationCompleteAttributes,
 } from '../src/client-side-metrics/client-side-metrics-attributes';
 
+interface IOperationCompleteRequest {
+  metrics: OnOperationCompleteMetrics;
+  attributes: OnOperationCompleteAttributes;
+}
+
+interface IAttemptCompleteRequest {
+  metrics: OnAttemptCompleteMetrics;
+  attributes: OnAttemptCompleteAttributes;
+}
+
 /**
  * A test implementation of the IMetricsHandler interface.  Used for testing purposes.
  * It logs the metrics and attributes received by the onOperationComplete and onAttemptComplete methods.
  */
 export class TestMetricsHandler {
   private messages: {value: string};
+  requestsHandled: (IOperationCompleteRequest | IAttemptCompleteRequest)[] = [];
 
   constructor(messages: {value: string}) {
     this.messages = messages;
@@ -40,6 +51,7 @@ export class TestMetricsHandler {
     metrics: OnOperationCompleteMetrics,
     attributes: OnOperationCompleteAttributes
   ) {
+    this.requestsHandled.push({metrics, attributes});
     attributes.clientName = 'nodejs-bigtable';
     this.messages.value += 'Recording parameters for onOperationComplete:\n';
     this.messages.value += `metrics: ${JSON.stringify(metrics)}\n`;
@@ -55,6 +67,7 @@ export class TestMetricsHandler {
     metrics: OnAttemptCompleteMetrics,
     attributes: OnAttemptCompleteAttributes
   ) {
+    this.requestsHandled.push({metrics, attributes});
     attributes.clientName = 'nodejs-bigtable';
     this.messages.value += 'Recording parameters for onAttemptComplete:\n';
     this.messages.value += `metrics: ${JSON.stringify(metrics)}\n`;

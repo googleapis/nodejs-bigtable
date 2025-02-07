@@ -23,6 +23,7 @@ import {
   StreamingState,
 } from '../../src/client-side-metrics/client-side-metrics-attributes';
 import {grpc} from 'google-gax';
+import {expectedRequestsHandled} from './metrics-handler-fixture';
 
 /**
  * A fake implementation of the Bigtable client for testing purposes.  Provides a
@@ -46,7 +47,8 @@ class FakeInstance {
 describe('Bigtable/MetricsCollector', () => {
   it('should record the right metrics with a typical method call', async () => {
     const logger = {value: ''};
-    const metricsHandlers = [new TestMetricsHandler(logger)];
+    const testHandler = new TestMetricsHandler(logger);
+    const metricsHandlers = [testHandler];
     class FakeTable {
       id = 'fakeTableId';
       instance = new FakeInstance();
@@ -148,5 +150,9 @@ describe('Bigtable/MetricsCollector', () => {
     );
     // Ensure events occurred in the right order here:
     assert.strictEqual(logger.value, expectedOutput.replace(/\r/g, ''));
+    assert.deepStrictEqual(
+      testHandler.requestsHandled,
+      expectedRequestsHandled
+    );
   });
 });

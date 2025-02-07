@@ -1,0 +1,61 @@
+export const expectedRequestsHandled = [
+  {
+    metrics: {
+      attemptLatency: 2000,
+      serverLatency: 101,
+      connectivityErrorCount: 1,
+    },
+    attributes: {
+      appProfileId: undefined,
+      streamingOperation: 'streaming',
+      attemptStatus: 4,
+      connectivityErrorCount: 1,
+      projectId: 'my-project',
+      instanceId: 'fakeInstanceId',
+      table: 'fakeTableId',
+      cluster: 'fake-cluster3',
+      zone: 'us-west1-c ',
+      methodName: 'readRows',
+      clientName: 'nodejs-bigtable',
+    },
+  },
+  {
+    metrics: {
+      attemptLatency: 1000,
+      serverLatency: 103,
+      connectivityErrorCount: 1,
+    },
+    attributes: {
+      appProfileId: undefined,
+      streamingOperation: 'streaming',
+      attemptStatus: 0,
+      connectivityErrorCount: 1,
+      projectId: 'my-project',
+      instanceId: 'fakeInstanceId',
+      table: 'fakeTableId',
+      cluster: 'fake-cluster3',
+      zone: 'us-west1-c ',
+      methodName: 'readRows',
+      clientName: 'nodejs-bigtable',
+    },
+  },
+  {
+    metrics: {
+      operationLatency: 6000,
+      retryCount: 1,
+      firstResponseLatency: 2000,
+    },
+    attributes: {
+      appProfileId: undefined,
+      finalOperationStatus: 0,
+      streamingOperation: 'streaming',
+      projectId: 'my-project',
+      instanceId: 'fakeInstanceId',
+      table: 'fakeTableId',
+      cluster: 'fake-cluster3',
+      zone: 'us-west1-c ',
+      methodName: 'readRows',
+      clientName: 'nodejs-bigtable',
+    },
+  },
+];
