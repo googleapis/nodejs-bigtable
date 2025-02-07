@@ -70,7 +70,7 @@ export const exportInput = {
                 methodName: 'readRows',
                 clientName: 'nodejs-bigtable/5.1.2',
               },
-              startTime: [1738946024, 950000000],
+              startTime: [1738946024, 951000000],
               endTime: [1738946034, 948000000],
               value: {
                 min: 76,
@@ -83,7 +83,7 @@ export const exportInput = {
                   ],
                   counts: [0, 0, 0, 0, 0, 0, 93, 0, 5, 0, 0, 1, 0, 0, 0, 0],
                 },
-                count: 100,
+                count: 99,
               },
             },
           ],
@@ -103,6 +103,7 @@ export const exportInput = {
           dataPoints: [
             {
               attributes: {
+                appProfileId: 'fake-app-profile-id',
                 finalOperationStatus: 0,
                 streamingOperation: 'STREAMING',
                 projectId: 'some-project',

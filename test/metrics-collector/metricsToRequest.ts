@@ -2,7 +2,6 @@ import * as assert from 'assert';
 import {describe} from 'mocha';
 import {exportInput} from './export-input-fixture';
 import {
-  ExportInput,
   metricsToRequest,
 } from '../../src/client-side-metrics/exporter';
 
@@ -19,7 +18,7 @@ describe.only('Bigtable/metricsToRequest', () => {
               app_profile: 'fake-app-profile-id',
               client_name: 'nodejs-bigtable/5.1.2',
               method: 'readRows',
-              finalOperationStatus: 0,
+              finalOperationStatus: '0',
               streaming: 'STREAMING',
             },
           },
@@ -40,9 +39,11 @@ describe.only('Bigtable/metricsToRequest', () => {
               interval: {
                 endTime: {
                   seconds: 1738946034,
+                  nanos: 948000000,
                 },
                 startTime: {
                   seconds: 1738946024,
+                  nanos: 951000000,
                 },
               },
               value: {
@@ -53,7 +54,7 @@ describe.only('Bigtable/metricsToRequest', () => {
                     explicitBuckets: {
                       bounds: [
                         0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500,
-                        7500, 10000,
+                        5000, 7500, 10000,
                       ],
                     },
                   },
@@ -88,7 +89,7 @@ describe.only('Bigtable/metricsToRequest', () => {
               app_profile: 'fake-app-profile-id',
               client_name: 'nodejs-bigtable/5.1.2',
               method: 'readRows',
-              finalOperationStatus: 0,
+              finalOperationStatus: '0',
               streaming: 'STREAMING',
             },
           },
@@ -108,21 +109,23 @@ describe.only('Bigtable/metricsToRequest', () => {
             {
               interval: {
                 endTime: {
+                  nanos: 948000000,
                   seconds: 1738946034,
                 },
                 startTime: {
+                  nanos: 951000000,
                   seconds: 1738946024,
                 },
               },
               value: {
                 distributionValue: {
-                  count: '100',
-                  mean: 110.27,
+                  count: '99',
+                  mean: 0,
                   bucketOptions: {
                     explicitBuckets: {
                       bounds: [
                         0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500,
-                        7500, 10000,
+                        5000, 7500, 10000,
                       ],
                     },
                   },
