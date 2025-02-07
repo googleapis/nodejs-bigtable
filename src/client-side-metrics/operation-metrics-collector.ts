@@ -14,11 +14,7 @@
 
 import * as fs from 'fs';
 import {IMetricsHandler} from './metrics-handler';
-import {
-  MethodName,
-  OnOperationCompleteAttributes,
-  StreamingState,
-} from './client-side-metrics-attributes';
+import {MethodName, StreamingState} from './client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 
 /**
@@ -85,16 +81,6 @@ interface OnAttemptCompleteInfo {
    * The attempt status of the operation.
    */
   attemptStatus: grpc.status;
-}
-
-/**
- * Attributes specific to a single attempt of a Bigtable operation. These
- * attributes provide information about the attempt's status and whether it was
- * part of a streaming operation.
- */
-interface AttemptOnlyAttributes {
-  attemptStatus: grpc.status;
-  streamingOperation: StreamingState;
 }
 
 /**
