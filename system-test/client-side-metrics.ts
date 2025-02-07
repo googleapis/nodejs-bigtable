@@ -24,6 +24,7 @@ import {TestDateProvider} from '../common/test-date-provider';
 import * as proxyquire from 'proxyquire';
 import {TabularApiSurface} from '../src/tabular-api-surface';
 import {MethodName} from '../common/client-side-metrics-attributes';
+import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 
 class Logger {
   private messages = '';
@@ -73,7 +74,7 @@ describe.only('Bigtable/MetricsCollector', () => {
     './instance.js': {Table: FakeInstance},
   }).Bigtable;
   const bigtable = new FakeBigtable({
-    metricsHandlers: [new TestMetricsHandler(logger)],
+    metricsHandlers: [new GCPMetricsHandler()],
   });
   const instanceId = 'emulator-test-instance';
   const tableId = 'my-table';
