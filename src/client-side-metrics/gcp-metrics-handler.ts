@@ -56,6 +56,11 @@ interface Metrics {
 export class GCPMetricsHandler implements IMetricsHandler {
   private initialized = false;
   private otelMetrics?: Metrics;
+  private exporter: typeof MetricExporter;
+
+  constructor(exporter: typeof MetricExporter) {
+    this.exporter = exporter;
+  }
 
   /**
    * Initializes the OpenTelemetry metrics instruments if they haven't been already.
@@ -104,9 +109,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
             // Export metrics every 10 seconds. 5 seconds is the smallest sample period allowed by
             // Cloud Monitoring.
             exportIntervalMillis: 100_000,
-            exporter: new MetricExporter({
-              projectId,
-            }),
+            exporter: this.exporter,
           }),
         ],
       });
