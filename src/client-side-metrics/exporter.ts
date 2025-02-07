@@ -21,8 +21,129 @@ interface ExportResult {
   code: number;
 }
 
-export function metricsToRequest(metrics: ResourceMetrics) {
-  return {};
+// TODO: Only involves the values that we care about
+interface ExportInput {
+  resource: {
+    _attributes: {
+      'cloud.resource_manager.project_id': string;
+    };
+    _syncAttributes: {
+      'monitored_resource.type': string;
+    };
+  };
+  scopeMetrics: [
+    {
+      metrics: [
+        {
+          descriptor: {
+            name: string;
+            unit: string;
+          };
+          dataPoints: [
+            {
+              attributes: {
+                appProfileId: string;
+                finalOperationStatus: number;
+                streamingOperation: string;
+                projectId: string;
+                instanceId: string;
+                table: string;
+                cluster: string;
+                zone: string;
+                methodName: string;
+                clientName: string;
+              };
+              startTime: [number, number];
+              endTime: [number, number];
+              value: {
+                sum: number;
+                count: number;
+                buckets: {
+                  boundaries: number[];
+                  counts: number[];
+                };
+              };
+            },
+          ];
+        },
+      ];
+    },
+  ];
+}
+
+export function metricsToRequest(exportArgs: ExportInput) {
+  const request = {
+    name: `projects/${exportArgs.resource._attributes['cloud.resource_manager.project_id']}`,
+    timeSeries: [],
+  };
+
+  for (const scopeMetrics of exportArgs.scopeMetrics) {
+    for (const metric of scopeMetrics.metrics) {
+      const metricName = metric.descriptor.name;
+
+      for (const dataPoint of metric.dataPoints) {
+        // Extract attributes to labels based on their intended target (resource or metric)
+        const allAttributes = dataPoint.attributes;
+        const metricLabels = {
+          app_profile: allAttributes.appProfileId,
+          client_name: allAttributes.clientName,
+          method: allAttributes.methodName,
+          finalOperationStatus: allAttributes.finalOperationStatus,
+          streaming: allAttributes.streamingOperation,
+        };
+        const resourceLabels = {
+          cluster: allAttributes.cluster,
+          instance: allAttributes.instanceId,
+          project_id: allAttributes.projectId,
+          table: allAttributes.table,
+          zone: allAttributes.zone,
+        };
+        const timeSeries = {
+          metric: {
+            type: metricName,
+            labels: metricLabels,
+          },
+          resource: {
+            type: exportArgs.resource._syncAttributes[
+              'monitored_resource.type'
+            ],
+            labels: resourceLabels,
+          },
+          metricKind: 'CUMULATIVE',
+          valueType: 'DISTRIBUTION',
+          points: [
+            {
+              interval: {
+                endTime: {
+                  seconds: dataPoint.endTime[0],
+                  nanos: dataPoint.endTime[1],
+                },
+                startTime: {
+                  seconds: dataPoint.startTime[0],
+                  nanos: dataPoint.startTime[1],
+                },
+              },
+              value: {
+                distributionValue: {
+                  count: String(dataPoint.value.count),
+                  mean: dataPoint.value.sum / dataPoint.value.count,
+                  bucketOptions: {
+                    explicitBuckets: {
+                      bounds: dataPoint.value.buckets.boundaries,
+                    },
+                  },
+                  bucketCounts: dataPoint.value.buckets.counts.map(String),
+                },
+              },
+            },
+          ],
+          unit: metric.descriptor.unit || 'ms', // Default to 'ms' if no unit is specified
+        };
+        request.timeSeries.push(timeSeries);
+      }
+    }
+  }
+  return request;
 }
 
 export class CloudMonitoringExporter extends MetricExporter {
@@ -34,7 +155,8 @@ export class CloudMonitoringExporter extends MetricExporter {
   ): void {
     (async () => {
       try {
-        const request = metricsToRequest(metrics);
+        // TODO: Remove casting.
+        const request = metricsToRequest(metrics as unknown as ExportInput);
         await this.monitoringClient.createTimeSeries(request);
         const exportResult = {code: 0};
         resultCallback(exportResult);

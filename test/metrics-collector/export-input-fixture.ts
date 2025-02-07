@@ -46,38 +46,6 @@ export const exportInput = {
       metrics: [
         {
           descriptor: {
-            name: 'attempt_latencies',
-            description:
-              'The latencies of a client RPC attempt. Under normal circumstances, this value is identical to operation_latencies. If the client receives transient errors, however, then operation_latencies is the sum of all attempt_latencies and the exponential delays.',
-            type: 'HISTOGRAM',
-            unit: 'ms',
-            valueType: 1,
-            advice: {},
-          },
-          aggregationTemporality: 1,
-          dataPointType: 3,
-          dataPoints: [
-            {
-              attributes: {
-                attemptStatus: 0,
-                streamingOperation: true,
-                projectId: 'some-project',
-                instanceId: 'emulator-test-instance',
-                table: 'my-table',
-                cluster: 'fake-cluster3',
-                zone: 'us-west1-c\u0012',
-                methodName: 'readRows',
-                clientName: 'nodejs-bigtable/5.1.2',
-              },
-              startTime: [1738946024, 950000000],
-              endTime: [1738946034, 948000000],
-              value: 10944,
-            },
-          ],
-          isMonotonic: true,
-        },
-        {
-          descriptor: {
             name: 'bigtable.googleapis.com/internal/client/operation_latencies',
             type: 'HISTOGRAM',
             description:
@@ -91,8 +59,9 @@ export const exportInput = {
           dataPoints: [
             {
               attributes: {
+                appProfileId: 'fake-app-profile-id',
                 finalOperationStatus: 0,
-                streamingOperation: true,
+                streamingOperation: 'STREAMING',
                 projectId: 'some-project',
                 instanceId: 'emulator-test-instance',
                 table: 'my-table',
@@ -106,7 +75,7 @@ export const exportInput = {
               value: {
                 min: 76,
                 max: 1337,
-                sum: 11027,
+                sum: 11979,
                 buckets: {
                   boundaries: [
                     0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
@@ -114,7 +83,7 @@ export const exportInput = {
                   ],
                   counts: [0, 0, 0, 0, 0, 0, 93, 0, 5, 0, 0, 1, 0, 0, 0, 0],
                 },
-                count: 99,
+                count: 100,
               },
             },
           ],
@@ -135,7 +104,7 @@ export const exportInput = {
             {
               attributes: {
                 finalOperationStatus: 0,
-                streamingOperation: true,
+                streamingOperation: 'STREAMING',
                 projectId: 'some-project',
                 instanceId: 'emulator-test-instance',
                 table: 'my-table',
@@ -145,92 +114,6 @@ export const exportInput = {
                 clientName: 'nodejs-bigtable/5.1.2',
               },
               startTime: [1738946024, 951000000],
-              endTime: [1738946034, 948000000],
-              value: {
-                min: 0,
-                max: 0,
-                sum: 0,
-                buckets: {
-                  boundaries: [
-                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
-                    7500, 10000,
-                  ],
-                  counts: [99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                },
-                count: 99,
-              },
-            },
-          ],
-        },
-        {
-          descriptor: {
-            name: 'bigtable.googleapis.com/internal/client/server_latencies',
-            type: 'HISTOGRAM',
-            description:
-              'Latencies between the time when the Google frontend receives an RPC and when it sends the first byte of the response.',
-            unit: '',
-            valueType: 1,
-            advice: {},
-          },
-          aggregationTemporality: 1,
-          dataPointType: 0,
-          dataPoints: [
-            {
-              attributes: {
-                attemptStatus: 0,
-                streamingOperation: true,
-                projectId: 'some-project',
-                instanceId: 'emulator-test-instance',
-                table: 'my-table',
-                cluster: 'fake-cluster3',
-                zone: 'us-west1-c\u0012',
-                methodName: 'readRows',
-                clientName: 'nodejs-bigtable/5.1.2',
-              },
-              startTime: [1738946024, 950000000],
-              endTime: [1738946034, 948000000],
-              value: {
-                min: 57,
-                max: 379,
-                sum: 7271,
-                buckets: {
-                  boundaries: [
-                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
-                    7500, 10000,
-                  ],
-                  counts: [0, 0, 0, 0, 0, 94, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0],
-                },
-                count: 99,
-              },
-            },
-          ],
-        },
-        {
-          descriptor: {
-            name: 'bigtable.googleapis.com/internal/client/connectivity_error_count',
-            type: 'HISTOGRAM',
-            description:
-              "The number of requests that failed to reach Google's network. In normal cases, this number is 0. When the number is not 0, it can indicate connectivity issues between the application and the Google network.",
-            unit: '',
-            valueType: 1,
-            advice: {},
-          },
-          aggregationTemporality: 1,
-          dataPointType: 0,
-          dataPoints: [
-            {
-              attributes: {
-                attemptStatus: 0,
-                streamingOperation: true,
-                projectId: 'some-project',
-                instanceId: 'emulator-test-instance',
-                table: 'my-table',
-                cluster: 'fake-cluster3',
-                zone: 'us-west1-c\u0012',
-                methodName: 'readRows',
-                clientName: 'nodejs-bigtable/5.1.2',
-              },
-              startTime: [1738946024, 950000000],
               endTime: [1738946034, 948000000],
               value: {
                 min: 0,
