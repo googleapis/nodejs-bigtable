@@ -345,7 +345,7 @@ export class OperationMetricsCollector {
     const instanceInformation = mappedEntries
       .get('x-goog-ext-425905942-bin')
       ?.replace(new RegExp('\\n', 'g'), '')
-      .split('\r');
+      .split(' \r'); // The data returned actually has a space after the zone.
     if (instanceInformation && instanceInformation[0]) {
       this.zone = instanceInformation[0];
     }
