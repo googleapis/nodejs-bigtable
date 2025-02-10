@@ -92,7 +92,7 @@ export function metricsToRequest(exportArgs: ExportInput) {
           app_profile: allAttributes.appProfileId,
           client_name: allAttributes.clientName,
           method: allAttributes.methodName,
-          finalOperationStatus: allAttributes.finalOperationStatus.toString(),
+          status: allAttributes.finalOperationStatus.toString(),
           streaming: allAttributes.streamingOperation,
         };
         const resourceLabels = {
