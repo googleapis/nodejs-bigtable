@@ -153,6 +153,7 @@ export function metricsToRequest(exportArgs: ExportInput) {
   };
 }
 
+// TODO: Add test for when the export fails
 export class CloudMonitoringExporter extends MetricExporter {
   private monitoringClient = new MetricServiceClient();
 

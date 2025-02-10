@@ -26,7 +26,13 @@ describe.only('Bigtable/CloudMonitoringExporter', () => {
       const exporter = new CloudMonitoringExporter();
       exporter.export(
         transformedExportInput as unknown as ResourceMetrics,
-        done
+        (result: {code: number}) => {
+          if (result.code === 0) {
+            done();
+          } else {
+            done(result.code);
+          }
+        }
       );
     })();
   });
