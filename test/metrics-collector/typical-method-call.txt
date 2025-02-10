@@ -12,7 +12,7 @@ getDate call returns 3000 ms
 getDate call returns 4000 ms
 Recording parameters for onAttemptComplete:
 metrics: {"attemptLatency":2000,"serverLatency":101,"connectivityErrorCount":1}
-attributes: {"streamingOperation":"streaming","attemptStatus":4,"connectivityErrorCount":1,"projectId":"my-project","instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","methodName":"readRows","clientName":"nodejs-bigtable"}
+attributes: {"streamingOperation":"true","attemptStatus":4,"connectivityErrorCount":1,"projectId":"my-project","instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","methodName":"readRows","clientName":"nodejs-bigtable"}
 9. After a timeout, the second attempt is made.
 getDate call returns 5000 ms
 10. Client receives status information.
@@ -25,8 +25,8 @@ getDate call returns 5000 ms
 getDate call returns 6000 ms
 Recording parameters for onAttemptComplete:
 metrics: {"attemptLatency":1000,"serverLatency":103,"connectivityErrorCount":1}
-attributes: {"streamingOperation":"streaming","attemptStatus":0,"connectivityErrorCount":1,"projectId":"my-project","instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","methodName":"readRows","clientName":"nodejs-bigtable"}
+attributes: {"streamingOperation":"true","attemptStatus":0,"connectivityErrorCount":1,"projectId":"my-project","instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","methodName":"readRows","clientName":"nodejs-bigtable"}
 getDate call returns 7000 ms
 Recording parameters for onOperationComplete:
 metrics: {"operationLatency":6000,"retryCount":1,"firstResponseLatency":2000}
-attributes: {"finalOperationStatus":0,"streamingOperation":"streaming","projectId":"my-project","instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","methodName":"readRows","clientName":"nodejs-bigtable"}
+attributes: {"finalOperationStatus":0,"streamingOperation":"true","projectId":"my-project","instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","methodName":"readRows","clientName":"nodejs-bigtable"}

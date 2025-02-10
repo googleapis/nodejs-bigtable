@@ -29,9 +29,12 @@ interface StandardAttributes {
   clientName: string;
 }
 
+// The backend is expecting true/false and will fail if other values are provided.
+// export in open telemetry is expecting string value attributes so we don't use boolean
+// true/false.
 export enum StreamingState {
-  STREAMING = 'streaming',
-  UNARY = 'unary',
+  STREAMING = 'true',
+  UNARY = 'false',
 }
 
 /**

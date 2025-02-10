@@ -21,7 +21,7 @@ export const expectedRequestsHandled = [
     },
     attributes: {
       appProfileId: undefined,
-      streamingOperation: 'streaming',
+      streamingOperation: 'true',
       attemptStatus: 4,
       connectivityErrorCount: 1,
       projectId: 'my-project',
@@ -41,7 +41,7 @@ export const expectedRequestsHandled = [
     },
     attributes: {
       appProfileId: undefined,
-      streamingOperation: 'streaming',
+      streamingOperation: 'true',
       attemptStatus: 0,
       connectivityErrorCount: 1,
       projectId: 'my-project',
@@ -62,7 +62,7 @@ export const expectedRequestsHandled = [
     attributes: {
       appProfileId: undefined,
       finalOperationStatus: 0,
-      streamingOperation: 'streaming',
+      streamingOperation: 'true',
       projectId: 'my-project',
       instanceId: 'fakeInstanceId',
       table: 'fakeTableId',
