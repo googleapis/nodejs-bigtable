@@ -37,6 +37,7 @@ export type OnOperationCompleteAttributes = {
   appProfileId?: string;
   methodName: MethodName;
   clientName: string;
+  clientUid: string;
   finalOperationStatus: grpc.status;
   streamingOperation: StreamingState;
 };

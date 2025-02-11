@@ -30,6 +30,7 @@ import {expectedRequestsHandled} from './metrics-handler-fixture';
  * metricsTracerFactory and a stubbed projectId method.
  */
 class FakeBigtable {
+  clientUid = 'fake-uuid';
   appProfileId?: string;
   projectId = 'my-project';
 }

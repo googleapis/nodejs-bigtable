@@ -64,6 +64,7 @@ export interface ITabularApiSurface {
   id: string;
   bigtable: {
     appProfileId?: string;
+    clientUid: string;
   };
 }
 
@@ -203,6 +204,7 @@ export class OperationMetricsCollector {
           appProfileId: this.tabularApiSurface.bigtable.appProfileId,
           methodName: this.methodName,
           clientName: `nodejs-bigtable/${version}`,
+          clientUid: this.tabularApiSurface.bigtable.clientUid,
         };
         const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
         this.metricsHandlers.forEach(metricsHandler => {
@@ -281,6 +283,7 @@ export class OperationMetricsCollector {
             appProfileId: this.tabularApiSurface.bigtable.appProfileId,
             methodName: this.methodName,
             clientName: `nodejs-bigtable/${version}`,
+            clientUid: this.tabularApiSurface.bigtable.clientUid,
           };
           const metrics = {
             operationLatency: totalTime,

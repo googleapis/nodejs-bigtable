@@ -31,6 +31,7 @@ export const expectedRequestsHandled = [
       zone: 'us-west1-c',
       methodName: 'readRows',
       clientName: 'nodejs-bigtable',
+      clientUid: 'fake-uuid',
     },
   },
   {
@@ -51,6 +52,7 @@ export const expectedRequestsHandled = [
       zone: 'us-west1-c',
       methodName: 'readRows',
       clientName: 'nodejs-bigtable',
+      clientUid: 'fake-uuid',
     },
   },
   {
@@ -70,6 +72,7 @@ export const expectedRequestsHandled = [
       zone: 'us-west1-c',
       methodName: 'readRows',
       clientName: 'nodejs-bigtable',
+      clientUid: 'fake-uuid',
     },
   },
 ];
