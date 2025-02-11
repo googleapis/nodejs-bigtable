@@ -91,6 +91,94 @@ export const exportInput = {
             },
           ],
         },
+        {
+          descriptor: {
+            name: 'bigtable.googleapis.com/internal/client/operation_latencies',
+            type: 'HISTOGRAM',
+            description:
+              "The total end-to-end latency across all RPC attempts associated with a Bigtable operation. This metric measures an operation's round trip from the client to Bigtable and back to the client and includes all retries.",
+            unit: '',
+            valueType: 1,
+            advice: {},
+          },
+          aggregationTemporality: 1,
+          dataPointType: 0,
+          dataPoints: [
+            {
+              attributes: {
+                appProfileId: 'fake-app-profile-id',
+                finalOperationStatus: 0,
+                streamingOperation: 'true',
+                projectId: 'some-project',
+                instanceId: 'emulator-test-instance',
+                table: 'my-table',
+                cluster: 'fake-cluster3',
+                zone: 'us-west1-c',
+                methodName: 'mutateRows',
+                clientName: 'nodejs-bigtable/5.1.2',
+              },
+              startTime: [fakeStartTime, 951000000],
+              endTime: [fakeEndTime, 948000000],
+              value: {
+                min: 76,
+                max: 1337,
+                sum: 11979,
+                buckets: {
+                  boundaries: [
+                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
+                    7500, 10000,
+                  ],
+                  counts: [0, 0, 0, 0, 0, 0, 93, 0, 5, 0, 0, 1, 0, 0, 0, 0],
+                },
+                count: 99,
+              },
+            },
+          ],
+        },
+        {
+          descriptor: {
+            name: 'bigtable.googleapis.com/internal/client/operation_latencies',
+            type: 'HISTOGRAM',
+            description:
+              "The total end-to-end latency across all RPC attempts associated with a Bigtable operation. This metric measures an operation's round trip from the client to Bigtable and back to the client and includes all retries.",
+            unit: '',
+            valueType: 1,
+            advice: {},
+          },
+          aggregationTemporality: 1,
+          dataPointType: 0,
+          dataPoints: [
+            {
+              attributes: {
+                appProfileId: 'fake-app-profile-id',
+                finalOperationStatus: 0,
+                streamingOperation: 'true',
+                projectId: 'some-project',
+                instanceId: 'emulator-test-instance',
+                table: 'my-table',
+                cluster: 'fake-cluster3',
+                zone: 'us-west1-c',
+                methodName: 'sampleRowKeys',
+                clientName: 'nodejs-bigtable/5.1.2',
+              },
+              startTime: [fakeStartTime, 951000000],
+              endTime: [fakeEndTime, 948000000],
+              value: {
+                min: 76,
+                max: 1337,
+                sum: 11979,
+                buckets: {
+                  boundaries: [
+                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
+                    7500, 10000,
+                  ],
+                  counts: [0, 0, 0, 0, 0, 0, 93, 0, 5, 0, 0, 1, 0, 0, 0, 0],
+                },
+                count: 99,
+              },
+            },
+          ],
+        },
       ],
     },
   ],
