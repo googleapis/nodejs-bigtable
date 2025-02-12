@@ -300,8 +300,9 @@ export class OperationMetricsCollector {
     if (matchedDuration && matchedDuration[1]) {
       if (!this.serverTimeRead) {
         this.serverTimeRead = true;
-        const serverTime = parseInt(matchedDuration[1]);
-        this.serverTime = serverTime;
+        this.serverTime = isNaN(parseInt(matchedDuration[1]))
+          ? null
+          : parseInt(matchedDuration[1]);
       }
     } else {
       this.connectivityErrorCount++;
