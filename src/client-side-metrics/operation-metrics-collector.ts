@@ -85,7 +85,8 @@ const version = JSON.parse(packageJSON.toString()).version;
 enum MetricsCollectorState {
   OPERATION_NOT_STARTED,
   OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS,
-  OPERATION_STARTED_ATTEMPT_IN_PROGRESS,
+  OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
+  OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED,
   OPERATION_COMPLETE,
 }
 
@@ -101,7 +102,6 @@ export class OperationMetricsCollector {
   private tabularApiSurface: ITabularApiSurface;
   private methodName: MethodName;
   private attemptCount = 0;
-  private receivedFirstResponse: boolean;
   private metricsHandlers: IMetricsHandler[];
   private firstResponseLatency: number | null;
   private serverTimeRead: boolean;
@@ -125,7 +125,6 @@ export class OperationMetricsCollector {
     this.methodName = methodName;
     this.operationStartTime = null;
     this.attemptStartTime = null;
-    this.receivedFirstResponse = false;
     this.metricsHandlers = metricsHandlers;
     this.firstResponseLatency = null;
     this.serverTimeRead = false;
@@ -140,7 +139,6 @@ export class OperationMetricsCollector {
     if (this.state === MetricsCollectorState.OPERATION_NOT_STARTED) {
       this.operationStartTime = new Date();
       this.firstResponseLatency = null;
-      this.receivedFirstResponse = false;
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
     } else {
@@ -155,7 +153,10 @@ export class OperationMetricsCollector {
    */
   onAttemptComplete(projectId: string, info: OnAttemptCompleteInfo) {
     if (
-      this.state === MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS
+      this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
+      this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED
     ) {
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
@@ -202,7 +203,8 @@ export class OperationMetricsCollector {
       this.state ===
       MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
     ) {
-      this.state = MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS;
+      this.state =
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET;
       this.attemptStartTime = new Date();
       this.serverTime = null;
       this.serverTimeRead = false;
@@ -216,8 +218,12 @@ export class OperationMetricsCollector {
    * Called when the first response is received. Records first response latencies.
    */
   onResponse(projectId: string) {
-    if (!this.receivedFirstResponse) {
-      this.receivedFirstResponse = true;
+    if (
+      this.state ===
+      MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET
+    ) {
+      this.state =
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
       const endTime = new Date();
       if (projectId && this.operationStartTime) {
         this.firstResponseLatency =

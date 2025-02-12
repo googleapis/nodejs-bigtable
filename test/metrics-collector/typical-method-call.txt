@@ -18,15 +18,16 @@ getDate call returns 5000 ms
 10. Client receives status information.
 11. Client receives metadata.
 12. Client receives third row.
+getDate call returns 6000 ms
 13. Client receives metadata.
 14. Client receives fourth row.
 15. User reads row 1
 16. Stream ends, operation completes
-getDate call returns 6000 ms
-Recording parameters for onAttemptComplete:
-metrics: {"attemptLatency":1000,"serverLatency":103,"connectivityErrorCount":0}
-attributes: {"streamingOperation":"true","attemptStatus":0,"projectId":"my-project","instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","methodName":"readRows","clientName":"nodejs-bigtable","clientUid":"fake-uuid"}
 getDate call returns 7000 ms
+Recording parameters for onAttemptComplete:
+metrics: {"attemptLatency":2000,"serverLatency":103,"connectivityErrorCount":0}
+attributes: {"streamingOperation":"true","attemptStatus":0,"projectId":"my-project","instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","methodName":"readRows","clientName":"nodejs-bigtable","clientUid":"fake-uuid"}
+getDate call returns 8000 ms
 Recording parameters for onOperationComplete:
-metrics: {"operationLatency":6000,"retryCount":1,"firstResponseLatency":2000}
+metrics: {"operationLatency":7000,"retryCount":1,"firstResponseLatency":5000}
 attributes: {"finalOperationStatus":0,"streamingOperation":"true","projectId":"my-project","instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","methodName":"readRows","clientName":"nodejs-bigtable","clientUid":"fake-uuid"}

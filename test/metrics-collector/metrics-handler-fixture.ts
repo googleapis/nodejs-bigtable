@@ -35,7 +35,7 @@ export const expectedRequestsHandled = [
   },
   {
     metrics: {
-      attemptLatency: 1000,
+      attemptLatency: 2000,
       serverLatency: 103,
       connectivityErrorCount: 0,
     },
@@ -55,9 +55,9 @@ export const expectedRequestsHandled = [
   },
   {
     metrics: {
-      operationLatency: 6000,
+      operationLatency: 7000,
       retryCount: 1,
-      firstResponseLatency: 2000,
+      firstResponseLatency: 5000,
     },
     attributes: {
       appProfileId: undefined,
