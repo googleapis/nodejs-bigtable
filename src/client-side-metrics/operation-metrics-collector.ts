@@ -131,6 +131,7 @@ export class OperationMetricsCollector {
   private serverTimeRead: boolean;
   private serverTime: number | null;
   private dateProvider: DateProvider;
+  private connectivityErrorCount: number;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -156,6 +157,7 @@ export class OperationMetricsCollector {
     this.firstResponseLatency = null;
     this.serverTimeRead = false;
     this.serverTime = null;
+    this.connectivityErrorCount = 0;
     if (dateProvider) {
       this.dateProvider = dateProvider;
     } else {
@@ -195,7 +197,6 @@ export class OperationMetricsCollector {
         const attributes = {
           streamingOperation: info.streamingOperation,
           attemptStatus: info.attemptStatus,
-          connectivityErrorCount: info.connectivityErrorCount,
           projectId,
           instanceId: this.tabularApiSurface.instance.id,
           table: this.tabularApiSurface.id,
@@ -213,7 +214,7 @@ export class OperationMetricsCollector {
               {
                 attemptLatency: totalTime,
                 serverLatency: this.serverTime ?? undefined,
-                connectivityErrorCount: info.connectivityErrorCount,
+                connectivityErrorCount: this.connectivityErrorCount,
               },
               attributes
             );
@@ -237,6 +238,7 @@ export class OperationMetricsCollector {
       this.attemptStartTime = this.dateProvider.getDate();
       this.serverTime = null;
       this.serverTimeRead = false;
+      this.connectivityErrorCount = 0;
     } else {
       console.warn('Invalid state transition attempted');
     }
@@ -320,15 +322,19 @@ export class OperationMetricsCollector {
         value.toString(),
       ])
     );
-    const durationValues = mappedEntries.get('server-timing')?.split('dur=');
-    if (durationValues && durationValues[1]) {
-      if (!this.serverTimeRead) {
+    const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
+    const durationValues = mappedEntries.get('server-timing');
+    if (durationValues) {
+      const match = durationValues.match(SERVER_TIMING_REGEX);
+      if (!this.serverTimeRead && match && match[1]) {
         this.serverTimeRead = true;
-        const serverTime = parseInt(durationValues[1]);
+        const serverTime = parseInt(match[1]);
         if (projectId) {
           this.serverTime = serverTime;
         }
       }
+    } else {
+      this.connectivityErrorCount++;
     }
   }
 

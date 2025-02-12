@@ -17,13 +17,12 @@ export const expectedRequestsHandled = [
     metrics: {
       attemptLatency: 2000,
       serverLatency: 101,
-      connectivityErrorCount: 1,
+      connectivityErrorCount: 0,
     },
     attributes: {
       appProfileId: undefined,
       streamingOperation: 'true',
       attemptStatus: 4,
-      connectivityErrorCount: 1,
       projectId: 'my-project',
       instanceId: 'fakeInstanceId',
       table: 'fakeTableId',
@@ -38,13 +37,12 @@ export const expectedRequestsHandled = [
     metrics: {
       attemptLatency: 1000,
       serverLatency: 103,
-      connectivityErrorCount: 1,
+      connectivityErrorCount: 0,
     },
     attributes: {
       appProfileId: undefined,
       streamingOperation: 'true',
       attemptStatus: 0,
-      connectivityErrorCount: 1,
       projectId: 'my-project',
       instanceId: 'fakeInstanceId',
       table: 'fakeTableId',
