@@ -324,11 +324,11 @@ export class OperationMetricsCollector {
     );
     const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
     const durationValues = mappedEntries.get('server-timing');
-    if (durationValues) {
-      const match = durationValues.match(SERVER_TIMING_REGEX);
-      if (!this.serverTimeRead && match && match[1]) {
+    const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
+    if (matchedDuration && matchedDuration[1]) {
+      if (!this.serverTimeRead) {
         this.serverTimeRead = true;
-        const serverTime = parseInt(match[1]);
+        const serverTime = parseInt(matchedDuration[1]);
         if (projectId) {
           this.serverTime = serverTime;
         }
