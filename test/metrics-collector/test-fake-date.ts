@@ -1,10 +1,10 @@
 import {describe} from 'mocha';
 import {getDate} from '../../src/getDate';
 
-describe.only('Bigtable/FakeDate', () => {
+describe('Bigtable/FakeDate', () => {
   const originalDate = global.Date;
   before(() => {
-    let mockTime = new Date('2025-03-15T10:00:00.000Z').getTime();
+    let mockTime = new Date('1970-01-01T00:00:01.000Z').getTime();
 
     (global as any).Date = class extends originalDate {
       constructor(...args: any[]) {
@@ -42,8 +42,8 @@ describe.only('Bigtable/FakeDate', () => {
   });
 
   it('should record the right metrics with a typical method call', async () => {
-    console.log(getDate().toISOString());
-    console.log(getDate().toISOString());
-    console.log(getDate().toISOString());
+    console.log(getDate().getTime());
+    console.log(getDate().getTime());
+    console.log(getDate().getTime());
   });
 });

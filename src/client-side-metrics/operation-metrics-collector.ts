@@ -170,7 +170,7 @@ export class OperationMetricsCollector {
    */
   onOperationStart() {
     if (this.state === MetricsCollectorState.OPERATION_NOT_STARTED) {
-      this.operationStartTime = this.dateProvider.getDate();
+      this.operationStartTime = new Date();
       this.firstResponseLatency = null;
       this.receivedFirstResponse = false;
       this.state =
@@ -192,7 +192,7 @@ export class OperationMetricsCollector {
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
       this.attemptCount++;
-      const endTime = this.dateProvider.getDate();
+      const endTime = new Date();
       if (projectId && this.attemptStartTime) {
         const attributes = {
           streamingOperation: info.streamingOperation,
@@ -235,7 +235,7 @@ export class OperationMetricsCollector {
       MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
     ) {
       this.state = MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS;
-      this.attemptStartTime = this.dateProvider.getDate();
+      this.attemptStartTime = new Date();
       this.serverTime = null;
       this.serverTimeRead = false;
       this.connectivityErrorCount = 0;
@@ -250,7 +250,7 @@ export class OperationMetricsCollector {
   onResponse(projectId: string) {
     if (!this.receivedFirstResponse) {
       this.receivedFirstResponse = true;
-      const endTime = this.dateProvider.getDate();
+      const endTime = new Date();
       if (projectId && this.operationStartTime) {
         this.firstResponseLatency =
           endTime.getTime() - this.operationStartTime.getTime();
@@ -270,7 +270,7 @@ export class OperationMetricsCollector {
       MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
     ) {
       this.state = MetricsCollectorState.OPERATION_COMPLETE;
-      const endTime = this.dateProvider.getDate();
+      const endTime = new Date();
       if (projectId && this.operationStartTime) {
         const totalTime = endTime.getTime() - this.operationStartTime.getTime();
         {

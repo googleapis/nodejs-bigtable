@@ -45,9 +45,50 @@ class FakeInstance {
   id = 'fakeInstanceId';
 }
 
-describe('Bigtable/MetricsCollector', () => {
+describe.only('Bigtable/MetricsCollector', () => {
+  const logger = {value: ''};
+  const originalDate = global.Date;
+
+  before(() => {
+    let mockTime = new Date('1970-01-01T00:00:01.000Z').getTime();
+
+    (global as any).Date = class extends originalDate {
+      constructor(...args: any[]) {
+        // Using a rest parameter
+        if (args.length === 0) {
+          super(mockTime);
+          logger.value += `getDate call returns ${mockTime.toString()} ms\n`;
+          mockTime += 1000;
+        }
+      }
+
+      static now(): number {
+        return mockTime;
+      }
+
+      static parse(dateString: string): number {
+        return originalDate.parse(dateString);
+      }
+
+      static UTC(
+        year: number,
+        month: number,
+        date?: number,
+        hours?: number,
+        minutes?: number,
+        seconds?: number,
+        ms?: number
+      ): number {
+        return originalDate.UTC(year, month, date, hours, minutes, seconds, ms);
+      }
+    };
+  });
+
+  after(() => {
+    (global as any).Date = originalDate;
+  });
+
   it('should record the right metrics with a typical method call', async () => {
-    const logger = {value: ''};
     const testHandler = new TestMetricsHandler(logger);
     const metricsHandlers = [testHandler];
     class FakeTable {
