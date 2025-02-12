@@ -294,7 +294,8 @@ export class OperationMetricsCollector {
       ])
     );
     const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
-    const durationValues = mappedEntries.get('server-timing');
+    const SERVER_TIMING_KEY = 'server-timing';
+    const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
     const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
     if (matchedDuration && matchedDuration[1]) {
       if (!this.serverTimeRead) {
@@ -320,8 +321,9 @@ export class OperationMetricsCollector {
         value.toString(),
       ])
     );
+    const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
     const instanceInformation = mappedEntries
-      .get('x-goog-ext-425905942-bin')
+      .get(INSTANCE_INFORMATION_KEY)
       ?.replace(new RegExp('\\n', 'g'), '')
       .split(' \r'); // The data returned actually has a space after the zone.
     if (instanceInformation && instanceInformation[0]) {
