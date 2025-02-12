@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import {describe} from 'mocha';
-import {TestDateProvider} from '../../test-common/test-date-provider';
 import * as assert from 'assert';
 import * as fs from 'fs';
 import {TestMetricsHandler} from '../../test-common/test-metrics-handler';
