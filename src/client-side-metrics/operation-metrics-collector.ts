@@ -31,30 +31,6 @@ interface DateLike {
 }
 
 /**
- * Interface for a provider that returns DateLike objects. Used for mocking dates in tests.
- */
-interface DateProvider {
-  /**
-   * Returns a DateLike object.
-   * @returns A DateLike object representing the current time or a fake time value.
-   */
-  getDate(): DateLike;
-}
-
-/**
- * The default DateProvider implementation.  Returns the current date and time.
- */
-class DefaultDateProvider {
-  /**
-   * Returns a new Date object representing the current time.
-   * @returns {Date} The current date and time.
-   */
-  getDate() {
-    return new Date();
-  }
-}
-
-/**
  * An interface representing a tabular API surface, such as a Bigtable table.
  */
 export interface ITabularApiSurface {
@@ -130,20 +106,17 @@ export class OperationMetricsCollector {
   private firstResponseLatency: number | null;
   private serverTimeRead: boolean;
   private serverTime: number | null;
-  private dateProvider: DateProvider;
   private connectivityErrorCount: number;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
    * @param {IMetricsHandler[]} metricsHandlers The metrics handlers used for recording metrics.
    * @param {MethodName} methodName The name of the method being traced.
-   * @param {DateProvider} dateProvider A provider for date/time information (for testing).
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
     metricsHandlers: IMetricsHandler[],
-    methodName: MethodName,
-    dateProvider?: DateProvider
+    methodName: MethodName
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
@@ -158,11 +131,6 @@ export class OperationMetricsCollector {
     this.serverTimeRead = false;
     this.serverTime = null;
     this.connectivityErrorCount = 0;
-    if (dateProvider) {
-      this.dateProvider = dateProvider;
-    } else {
-      this.dateProvider = new DefaultDateProvider();
-    }
   }
 
   /**

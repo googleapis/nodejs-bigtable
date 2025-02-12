@@ -120,8 +120,7 @@ describe.only('Bigtable/MetricsCollector', () => {
           const metricsCollector = new OperationMetricsCollector(
             this,
             metricsHandlers,
-            MethodName.READ_ROWS,
-            new TestDateProvider(logger)
+            MethodName.READ_ROWS
           );
           // In this method we simulate a series of events that might happen
           // when a user calls one of the Table methods.
