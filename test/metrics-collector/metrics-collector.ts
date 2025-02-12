@@ -44,7 +44,7 @@ class FakeInstance {
   id = 'fakeInstanceId';
 }
 
-describe('Bigtable/MetricsCollector', () => {
+describe.only('Bigtable/MetricsCollector', () => {
   const logger = {value: ''};
   const originalDate = global.Date;
 

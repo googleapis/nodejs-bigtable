@@ -22,6 +22,16 @@ export enum StreamingState {
   UNARY = 'false',
 }
 
+type IMetricsCollectorData = {
+  instanceId: string;
+  table: string;
+  cluster?: string;
+  zone?: string;
+  appProfileId?: string;
+  methodName: MethodName;
+  clientUid: string;
+};
+
 /**
  * Attributes associated with the completion of a Bigtable operation. These
  * attributes provide context about the Bigtable environment, the completed
@@ -30,14 +40,8 @@ export enum StreamingState {
  */
 export type OnOperationCompleteAttributes = {
   projectId: string;
-  instanceId: string;
-  table: string;
-  cluster?: string;
-  zone?: string;
-  appProfileId?: string;
-  methodName: MethodName;
+  metricsCollectorData: IMetricsCollectorData;
   clientName: string;
-  clientUid: string;
   finalOperationStatus: grpc.status;
   streamingOperation: StreamingState;
 };
@@ -51,12 +55,7 @@ export type OnOperationCompleteAttributes = {
  */
 export type OnAttemptCompleteAttributes = {
   projectId: string;
-  instanceId: string;
-  table: string;
-  cluster?: string;
-  zone?: string;
-  appProfileId?: string;
-  methodName: MethodName;
+  metricsCollectorData: IMetricsCollectorData;
   clientName: string;
   attemptStatus: grpc.status;
   streamingOperation: StreamingState;

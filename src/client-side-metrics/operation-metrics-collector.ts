@@ -132,6 +132,18 @@ export class OperationMetricsCollector {
     this.connectivityErrorCount = 0;
   }
 
+  private getMetricsCollectorData() {
+    return {
+      instanceId: this.tabularApiSurface.instance.id,
+      table: this.tabularApiSurface.id,
+      cluster: this.cluster,
+      zone: this.zone,
+      appProfileId: this.tabularApiSurface.bigtable.appProfileId,
+      methodName: this.methodName,
+      clientUid: this.tabularApiSurface.bigtable.clientUid,
+    };
+  }
+
   /**
    * Called when the operation starts. Records the start time.
    */
@@ -166,15 +178,9 @@ export class OperationMetricsCollector {
         const attributes = {
           streamingOperation: info.streamingOperation,
           attemptStatus: info.attemptStatus,
-          projectId,
-          instanceId: this.tabularApiSurface.instance.id,
-          table: this.tabularApiSurface.id,
-          cluster: this.cluster,
-          zone: this.zone,
-          appProfileId: this.tabularApiSurface.bigtable.appProfileId,
-          methodName: this.methodName,
           clientName: `nodejs-bigtable/${version}`,
-          clientUid: this.tabularApiSurface.bigtable.clientUid,
+          metricsCollectorData: this.getMetricsCollectorData(),
+          projectId,
         };
         const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
         this.metricsHandlers.forEach(metricsHandler => {
@@ -251,15 +257,9 @@ export class OperationMetricsCollector {
           const operationAttributes = {
             finalOperationStatus: info.finalOperationStatus,
             streamingOperation: info.streamingOperation,
-            projectId,
-            instanceId: this.tabularApiSurface.instance.id,
-            table: this.tabularApiSurface.id,
-            cluster: this.cluster,
-            zone: this.zone,
-            appProfileId: this.tabularApiSurface.bigtable.appProfileId,
-            methodName: this.methodName,
+            metricsCollectorData: this.getMetricsCollectorData(),
             clientName: `nodejs-bigtable/${version}`,
-            clientUid: this.tabularApiSurface.bigtable.clientUid,
+            projectId,
           };
           const metrics = {
             operationLatency: totalTime,
