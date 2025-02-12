@@ -131,17 +131,11 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '3. Client receives status information.\n';
           metricsCollector.onStatusReceived(status);
           logger.value += '4. Client receives metadata.\n';
-          metricsCollector.onMetadataReceived(
-            this.bigtable.projectId,
-            createMetadata('101')
-          );
+          metricsCollector.onMetadataReceived(createMetadata('101'));
           logger.value += '5. Client receives first row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '6. Client receives metadata.\n';
-          metricsCollector.onMetadataReceived(
-            this.bigtable.projectId,
-            createMetadata('102')
-          );
+          metricsCollector.onMetadataReceived(createMetadata('102'));
           logger.value += '7. Client receives second row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '8. A transient error occurs.\n';
@@ -155,17 +149,11 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '10. Client receives status information.\n';
           metricsCollector.onStatusReceived(status);
           logger.value += '11. Client receives metadata.\n';
-          metricsCollector.onMetadataReceived(
-            this.bigtable.projectId,
-            createMetadata('103')
-          );
+          metricsCollector.onMetadataReceived(createMetadata('103'));
           logger.value += '12. Client receives third row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '13. Client receives metadata.\n';
-          metricsCollector.onMetadataReceived(
-            this.bigtable.projectId,
-            createMetadata('104')
-          );
+          metricsCollector.onMetadataReceived(createMetadata('104'));
           logger.value += '14. Client receives fourth row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '15. User reads row 1\n';

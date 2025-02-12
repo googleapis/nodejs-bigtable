@@ -277,13 +277,10 @@ export class OperationMetricsCollector {
    * @param {string} projectId The id of the project.
    * @param {object} metadata The received metadata.
    */
-  onMetadataReceived(
-    projectId: string,
-    metadata: {
-      internalRepr: Map<string, Buffer>;
-      options: {};
-    }
-  ) {
+  onMetadataReceived(metadata: {
+    internalRepr: Map<string, Buffer>;
+    options: {};
+  }) {
     const mappedEntries = new Map(
       Array.from(metadata.internalRepr.entries(), ([key, value]) => [
         key,
@@ -297,9 +294,7 @@ export class OperationMetricsCollector {
       if (!this.serverTimeRead) {
         this.serverTimeRead = true;
         const serverTime = parseInt(matchedDuration[1]);
-        if (projectId) {
-          this.serverTime = serverTime;
-        }
+        this.serverTime = serverTime;
       }
     } else {
       this.connectivityErrorCount++;
