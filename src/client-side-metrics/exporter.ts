@@ -63,6 +63,7 @@ export interface ExportInput {
           zone: string;
           methodName: string;
           clientName: string;
+          clientUid: string;
         };
         startTime: number[];
         endTime: number[];
@@ -96,6 +97,7 @@ export function metricsToRequest(exportArgs: ExportInput) {
           method: allAttributes.methodName,
           status: allAttributes.finalOperationStatus.toString(),
           streaming: allAttributes.streamingOperation,
+          client_uid: allAttributes.clientUid,
         };
         const resourceLabels = {
           cluster: allAttributes.cluster,

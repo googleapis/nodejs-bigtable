@@ -16,8 +16,7 @@ export const expectedRequest = {
         labels: {
           app_profile: 'fake-app-profile-id',
           client_name: 'go-bigtable/1.35.0',
-          client_uid:
-            'go-9f4f393d-c57f-457c-9445-550b8a6f7d00@bahaaiman-ct-01.c.googlers.com',
+          client_uid: 'fake-client-uid',
           method: 'Bigtable.ReadRows',
           status: 'OK',
         },
@@ -51,9 +50,47 @@ export const expectedRequest = {
               bucketOptions: {
                 explicitBuckets: {
                   bounds: [
-                    0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10,
-                    25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250, 300, 400,
-                    800, 1000, 2000, 5000, 10000, 20000, 50000, 100000,
+                    0, // 1
+                    0.01, // 2
+                    0.05, // 3
+                    0.1, // 4
+                    0.3, // 5
+                    0.6, // 6
+                    0.8, // 7
+                    1, // 8
+                    2, // 9
+                    3, // 10
+                    4, // 11
+                    5, // 12
+                    6, // 13
+                    8, // 14
+                    10, // 15
+                    13, // 16
+                    16, // 17
+                    20, // 18
+                    25, // 19
+                    30, // 20
+                    40, // 21
+                    50, // 22
+                    65, // 23
+                    80, // 24
+                    100, // 25
+                    130, // 26
+                    160, // 27
+                    200, // 28
+                    250, // 29
+                    300, // 30
+                    400, // 31
+                    500, // 32
+                    650, // 33
+                    800, // 34
+                    1000, // 35
+                    2000, // 36
+                    5000, // 37
+                    10000, // 38
+                    20000, // 39
+                    50000, // 40
+                    100000, // 41
                   ],
                 },
               },
@@ -95,6 +132,11 @@ export const expectedRequest = {
                 '0', //35
                 '0', //36
                 '0', //37
+                '0', //38
+                '0', //39
+                '0', //40
+                '0', //41
+                '0', //42
               ],
             },
           },
@@ -106,7 +148,7 @@ export const expectedRequest = {
 };
 
 // TODO: Generate the export code
-describe('Bigtable/metricsToRequest', () => {
+describe.only('Bigtable/metricsToRequest', () => {
   it('Converts a counter and a histogram to the cloud monitoring format', () => {
     const actualRequest = metricsToRequest(exportInput);
     assert.deepStrictEqual(actualRequest, expectedRequest);
