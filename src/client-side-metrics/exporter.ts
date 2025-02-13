@@ -18,8 +18,6 @@ import {ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
-import {expectedRequest} from '../../test/metrics-collector/metricsToRequest';
-import {exportInput} from '../../test-common/export-input-fixture';
 
 interface ExportResult {
   code: number;
@@ -156,110 +154,6 @@ export function metricsToRequest(exportArgs: ExportInput) {
     timeSeries: timeSeriesArray,
   };
 }
-
-const goRequestToExporter = {
-  name: 'projects/cloud-native-db-dpes-shared',
-  timeSeries: [
-    {
-      metric: {
-        type: 'bigtable.googleapis.com/internal/client/operation_latencies',
-        labels: {
-          app_profile: '',
-          client_name: 'go-bigtable/1.35.0',
-          client_uid:
-            'go-9f4f393d-c57f-457c-9445-550b8a6f7d00@bahaaiman-ct-01.c.googlers.com',
-          method: 'Bigtable.MutateRows',
-          status: 'OK',
-          // "streaming":  "true"
-        },
-      },
-      resource: {
-        type: 'bigtable_client_raw',
-        labels: {
-          cluster: 'bahaaiman-instance-01-c1',
-          instance: 'interim-instance3',
-          project_id: 'cloud-native-db-dpes-shared',
-          table: 'profile-b5e6f29d-2122-4d2c-8c12-cfb8e90ca05f',
-          zone: 'us-central1-f',
-        },
-      },
-      metricKind: 'CUMULATIVE',
-      valueType: 'DISTRIBUTION',
-      points: [
-        {
-          interval: {
-            endTime: {
-              seconds: Math.floor(Date.now() / 1000),
-            },
-            startTime: {
-              seconds: Math.floor(Date.now() / 1000) - 1000,
-            },
-          },
-          value: {
-            distributionValue: {
-              count: '1',
-              mean: 331,
-              bucketOptions: {
-                explicitBuckets: {
-                  bounds: [
-                    0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65,
-                    80, 100, 130, 160, 200, 250, 300, 400, 500, 650, 800, 1000,
-                    2000, 5000, 10000, 20000, 50000, 100000, 200000, 400000,
-                    800000, 1600000, 3200000,
-                  ],
-                },
-              },
-              bucketCounts: [
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '1',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-              ],
-            },
-          },
-        },
-      ],
-      unit: 'ms',
-    },
-  ],
-};
 
 // TODO: Add test for when the export fails
 export class CloudMonitoringExporter extends MetricExporter {
