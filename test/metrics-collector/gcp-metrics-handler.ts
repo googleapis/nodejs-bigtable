@@ -27,10 +27,70 @@ function replaceTimestamps(
 }
 
 // Example usage:
-replaceTimestamps(expectedOtelExportInput, [123, 789], [456, 789]);
+// replaceTimestamps(expectedOtelExportInput, [123, 789], [456, 789]);
 
 // You can now use updatedInput with metricsToRequest, and it will have the new timestamps.
 
+describe.only('Bigtable/GCPMetricsHandler', () => {
+  it('Should export a value ready for sending to the CloudMonitoringExporter', done => {
+    (async () => {
+      // let exportPromiseResolve: (value: unknown) => void;
+      /*
+      const exportPromise = new Promise(resolve => {
+        setTimeout(() => {
+          resolve(undefined);
+        }, 30000);
+      });
+       */
+
+      /*
+      We need to create a timeout here because if we don't then mocha shuts down
+      the test as it is sleeping before the GCPMetricsHandler has a chance to
+      export the data.
+       */
+      const timeout = setTimeout(() => {}, 30000);
+
+      class TestExporter extends MetricExporter {
+        async export(
+          metrics: ResourceMetrics,
+          resultCallback: (result: ExportResult) => void
+        ): Promise<void> {
+          // Make export async
+          console.log('in export');
+          // Perform your assertions here on the 'metrics' object
+          // ... (your assertion logic)
+          clearTimeout(timeout);
+          resultCallback({code: 0});
+          done();
+          // exportPromiseResolve(undefined); // Resolve the promise after export
+        }
+      }
+
+      const handler = new GCPMetricsHandler(
+        new TestExporter({projectId: 'cloud-native-db-dpes-shared'})
+      );
+
+      for (const request of expectedRequestsHandled) {
+        if (request.metrics.attemptLatency) {
+          handler.onAttemptComplete(
+            request.metrics,
+            request.attributes as OnAttemptCompleteAttributes
+          );
+        } else {
+          handler.onOperationComplete(
+            request.metrics as OnOperationCompleteMetrics,
+            request.attributes as OnOperationCompleteAttributes
+          );
+        }
+      }
+
+      // await exportPromise; // Wait for the export to complete
+
+      console.log('done waiting'); // This will now be reached
+    })();
+  });
+});
+/*
 describe.only('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value ready for sending to the CloudMonitoringExporter', async () => {
     let testDone = false;
@@ -40,13 +100,6 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
         metrics: ResourceMetrics,
         resultCallback: (result: ExportResult) => void
       ) {
-        /*
-        replaceTimestamps(
-          metrics as unknown as typeof expectedOtelExportInput,
-          [123, 789],
-          [456, 789]
-        );
-         */
         // super.export(metrics, resultCallback);
         console.log('in export');
         try {
@@ -90,3 +143,12 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
     console.log('done waiting');
   });
 });
+*/
+
+/*
+replaceTimestamps(
+  metrics as unknown as typeof expectedOtelExportInput,
+  [123, 789],
+  [456, 789]
+);
+ */
