@@ -47,7 +47,7 @@ export const expectedRequest = {
           value: {
             distributionValue: {
               count: '1',
-              mean: 121,
+              mean: 11979,
               bucketOptions: {
                 explicitBuckets: {
                   bounds: [
