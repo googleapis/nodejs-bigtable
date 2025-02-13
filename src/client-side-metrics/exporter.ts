@@ -271,25 +271,9 @@ export class CloudMonitoringExporter extends MetricExporter {
       try {
         // TODO: Remove casting.
         const request = metricsToRequest(metrics as unknown as ExportInput);
-        /*
-        const result = await this.monitoringClient.createTimeSeries(
+        await this.monitoringClient.createTimeSeries(
           request as ICreateTimeSeriesRequest
         );
-         */
-        const usedRequest = JSON.parse(
-          JSON.stringify(expectedRequest).replace(
-            /some-project/g,
-            'cloud-native-db-dpes-shared'
-          )
-        );
-        await this.monitoringClient.createTimeSeries(
-          usedRequest as ICreateTimeSeriesRequest
-        );
-        /*
-        await this.monitoringClient.createTimeSeries(
-          goRequestToExporter as ICreateTimeSeriesRequest
-        );
-         */
         const exportResult = {code: 0};
         resultCallback(exportResult);
       } catch (error) {
