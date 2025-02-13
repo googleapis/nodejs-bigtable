@@ -25,7 +25,7 @@ export const expectedRequestsHandled = [
       connectivityErrorCount: 0,
     },
     attributes: {
-      streamingOperation: StreamingState.STREAMING,
+      streamingOperation: 'true',
       attemptStatus: 4,
       clientName: 'nodejs-bigtable',
       metricsCollectorData: {
@@ -34,7 +34,7 @@ export const expectedRequestsHandled = [
         table: 'fakeTableId',
         cluster: 'fake-cluster3',
         zone: 'us-west1-c',
-        methodName: MethodName.READ_ROWS,
+        methodName: 'readRows',
         clientUid: 'fake-uuid',
       },
       projectId: 'my-project',
@@ -47,7 +47,7 @@ export const expectedRequestsHandled = [
       connectivityErrorCount: 0,
     },
     attributes: {
-      streamingOperation: StreamingState.STREAMING,
+      streamingOperation: 'true',
       attemptStatus: 0,
       clientName: 'nodejs-bigtable',
       metricsCollectorData: {
@@ -56,7 +56,7 @@ export const expectedRequestsHandled = [
         table: 'fakeTableId',
         cluster: 'fake-cluster3',
         zone: 'us-west1-c',
-        methodName: MethodName.READ_ROWS,
+        methodName: 'readRows',
         clientUid: 'fake-uuid',
       },
       projectId: 'my-project',
@@ -70,14 +70,14 @@ export const expectedRequestsHandled = [
     },
     attributes: {
       finalOperationStatus: 0,
-      streamingOperation: StreamingState.STREAMING,
+      streamingOperation: 'true',
       metricsCollectorData: {
         appProfileId: undefined,
         instanceId: 'fakeInstanceId',
         table: 'fakeTableId',
         cluster: 'fake-cluster3',
         zone: 'us-west1-c',
-        methodName: MethodName.READ_ROWS,
+        methodName: 'readRows',
         clientUid: 'fake-uuid',
       },
       clientName: 'nodejs-bigtable',

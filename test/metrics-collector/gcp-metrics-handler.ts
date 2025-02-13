@@ -32,7 +32,7 @@ replaceTimestamps(expectedOtelExportInput, [123, 789], [456, 789]);
 // You can now use updatedInput with metricsToRequest, and it will have the new timestamps.
 
 describe.only('Bigtable/GCPMetricsHandler', () => {
-  it('Should export a value ready for sending to the CloudMonitoringExporter', done => {
+  it('Should export a value ready for sending to the CloudMonitoringExporter', async () => {
     let testDone = false;
     let resolvePlaceholder: (arg: string) => void;
     class TestExporter extends MetricExporter {
@@ -40,11 +40,13 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
         metrics: ResourceMetrics,
         resultCallback: (result: ExportResult) => void
       ) {
+        /*
         replaceTimestamps(
           metrics as unknown as typeof expectedOtelExportInput,
           [123, 789],
           [456, 789]
         );
+         */
         // super.export(metrics, resultCallback);
         console.log('in export');
         try {
@@ -82,8 +84,9 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
     // This promise is needed because the test completes prematurely otherwise
     // before the metric is exported.
     // TODO: Try removing this promise
-    new Promise(resolve => {
+    await new Promise(resolve => {
       resolvePlaceholder = resolve;
     });
+    console.log('done waiting');
   });
 });
