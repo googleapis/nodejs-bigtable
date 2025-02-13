@@ -14,88 +14,23 @@
 
 import {grpc} from 'google-gax';
 
-/**
- * Standard attributes common to various Bigtable client-side metrics. These attributes provide
- * contextual information about the Bigtable environment and operation.
- */
-interface StandardAttributes {
-  projectId: string;
+// The backend is expecting true/false and will fail if other values are provided.
+// export in open telemetry is expecting string value attributes so we don't use boolean
+// true/false.
+export enum StreamingState {
+  STREAMING = 'true',
+  UNARY = 'false',
+}
+
+type IMetricsCollectorData = {
   instanceId: string;
   table: string;
   cluster?: string;
   zone?: string;
   appProfileId?: string;
   methodName: MethodName;
-  clientName: string;
-}
-
-export enum StreamingState {
-  STREAMING = 'streaming',
-  UNARY = 'unary',
-}
-
-/**
- * Attributes associated with operation latency metrics for Bigtable client operations.
- * These attributes provide context about the Bigtable environment and the completed operation.
- */
-interface OperationLatencyAttributes extends StandardAttributes {
-  finalOperationStatus: grpc.status;
-  streamingOperation: StreamingState;
-}
-
-/**
- * Attributes associated with attempt latency metrics for Bigtable client operations.
- * These attributes provide context about the Bigtable environment, the specific attempt, and whether the operation was streaming.
- */
-interface AttemptLatencyAttributes extends StandardAttributes {
-  attemptStatus: grpc.status;
-  streamingOperation: StreamingState;
-}
-
-/**
- * Attributes associated with retry count metrics for Bigtable client operations.  These attributes
- * provide context about the Bigtable environment and the final status of the operation.
- */
-interface RetryCountAttributes extends StandardAttributes {
-  finalOperationStatus: grpc.status;
-}
-
-/**
- * Attributes associated with application blocking latencies for Bigtable client operations.
- * These attributes provide context about the Bigtable environment and the operation being performed.
- */
-type ApplicationBlockingLatenciesAttributes = StandardAttributes;
-
-/**
- * Attributes associated with first response latency metrics for Bigtable client operations.
- * These attributes provide context about the Bigtable environment and the final status of the operation.
- */
-interface FirstResponseLatencyAttributes extends StandardAttributes {
-  finalOperationStatus: grpc.status;
-}
-
-/**
- * Attributes associated with server latency metrics for Bigtable client operations.
- * These attributes provide context about the Bigtable environment, the specific attempt, and whether the operation was streaming.
- */
-interface ServerLatenciesAttributes extends StandardAttributes {
-  attemptStatus: grpc.status;
-  streamingOperation: StreamingState;
-}
-
-/**
- * Attributes associated with connectivity error count metrics for Bigtable client operations.
- * These attributes provide context about the Bigtable environment and the status of the attempt.
- */
-interface ConnectivityErrorCountAttributes extends StandardAttributes {
-  attemptStatus: grpc.status;
-}
-
-/**
- * Attributes associated with client blocking latencies for Bigtable client operations.
- * These attributes provide context about the Bigtable environment and the operation being performed.
- */
-type ClientBlockingLatenciesAttributes = StandardAttributes;
+  clientUid: string;
+};
 
 /**
  * Attributes associated with the completion of a Bigtable operation. These
@@ -103,10 +38,13 @@ type ClientBlockingLatenciesAttributes = StandardAttributes;
  * operation, and its final status.  They are used for recording metrics such as
  * operation latency, first response latency, and retry count.
  */
-export type OnOperationCompleteAttributes =
-  | OperationLatencyAttributes
-  | FirstResponseLatencyAttributes
-  | RetryCountAttributes;
+export type OnOperationCompleteAttributes = {
+  projectId: string;
+  metricsCollectorData: IMetricsCollectorData;
+  clientName: string;
+  finalOperationStatus: grpc.status;
+  streamingOperation: StreamingState;
+};
 
 /**
  * Attributes associated with the completion of a single attempt of a Bigtable
@@ -115,21 +53,23 @@ export type OnOperationCompleteAttributes =
  * are used for recording metrics such as attempt latency, server latency, and
  * connectivity errors.
  */
-export type OnAttemptCompleteAttributes =
-  | AttemptLatencyAttributes
-  | ConnectivityErrorCountAttributes
-  | ServerLatenciesAttributes
-  | ClientBlockingLatenciesAttributes;
+export type OnAttemptCompleteAttributes = {
+  projectId: string;
+  metricsCollectorData: IMetricsCollectorData;
+  clientName: string;
+  attemptStatus: grpc.status;
+  streamingOperation: StreamingState;
+};
 
 /**
  * Represents the names of Bigtable methods. These are used as attributes for
  * metrics, allowing for differentiation of performance by method.
  */
 export enum MethodName {
-  READ_ROWS = 'readRows',
-  MUTATE_ROW = 'mutateRow',
-  CHECK_AND_MUTATE_ROW = 'checkAndMutateRow',
-  READ_MODIFY_WRITE_ROW = 'readModifyWriteRow',
-  SAMPLE_ROW_KEYS = 'sampleRowKeys',
-  MUTATE_ROWS = 'mutateRows',
+  READ_ROWS = 'Bigtable.ReadRows',
+  MUTATE_ROW = 'Bigtable.MutateRow',
+  CHECK_AND_MUTATE_ROW = 'Bigtable.CheckAndMutateRow',
+  READ_MODIFY_WRITE_ROW = 'Bigtable.ReadModifyWriteRow',
+  SAMPLE_ROW_KEYS = 'Bigtable.SampleRowKeys',
+  MUTATE_ROWS = 'Bigtable.MutateRows',
 }

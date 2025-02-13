@@ -19,7 +19,7 @@ import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
 
-interface ExportResult {
+export interface ExportResult {
   code: number;
 }
 

@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {
+  MethodName,
+  StreamingState,
+} from '../src/client-side-metrics/client-side-metrics-attributes';
+
 export const expectedRequestsHandled = [
   {
     metrics: {
@@ -20,7 +25,7 @@ export const expectedRequestsHandled = [
       connectivityErrorCount: 0,
     },
     attributes: {
-      streamingOperation: 'true',
+      streamingOperation: StreamingState.STREAMING,
       attemptStatus: 4,
       clientName: 'nodejs-bigtable',
       metricsCollectorData: {
@@ -29,7 +34,7 @@ export const expectedRequestsHandled = [
         table: 'fakeTableId',
         cluster: 'fake-cluster3',
         zone: 'us-west1-c',
-        methodName: 'readRows',
+        methodName: MethodName.READ_ROWS,
         clientUid: 'fake-uuid',
       },
       projectId: 'my-project',
@@ -42,7 +47,7 @@ export const expectedRequestsHandled = [
       connectivityErrorCount: 0,
     },
     attributes: {
-      streamingOperation: 'true',
+      streamingOperation: StreamingState.STREAMING,
       attemptStatus: 0,
       clientName: 'nodejs-bigtable',
       metricsCollectorData: {
@@ -51,7 +56,7 @@ export const expectedRequestsHandled = [
         table: 'fakeTableId',
         cluster: 'fake-cluster3',
         zone: 'us-west1-c',
-        methodName: 'readRows',
+        methodName: MethodName.READ_ROWS,
         clientUid: 'fake-uuid',
       },
       projectId: 'my-project',
@@ -65,14 +70,14 @@ export const expectedRequestsHandled = [
     },
     attributes: {
       finalOperationStatus: 0,
-      streamingOperation: 'true',
+      streamingOperation: StreamingState.STREAMING,
       metricsCollectorData: {
         appProfileId: undefined,
         instanceId: 'fakeInstanceId',
         table: 'fakeTableId',
         cluster: 'fake-cluster3',
         zone: 'us-west1-c',
-        methodName: 'readRows',
+        methodName: MethodName.READ_ROWS,
         clientUid: 'fake-uuid',
       },
       clientName: 'nodejs-bigtable',

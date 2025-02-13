@@ -53,12 +53,15 @@ interface Metrics {
  * This handler records metrics such as operation latency, attempt latency, retry count, and more,
  * associating them with relevant attributes for detailed analysis in Cloud Monitoring.
  */
-export class GCPMetricsHandler implements IMetricsHandler {
+export class GCPMetricsHandler<T extends MetricExporter>
+  implements IMetricsHandler
+{
   private initialized = false;
   private otelMetrics?: Metrics;
-  private exporter: typeof MetricExporter;
+  private exporter: T;
 
-  constructor(exporter: typeof MetricExporter) {
+  constructor(exporter: T) {
+    console.log('Passing in exporter');
     this.exporter = exporter;
   }
 
@@ -77,6 +80,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
         25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250, 300, 400, 500, 650,
         800, 1000, 2000, 5000, 10000, 20000, 50000, 100000,
       ];
+      /*
       const histogramAggregation = new ExplicitBucketHistogramAggregation();
       const viewList = [
         'operation_latencies',
@@ -95,8 +99,9 @@ export class GCPMetricsHandler implements IMetricsHandler {
             aggregation: name.slice(-9) ? sumAggregation : histogramAggregation,
           })
       );
+       */
       const meterProvider = new MeterProvider({
-        views: viewList,
+        // views: viewList,
         resource: new Resources.Resource({
           'service.name': 'Cloud Bigtable Table',
           'cloud.provider': 'gcp',
@@ -109,7 +114,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
           new PeriodicExportingMetricReader({
             // Export metrics every 10 seconds. 5 seconds is the smallest sample period allowed by
             // Cloud Monitoring.
-            exportIntervalMillis: 100_000,
+            exportIntervalMillis: 10_000,
             exporter: this.exporter,
           }),
         ],
@@ -122,9 +127,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
             description:
               "The total end-to-end latency across all RPC attempts associated with a Bigtable operation. This metric measures an operation's round trip from the client to Bigtable and back to the client and includes all retries.",
             unit: 'ms',
-            advice: {
-              explicitBucketBoundaries: buckets,
-            },
           }
         ),
         attemptLatencies: meter.createHistogram(
@@ -133,9 +135,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
             description:
               'The latencies of a client RPC attempt. Under normal circumstances, this value is identical to operation_latencies. If the client receives transient errors, however, then operation_latencies is the sum of all attempt_latencies and the exponential delays.',
             unit: 'ms',
-            advice: {
-              explicitBucketBoundaries: buckets,
-            },
           }
         ),
         retryCount: meter.createHistogram(
@@ -185,6 +184,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
           }
         ),
       };
+      console.log('Done initializing');
     }
   }
 
@@ -198,6 +198,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
     metrics: OnOperationCompleteMetrics,
     attributes: OnOperationCompleteAttributes
   ) {
+    console.log('onOperationComplete');
     this.initialize(attributes.projectId);
     this.otelMetrics?.operationLatencies.record(
       metrics.operationLatency,
@@ -221,7 +222,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
     metrics: OnAttemptCompleteMetrics,
     attributes: OnAttemptCompleteAttributes
   ) {
-    console.log('onAttemptComplete handler');
+    console.log('onAttemptComplete');
     this.initialize(attributes.projectId);
     this.otelMetrics?.attemptLatencies.record(
       metrics.attemptLatency,
