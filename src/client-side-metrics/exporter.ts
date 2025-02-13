@@ -122,11 +122,9 @@ export function metricsToRequest(exportArgs: ExportInput) {
               interval: {
                 endTime: {
                   seconds: dataPoint.endTime[0],
-                  nanos: dataPoint.endTime[1],
                 },
                 startTime: {
                   seconds: dataPoint.startTime[0],
-                  nanos: dataPoint.startTime[1],
                 },
               },
               value: {

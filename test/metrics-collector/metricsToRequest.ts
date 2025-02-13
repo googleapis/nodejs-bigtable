@@ -15,17 +15,18 @@ export const expectedRequest = {
         type: 'bigtable.googleapis.com/internal/client/operation_latencies',
         labels: {
           app_profile: 'fake-app-profile-id',
-          client_name: 'go-bigtable/1.35.0',
-          client_uid: 'fake-client-uid',
+          client_name: 'nodejs-bigtable/5.1.2',
+          client_uid: 'fake-uuid',
           method: 'Bigtable.ReadRows',
-          status: 'OK',
+          status: '0',
+          streaming: 'true',
         },
       },
       resource: {
         type: 'bigtable_client_raw',
         labels: {
           cluster: 'fake-cluster3',
-          instance: 'emulator-test-instance2',
+          instance: 'emulator-test-instance',
           project_id: 'some-project',
           table: 'my-table',
           zone: 'us-central1-f',
@@ -37,16 +38,16 @@ export const expectedRequest = {
         {
           interval: {
             endTime: {
-              seconds: Math.floor(Date.now() / 1000),
+              seconds: fakeEndTime,
             },
             startTime: {
-              seconds: Math.floor(Date.now() / 1000) - 1000,
+              seconds: fakeStartTime,
             },
           },
           value: {
             distributionValue: {
               count: '1',
-              mean: 376.103605,
+              mean: 121,
               bucketOptions: {
                 explicitBuckets: {
                   bounds: [
