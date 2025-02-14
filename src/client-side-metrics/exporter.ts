@@ -18,6 +18,7 @@ import {ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
+import {RETRY_COUNT_NAME} from '../../test-common/expected-otel-export-input';
 
 export interface ExportResult {
   code: number;
@@ -93,7 +94,7 @@ export function metricsToRequest(exportArgs: ExportInput) {
           app_profile: allAttributes.appProfileId,
           client_name: allAttributes.clientName,
           method: allAttributes.methodName,
-          status: allAttributes.finalOperationStatus.toString(),
+          status: allAttributes.finalOperationStatus?.toString(),
           streaming: allAttributes.streamingOperation,
           client_uid: allAttributes.clientUid,
         };
@@ -104,46 +105,78 @@ export function metricsToRequest(exportArgs: ExportInput) {
           table: allAttributes.table,
           zone: allAttributes.zone,
         };
-        const timeSeries = {
-          metric: {
-            type: metricName,
-            labels: metricLabels,
-          },
-          resource: {
-            type: exportArgs.resource._syncAttributes[
-              'monitored_resource.type'
-            ],
-            labels: resourceLabels,
-          },
-          metricKind: 'CUMULATIVE',
-          valueType: 'DISTRIBUTION',
-          points: [
-            {
-              interval: {
-                endTime: {
-                  seconds: dataPoint.endTime[0],
-                },
-                startTime: {
-                  seconds: dataPoint.startTime[0],
-                },
-              },
-              value: {
-                distributionValue: {
-                  count: String(dataPoint.value.count),
-                  mean: dataPoint.value.sum / dataPoint.value.count,
-                  bucketOptions: {
-                    explicitBuckets: {
-                      bounds: dataPoint.value.buckets.boundaries,
-                    },
-                  },
-                  bucketCounts: dataPoint.value.buckets.counts.map(String),
-                },
-              },
+        if (metricName === RETRY_COUNT_NAME) {
+          const timeSeries = {
+            metric: {
+              type: metricName,
+              labels: metricLabels,
             },
-          ],
-          unit: metric.descriptor.unit || 'ms', // Default to 'ms' if no unit is specified
-        };
-        timeSeriesArray.push(timeSeries);
+            resource: {
+              type: exportArgs.resource._syncAttributes[
+                'monitored_resource.type'
+              ],
+              labels: resourceLabels,
+            },
+            valueType: 'INT64',
+            points: [
+              {
+                interval: {
+                  endTime: {
+                    seconds: dataPoint.endTime[0],
+                  },
+                  startTime: {
+                    seconds: dataPoint.startTime[0],
+                  },
+                },
+                value: {
+                  int64Value: dataPoint.value,
+                },
+              },
+            ],
+          };
+          timeSeriesArray.push(timeSeries);
+        } else {
+          const timeSeries = {
+            metric: {
+              type: metricName,
+              labels: metricLabels,
+            },
+            resource: {
+              type: exportArgs.resource._syncAttributes[
+                'monitored_resource.type'
+              ],
+              labels: resourceLabels,
+            },
+            metricKind: 'CUMULATIVE',
+            valueType: 'DISTRIBUTION',
+            points: [
+              {
+                interval: {
+                  endTime: {
+                    seconds: dataPoint.endTime[0],
+                  },
+                  startTime: {
+                    seconds: dataPoint.startTime[0],
+                  },
+                },
+                value: {
+                  distributionValue: {
+                    count: String(dataPoint.value.count),
+                    mean: dataPoint.value.sum / dataPoint.value.count,
+                    bucketOptions: {
+                      explicitBuckets: {
+                        bounds: dataPoint.value.buckets.boundaries,
+                      },
+                    },
+                    bucketCounts: dataPoint.value.buckets.counts.map(String),
+                  },
+                },
+              },
+            ],
+            unit: metric.descriptor.unit || 'ms', // Default to 'ms' if no unit is specified
+          };
+          timeSeriesArray.push(timeSeries);
+        }
       }
     }
   }

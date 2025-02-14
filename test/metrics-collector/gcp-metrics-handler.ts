@@ -1,6 +1,10 @@
 import {describe} from 'mocha';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
-import {ExportResult} from '../../src/client-side-metrics/exporter';
+import {
+  ExportInput,
+  ExportResult,
+  metricsToRequest,
+} from '../../src/client-side-metrics/exporter';
 import {GCPMetricsHandler} from '../../src/client-side-metrics/gcp-metrics-handler';
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import {expectedRequestsHandled} from '../../test-common/metrics-handler-fixture';
@@ -11,6 +15,7 @@ import {
 import {OnOperationCompleteMetrics} from '../../src/client-side-metrics/metrics-handler';
 import {expectedOtelExportInput} from '../../test-common/expected-otel-export-input';
 import * as assert from 'assert';
+import {exportInput} from '../../test-common/export-input-fixture';
 
 function replaceTimestamps(
   request: typeof expectedOtelExportInput,
@@ -56,20 +61,31 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void
         ): Promise<void> {
-          // Make export async
-          replaceTimestamps(
-            metrics as unknown as typeof expectedOtelExportInput,
-            [123, 789],
-            [456, 789]
-          );
-          assert.deepStrictEqual(metrics, expectedOtelExportInput);
-          console.log('in export');
-          // Perform your assertions here on the 'metrics' object
-          // ... (your assertion logic)
-          clearTimeout(timeout);
-          resultCallback({code: 0});
-          done();
-          // exportPromiseResolve(undefined); // Resolve the promise after export
+          try {
+            console.log('in exporter');
+            // Make export async
+            replaceTimestamps(
+              metrics as unknown as typeof expectedOtelExportInput,
+              [123, 789],
+              [456, 789]
+            );
+            assert.deepStrictEqual(
+              JSON.parse(JSON.stringify(metrics)),
+              expectedOtelExportInput
+            );
+            const convertedRequest = metricsToRequest(
+              expectedOtelExportInput as unknown as ExportInput
+            );
+            console.log('in export');
+            // Perform your assertions here on the 'metrics' object
+            // ... (your assertion logic)
+            clearTimeout(timeout);
+            resultCallback({code: 0});
+            done();
+            // exportPromiseResolve(undefined); // Resolve the promise after export
+          } catch (e) {
+            done(e);
+          }
         }
       }
 

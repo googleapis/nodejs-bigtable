@@ -178,6 +178,7 @@ export class GCPMetricsHandler<T extends MetricExporter>
             description:
               'Latencies between the time when the Google frontend receives an RPC and when it sends the first byte of the response.',
             unit: 'ms',
+
             advice: {
               explicitBucketBoundaries: latencyBuckets,
             },
