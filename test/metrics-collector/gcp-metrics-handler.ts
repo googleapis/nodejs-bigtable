@@ -10,6 +10,7 @@ import {
 } from '../../src/client-side-metrics/client-side-metrics-attributes';
 import {OnOperationCompleteMetrics} from '../../src/client-side-metrics/metrics-handler';
 import {expectedOtelExportInput} from '../../test-common/expected-otel-export-input';
+import * as assert from 'assert';
 
 function replaceTimestamps(
   request: typeof expectedOtelExportInput,
@@ -56,6 +57,12 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
           resultCallback: (result: ExportResult) => void
         ): Promise<void> {
           // Make export async
+          replaceTimestamps(
+            metrics as unknown as typeof expectedOtelExportInput,
+            [123, 789],
+            [456, 789]
+          );
+          assert.deepStrictEqual(metrics, expectedOtelExportInput);
           console.log('in export');
           // Perform your assertions here on the 'metrics' object
           // ... (your assertion logic)

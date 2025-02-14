@@ -75,7 +75,7 @@ export class GCPMetricsHandler<T extends MetricExporter>
     if (!this.initialized) {
       this.initialized = true;
       const sumAggregation = Aggregation.Sum();
-      const buckets = [
+      const latencyBuckets = [
         0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20,
         25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250, 300, 400, 500, 650,
         800, 1000, 2000, 5000, 10000, 20000, 50000, 100000,
@@ -127,6 +127,9 @@ export class GCPMetricsHandler<T extends MetricExporter>
             description:
               "The total end-to-end latency across all RPC attempts associated with a Bigtable operation. This metric measures an operation's round trip from the client to Bigtable and back to the client and includes all retries.",
             unit: 'ms',
+            advice: {
+              explicitBucketBoundaries: latencyBuckets,
+            },
           }
         ),
         attemptLatencies: meter.createHistogram(
@@ -135,9 +138,12 @@ export class GCPMetricsHandler<T extends MetricExporter>
             description:
               'The latencies of a client RPC attempt. Under normal circumstances, this value is identical to operation_latencies. If the client receives transient errors, however, then operation_latencies is the sum of all attempt_latencies and the exponential delays.',
             unit: 'ms',
+            advice: {
+              explicitBucketBoundaries: latencyBuckets,
+            },
           }
         ),
-        retryCount: meter.createHistogram(
+        retryCount: meter.createCounter(
           'bigtable.googleapis.com/internal/client/retry_count',
           {
             description:
@@ -150,6 +156,9 @@ export class GCPMetricsHandler<T extends MetricExporter>
             description:
               'The time from when the client receives the response to a request until the application reads the response. This metric is most relevant for ReadRows requests. The start and stop times for this metric depend on the way that you send the read request; see Application blocking latencies timer examples for details.',
             unit: 'ms',
+            advice: {
+              explicitBucketBoundaries: latencyBuckets,
+            },
           }
         ),
         firstResponseLatencies: meter.createHistogram(
@@ -158,6 +167,9 @@ export class GCPMetricsHandler<T extends MetricExporter>
             description:
               'Latencies from when a client sends a request and receives the first row of the response.',
             unit: 'ms',
+            advice: {
+              explicitBucketBoundaries: latencyBuckets,
+            },
           }
         ),
         serverLatencies: meter.createHistogram(
@@ -166,6 +178,9 @@ export class GCPMetricsHandler<T extends MetricExporter>
             description:
               'Latencies between the time when the Google frontend receives an RPC and when it sends the first byte of the response.',
             unit: 'ms',
+            advice: {
+              explicitBucketBoundaries: latencyBuckets,
+            },
           }
         ),
         connectivityErrorCount: meter.createHistogram(
@@ -173,6 +188,9 @@ export class GCPMetricsHandler<T extends MetricExporter>
           {
             description:
               "The number of requests that failed to reach Google's network. In normal cases, this number is 0. When the number is not 0, it can indicate connectivity issues between the application and the Google network.",
+            advice: {
+              explicitBucketBoundaries: latencyBuckets,
+            },
           }
         ),
         clientBlockingLatencies: meter.createHistogram(
@@ -181,6 +199,9 @@ export class GCPMetricsHandler<T extends MetricExporter>
             description:
               'Latencies introduced when the client blocks the sending of more requests to the server because of too many pending requests in a bulk operation.',
             unit: 'ms',
+            advice: {
+              explicitBucketBoundaries: latencyBuckets,
+            },
           }
         ),
       };
@@ -204,7 +225,7 @@ export class GCPMetricsHandler<T extends MetricExporter>
       metrics.operationLatency,
       attributes
     );
-    this.otelMetrics?.retryCount.record(metrics.retryCount, attributes);
+    this.otelMetrics?.retryCount.add(metrics.retryCount, attributes);
     this.otelMetrics?.firstResponseLatencies.record(
       metrics.firstResponseLatency,
       attributes

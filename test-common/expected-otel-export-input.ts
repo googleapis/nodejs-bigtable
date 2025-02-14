@@ -38,7 +38,14 @@ export const expectedOtelExportInput = {
               "The total end-to-end latency across all RPC attempts associated with a Bigtable operation. This metric measures an operation's round trip from the client to Bigtable and back to the client and includes all retries.",
             unit: 'ms',
             valueType: 1,
-            advice: {},
+            advice: {
+              explicitBucketBoundaries: [
+                0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10, 13,
+                16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250, 300,
+                400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000, 50000,
+                100000,
+              ],
+            },
           },
           aggregationTemporality: 1,
           dataPointType: 0,
@@ -66,10 +73,16 @@ export const expectedOtelExportInput = {
                 sum: 7000,
                 buckets: {
                   boundaries: [
-                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
-                    7500, 10000,
+                    0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10,
+                    13, 16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250,
+                    300, 400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000,
+                    50000, 100000,
                   ],
-                  counts: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+                  counts: [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+                    0, 0,
+                  ],
                 },
                 count: 1,
               },
@@ -84,7 +97,14 @@ export const expectedOtelExportInput = {
               'The latencies of a client RPC attempt. Under normal circumstances, this value is identical to operation_latencies. If the client receives transient errors, however, then operation_latencies is the sum of all attempt_latencies and the exponential delays.',
             unit: 'ms',
             valueType: 1,
-            advice: {},
+            advice: {
+              explicitBucketBoundaries: [
+                0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10, 13,
+                16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250, 300,
+                400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000, 50000,
+                100000,
+              ],
+            },
           },
           aggregationTemporality: 1,
           dataPointType: 0,
@@ -112,10 +132,16 @@ export const expectedOtelExportInput = {
                 sum: 2000,
                 buckets: {
                   boundaries: [
-                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
-                    7500, 10000,
+                    0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10,
+                    13, 16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250,
+                    300, 400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000,
+                    50000, 100000,
                   ],
-                  counts: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                  counts: [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+                    0, 0,
+                  ],
                 },
                 count: 1,
               },
@@ -143,10 +169,16 @@ export const expectedOtelExportInput = {
                 sum: 2000,
                 buckets: {
                   boundaries: [
-                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
-                    7500, 10000,
+                    0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10,
+                    13, 16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250,
+                    300, 400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000,
+                    50000, 100000,
                   ],
-                  counts: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                  counts: [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+                    0, 0,
+                  ],
                 },
                 count: 1,
               },
@@ -156,7 +188,7 @@ export const expectedOtelExportInput = {
         {
           descriptor: {
             name: 'bigtable.googleapis.com/internal/client/retry_count',
-            type: 'HISTOGRAM',
+            type: 'COUNTER',
             description:
               'A counter that records the number of attempts that an operation required to complete. Under normal circumstances, this value is empty.',
             unit: '',
@@ -164,7 +196,7 @@ export const expectedOtelExportInput = {
             advice: {},
           },
           aggregationTemporality: 1,
-          dataPointType: 0,
+          dataPointType: 3,
           dataPoints: [
             {
               attributes: {
@@ -183,21 +215,10 @@ export const expectedOtelExportInput = {
               },
               startTime: [123, 789],
               endTime: [456, 789],
-              value: {
-                min: 1,
-                max: 1,
-                sum: 1,
-                buckets: {
-                  boundaries: [
-                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
-                    7500, 10000,
-                  ],
-                  counts: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                },
-                count: 1,
-              },
+              value: 1,
             },
           ],
+          isMonotonic: true,
         },
         {
           descriptor: {
@@ -207,7 +228,14 @@ export const expectedOtelExportInput = {
               'Latencies from when a client sends a request and receives the first row of the response.',
             unit: 'ms',
             valueType: 1,
-            advice: {},
+            advice: {
+              explicitBucketBoundaries: [
+                0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10, 13,
+                16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250, 300,
+                400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000, 50000,
+                100000,
+              ],
+            },
           },
           aggregationTemporality: 1,
           dataPointType: 0,
@@ -235,10 +263,16 @@ export const expectedOtelExportInput = {
                 sum: 5000,
                 buckets: {
                   boundaries: [
-                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
-                    7500, 10000,
+                    0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10,
+                    13, 16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250,
+                    300, 400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000,
+                    50000, 100000,
                   ],
-                  counts: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                  counts: [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+                    0, 0,
+                  ],
                 },
                 count: 1,
               },
@@ -253,7 +287,14 @@ export const expectedOtelExportInput = {
               'Latencies between the time when the Google frontend receives an RPC and when it sends the first byte of the response.',
             unit: 'ms',
             valueType: 1,
-            advice: {},
+            advice: {
+              explicitBucketBoundaries: [
+                0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10, 13,
+                16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250, 300,
+                400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000, 50000,
+                100000,
+              ],
+            },
           },
           aggregationTemporality: 1,
           dataPointType: 0,
@@ -281,10 +322,16 @@ export const expectedOtelExportInput = {
                 sum: 101,
                 buckets: {
                   boundaries: [
-                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
-                    7500, 10000,
+                    0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10,
+                    13, 16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250,
+                    300, 400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000,
+                    50000, 100000,
                   ],
-                  counts: [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                  counts: [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0,
+                  ],
                 },
                 count: 1,
               },
@@ -312,10 +359,16 @@ export const expectedOtelExportInput = {
                 sum: 103,
                 buckets: {
                   boundaries: [
-                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
-                    7500, 10000,
+                    0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10,
+                    13, 16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250,
+                    300, 400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000,
+                    50000, 100000,
                   ],
-                  counts: [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                  counts: [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0,
+                  ],
                 },
                 count: 1,
               },
@@ -330,7 +383,14 @@ export const expectedOtelExportInput = {
               "The number of requests that failed to reach Google's network. In normal cases, this number is 0. When the number is not 0, it can indicate connectivity issues between the application and the Google network.",
             unit: '',
             valueType: 1,
-            advice: {},
+            advice: {
+              explicitBucketBoundaries: [
+                0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10, 13,
+                16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250, 300,
+                400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000, 50000,
+                100000,
+              ],
+            },
           },
           aggregationTemporality: 1,
           dataPointType: 0,
@@ -358,10 +418,16 @@ export const expectedOtelExportInput = {
                 sum: 0,
                 buckets: {
                   boundaries: [
-                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
-                    7500, 10000,
+                    0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10,
+                    13, 16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250,
+                    300, 400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000,
+                    50000, 100000,
                   ],
-                  counts: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  counts: [
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0,
+                  ],
                 },
                 count: 1,
               },
@@ -389,10 +455,16 @@ export const expectedOtelExportInput = {
                 sum: 0,
                 buckets: {
                   boundaries: [
-                    0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000,
-                    7500, 10000,
+                    0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10,
+                    13, 16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250,
+                    300, 400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000,
+                    50000, 100000,
                   ],
-                  counts: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  counts: [
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0,
+                  ],
                 },
                 count: 1,
               },
