@@ -149,7 +149,7 @@ export const expectedRequest = {
 };
 
 // TODO: Generate the export code
-describe.only('Bigtable/metricsToRequest', () => {
+describe('Bigtable/metricsToRequest', () => {
   it('Converts a counter and a histogram to the cloud monitoring format', () => {
     const actualRequest = metricsToRequest(exportInput);
     assert.deepStrictEqual(actualRequest, expectedRequest);

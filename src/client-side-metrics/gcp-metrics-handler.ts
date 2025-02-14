@@ -61,7 +61,6 @@ export class GCPMetricsHandler<T extends MetricExporter>
   private exporter: T;
 
   constructor(exporter: T) {
-    console.log('Passing in exporter');
     this.exporter = exporter;
   }
 
@@ -219,7 +218,6 @@ export class GCPMetricsHandler<T extends MetricExporter>
     metrics: OnOperationCompleteMetrics,
     attributes: OnOperationCompleteAttributes
   ) {
-    console.log('onOperationComplete');
     this.initialize(attributes.projectId);
     this.otelMetrics?.operationLatencies.record(
       metrics.operationLatency,
@@ -243,7 +241,6 @@ export class GCPMetricsHandler<T extends MetricExporter>
     metrics: OnAttemptCompleteMetrics,
     attributes: OnAttemptCompleteAttributes
   ) {
-    console.log('onAttemptComplete');
     this.initialize(attributes.projectId);
     this.otelMetrics?.attemptLatencies.record(
       metrics.attemptLatency,

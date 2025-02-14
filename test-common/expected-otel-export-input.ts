@@ -9,14 +9,20 @@ export const expectedOtelExportConvertedValue = {
         type: 'bigtable.googleapis.com/internal/client/operation_latencies',
         labels: {
           client_name: 'nodejs-bigtable',
+          method: 'readRows',
           status: '0',
           streaming: 'true',
+          client_uid: 'fake-uuid',
         },
       },
       resource: {
         type: 'bigtable_client_raw',
         labels: {
+          cluster: 'fake-cluster3',
+          instance: 'fakeInstanceId',
           project_id: 'my-project',
+          table: 'fakeTableId',
+          zone: 'us-west1-c',
         },
       },
       metricKind: 'CUMULATIVE',
@@ -100,13 +106,19 @@ export const expectedOtelExportConvertedValue = {
         type: 'bigtable.googleapis.com/internal/client/attempt_latencies',
         labels: {
           client_name: 'nodejs-bigtable',
+          method: 'readRows',
           streaming: 'true',
+          client_uid: 'fake-uuid',
         },
       },
       resource: {
         type: 'bigtable_client_raw',
         labels: {
+          cluster: 'fake-cluster3',
+          instance: 'fakeInstanceId',
           project_id: 'my-project',
+          table: 'fakeTableId',
+          zone: 'us-west1-c',
         },
       },
       metricKind: 'CUMULATIVE',
@@ -190,13 +202,19 @@ export const expectedOtelExportConvertedValue = {
         type: 'bigtable.googleapis.com/internal/client/attempt_latencies',
         labels: {
           client_name: 'nodejs-bigtable',
+          method: 'readRows',
           streaming: 'true',
+          client_uid: 'fake-uuid',
         },
       },
       resource: {
         type: 'bigtable_client_raw',
         labels: {
+          cluster: 'fake-cluster3',
+          instance: 'fakeInstanceId',
           project_id: 'my-project',
+          table: 'fakeTableId',
+          zone: 'us-west1-c',
         },
       },
       metricKind: 'CUMULATIVE',
@@ -280,14 +298,20 @@ export const expectedOtelExportConvertedValue = {
         type: 'bigtable.googleapis.com/internal/client/retry_count',
         labels: {
           client_name: 'nodejs-bigtable',
+          method: 'readRows',
           status: '0',
           streaming: 'true',
+          client_uid: 'fake-uuid',
         },
       },
       resource: {
         type: 'bigtable_client_raw',
         labels: {
+          cluster: 'fake-cluster3',
+          instance: 'fakeInstanceId',
           project_id: 'my-project',
+          table: 'fakeTableId',
+          zone: 'us-west1-c',
         },
       },
       valueType: 'INT64',
@@ -312,14 +336,20 @@ export const expectedOtelExportConvertedValue = {
         type: 'bigtable.googleapis.com/internal/client/first_response_latencies',
         labels: {
           client_name: 'nodejs-bigtable',
+          method: 'readRows',
           status: '0',
           streaming: 'true',
+          client_uid: 'fake-uuid',
         },
       },
       resource: {
         type: 'bigtable_client_raw',
         labels: {
+          cluster: 'fake-cluster3',
+          instance: 'fakeInstanceId',
           project_id: 'my-project',
+          table: 'fakeTableId',
+          zone: 'us-west1-c',
         },
       },
       metricKind: 'CUMULATIVE',
@@ -403,13 +433,19 @@ export const expectedOtelExportConvertedValue = {
         type: 'bigtable.googleapis.com/internal/client/server_latencies',
         labels: {
           client_name: 'nodejs-bigtable',
+          method: 'readRows',
           streaming: 'true',
+          client_uid: 'fake-uuid',
         },
       },
       resource: {
         type: 'bigtable_client_raw',
         labels: {
+          cluster: 'fake-cluster3',
+          instance: 'fakeInstanceId',
           project_id: 'my-project',
+          table: 'fakeTableId',
+          zone: 'us-west1-c',
         },
       },
       metricKind: 'CUMULATIVE',
@@ -493,13 +529,19 @@ export const expectedOtelExportConvertedValue = {
         type: 'bigtable.googleapis.com/internal/client/server_latencies',
         labels: {
           client_name: 'nodejs-bigtable',
+          method: 'readRows',
           streaming: 'true',
+          client_uid: 'fake-uuid',
         },
       },
       resource: {
         type: 'bigtable_client_raw',
         labels: {
+          cluster: 'fake-cluster3',
+          instance: 'fakeInstanceId',
           project_id: 'my-project',
+          table: 'fakeTableId',
+          zone: 'us-west1-c',
         },
       },
       metricKind: 'CUMULATIVE',
@@ -583,13 +625,19 @@ export const expectedOtelExportConvertedValue = {
         type: 'bigtable.googleapis.com/internal/client/connectivity_error_count',
         labels: {
           client_name: 'nodejs-bigtable',
+          method: 'readRows',
           streaming: 'true',
+          client_uid: 'fake-uuid',
         },
       },
       resource: {
         type: 'bigtable_client_raw',
         labels: {
+          cluster: 'fake-cluster3',
+          instance: 'fakeInstanceId',
           project_id: 'my-project',
+          table: 'fakeTableId',
+          zone: 'us-west1-c',
         },
       },
       metricKind: 'CUMULATIVE',
@@ -673,13 +721,19 @@ export const expectedOtelExportConvertedValue = {
         type: 'bigtable.googleapis.com/internal/client/connectivity_error_count',
         labels: {
           client_name: 'nodejs-bigtable',
+          method: 'readRows',
           streaming: 'true',
+          client_uid: 'fake-uuid',
         },
       },
       resource: {
         type: 'bigtable_client_raw',
         labels: {
+          cluster: 'fake-cluster3',
+          instance: 'fakeInstanceId',
           project_id: 'my-project',
+          table: 'fakeTableId',
+          zone: 'us-west1-c',
         },
       },
       metricKind: 'CUMULATIVE',

@@ -34,7 +34,7 @@ function replaceTimestamps(
   });
 }
 
-describe('Bigtable/GCPMetricsHandler', () => {
+describe.only('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value ready for sending to the CloudMonitoringExporter', done => {
     (async () => {
       /*
