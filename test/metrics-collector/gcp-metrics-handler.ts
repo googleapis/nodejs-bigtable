@@ -13,9 +13,11 @@ import {
   OnOperationCompleteAttributes,
 } from '../../src/client-side-metrics/client-side-metrics-attributes';
 import {OnOperationCompleteMetrics} from '../../src/client-side-metrics/metrics-handler';
-import {expectedOtelExportInput} from '../../test-common/expected-otel-export-input';
+import {
+  expectedOtelExportConvertedValue,
+  expectedOtelExportInput,
+} from '../../test-common/expected-otel-export-input';
 import * as assert from 'assert';
-import {exportInput} from '../../test-common/export-input-fixture';
 
 function replaceTimestamps(
   request: typeof expectedOtelExportInput,
@@ -32,23 +34,9 @@ function replaceTimestamps(
   });
 }
 
-// Example usage:
-// replaceTimestamps(expectedOtelExportInput, [123, 789], [456, 789]);
-
-// You can now use updatedInput with metricsToRequest, and it will have the new timestamps.
-
-describe.only('Bigtable/GCPMetricsHandler', () => {
+describe('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value ready for sending to the CloudMonitoringExporter', done => {
     (async () => {
-      // let exportPromiseResolve: (value: unknown) => void;
-      /*
-      const exportPromise = new Promise(resolve => {
-        setTimeout(() => {
-          resolve(undefined);
-        }, 30000);
-      });
-       */
-
       /*
       We need to create a timeout here because if we don't then mocha shuts down
       the test as it is sleeping before the GCPMetricsHandler has a chance to
@@ -62,8 +50,6 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
           resultCallback: (result: ExportResult) => void
         ): Promise<void> {
           try {
-            console.log('in exporter');
-            // Make export async
             replaceTimestamps(
               metrics as unknown as typeof expectedOtelExportInput,
               [123, 789],
@@ -76,13 +62,13 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
             const convertedRequest = metricsToRequest(
               expectedOtelExportInput as unknown as ExportInput
             );
-            console.log('in export');
-            // Perform your assertions here on the 'metrics' object
-            // ... (your assertion logic)
+            assert.deepStrictEqual(
+              JSON.parse(JSON.stringify(convertedRequest)),
+              expectedOtelExportConvertedValue
+            );
             clearTimeout(timeout);
             resultCallback({code: 0});
             done();
-            // exportPromiseResolve(undefined); // Resolve the promise after export
           } catch (e) {
             done(e);
           }
@@ -106,10 +92,6 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
           );
         }
       }
-
-      // await exportPromise; // Wait for the export to complete
-
-      console.log('done waiting'); // This will now be reached
     })();
   });
 });

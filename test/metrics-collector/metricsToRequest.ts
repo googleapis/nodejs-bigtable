@@ -26,10 +26,10 @@ export const expectedRequest = {
         type: 'bigtable_client_raw',
         labels: {
           cluster: 'fake-cluster3',
-          instance: 'emulator-test-instance',
+          instance: 'fakeInstanceId',
           project_id: 'some-project',
-          table: 'my-table',
-          zone: 'us-central1-f',
+          table: 'fakeTableId',
+          zone: 'us-west1-c',
         },
       },
       metricKind: 'CUMULATIVE',
@@ -149,7 +149,7 @@ export const expectedRequest = {
 };
 
 // TODO: Generate the export code
-describe('Bigtable/metricsToRequest', () => {
+describe.only('Bigtable/metricsToRequest', () => {
   it('Converts a counter and a histogram to the cloud monitoring format', () => {
     const actualRequest = metricsToRequest(exportInput);
     assert.deepStrictEqual(actualRequest, expectedRequest);

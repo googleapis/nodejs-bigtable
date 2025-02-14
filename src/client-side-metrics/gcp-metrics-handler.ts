@@ -206,7 +206,6 @@ export class GCPMetricsHandler<T extends MetricExporter>
           }
         ),
       };
-      console.log('Done initializing');
     }
   }
 

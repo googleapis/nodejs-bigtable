@@ -56,13 +56,15 @@ export interface ExportInput {
           finalOperationStatus: number;
           streamingOperation: string;
           projectId: string;
-          instanceId: string;
-          table: string;
-          cluster: string;
-          zone: string;
-          methodName: string;
           clientName: string;
-          clientUid: string;
+          metricsCollectorData: {
+            instanceId: string;
+            table: string;
+            cluster: string;
+            zone: string;
+            methodName: string;
+            clientUid: string;
+          };
         };
         startTime: number[];
         endTime: number[];
@@ -93,17 +95,17 @@ export function metricsToRequest(exportArgs: ExportInput) {
         const metricLabels = {
           app_profile: allAttributes.appProfileId,
           client_name: allAttributes.clientName,
-          method: allAttributes.methodName,
+          method: allAttributes.metricsCollectorData.methodName,
           status: allAttributes.finalOperationStatus?.toString(),
           streaming: allAttributes.streamingOperation,
-          client_uid: allAttributes.clientUid,
+          client_uid: allAttributes.metricsCollectorData.clientUid,
         };
         const resourceLabels = {
-          cluster: allAttributes.cluster,
-          instance: allAttributes.instanceId,
+          cluster: allAttributes.metricsCollectorData.cluster,
+          instance: allAttributes.metricsCollectorData.instanceId,
           project_id: allAttributes.projectId,
-          table: allAttributes.table,
-          zone: allAttributes.zone,
+          table: allAttributes.metricsCollectorData.table,
+          zone: allAttributes.metricsCollectorData.zone,
         };
         if (metricName === RETRY_COUNT_NAME) {
           const timeSeries = {

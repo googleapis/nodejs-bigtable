@@ -1,7 +1,7 @@
 export const RETRY_COUNT_NAME =
   'bigtable.googleapis.com/internal/client/retry_count';
 
-const expectedOtelExportConvertedValue = {
+export const expectedOtelExportConvertedValue = {
   name: 'projects/my-project',
   timeSeries: [
     {

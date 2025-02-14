@@ -4,7 +4,7 @@ import {exportInput} from '../test-common/export-input-fixture';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import {Bigtable} from '../src';
 
-describe.only('Bigtable/CloudMonitoringExporter', () => {
+describe('Bigtable/CloudMonitoringExporter', () => {
   it('exports client side metrics to cloud monitoring', done => {
     // When this test is run, metrics should be visible at the following link:
     // https://pantheon.corp.google.com/monitoring/metrics-explorer;duration=PT1H?inv=1&invt=Abo9_A&project={projectId}
