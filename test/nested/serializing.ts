@@ -18,11 +18,17 @@ const status = {
 
 describe.only('Bigtable/Table', () => {
   it('decode', () => {
-    const result3 = gax.protobuf.parse('\n\nus-west1-c \rfake-cluster3');
+    // const result3 = gax.protobuf.parse('\n\nus-west1-c \rfake-cluster3');
+    const result4 = ResponseParams.decodeDelimited(
+      Buffer.from('\n\nus-west1-c \rfake-cluster3')
+    );
+    // ResponseParams.toObject(Buffer.from('\n\nus-west1-c \rfake-cluster3'))
     const result2 = ResponseParams.get('\n\nus-west1-c \rfake-cluster3');
+    /*
     const result = ResponseParams.decode(
       Buffer.from('\n\nus-west1-c \rfake-cluster3')
     );
-    console.log(result);
+     */
+    console.log(result4);
   });
 });
