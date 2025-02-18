@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {grpc} from 'google-gax';
-
 // The backend is expecting true/false and will fail if other values are provided.
 // export in open telemetry is expecting string value attributes so we don't use boolean
 // true/false.
