@@ -54,24 +54,6 @@ export interface OnAttemptCompleteData {
 }
 
 /**
- * Metrics related to the completion of a Bigtable operation.
- */
-export interface OnOperationCompleteMetrics {
-  firstResponseLatency?: number;
-  operationLatency: number;
-  retryCount?: number;
-}
-
-/**
- * Metrics related to the completion of a single attempt of a Bigtable operation.
- */
-export interface OnAttemptCompleteMetrics {
-  attemptLatency: number;
-  serverLatency?: number;
-  connectivityErrorCount: number;
-}
-
-/**
  * An interface for handling client-side metrics related to Bigtable operations.
  * Implementations of this interface can define how metrics are recorded and processed.
  */
