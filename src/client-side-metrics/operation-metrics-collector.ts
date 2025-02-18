@@ -44,30 +44,6 @@ export interface ITabularApiSurface {
   };
 }
 
-/**
- * Information about the completion of a single attempt of a Bigtable operation.
- * This information is used for recording metrics.
- */
-interface OnAttemptCompleteInfo {
-  connectivityErrorCount: number;
-  /**
-   * Whether the operation is a streaming operation or not.
-   */
-  streamingOperation: StreamingState;
-  /**
-   * The attempt status of the operation.
-   */
-  attemptStatus: grpc.status;
-}
-
-/**
- * Information about a Bigtable operation to be recorded in client side metrics.
- */
-interface OperationOnlyAttributes {
-  finalOperationStatus: grpc.status;
-  streamingOperation: StreamingState;
-}
-
 const packageJSON = fs.readFileSync('package.json');
 const version = JSON.parse(packageJSON.toString()).version;
 
@@ -107,16 +83,19 @@ export class OperationMetricsCollector {
   private serverTimeRead: boolean;
   private serverTime: number | null;
   private connectivityErrorCount: number;
+  private streamingOperation: StreamingState;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
    * @param {IMetricsHandler[]} metricsHandlers The metrics handlers used for recording metrics.
    * @param {MethodName} methodName The name of the method being traced.
+   * @param {StreamingState} streamingOperation Whether or not the call is a streaming operation.
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
     metricsHandlers: IMetricsHandler[],
-    methodName: MethodName
+    methodName: MethodName,
+    streamingOperation: StreamingState
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
@@ -130,6 +109,7 @@ export class OperationMetricsCollector {
     this.serverTimeRead = false;
     this.serverTime = null;
     this.connectivityErrorCount = 0;
+    this.streamingOperation = streamingOperation;
   }
 
   private getMetricsCollectorData() {
@@ -161,9 +141,9 @@ export class OperationMetricsCollector {
   /**
    * Called when an attempt (e.g., an RPC attempt) completes. Records attempt latencies.
    * @param {string} projectId The id of the project.
-   * @param {OnAttemptCompleteInfo} info Information about the completed attempt.
+   * @param {grpc.status} attemptStatus The grpc status for the attempt.
    */
-  onAttemptComplete(projectId: string, info: OnAttemptCompleteInfo) {
+  onAttemptComplete(projectId: string, attemptStatus: grpc.status) {
     if (
       this.state ===
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
@@ -182,8 +162,8 @@ export class OperationMetricsCollector {
               attemptLatency: totalTime,
               serverLatency: this.serverTime ?? undefined,
               connectivityErrorCount: this.connectivityErrorCount,
-              streamingOperation: info.streamingOperation,
-              attemptStatus: info.attemptStatus,
+              streamingOperation: this.streamingOperation,
+              attemptStatus,
               clientName: `nodejs-bigtable/${version}`,
               metricsCollectorData: this.getMetricsCollectorData(),
               projectId,
@@ -237,9 +217,9 @@ export class OperationMetricsCollector {
    * Called when an operation completes (successfully or unsuccessfully).
    * Records operation latencies, retry counts, and connectivity error counts.
    * @param {string} projectId The id of the project.
-   * @param {OperationOnlyAttributes} info Information about the completed operation.
+   * @param {grpc.status} finalOperationStatus Information about the completed operation.
    */
-  onOperationComplete(projectId: string, info: OperationOnlyAttributes) {
+  onOperationComplete(projectId: string, finalOperationStatus: grpc.status) {
     if (
       this.state ===
       MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
@@ -252,8 +232,8 @@ export class OperationMetricsCollector {
           this.metricsHandlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
               metricsHandler.onOperationComplete({
-                finalOperationStatus: info.finalOperationStatus,
-                streamingOperation: info.streamingOperation,
+                finalOperationStatus: finalOperationStatus,
+                streamingOperation: this.streamingOperation,
                 metricsCollectorData: this.getMetricsCollectorData(),
                 clientName: `nodejs-bigtable/${version}`,
                 projectId,
@@ -272,7 +252,6 @@ export class OperationMetricsCollector {
 
   /**
    * Called when metadata is received. Extracts server timing information if available.
-   * @param {string} projectId The id of the project.
    * @param {object} metadata The received metadata.
    */
   onMetadataReceived(metadata: {

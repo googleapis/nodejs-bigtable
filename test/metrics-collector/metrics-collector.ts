@@ -119,7 +119,8 @@ describe('Bigtable/MetricsCollector', () => {
           const metricsCollector = new OperationMetricsCollector(
             this,
             metricsHandlers,
-            MethodName.READ_ROWS
+            MethodName.READ_ROWS,
+            StreamingState.STREAMING
           );
           // In this method we simulate a series of events that might happen
           // when a user calls one of the Table methods.
@@ -139,11 +140,10 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '7. Client receives second row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '8. A transient error occurs.\n';
-          metricsCollector.onAttemptComplete(this.bigtable.projectId, {
-            streamingOperation: StreamingState.STREAMING,
-            attemptStatus: grpc.status.DEADLINE_EXCEEDED,
-            connectivityErrorCount: 1,
-          });
+          metricsCollector.onAttemptComplete(
+            this.bigtable.projectId,
+            grpc.status.DEADLINE_EXCEEDED
+          );
           logger.value += '9. After a timeout, the second attempt is made.\n';
           metricsCollector.onAttemptStart();
           logger.value += '10. Client receives status information.\n';
@@ -158,15 +158,14 @@ describe('Bigtable/MetricsCollector', () => {
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '15. User reads row 1\n';
           logger.value += '16. Stream ends, operation completes\n';
-          metricsCollector.onAttemptComplete(this.bigtable.projectId, {
-            attemptStatus: grpc.status.OK,
-            streamingOperation: StreamingState.STREAMING,
-            connectivityErrorCount: 1,
-          });
-          metricsCollector.onOperationComplete(this.bigtable.projectId, {
-            finalOperationStatus: grpc.status.OK,
-            streamingOperation: StreamingState.STREAMING,
-          });
+          metricsCollector.onAttemptComplete(
+            this.bigtable.projectId,
+            grpc.status.OK
+          );
+          metricsCollector.onOperationComplete(
+            this.bigtable.projectId,
+            grpc.status.OK
+          );
         }
       }
     }
