@@ -18,19 +18,6 @@ import {MethodName, StreamingState} from './client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 
 /**
- * An interface representing a Date-like object.  Provides a `getTime` method
- * for retrieving the time value in milliseconds.  Used for abstracting time
- * in tests.
- */
-interface DateLike {
-  /**
-   * Returns the time value in milliseconds.
-   * @returns The time value in milliseconds.
-   */
-  getTime(): number;
-}
-
-/**
  * An interface representing a tabular API surface, such as a Bigtable table.
  */
 export interface ITabularApiSurface {
@@ -71,8 +58,8 @@ enum MetricsCollectorState {
  */
 export class OperationMetricsCollector {
   private state: MetricsCollectorState;
-  private operationStartTime: DateLike | null;
-  private attemptStartTime: DateLike | null;
+  private operationStartTime: Date | null;
+  private attemptStartTime: Date | null;
   private zone: string | undefined;
   private cluster: string | undefined;
   private tabularApiSurface: ITabularApiSurface;
