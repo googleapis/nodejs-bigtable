@@ -22,45 +22,6 @@ export enum StreamingState {
   UNARY = 'false',
 }
 
-type IMetricsCollectorData = {
-  instanceId: string;
-  table: string;
-  cluster?: string;
-  zone?: string;
-  appProfileId?: string;
-  methodName: MethodName;
-  clientUid: string;
-};
-
-/**
- * Attributes associated with the completion of a Bigtable operation. These
- * attributes provide context about the Bigtable environment, the completed
- * operation, and its final status.  They are used for recording metrics such as
- * operation latency, first response latency, and retry count.
- */
-export type OnOperationCompleteAttributes = {
-  projectId: string;
-  metricsCollectorData: IMetricsCollectorData;
-  clientName: string;
-  finalOperationStatus: grpc.status;
-  streamingOperation: StreamingState;
-};
-
-/**
- * Attributes associated with the completion of a single attempt of a Bigtable
- * operation.  These attributes provide context about the Bigtable environment,
- * the specific attempt, its status, and whether the operation was streaming. They
- * are used for recording metrics such as attempt latency, server latency, and
- * connectivity errors.
- */
-export type OnAttemptCompleteAttributes = {
-  projectId: string;
-  metricsCollectorData: IMetricsCollectorData;
-  clientName: string;
-  attemptStatus: grpc.status;
-  streamingOperation: StreamingState;
-};
-
 /**
  * Represents the names of Bigtable methods. These are used as attributes for
  * metrics, allowing for differentiation of performance by method.

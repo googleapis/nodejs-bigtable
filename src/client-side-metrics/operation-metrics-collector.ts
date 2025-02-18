@@ -175,24 +175,19 @@ export class OperationMetricsCollector {
       this.attemptCount++;
       const endTime = new Date();
       if (projectId && this.attemptStartTime) {
-        const attributes = {
-          streamingOperation: info.streamingOperation,
-          attemptStatus: info.attemptStatus,
-          clientName: `nodejs-bigtable/${version}`,
-          metricsCollectorData: this.getMetricsCollectorData(),
-          projectId,
-        };
         const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
         this.metricsHandlers.forEach(metricsHandler => {
           if (metricsHandler.onAttemptComplete) {
-            metricsHandler.onAttemptComplete(
-              {
-                attemptLatency: totalTime,
-                serverLatency: this.serverTime ?? undefined,
-                connectivityErrorCount: this.connectivityErrorCount,
-              },
-              attributes
-            );
+            metricsHandler.onAttemptComplete({
+              attemptLatency: totalTime,
+              serverLatency: this.serverTime ?? undefined,
+              connectivityErrorCount: this.connectivityErrorCount,
+              streamingOperation: info.streamingOperation,
+              attemptStatus: info.attemptStatus,
+              clientName: `nodejs-bigtable/${version}`,
+              metricsCollectorData: this.getMetricsCollectorData(),
+              projectId,
+            });
           }
         });
       }
@@ -254,21 +249,18 @@ export class OperationMetricsCollector {
       if (projectId && this.operationStartTime) {
         const totalTime = endTime.getTime() - this.operationStartTime.getTime();
         {
-          const operationAttributes = {
-            finalOperationStatus: info.finalOperationStatus,
-            streamingOperation: info.streamingOperation,
-            metricsCollectorData: this.getMetricsCollectorData(),
-            clientName: `nodejs-bigtable/${version}`,
-            projectId,
-          };
-          const metrics = {
-            operationLatency: totalTime,
-            retryCount: this.attemptCount - 1,
-            firstResponseLatency: this.firstResponseLatency ?? undefined,
-          };
           this.metricsHandlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
-              metricsHandler.onOperationComplete(metrics, operationAttributes);
+              metricsHandler.onOperationComplete({
+                finalOperationStatus: info.finalOperationStatus,
+                streamingOperation: info.streamingOperation,
+                metricsCollectorData: this.getMetricsCollectorData(),
+                clientName: `nodejs-bigtable/${version}`,
+                projectId,
+                operationLatency: totalTime,
+                retryCount: this.attemptCount - 1,
+                firstResponseLatency: this.firstResponseLatency ?? undefined,
+              });
             }
           });
         }

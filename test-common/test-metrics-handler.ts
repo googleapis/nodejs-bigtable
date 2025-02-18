@@ -13,64 +13,41 @@
 // limitations under the License.
 
 import {
-  OnAttemptCompleteMetrics,
-  OnOperationCompleteMetrics,
+  IMetricsHandler,
+  OnAttemptCompleteData,
+  OnOperationCompleteData,
 } from '../src/client-side-metrics/metrics-handler';
-import {
-  OnAttemptCompleteAttributes,
-  OnOperationCompleteAttributes,
-} from '../src/client-side-metrics/client-side-metrics-attributes';
-
-interface IOperationCompleteRequest {
-  metrics: OnOperationCompleteMetrics;
-  attributes: OnOperationCompleteAttributes;
-}
-
-interface IAttemptCompleteRequest {
-  metrics: OnAttemptCompleteMetrics;
-  attributes: OnAttemptCompleteAttributes;
-}
 
 /**
  * A test implementation of the IMetricsHandler interface.  Used for testing purposes.
  * It logs the metrics and attributes received by the onOperationComplete and onAttemptComplete methods.
  */
-export class TestMetricsHandler {
+export class TestMetricsHandler implements IMetricsHandler {
   private messages: {value: string};
-  requestsHandled: (IOperationCompleteRequest | IAttemptCompleteRequest)[] = [];
+  requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [];
 
   constructor(messages: {value: string}) {
     this.messages = messages;
   }
   /**
    * Logs the metrics and attributes received for an operation completion.
-   * @param {OnOperationCompleteMetrics} metrics Metrics related to the completed operation.
-   * @param {Attributes} attributes Attributes associated with the completed operation.
+   * @param {OnOperationCompleteData} data Metrics related to the completed operation.
    */
-  onOperationComplete(
-    metrics: OnOperationCompleteMetrics,
-    attributes: OnOperationCompleteAttributes
-  ) {
-    this.requestsHandled.push({metrics, attributes});
-    attributes.clientName = 'nodejs-bigtable';
+  onOperationComplete(data: OnOperationCompleteData) {
+    this.requestsHandled.push(data);
+    data.clientName = 'nodejs-bigtable';
     this.messages.value += 'Recording parameters for onOperationComplete:\n';
-    this.messages.value += `metrics: ${JSON.stringify(metrics)}\n`;
-    this.messages.value += `attributes: ${JSON.stringify(attributes)}\n`;
+    this.messages.value += `${JSON.stringify(data)}\n`;
   }
 
   /**
    * Logs the metrics and attributes received for an attempt completion.
-   * @param {OnAttemptCompleteMetrics} metrics Metrics related to the completed attempt.
-   * @param {Attributes} attributes Attributes associated with the completed attempt.
+   * @param {OnOperationCompleteData} data Metrics related to the completed attempt.
    */
-  onAttemptComplete(
-    metrics: OnAttemptCompleteMetrics,
-    attributes: OnAttemptCompleteAttributes
-  ) {
-    this.requestsHandled.push({metrics, attributes});
-    attributes.clientName = 'nodejs-bigtable';
+  onAttemptComplete(data: OnAttemptCompleteData) {
+    this.requestsHandled.push(data);
+    data.clientName = 'nodejs-bigtable';
     this.messages.value += 'Recording parameters for onAttemptComplete:\n';
-    this.messages.value += `metrics: ${JSON.stringify(metrics)}\n`;
-    this.messages.value += `attributes: ${JSON.stringify(attributes)}\n`;
+    this.messages.value += `${JSON.stringify(data)}\n`;
   }
 }
