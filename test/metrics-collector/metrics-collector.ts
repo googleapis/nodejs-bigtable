@@ -104,7 +104,7 @@ describe('Bigtable/MetricsCollector', () => {
         function createMetadata(duration: string) {
           return {
             internalRepr: new Map([
-              ['server-timing', Buffer.from(`gfet4t7; dur=${duration}`)],
+              ['server-timing', [`gfet4t7; dur=${duration}`]],
             ]),
             options: {},
           };
