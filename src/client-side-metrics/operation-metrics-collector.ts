@@ -16,6 +16,11 @@ import * as fs from 'fs';
 import {IMetricsHandler} from './metrics-handler';
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
 import {grpc} from 'google-gax';
+import * as gax from 'google-gax';
+const root = gax.protobuf.loadSync(
+  './protos/google/bigtable/v2/response_params.proto'
+);
+const ResponseParams = root.lookupType('ResponseParams');
 
 /**
  * An interface representing a tabular API surface, such as a Bigtable table.
@@ -272,24 +277,24 @@ export class OperationMetricsCollector {
    * @param {object} status The received status information.
    */
   onStatusReceived(status: {
-    metadata: {internalRepr: Map<string, Buffer>; options: {}};
+    metadata: {internalRepr: Map<string, Buffer[]>; options: {}};
   }) {
-    const mappedEntries = new Map(
-      Array.from(status.metadata.internalRepr.entries(), ([key, value]) => [
-        key,
-        value.toString(),
-      ])
-    );
     const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
-    const instanceInformation = mappedEntries
-      .get(INSTANCE_INFORMATION_KEY)
-      ?.replace(new RegExp('\\n', 'g'), '')
-      .split(' \r'); // The data returned actually has a space after the zone.
-    if (instanceInformation && instanceInformation[0]) {
-      this.zone = instanceInformation[0];
+    const mappedValue = status.metadata.internalRepr.get(
+      INSTANCE_INFORMATION_KEY
+    ) as Buffer[];
+    const decodedValue = ResponseParams.decode(
+      mappedValue[0],
+      mappedValue[0].toString().length
+    );
+    if (decodedValue && (decodedValue as unknown as {zoneId: string}).zoneId) {
+      this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
     }
-    if (instanceInformation && instanceInformation[1]) {
-      this.cluster = instanceInformation[1];
+    if (
+      decodedValue &&
+      (decodedValue as unknown as {clusterId: string}).clusterId
+    ) {
+      this.cluster = (decodedValue as unknown as {clusterId: string}).clusterId;
     }
   }
 }
