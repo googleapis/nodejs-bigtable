@@ -3,11 +3,16 @@ import {
   CloudMonitoringExporter,
   ExportResult,
 } from '../src/client-side-metrics/exporter';
-import {exportInput} from '../test-common/export-input-fixture';
+import {
+  exportInput,
+  fakeEndTime,
+  fakeStartTime,
+} from '../test-common/export-input-fixture';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import {Bigtable} from '../src';
 import * as assert from 'assert';
 import {expectedOtelExportInput} from '../test-common/expected-otel-export-input';
+import {replaceTimestamps} from '../test-common/replace-timestamps';
 
 describe('Bigtable/CloudMonitoringExporter', () => {
   it('exports client side metrics to cloud monitoring', done => {
@@ -68,6 +73,11 @@ describe('Bigtable/CloudMonitoringExporter', () => {
           /my-project/g,
           projectId
         )
+      );
+      replaceTimestamps(
+        transformedExportInput as unknown as typeof expectedOtelExportInput,
+        [fakeStartTime, 0],
+        [fakeEndTime, 0]
       );
       const exporter = new CloudMonitoringExporter();
       exporter.export(

@@ -6,13 +6,7 @@ import {
   OnOperationCompleteAttributes,
 } from '../src/client-side-metrics/client-side-metrics-attributes';
 import {OnOperationCompleteMetrics} from '../src/client-side-metrics/metrics-handler';
-import * as assert from 'assert';
-import {
-  CloudMonitoringExporter,
-  ExportResult,
-} from '../src/client-side-metrics/exporter';
-import {expectedOtelExportInput} from '../test-common/expected-otel-export-input';
-import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
+import {CloudMonitoringExporter} from '../src/client-side-metrics/exporter';
 
 // TODO: Test that calls export.
 // TODO: Test whole process.
