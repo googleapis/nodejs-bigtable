@@ -247,7 +247,7 @@ export class OperationMetricsCollector {
    * @param {object} metadata The received metadata.
    */
   onMetadataReceived(metadata: {
-    internalRepr: Map<string, Buffer>;
+    internalRepr: Map<string, string[]>;
     options: {};
   }) {
     const mappedEntries = new Map(
