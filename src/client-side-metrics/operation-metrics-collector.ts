@@ -276,7 +276,7 @@ export class OperationMetricsCollector {
    * Called when status information is received. Extracts zone and cluster information.
    * @param {object} status The received status information.
    */
-  onStatusReceived(status: {
+  onStatusMetadataReceived(status: {
     metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
   }) {
     const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';

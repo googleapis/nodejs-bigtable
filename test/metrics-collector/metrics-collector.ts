@@ -140,7 +140,7 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '2. The attempt starts.\n';
           metricsCollector.onAttemptStart();
           logger.value += '3. Client receives status information.\n';
-          metricsCollector.onStatusReceived(status);
+          metricsCollector.onStatusMetadataReceived(status);
           logger.value += '4. Client receives metadata.\n';
           metricsCollector.onMetadataReceived(createMetadata('101'));
           logger.value += '5. Client receives first row.\n';
@@ -157,7 +157,7 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '9. After a timeout, the second attempt is made.\n';
           metricsCollector.onAttemptStart();
           logger.value += '10. Client receives status information.\n';
-          metricsCollector.onStatusReceived(status);
+          metricsCollector.onStatusMetadataReceived(status);
           logger.value += '11. Client receives metadata.\n';
           metricsCollector.onMetadataReceived(createMetadata('103'));
           logger.value += '12. Client receives third row.\n';
