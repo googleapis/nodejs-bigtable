@@ -23,6 +23,11 @@ import {
 } from '../../src/client-side-metrics/client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 import {expectedRequestsHandled} from './metrics-handler-fixture';
+import * as gax from 'google-gax';
+const root = gax.protobuf.loadSync(
+  './protos/google/bigtable/v2/response_params.proto'
+);
+const ResponseParams = root.lookupType('ResponseParams');
 
 /**
  * A fake implementation of the Bigtable client for testing purposes.  Provides a
@@ -44,7 +49,7 @@ class FakeInstance {
   id = 'fakeInstanceId';
 }
 
-describe('Bigtable/MetricsCollector', () => {
+describe.only('Bigtable/MetricsCollector', () => {
   const logger = {value: ''};
   const originalDate = global.Date;
 
@@ -110,7 +115,12 @@ describe('Bigtable/MetricsCollector', () => {
               internalRepr: new Map([
                 [
                   'x-goog-ext-425905942-bin',
-                  Buffer.from('\n\nus-west1-c \rfake-cluster3'),
+                  [
+                    ResponseParams.encode({
+                      zoneId: 'us-west1-c',
+                      clusterId: 'fake-cluster3',
+                    }).finish(),
+                  ],
                 ],
               ]),
               options: {},

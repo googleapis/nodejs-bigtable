@@ -277,7 +277,7 @@ export class OperationMetricsCollector {
    * @param {object} status The received status information.
    */
   onStatusReceived(status: {
-    metadata: {internalRepr: Map<string, Buffer[]>; options: {}};
+    metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
   }) {
     const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
     const mappedValue = status.metadata.internalRepr.get(
