@@ -285,7 +285,7 @@ export class OperationMetricsCollector {
     ) as Buffer[];
     const decodedValue = ResponseParams.decode(
       mappedValue[0],
-      mappedValue[0].toString().length
+      mappedValue[0].length
     );
     if (decodedValue && (decodedValue as unknown as {zoneId: string}).zoneId) {
       this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
