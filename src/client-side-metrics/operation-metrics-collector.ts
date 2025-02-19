@@ -21,6 +21,11 @@ import {
   OnOperationCompleteAttributes,
   OperationOnlyAttributes,
 } from '../../common/client-side-metrics-attributes';
+import * as gax from 'google-gax';
+const root = gax.protobuf.loadSync(
+  './protos/google/bigtable/v2/response_params.proto'
+);
+const ResponseParams = root.lookupType('ResponseParams');
 
 /**
  * An interface representing a Date-like object.  Provides a `getTime` method
@@ -381,6 +386,13 @@ export class OperationMetricsCollector {
         key,
         value.toString(),
       ])
+    );
+    const mappedValue = status.metadata.internalRepr.get(
+      'x-goog-ext-425905942-bin'
+    ) as Buffer;
+    const result = ResponseParams.decode(
+      mappedValue[0] as unknown as Buffer,
+      2
     );
     const instanceInformation = mappedEntries
       .get('x-goog-ext-425905942-bin')
