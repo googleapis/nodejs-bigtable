@@ -1,0 +1,45 @@
+import {describe} from 'mocha';
+import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
+import {expectedRequestsHandled} from '../test-common/metrics-handler-fixture';
+import {
+  OnAttemptCompleteAttributes,
+  OnOperationCompleteAttributes,
+} from '../src/client-side-metrics/client-side-metrics-attributes';
+import {OnOperationCompleteMetrics} from '../src/client-side-metrics/metrics-handler';
+import * as assert from 'assert';
+import {
+  CloudMonitoringExporter,
+  ExportResult,
+} from '../src/client-side-metrics/exporter';
+import {expectedOtelExportInput} from '../test-common/expected-otel-export-input';
+import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
+
+// TODO: Test that calls export.
+// TODO: Test whole process.
+describe('Bigtable/GCPMetricsHandler', () => {
+  it('Should export a value to the CloudMonitoringExporter', done => {
+    /*
+    We need to create a timeout here because if we don't then mocha shuts down
+    the test as it is sleeping before the GCPMetricsHandler has a chance to
+    export the data.
+     */
+    const timeout = setTimeout(() => {}, 30000);
+    const handler = new GCPMetricsHandler(
+      new CloudMonitoringExporter({projectId: 'cloud-native-db-dpes-shared'})
+    );
+
+    for (const request of expectedRequestsHandled) {
+      if (request.metrics.attemptLatency) {
+        handler.onAttemptComplete(
+          request.metrics,
+          request.attributes as OnAttemptCompleteAttributes
+        );
+      } else {
+        handler.onOperationComplete(
+          request.metrics as OnOperationCompleteMetrics,
+          request.attributes as OnOperationCompleteAttributes
+        );
+      }
+    }
+  });
+});
