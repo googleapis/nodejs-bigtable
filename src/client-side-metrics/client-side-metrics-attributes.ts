@@ -25,10 +25,10 @@ export enum StreamingState {
  * metrics, allowing for differentiation of performance by method.
  */
 export enum MethodName {
-  READ_ROWS = 'readRows',
-  MUTATE_ROW = 'mutateRow',
-  CHECK_AND_MUTATE_ROW = 'checkAndMutateRow',
-  READ_MODIFY_WRITE_ROW = 'readModifyWriteRow',
-  SAMPLE_ROW_KEYS = 'sampleRowKeys',
-  MUTATE_ROWS = 'mutateRows',
+  READ_ROWS = 'Bigtable.ReadRows',
+  MUTATE_ROW = 'Bigtable.MutateRow',
+  CHECK_AND_MUTATE_ROW = 'Bigtable.CheckAndMutateRow',
+  READ_MODIFY_WRITE_ROW = 'Bigtable.ReadModifyWriteRow',
+  SAMPLE_ROW_KEYS = 'Bigtable.SampleRowKeys',
+  MUTATE_ROWS = 'Bigtable.MutateRows',
 }
