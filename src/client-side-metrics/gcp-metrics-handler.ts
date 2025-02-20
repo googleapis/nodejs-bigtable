@@ -14,8 +14,8 @@
 
 import {
   IMetricsHandler,
-  OnAttemptCompleteMetrics,
-  OnOperationCompleteMetrics,
+  OnAttemptCompleteData,
+  OnOperationCompleteData,
 } from './metrics-handler';
 import * as Resources from '@opentelemetry/resources';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
@@ -48,6 +48,14 @@ interface Metrics {
   clientBlockingLatencies: typeof Histogram;
 }
 
+interface MonitoredResourceData {
+  projectId: string;
+  instanceId: string;
+  table: string;
+  cluster?: string;
+  zone?: string;
+}
+
 /**
  * A metrics handler implementation that uses OpenTelemetry to export metrics to Google Cloud Monitoring.
  * This handler records metrics such as operation latency, attempt latency, retry count, and more,
@@ -70,7 +78,7 @@ export class GCPMetricsHandler<T extends MetricExporter>
    * Sets up a MeterProvider and configures a PeriodicExportingMetricReader for exporting metrics to Cloud Monitoring.
    * @param {string} [projectId] The Google Cloud project ID. Used for metric export. If not provided, it will attempt to detect it from the environment.
    */
-  private initialize(projectId?: string) {
+  private initialize(data: MonitoredResourceData) {
     if (!this.initialized) {
       this.initialized = true;
       const latencyBuckets = [
@@ -104,8 +112,13 @@ export class GCPMetricsHandler<T extends MetricExporter>
           'service.name': 'Cloud Bigtable Table',
           'cloud.provider': 'gcp',
           'cloud.platform': 'gce_instance',
-          'cloud.resource_manager.project_id': projectId,
+          'cloud.resource_manager.project_id': data.projectId,
           'monitored_resource.type': 'bigtable_client_raw',
+          'monitored_resource.project_id': data.projectId,
+          'monitored_resource.instance_id': data.instanceId,
+          'monitored_resource.table': data.table,
+          'monitored_resource.cluster': data.cluster,
+          'monitored_resource.zone': data.zone,
         }).merge(new ResourceUtil.GcpDetectorSync().detect()),
         readers: [
           // Register the exporter
@@ -210,45 +223,79 @@ export class GCPMetricsHandler<T extends MetricExporter>
   /**
    * Records metrics for a completed Bigtable operation.
    * This method records the operation latency and retry count, associating them with provided attributes.
-   * @param {OnOperationCompleteMetrics} metrics Metrics related to the completed operation.
-   * @param {OnOperationCompleteAttributes} attributes Attributes associated with the completed operation.
+   * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
-  onOperationComplete(
-    metrics: OnOperationCompleteMetrics,
-    attributes: OnOperationCompleteAttributes
-  ) {
-    this.initialize(attributes.projectId);
-    this.otelMetrics?.operationLatencies.record(
-      metrics.operationLatency,
-      attributes
-    );
-    this.otelMetrics?.retryCount.add(metrics.retryCount, attributes);
-    this.otelMetrics?.firstResponseLatencies.record(
-      metrics.firstResponseLatency,
-      attributes
-    );
+  onOperationComplete(data: OnOperationCompleteData) {
+    this.initialize({
+      projectId: data.projectId,
+      instanceId: data.metricsCollectorData.instanceId,
+      table: data.metricsCollectorData.table,
+      cluster: data.metricsCollectorData.cluster,
+      zone: data.metricsCollectorData.zone,
+    });
+    this.otelMetrics?.operationLatencies.record(data.operationLatency, {
+      appProfileId: data.metricsCollectorData.appProfileId,
+      methodName: data.metricsCollectorData.methodName,
+      clientUid: data.metricsCollectorData.clientUid,
+      finalOperationStatus: data.finalOperationStatus,
+      streamingOperation: data.streamingOperation,
+      clientName: data.clientName,
+    });
+    this.otelMetrics?.retryCount.add(data.retryCount, {
+      appProfileId: data.metricsCollectorData.appProfileId,
+      methodName: data.metricsCollectorData.methodName,
+      clientUid: data.metricsCollectorData.clientUid,
+      finalOperationStatus: data.finalOperationStatus,
+      clientName: data.clientName,
+    });
+    this.otelMetrics?.firstResponseLatencies.record(data.firstResponseLatency, {
+      appProfileId: data.metricsCollectorData.appProfileId,
+      methodName: data.metricsCollectorData.methodName,
+      clientUid: data.metricsCollectorData.clientUid,
+      finalOperationStatus: data.finalOperationStatus,
+      clientName: data.clientName,
+    });
   }
 
   /**
    * Records metrics for a completed attempt of a Bigtable operation.
    * This method records attempt latency, connectivity error count, server latency, and first response latency,
    * along with the provided attributes.
-   * @param {OnAttemptCompleteMetrics} metrics Metrics related to the completed attempt.
-   * @param {OnAttemptCompleteAttributes} attributes Attributes associated with the completed attempt.
+   * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
-  onAttemptComplete(
-    metrics: OnAttemptCompleteMetrics,
-    attributes: OnAttemptCompleteAttributes
-  ) {
-    this.initialize(attributes.projectId);
-    this.otelMetrics?.attemptLatencies.record(
-      metrics.attemptLatency,
-      attributes
-    );
+  onAttemptComplete(data: OnAttemptCompleteData) {
+    this.initialize({
+      projectId: data.projectId,
+      instanceId: data.metricsCollectorData.instanceId,
+      table: data.metricsCollectorData.table,
+      cluster: data.metricsCollectorData.cluster,
+      zone: data.metricsCollectorData.zone,
+    });
+    this.otelMetrics?.attemptLatencies.record(data.attemptLatency, {
+      appProfileId: data.metricsCollectorData.appProfileId,
+      methodName: data.metricsCollectorData.methodName,
+      clientUid: data.metricsCollectorData.clientUid,
+      attemptStatus: data.attemptStatus,
+      streamingOperation: data.streamingOperation,
+      clientName: data.clientName,
+    });
     this.otelMetrics?.connectivityErrorCount.record(
-      metrics.connectivityErrorCount,
-      attributes
+      data.connectivityErrorCount,
+      {
+        appProfileId: data.metricsCollectorData.appProfileId,
+        methodName: data.metricsCollectorData.methodName,
+        clientUid: data.metricsCollectorData.clientUid,
+        attemptStatus: data.attemptStatus,
+        clientName: data.clientName,
+      }
     );
-    this.otelMetrics?.serverLatencies.record(metrics.serverLatency, attributes);
+    this.otelMetrics?.serverLatencies.record(data.serverLatency, {
+      appProfileId: data.metricsCollectorData.appProfileId,
+      methodName: data.metricsCollectorData.methodName,
+      clientUid: data.metricsCollectorData.clientUid,
+      attemptStatus: data.attemptStatus,
+      streamingOperation: data.streamingOperation,
+      clientName: data.clientName,
+    });
   }
 }
