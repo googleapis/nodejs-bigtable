@@ -9,10 +9,9 @@ import {GCPMetricsHandler} from '../../src/client-side-metrics/gcp-metrics-handl
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import {expectedRequestsHandled} from '../../test-common/metrics-handler-fixture';
 import {
-  OnAttemptCompleteAttributes,
-  OnOperationCompleteAttributes,
-} from '../../src/client-side-metrics/client-side-metrics-attributes';
-import {OnOperationCompleteMetrics} from '../../src/client-side-metrics/metrics-handler';
+  OnAttemptCompleteData,
+  OnOperationCompleteData,
+} from '../../src/client-side-metrics/metrics-handler';
 import {
   expectedOtelExportConvertedValue,
   expectedOtelExportInput,
@@ -66,16 +65,10 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
       );
 
       for (const request of expectedRequestsHandled) {
-        if (request.metrics.attemptLatency) {
-          handler.onAttemptComplete(
-            request.metrics,
-            request.attributes as OnAttemptCompleteAttributes
-          );
+        if (request.attemptLatency) {
+          handler.onAttemptComplete(request as OnAttemptCompleteData);
         } else {
-          handler.onOperationComplete(
-            request.metrics as OnOperationCompleteMetrics,
-            request.attributes as OnOperationCompleteAttributes
-          );
+          handler.onOperationComplete(request as OnOperationCompleteData);
         }
       }
     })();

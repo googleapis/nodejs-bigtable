@@ -2,10 +2,9 @@ import {describe} from 'mocha';
 import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 import {expectedRequestsHandled} from '../test-common/metrics-handler-fixture';
 import {
-  OnAttemptCompleteAttributes,
-  OnOperationCompleteAttributes,
-} from '../src/client-side-metrics/client-side-metrics-attributes';
-import {OnOperationCompleteMetrics} from '../src/client-side-metrics/metrics-handler';
+  OnAttemptCompleteData,
+  OnOperationCompleteData,
+} from '../src/client-side-metrics/metrics-handler';
 import {CloudMonitoringExporter} from '../src/client-side-metrics/exporter';
 
 // TODO: Test that calls export.
@@ -23,16 +22,10 @@ describe('Bigtable/GCPMetricsHandler', () => {
     );
 
     for (const request of expectedRequestsHandled) {
-      if (request.metrics.attemptLatency) {
-        handler.onAttemptComplete(
-          request.metrics,
-          request.attributes as OnAttemptCompleteAttributes
-        );
+      if (request.attemptLatency) {
+        handler.onAttemptComplete(request as OnAttemptCompleteData);
       } else {
-        handler.onOperationComplete(
-          request.metrics as OnOperationCompleteMetrics,
-          request.attributes as OnOperationCompleteAttributes
-        );
+        handler.onOperationComplete(request as OnOperationCompleteData);
       }
     }
   });
