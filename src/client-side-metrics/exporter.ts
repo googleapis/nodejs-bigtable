@@ -32,6 +32,11 @@ export interface ExportInput {
     };
     _syncAttributes: {
       'monitored_resource.type': string;
+      'monitored_resource.project_id': string;
+      'monitored_resource.instance_id': string;
+      'monitored_resource.table': string;
+      'monitored_resource.cluster': string;
+      'monitored_resource.zone': string;
     };
   };
   scopeMetrics: {
@@ -51,21 +56,23 @@ export interface ExportInput {
       aggregationTemporality?: number;
       dataPointType?: number;
       dataPoints: {
-        attributes: {
-          appProfileId?: string;
-          finalOperationStatus: number;
-          streamingOperation: string;
-          projectId: string;
-          clientName: string;
-          metricsCollectorData: {
-            instanceId: string;
-            table: string;
-            cluster: string;
-            zone: string;
-            methodName: string;
-            clientUid: string;
-          };
-        };
+        attributes:
+          | {
+              methodName: string;
+              clientUid: string;
+              appProfileId?: string;
+              finalOperationStatus: number;
+              streamingOperation?: string;
+              clientName: string;
+            }
+          | {
+              methodName: string;
+              clientUid: string;
+              appProfileId?: string;
+              attemptStatus: number;
+              streamingOperation?: string;
+              clientName: string;
+            };
         startTime: number[];
         endTime: number[];
         value: {
@@ -92,20 +99,29 @@ export function metricsToRequest(exportArgs: ExportInput) {
       for (const dataPoint of metric.dataPoints) {
         // Extract attributes to labels based on their intended target (resource or metric)
         const allAttributes = dataPoint.attributes;
+        // TODO: Type guard for final operation status / attempt status
         const metricLabels = {
           app_profile: allAttributes.appProfileId,
           client_name: allAttributes.clientName,
-          method: allAttributes.metricsCollectorData.methodName,
-          status: allAttributes.finalOperationStatus?.toString(),
+          method: allAttributes.methodName,
+          status: '0',
           streaming: allAttributes.streamingOperation,
-          client_uid: allAttributes.metricsCollectorData.clientUid,
+          client_uid: allAttributes.clientUid,
         };
         const resourceLabels = {
-          cluster: allAttributes.metricsCollectorData.cluster,
-          instance: allAttributes.metricsCollectorData.instanceId,
-          project_id: allAttributes.projectId,
-          table: allAttributes.metricsCollectorData.table,
-          zone: allAttributes.metricsCollectorData.zone,
+          cluster:
+            exportArgs.resource._syncAttributes['monitored_resource.cluster'],
+          instance:
+            exportArgs.resource._syncAttributes[
+              'monitored_resource.instance_id'
+            ],
+          project_id:
+            exportArgs.resource._syncAttributes[
+              'monitored_resource.project_id'
+            ],
+          table:
+            exportArgs.resource._syncAttributes['monitored_resource.table'],
+          zone: exportArgs.resource._syncAttributes['monitored_resource.zone'],
         };
         if (metricName === RETRY_COUNT_NAME) {
           const timeSeries = {

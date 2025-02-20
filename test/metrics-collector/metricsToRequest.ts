@@ -6,6 +6,10 @@ import {
   fakeStartTime,
 } from '../../test-common/export-input-fixture';
 import {metricsToRequest} from '../../src/client-side-metrics/exporter';
+import {
+  expectedOtelExportConvertedValue,
+  expectedOtelExportInput,
+} from '../../test-common/expected-otel-export-input';
 
 export const expectedRequest = {
   name: 'projects/some-project',
@@ -150,8 +154,16 @@ export const expectedRequest = {
 
 // TODO: Generate the export code
 describe('Bigtable/metricsToRequest', () => {
+  /*
   it('Converts a counter and a histogram to the cloud monitoring format', () => {
     const actualRequest = metricsToRequest(exportInput);
     assert.deepStrictEqual(actualRequest, expectedRequest);
+  });
+   */
+  it('Converts an otel request to a request ready for the metric service client', () => {
+    assert.deepStrictEqual(
+      metricsToRequest(expectedOtelExportInput),
+      expectedOtelExportConvertedValue
+    );
   });
 });
