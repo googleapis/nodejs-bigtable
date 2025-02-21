@@ -8,8 +8,9 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/operation_latencies',
         labels: {
+          app_profile: undefined,
           client_name: 'nodejs-bigtable',
-          method: 'readRows',
+          method: 'Bigtable.ReadRows',
           status: '0',
           streaming: 'true',
           client_uid: 'fake-uuid',
@@ -105,8 +106,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/attempt_latencies',
         labels: {
+          app_profile: undefined,
           client_name: 'nodejs-bigtable',
-          method: 'readRows',
+          method: 'Bigtable.ReadRows',
+          status: '4',
           streaming: 'true',
           client_uid: 'fake-uuid',
         },
@@ -201,8 +204,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/attempt_latencies',
         labels: {
+          app_profile: undefined,
           client_name: 'nodejs-bigtable',
-          method: 'readRows',
+          method: 'Bigtable.ReadRows',
+          status: '0',
           streaming: 'true',
           client_uid: 'fake-uuid',
         },
@@ -297,10 +302,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/retry_count',
         labels: {
+          app_profile: undefined,
           client_name: 'nodejs-bigtable',
-          method: 'readRows',
+          method: 'Bigtable.ReadRows',
           status: '0',
-          streaming: 'true',
           client_uid: 'fake-uuid',
         },
       },
@@ -335,10 +340,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/first_response_latencies',
         labels: {
+          app_profile: undefined,
           client_name: 'nodejs-bigtable',
-          method: 'readRows',
+          method: 'Bigtable.ReadRows',
           status: '0',
-          streaming: 'true',
           client_uid: 'fake-uuid',
         },
       },
@@ -432,8 +437,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/server_latencies',
         labels: {
+          app_profile: undefined,
           client_name: 'nodejs-bigtable',
-          method: 'readRows',
+          method: 'Bigtable.ReadRows',
+          status: '4',
           streaming: 'true',
           client_uid: 'fake-uuid',
         },
@@ -528,8 +535,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/server_latencies',
         labels: {
+          app_profile: undefined,
           client_name: 'nodejs-bigtable',
-          method: 'readRows',
+          method: 'Bigtable.ReadRows',
+          status: '0',
           streaming: 'true',
           client_uid: 'fake-uuid',
         },
@@ -624,9 +633,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/connectivity_error_count',
         labels: {
+          app_profile: undefined,
           client_name: 'nodejs-bigtable',
-          method: 'readRows',
-          streaming: 'true',
+          method: 'Bigtable.ReadRows',
+          status: '4',
           client_uid: 'fake-uuid',
         },
       },
@@ -720,9 +730,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/connectivity_error_count',
         labels: {
+          app_profile: undefined,
           client_name: 'nodejs-bigtable',
-          method: 'readRows',
-          streaming: 'true',
+          method: 'Bigtable.ReadRows',
+          status: '0',
           client_uid: 'fake-uuid',
         },
       },

@@ -125,14 +125,17 @@ export function metricsToRequest(exportArgs: ExportInput) {
           // Extract attributes to labels based on their intended target (resource or metric)
           const allAttributes = dataPoint.attributes;
           // TODO: Type guard for final operation status / attempt status
-          const metricLabels = {
-            app_profile: allAttributes.appProfileId,
-            client_name: allAttributes.clientName,
-            method: allAttributes.methodName,
-            status: '0',
-            streaming: allAttributes.streamingOperation,
-            client_uid: allAttributes.clientUid,
-          };
+          const streaming = allAttributes.streamingOperation;
+          const metricLabels = Object.assign(
+            {
+              app_profile: allAttributes.appProfileId,
+              client_name: allAttributes.clientName,
+              method: allAttributes.methodName,
+              status: allAttributes.finalOperationStatus.toString(),
+              client_uid: allAttributes.clientUid,
+            },
+            streaming ? {streaming} : null
+          );
           const timeSeries = {
             metric: {
               type: metricName,
@@ -168,14 +171,23 @@ export function metricsToRequest(exportArgs: ExportInput) {
           // Extract attributes to labels based on their intended target (resource or metric)
           const allAttributes = dataPoint.attributes;
           // TODO: Type guard for final operation status / attempt status
-          const metricLabels = {
-            app_profile: allAttributes.appProfileId,
-            client_name: allAttributes.clientName,
-            method: allAttributes.methodName,
-            status: '0',
-            streaming: allAttributes.streamingOperation,
-            client_uid: allAttributes.clientUid,
-          };
+          const streaming = allAttributes.streamingOperation;
+          const metricLabels = Object.assign(
+            {
+              app_profile: allAttributes.appProfileId,
+              client_name: allAttributes.clientName,
+              method: allAttributes.methodName,
+              status:
+                (
+                  allAttributes as OnAttemptAttribute
+                ).attemptStatus?.toString() ??
+                (
+                  allAttributes as OnOperationAttribute
+                ).finalOperationStatus?.toString(),
+              client_uid: allAttributes.clientUid,
+            },
+            streaming ? {streaming} : null
+          );
           const timeSeries = {
             metric: {
               type: metricName,

@@ -19,7 +19,7 @@ import {
 import * as assert from 'assert';
 import {replaceTimestamps} from '../../test-common/replace-timestamps';
 
-describe.only('Bigtable/GCPMetricsHandler', () => {
+describe('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value ready for sending to the CloudMonitoringExporter', done => {
     (async () => {
       /*
