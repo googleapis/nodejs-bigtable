@@ -34,7 +34,7 @@ import * as assert from 'assert';
 import {replaceTimestamps} from '../../test-common/replace-timestamps';
 
 describe('Bigtable/GCPMetricsHandler', () => {
-  it.only('Should export a value ready for sending to the CloudMonitoringExporter', done => {
+  it('Should export a value ready for sending to the CloudMonitoringExporter', done => {
     (async () => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
