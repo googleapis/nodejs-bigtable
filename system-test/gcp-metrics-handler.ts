@@ -36,22 +36,37 @@ describe('Bigtable/GCPMetricsHandler', () => {
       export the data.
        */
       const timeout = setTimeout(() => {}, 30000);
-      const testResultCallback: (result: ExportResult) => void = (
-        result: ExportResult
-      ) => {
-        try {
-          clearTimeout(timeout);
-          assert.deepStrictEqual(result, {code: 0});
-          done();
-        } catch (error) {
-          done(error);
-        }
-      };
+      /*
+      The exporter is called every x seconds, but we only want to test the value
+      it receives once. Since done cannot be called multiple times in mocha,
+      exporter ensures we only test the value export receives one time.
+      */
+      let exported = false;
+      function getTestResultCallback(
+        resultCallback: (result: ExportResult) => void
+      ) {
+        return (result: ExportResult) => {
+          if (!exported) {
+            exported = true;
+            try {
+              clearTimeout(timeout);
+              assert.deepStrictEqual(result, {code: 0});
+              done();
+              resultCallback({code: 0});
+            } catch (error) {
+              done(error);
+            }
+          } else {
+            resultCallback({code: 0});
+          }
+        };
+      }
       class MockExporter extends CloudMonitoringExporter {
         export(
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void
         ): void {
+          const testResultCallback = getTestResultCallback(resultCallback);
           super.export(metrics, testResultCallback);
         }
       }
