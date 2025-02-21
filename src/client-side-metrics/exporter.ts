@@ -24,7 +24,65 @@ export interface ExportResult {
   code: number;
 }
 
-// TODO: Only involves the values that we care about
+interface OnAttemptAttribute {
+  methodName: string;
+  clientUid: string;
+  appProfileId?: string;
+  attemptStatus: number;
+  streamingOperation?: string;
+  clientName: string;
+}
+
+interface OnOperationAttribute {
+  methodName: string;
+  clientUid: string;
+  appProfileId?: string;
+  finalOperationStatus: number;
+  streamingOperation?: string;
+  clientName: string;
+}
+
+interface ScopeMetric<Attributes, Value> {
+  scope: {
+    name: string;
+    version: string;
+  };
+  metrics: {
+    descriptor: {
+      name: string;
+      unit: string;
+      description?: string;
+      type?: string;
+      valueType?: number;
+      advice?: {};
+    };
+    aggregationTemporality?: number;
+    dataPointType?: number;
+    dataPoints: {
+      attributes: Attributes;
+      startTime: number[];
+      endTime: number[];
+      value: Value;
+    }[];
+  }[];
+}
+
+type OtherMetric = ScopeMetric<
+  OnAttemptAttribute | OnOperationAttribute,
+  {
+    min?: number;
+    max?: number;
+    sum: number;
+    count: number;
+    buckets: {
+      boundaries: number[];
+      counts: number[];
+    };
+  }
+>;
+
+type RetryMetric = ScopeMetric<OnOperationAttribute, number>;
+
 export interface ExportInput {
   resource: {
     _attributes: {
@@ -39,91 +97,43 @@ export interface ExportInput {
       'monitored_resource.zone': string;
     };
   };
-  scopeMetrics: {
-    scope: {
-      name: string;
-      version: string;
-    };
-    metrics: {
-      descriptor: {
-        name: string;
-        unit: string;
-        description?: string;
-        type?: string;
-        valueType?: number;
-        advice?: {};
-      };
-      aggregationTemporality?: number;
-      dataPointType?: number;
-      dataPoints: {
-        attributes:
-          | {
-              methodName: string;
-              clientUid: string;
-              appProfileId?: string;
-              finalOperationStatus: number;
-              streamingOperation?: string;
-              clientName: string;
-            }
-          | {
-              methodName: string;
-              clientUid: string;
-              appProfileId?: string;
-              attemptStatus: number;
-              streamingOperation?: string;
-              clientName: string;
-            };
-        startTime: number[];
-        endTime: number[];
-        value: {
-          min?: number;
-          max?: number;
-          sum: number;
-          count: number;
-          buckets: {
-            boundaries: number[];
-            counts: number[];
-          };
-        };
-      }[];
-    }[];
-  }[];
+  scopeMetrics: (OtherMetric | RetryMetric)[];
+}
+
+function isRetryMetric(
+  scopeMetric: OtherMetric | RetryMetric
+): scopeMetric is RetryMetric {
+  return scopeMetric.scope.name === RETRY_COUNT_NAME;
 }
 
 export function metricsToRequest(exportArgs: ExportInput) {
   const timeSeriesArray = [];
+  const resourceLabels = {
+    cluster: exportArgs.resource._syncAttributes['monitored_resource.cluster'],
+    instance:
+      exportArgs.resource._syncAttributes['monitored_resource.instance_id'],
+    project_id:
+      exportArgs.resource._syncAttributes['monitored_resource.project_id'],
+    table: exportArgs.resource._syncAttributes['monitored_resource.table'],
+    zone: exportArgs.resource._syncAttributes['monitored_resource.zone'],
+  };
   for (const scopeMetrics of exportArgs.scopeMetrics) {
-    for (const metric of scopeMetrics.metrics) {
-      const metricName = metric.descriptor.name;
+    if (isRetryMetric(scopeMetrics)) {
+      for (const metric of scopeMetrics.metrics) {
+        const metricName = metric.descriptor.name;
 
-      for (const dataPoint of metric.dataPoints) {
-        // Extract attributes to labels based on their intended target (resource or metric)
-        const allAttributes = dataPoint.attributes;
-        // TODO: Type guard for final operation status / attempt status
-        const metricLabels = {
-          app_profile: allAttributes.appProfileId,
-          client_name: allAttributes.clientName,
-          method: allAttributes.methodName,
-          status: '0',
-          streaming: allAttributes.streamingOperation,
-          client_uid: allAttributes.clientUid,
-        };
-        const resourceLabels = {
-          cluster:
-            exportArgs.resource._syncAttributes['monitored_resource.cluster'],
-          instance:
-            exportArgs.resource._syncAttributes[
-              'monitored_resource.instance_id'
-            ],
-          project_id:
-            exportArgs.resource._syncAttributes[
-              'monitored_resource.project_id'
-            ],
-          table:
-            exportArgs.resource._syncAttributes['monitored_resource.table'],
-          zone: exportArgs.resource._syncAttributes['monitored_resource.zone'],
-        };
-        if (metricName === RETRY_COUNT_NAME) {
+        for (const dataPoint of metric.dataPoints) {
+          // Extract attributes to labels based on their intended target (resource or metric)
+          const allAttributes = dataPoint.attributes;
+          // TODO: Type guard for final operation status / attempt status
+          const metricLabels = {
+            app_profile: allAttributes.appProfileId,
+            client_name: allAttributes.clientName,
+            method: allAttributes.methodName,
+            status: '0',
+            streaming: allAttributes.streamingOperation,
+            client_uid: allAttributes.clientUid,
+          };
           const timeSeries = {
             metric: {
               type: metricName,
@@ -153,7 +163,24 @@ export function metricsToRequest(exportArgs: ExportInput) {
             ],
           };
           timeSeriesArray.push(timeSeries);
-        } else {
+        }
+      }
+    } else {
+      for (const metric of scopeMetrics.metrics) {
+        const metricName = metric.descriptor.name;
+
+        for (const dataPoint of metric.dataPoints) {
+          // Extract attributes to labels based on their intended target (resource or metric)
+          const allAttributes = dataPoint.attributes;
+          // TODO: Type guard for final operation status / attempt status
+          const metricLabels = {
+            app_profile: allAttributes.appProfileId,
+            client_name: allAttributes.clientName,
+            method: allAttributes.methodName,
+            status: '0',
+            streaming: allAttributes.streamingOperation,
+            client_uid: allAttributes.clientUid,
+          };
           const timeSeries = {
             metric: {
               type: metricName,
