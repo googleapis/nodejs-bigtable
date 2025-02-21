@@ -18,7 +18,10 @@ import {ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
-import {CONNECTIIVTY_ERROR_COUNT, RETRY_COUNT_NAME} from '../../test-common/expected-otel-export-input';
+import {
+  CONNECTIIVTY_ERROR_COUNT,
+  RETRY_COUNT_NAME,
+} from '../../test-common/expected-otel-export-input';
 
 export interface ExportResult {
   code: number;
