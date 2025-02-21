@@ -664,7 +664,7 @@ export const expectedOtelExportConvertedValue = {
             },
           },
           value: {
-            int64Value: 1,
+            int64Value: 0,
           },
         },
       ],
@@ -702,7 +702,7 @@ export const expectedOtelExportConvertedValue = {
             },
           },
           value: {
-            int64Value: 1,
+            int64Value: 0,
           },
         },
       ],
@@ -1049,22 +1049,16 @@ export const expectedOtelExportInput = {
         {
           descriptor: {
             name: 'bigtable.googleapis.com/internal/client/connectivity_error_count',
-            type: 'HISTOGRAM',
+            type: 'COUNTER',
             description:
               "The number of requests that failed to reach Google's network. In normal cases, this number is 0. When the number is not 0, it can indicate connectivity issues between the application and the Google network.",
             unit: '',
             valueType: 1,
-            advice: {
-              explicitBucketBoundaries: [
-                0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10, 13,
-                16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250, 300,
-                400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000, 50000,
-                100000,
-              ],
-            },
+            advice: {},
           },
           aggregationTemporality: 1,
-          dataPointType: 0,
+          dataPointType: 3,
+          isMonotonic: true,
           dataPoints: [
             {
               attributes: {
@@ -1075,7 +1069,7 @@ export const expectedOtelExportInput = {
               },
               startTime: [123, 789],
               endTime: [456, 789],
-              value: 1,
+              value: 0,
             },
             {
               attributes: {
@@ -1086,7 +1080,7 @@ export const expectedOtelExportInput = {
               },
               startTime: [123, 789],
               endTime: [456, 789],
-              value: 1,
+              value: 0,
             },
           ],
         },

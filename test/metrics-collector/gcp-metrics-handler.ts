@@ -19,8 +19,8 @@ import {
 import * as assert from 'assert';
 import {replaceTimestamps} from '../../test-common/replace-timestamps';
 
-describe.only('Bigtable/GCPMetricsHandler', () => {
-  it('Should export a value ready for sending to the CloudMonitoringExporter', done => {
+describe('Bigtable/GCPMetricsHandler', () => {
+  it.only('Should export a value ready for sending to the CloudMonitoringExporter', done => {
     (async () => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
@@ -40,6 +40,25 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
               [123, 789],
               [456, 789]
             );
+            const parsedExportInput = JSON.parse(JSON.stringify(metrics));
+            assert.deepStrictEqual(
+              (parsedExportInput as ExportInput).scopeMetrics[0].metrics.length,
+              expectedOtelExportInput.scopeMetrics[0].metrics.length
+            );
+            for (
+              let index = 0;
+              index <
+              (parsedExportInput as ExportInput).scopeMetrics[0].metrics.length;
+              index++
+            ) {
+              // We need to compare pointwise because mocha truncates to an 8192 character limit.
+              assert.deepStrictEqual(
+                (parsedExportInput as ExportInput).scopeMetrics[0].metrics[
+                  index
+                ],
+                expectedOtelExportInput.scopeMetrics[0].metrics[index]
+              );
+            }
             assert.deepStrictEqual(
               JSON.parse(JSON.stringify(metrics)),
               expectedOtelExportInput

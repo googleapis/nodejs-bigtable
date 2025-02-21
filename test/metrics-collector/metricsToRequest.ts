@@ -160,7 +160,7 @@ describe('Bigtable/metricsToRequest', () => {
     assert.deepStrictEqual(actualRequest, expectedRequest);
   });
    */
-  it.only('Converts an otel request to a request ready for the metric service client', () => {
+  it('Converts an otel request to a request ready for the metric service client', () => {
     const convertedValue = metricsToRequest(expectedOtelExportInput);
     assert.deepStrictEqual(
       convertedValue.timeSeries.length,
