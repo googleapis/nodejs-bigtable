@@ -42,32 +42,26 @@ interface OnOperationAttribute {
   clientName: string;
 }
 
-interface ScopeMetric<Attributes, Value> {
-  scope: {
+interface Metric<Attributes, Value> {
+  descriptor: {
     name: string;
-    version: string;
+    unit: string;
+    description?: string;
+    type?: string;
+    valueType?: number;
+    advice?: {};
   };
-  metrics: {
-    descriptor: {
-      name: string;
-      unit: string;
-      description?: string;
-      type?: string;
-      valueType?: number;
-      advice?: {};
-    };
-    aggregationTemporality?: number;
-    dataPointType?: number;
-    dataPoints: {
-      attributes: Attributes;
-      startTime: number[];
-      endTime: number[];
-      value: Value;
-    }[];
+  aggregationTemporality?: number;
+  dataPointType?: number;
+  dataPoints: {
+    attributes: Attributes;
+    startTime: number[];
+    endTime: number[];
+    value: Value;
   }[];
 }
 
-type OtherMetric = ScopeMetric<
+type OtherMetric = Metric<
   OnAttemptAttribute | OnOperationAttribute,
   {
     min?: number;
@@ -81,7 +75,7 @@ type OtherMetric = ScopeMetric<
   }
 >;
 
-type RetryMetric = ScopeMetric<OnOperationAttribute, number>;
+type RetryMetric = Metric<OnOperationAttribute, number>;
 
 export interface ExportInput {
   resource: {
@@ -97,13 +91,19 @@ export interface ExportInput {
       'monitored_resource.zone': string;
     };
   };
-  scopeMetrics: (OtherMetric | RetryMetric)[];
+  scopeMetrics: {
+    scope: {
+      name: string;
+      version: string;
+    };
+    metrics: (RetryMetric | OtherMetric)[];
+  }[];
 }
 
 function isRetryMetric(
-  scopeMetric: OtherMetric | RetryMetric
-): scopeMetric is RetryMetric {
-  return scopeMetric.scope.name === RETRY_COUNT_NAME;
+  metric: OtherMetric | RetryMetric
+): metric is RetryMetric {
+  return metric.descriptor.name === RETRY_COUNT_NAME;
 }
 
 export function metricsToRequest(exportArgs: ExportInput) {
@@ -118,10 +118,9 @@ export function metricsToRequest(exportArgs: ExportInput) {
     zone: exportArgs.resource._syncAttributes['monitored_resource.zone'],
   };
   for (const scopeMetrics of exportArgs.scopeMetrics) {
-    if (isRetryMetric(scopeMetrics)) {
-      for (const metric of scopeMetrics.metrics) {
-        const metricName = metric.descriptor.name;
-
+    for (const metric of scopeMetrics.metrics) {
+      const metricName = metric.descriptor.name;
+      if (isRetryMetric(metric)) {
         for (const dataPoint of metric.dataPoints) {
           // Extract attributes to labels based on their intended target (resource or metric)
           const allAttributes = dataPoint.attributes;
@@ -164,11 +163,7 @@ export function metricsToRequest(exportArgs: ExportInput) {
           };
           timeSeriesArray.push(timeSeries);
         }
-      }
-    } else {
-      for (const metric of scopeMetrics.metrics) {
-        const metricName = metric.descriptor.name;
-
+      } else {
         for (const dataPoint of metric.dataPoints) {
           // Extract attributes to labels based on their intended target (resource or metric)
           const allAttributes = dataPoint.attributes;
