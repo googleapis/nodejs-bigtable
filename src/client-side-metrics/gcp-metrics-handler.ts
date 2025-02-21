@@ -195,14 +195,11 @@ export class GCPMetricsHandler<T extends MetricExporter>
             },
           }
         ),
-        connectivityErrorCount: meter.createHistogram(
+        connectivityErrorCount: meter.createCounter(
           'bigtable.googleapis.com/internal/client/connectivity_error_count',
           {
             description:
               "The number of requests that failed to reach Google's network. In normal cases, this number is 0. When the number is not 0, it can indicate connectivity issues between the application and the Google network.",
-            advice: {
-              explicitBucketBoundaries: latencyBuckets,
-            },
           }
         ),
         clientBlockingLatencies: meter.createHistogram(
@@ -279,16 +276,13 @@ export class GCPMetricsHandler<T extends MetricExporter>
       streamingOperation: data.streamingOperation,
       clientName: data.clientName,
     });
-    this.otelMetrics?.connectivityErrorCount.record(
-      data.connectivityErrorCount,
-      {
-        appProfileId: data.metricsCollectorData.appProfileId,
-        methodName: data.metricsCollectorData.methodName,
-        clientUid: data.metricsCollectorData.clientUid,
-        attemptStatus: data.attemptStatus,
-        clientName: data.clientName,
-      }
-    );
+    this.otelMetrics?.connectivityErrorCount.add(data.connectivityErrorCount, {
+      appProfileId: data.metricsCollectorData.appProfileId,
+      methodName: data.metricsCollectorData.methodName,
+      clientUid: data.metricsCollectorData.clientUid,
+      attemptStatus: data.attemptStatus,
+      clientName: data.clientName,
+    });
     this.otelMetrics?.serverLatencies.record(data.serverLatency, {
       appProfileId: data.metricsCollectorData.appProfileId,
       methodName: data.metricsCollectorData.methodName,

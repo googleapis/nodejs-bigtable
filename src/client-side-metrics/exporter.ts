@@ -18,7 +18,7 @@ import {ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
-import {RETRY_COUNT_NAME} from '../../test-common/expected-otel-export-input';
+import {CONNECTIIVTY_ERROR_COUNT, RETRY_COUNT_NAME} from '../../test-common/expected-otel-export-input';
 
 export interface ExportResult {
   code: number;
@@ -75,7 +75,7 @@ type OtherMetric = Metric<
   }
 >;
 
-type RetryMetric = Metric<OnOperationAttribute, number>;
+type RetryMetric = Metric<OnAttemptAttribute | OnOperationAttribute, number>;
 
 export interface ExportInput {
   resource: {
@@ -100,10 +100,13 @@ export interface ExportInput {
   }[];
 }
 
-function isRetryMetric(
+function isIntegerMetric(
   metric: OtherMetric | RetryMetric
 ): metric is RetryMetric {
-  return metric.descriptor.name === RETRY_COUNT_NAME;
+  return (
+    metric.descriptor.name === RETRY_COUNT_NAME ||
+    metric.descriptor.name === CONNECTIIVTY_ERROR_COUNT
+  );
 }
 
 export function metricsToRequest(exportArgs: ExportInput) {
@@ -120,7 +123,7 @@ export function metricsToRequest(exportArgs: ExportInput) {
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const metric of scopeMetrics.metrics) {
       const metricName = metric.descriptor.name;
-      if (isRetryMetric(metric)) {
+      if (isIntegerMetric(metric)) {
         for (const dataPoint of metric.dataPoints) {
           // Extract attributes to labels based on their intended target (resource or metric)
           const allAttributes = dataPoint.attributes;
@@ -130,7 +133,13 @@ export function metricsToRequest(exportArgs: ExportInput) {
               app_profile: allAttributes.appProfileId,
               client_name: allAttributes.clientName,
               method: allAttributes.methodName,
-              status: allAttributes.finalOperationStatus.toString(),
+              status:
+                (
+                  allAttributes as OnAttemptAttribute
+                ).attemptStatus?.toString() ??
+                (
+                  allAttributes as OnOperationAttribute
+                ).finalOperationStatus?.toString(),
               client_uid: allAttributes.clientUid,
             },
             streaming ? {streaming} : null

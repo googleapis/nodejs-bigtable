@@ -1,5 +1,7 @@
 export const RETRY_COUNT_NAME =
   'bigtable.googleapis.com/internal/client/retry_count';
+export const CONNECTIIVTY_ERROR_COUNT =
+  'bigtable.googleapis.com/internal/client/connectivity_error_count';
 
 export const expectedOtelExportConvertedValue = {
   name: 'projects/my-project',
@@ -650,8 +652,7 @@ export const expectedOtelExportConvertedValue = {
           zone: 'us-west1-c',
         },
       },
-      metricKind: 'CUMULATIVE',
-      valueType: 'DISTRIBUTION',
+      valueType: 'INT64',
       points: [
         {
           interval: {
@@ -663,68 +664,10 @@ export const expectedOtelExportConvertedValue = {
             },
           },
           value: {
-            distributionValue: {
-              count: '1',
-              mean: 0,
-              bucketOptions: {
-                explicitBuckets: {
-                  bounds: [
-                    0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10,
-                    13, 16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250,
-                    300, 400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000,
-                    50000, 100000,
-                  ],
-                },
-              },
-              bucketCounts: [
-                '1',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-              ],
-            },
+            int64Value: 1,
           },
         },
       ],
-      unit: 'ms',
     },
     {
       metric: {
@@ -747,8 +690,7 @@ export const expectedOtelExportConvertedValue = {
           zone: 'us-west1-c',
         },
       },
-      metricKind: 'CUMULATIVE',
-      valueType: 'DISTRIBUTION',
+      valueType: 'INT64',
       points: [
         {
           interval: {
@@ -760,68 +702,10 @@ export const expectedOtelExportConvertedValue = {
             },
           },
           value: {
-            distributionValue: {
-              count: '1',
-              mean: 0,
-              bucketOptions: {
-                explicitBuckets: {
-                  bounds: [
-                    0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10,
-                    13, 16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250,
-                    300, 400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000,
-                    50000, 100000,
-                  ],
-                },
-              },
-              bucketCounts: [
-                '1',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-              ],
-            },
+            int64Value: 1,
           },
         },
       ],
-      unit: 'ms',
     },
   ],
 };
@@ -1191,25 +1075,7 @@ export const expectedOtelExportInput = {
               },
               startTime: [123, 789],
               endTime: [456, 789],
-              value: {
-                min: 0,
-                max: 0,
-                sum: 0,
-                buckets: {
-                  boundaries: [
-                    0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10,
-                    13, 16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250,
-                    300, 400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000,
-                    50000, 100000,
-                  ],
-                  counts: [
-                    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0,
-                  ],
-                },
-                count: 1,
-              },
+              value: 1,
             },
             {
               attributes: {
@@ -1220,25 +1086,7 @@ export const expectedOtelExportInput = {
               },
               startTime: [123, 789],
               endTime: [456, 789],
-              value: {
-                min: 0,
-                max: 0,
-                sum: 0,
-                buckets: {
-                  boundaries: [
-                    0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10,
-                    13, 16, 20, 25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250,
-                    300, 400, 500, 650, 800, 1000, 2000, 5000, 10000, 20000,
-                    50000, 100000,
-                  ],
-                  counts: [
-                    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0,
-                  ],
-                },
-                count: 1,
-              },
+              value: 1,
             },
           ],
         },
