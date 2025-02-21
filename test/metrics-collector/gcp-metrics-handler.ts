@@ -114,6 +114,10 @@ describe('Bigtable/GCPMetricsHandler', () => {
                 done(e);
               }
             })();
+          } else {
+            // The test suite will not complete if unanswered callbacks
+            // remain on subsequent export calls.
+            resultCallback({code: 0});
           }
         }
       }
