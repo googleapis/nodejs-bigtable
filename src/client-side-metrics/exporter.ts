@@ -124,7 +124,6 @@ export function metricsToRequest(exportArgs: ExportInput) {
         for (const dataPoint of metric.dataPoints) {
           // Extract attributes to labels based on their intended target (resource or metric)
           const allAttributes = dataPoint.attributes;
-          // TODO: Type guard for final operation status / attempt status
           const streaming = allAttributes.streamingOperation;
           const metricLabels = Object.assign(
             {
@@ -170,7 +169,6 @@ export function metricsToRequest(exportArgs: ExportInput) {
         for (const dataPoint of metric.dataPoints) {
           // Extract attributes to labels based on their intended target (resource or metric)
           const allAttributes = dataPoint.attributes;
-          // TODO: Type guard for final operation status / attempt status
           const streaming = allAttributes.streamingOperation;
           const metricLabels = Object.assign(
             {
