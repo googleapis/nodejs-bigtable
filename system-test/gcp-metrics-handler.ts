@@ -19,28 +19,67 @@ import {
   OnAttemptCompleteData,
   OnOperationCompleteData,
 } from '../src/client-side-metrics/metrics-handler';
-import {CloudMonitoringExporter} from '../src/client-side-metrics/exporter';
+import {
+  CloudMonitoringExporter,
+  ExportResult,
+} from '../src/client-side-metrics/exporter';
+import {Bigtable} from '../src';
+import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
+import * as assert from 'assert';
 
-// TODO: Test that calls export.
-// TODO: Test whole process.
-describe('Bigtable/GCPMetricsHandler', () => {
+describe.only('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value to the CloudMonitoringExporter', done => {
-    /*
-    We need to create a timeout here because if we don't then mocha shuts down
-    the test as it is sleeping before the GCPMetricsHandler has a chance to
-    export the data.
-     */
-    const timeout = setTimeout(() => {}, 30000);
-    const handler = new GCPMetricsHandler(
-      new CloudMonitoringExporter({projectId: 'cloud-native-db-dpes-shared'})
-    );
-
-    for (const request of expectedRequestsHandled) {
-      if (request.attemptLatency) {
-        handler.onAttemptComplete(request as OnAttemptCompleteData);
-      } else {
-        handler.onOperationComplete(request as OnOperationCompleteData);
+    (async () => {
+      /*
+      We need to create a timeout here because if we don't then mocha shuts down
+      the test as it is sleeping before the GCPMetricsHandler has a chance to
+      export the data.
+       */
+      const timeout = setTimeout(() => {}, 30000);
+      const testResultCallback: (result: ExportResult) => void = (
+        result: ExportResult
+      ) => {
+        try {
+          clearTimeout(timeout);
+          assert.deepStrictEqual(result, {code: 0});
+          done();
+        } catch (error) {
+          done(error);
+        }
+      };
+      class MockExporter extends CloudMonitoringExporter {
+        export(
+          metrics: ResourceMetrics,
+          resultCallback: (result: ExportResult) => void
+        ): void {
+          super.export(metrics, testResultCallback);
+        }
       }
-    }
+
+      const bigtable = new Bigtable();
+      const projectId: string = await new Promise((resolve, reject) => {
+        bigtable.getProjectId_((err, projectId) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(projectId as string);
+          }
+        });
+      });
+      const handler = new GCPMetricsHandler(new MockExporter({projectId}));
+      const transformedRequestsHandled = JSON.parse(
+        JSON.stringify(expectedRequestsHandled).replace(
+          /my-project/g,
+          projectId
+        )
+      );
+      for (const request of transformedRequestsHandled) {
+        if (request.attemptLatency) {
+          handler.onAttemptComplete(request as OnAttemptCompleteData);
+        } else {
+          handler.onOperationComplete(request as OnOperationCompleteData);
+        }
+      }
+    })();
   });
 });

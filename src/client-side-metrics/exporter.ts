@@ -263,6 +263,7 @@ export class CloudMonitoringExporter extends MetricExporter {
         await this.monitoringClient.createTimeSeries(
           request as ICreateTimeSeriesRequest
         );
+        // {code: 0} is typically the format the callback expects in the super class.
         const exportResult = {code: 0};
         resultCallback(exportResult);
       } catch (error) {
