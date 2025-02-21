@@ -105,7 +105,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       }
 
       const handler = new GCPMetricsHandler(
-        new TestExporter({projectId: 'cloud-native-db-dpes-shared'})
+        new TestExporter({projectId: 'some-project'})
       );
 
       for (const request of expectedRequestsHandled) {
