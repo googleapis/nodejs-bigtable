@@ -42,64 +42,78 @@ describe('Bigtable/GCPMetricsHandler', () => {
       export the data.
        */
       const timeout = setTimeout(() => {}, 30000);
+      /*
+      The exporter is called every x seconds, but we only want to test the value
+      it receives once. Since done cannot be called multiple times in mocha,
+      exporter ensures we only test the value export receives one time.
+      */
+      let exported = false;
 
       class TestExporter extends MetricExporter {
-        async export(
+        export(
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void
-        ): Promise<void> {
-          try {
-            replaceTimestamps(
-              metrics as unknown as typeof expectedOtelExportInput,
-              [123, 789],
-              [456, 789]
-            );
-            const parsedExportInput = JSON.parse(JSON.stringify(metrics));
-            assert.deepStrictEqual(
-              (parsedExportInput as ExportInput).scopeMetrics[0].metrics.length,
-              expectedOtelExportInput.scopeMetrics[0].metrics.length
-            );
-            for (
-              let index = 0;
-              index <
-              (parsedExportInput as ExportInput).scopeMetrics[0].metrics.length;
-              index++
-            ) {
-              // We need to compare pointwise because mocha truncates to an 8192 character limit.
-              assert.deepStrictEqual(
-                (parsedExportInput as ExportInput).scopeMetrics[0].metrics[
-                  index
-                ],
-                expectedOtelExportInput.scopeMetrics[0].metrics[index]
-              );
-            }
-            assert.deepStrictEqual(
-              JSON.parse(JSON.stringify(metrics)),
-              expectedOtelExportInput
-            );
-            const convertedRequest = metricsToRequest(
-              expectedOtelExportInput as unknown as ExportInput
-            );
-            assert.deepStrictEqual(
-              convertedRequest.timeSeries.length,
-              expectedOtelExportConvertedValue.timeSeries.length
-            );
-            for (
-              let index = 0;
-              index < convertedRequest.timeSeries.length;
-              index++
-            ) {
-              // We need to compare pointwise because mocha truncates to an 8192 character limit.
-              assert.deepStrictEqual(
-                convertedRequest.timeSeries[index],
-                expectedOtelExportConvertedValue.timeSeries[index]
-              );
-            }
-            clearTimeout(timeout);
-            resultCallback({code: 0});
-            done();
-          } catch (e) {
-            done(e);
+        ): void {
+          if (!exported) {
+            exported = true;
+            (async () => {
+              try {
+                replaceTimestamps(
+                  metrics as unknown as typeof expectedOtelExportInput,
+                  [123, 789],
+                  [456, 789]
+                );
+                const parsedExportInput = JSON.parse(JSON.stringify(metrics));
+                assert.deepStrictEqual(
+                  (parsedExportInput as ExportInput).scopeMetrics[0].metrics
+                    .length,
+                  expectedOtelExportInput.scopeMetrics[0].metrics.length
+                );
+                for (
+                  let index = 0;
+                  index <
+                  (parsedExportInput as ExportInput).scopeMetrics[0].metrics
+                    .length;
+                  index++
+                ) {
+                  // We need to compare pointwise because mocha truncates to an 8192 character limit.
+                  assert.deepStrictEqual(
+                    (parsedExportInput as ExportInput).scopeMetrics[0].metrics[
+                      index
+                    ],
+                    expectedOtelExportInput.scopeMetrics[0].metrics[index]
+                  );
+                }
+                assert.deepStrictEqual(
+                  JSON.parse(JSON.stringify(metrics)),
+                  expectedOtelExportInput
+                );
+                const convertedRequest = metricsToRequest(
+                  expectedOtelExportInput as unknown as ExportInput
+                );
+                assert.deepStrictEqual(
+                  convertedRequest.timeSeries.length,
+                  expectedOtelExportConvertedValue.timeSeries.length
+                );
+                for (
+                  let index = 0;
+                  index < convertedRequest.timeSeries.length;
+                  index++
+                ) {
+                  // We need to compare pointwise because mocha truncates to an 8192 character limit.
+                  assert.deepStrictEqual(
+                    convertedRequest.timeSeries[index],
+                    expectedOtelExportConvertedValue.timeSeries[index]
+                  );
+                }
+                clearTimeout(timeout);
+                await this.shutdown();
+                resultCallback({code: 0});
+                done();
+              } catch (e) {
+                done(e);
+              }
+            })();
           }
         }
       }

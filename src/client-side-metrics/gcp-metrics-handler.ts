@@ -20,10 +20,6 @@ import {
 import * as Resources from '@opentelemetry/resources';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
-import {
-  OnAttemptCompleteAttributes,
-  OnOperationCompleteAttributes,
-} from './client-side-metrics-attributes';
 import {View} from '@opentelemetry/sdk-metrics';
 const {
   Aggregation,
