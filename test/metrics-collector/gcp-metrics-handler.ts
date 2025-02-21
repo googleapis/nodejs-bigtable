@@ -107,7 +107,6 @@ describe('Bigtable/GCPMetricsHandler', () => {
                   );
                 }
                 clearTimeout(timeout);
-                await this.shutdown();
                 resultCallback({code: 0});
                 done();
               } catch (e) {
