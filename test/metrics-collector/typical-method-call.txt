@@ -1,0 +1,30 @@
+1. The operation starts
+getDate call returns 1000 ms
+2. The attempt starts.
+getDate call returns 2000 ms
+3. Client receives status information.
+4. Client receives metadata.
+5. Client receives first row.
+getDate call returns 3000 ms
+6. Client receives metadata.
+7. Client receives second row.
+8. A transient error occurs.
+getDate call returns 4000 ms
+Recording parameters for onAttemptComplete:
+{"attemptLatency":2000,"serverLatency":101,"connectivityErrorCount":0,"streamingOperation":"true","attemptStatus":4,"clientName":"nodejs-bigtable","metricsCollectorData":{"instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","methodName":"Bigtable.ReadRows","clientUid":"fake-uuid"},"projectId":"my-project"}
+9. After a timeout, the second attempt is made.
+getDate call returns 5000 ms
+10. Client receives status information.
+11. Client receives metadata.
+12. Client receives third row.
+getDate call returns 6000 ms
+13. Client receives metadata.
+14. Client receives fourth row.
+15. User reads row 1
+16. Stream ends, operation completes
+getDate call returns 7000 ms
+Recording parameters for onAttemptComplete:
+{"attemptLatency":2000,"serverLatency":103,"connectivityErrorCount":0,"streamingOperation":"true","attemptStatus":0,"clientName":"nodejs-bigtable","metricsCollectorData":{"instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","methodName":"Bigtable.ReadRows","clientUid":"fake-uuid"},"projectId":"my-project"}
+getDate call returns 8000 ms
+Recording parameters for onOperationComplete:
+{"finalOperationStatus":0,"streamingOperation":"true","metricsCollectorData":{"instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","methodName":"Bigtable.ReadRows","clientUid":"fake-uuid"},"clientName":"nodejs-bigtable","projectId":"my-project","operationLatency":7000,"retryCount":1,"firstResponseLatency":5000}
