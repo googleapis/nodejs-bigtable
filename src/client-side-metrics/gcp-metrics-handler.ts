@@ -252,7 +252,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
 
   /**
    * Records metrics for a completed attempt of a Bigtable operation.
-   * This method records attempt latency, connectivity error count, server latency, and first response latency,
+   * This method records attempt latency, connectivity error count, server latency,
    * along with the provided attributes.
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
