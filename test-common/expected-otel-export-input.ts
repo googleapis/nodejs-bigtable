@@ -17,6 +17,9 @@ export const RETRY_COUNT_NAME =
 export const CONNECTIIVTY_ERROR_COUNT =
   'bigtable.googleapis.com/internal/client/connectivity_error_count';
 
+export const fakeStartTime = Math.floor(Date.now() / 1000) - 2000;
+export const fakeEndTime = fakeStartTime + 1000;
+
 export const expectedOtelExportConvertedValue = {
   name: 'projects/my-project',
   timeSeries: [

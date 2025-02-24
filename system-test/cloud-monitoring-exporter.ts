@@ -17,7 +17,10 @@ import {
   CloudMonitoringExporter,
   ExportResult,
 } from '../src/client-side-metrics/exporter';
-import {fakeEndTime, fakeStartTime} from '../test-common/export-input-fixture';
+import {
+  fakeEndTime,
+  fakeStartTime,
+} from '../test-common/expected-otel-export-input';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import {Bigtable} from '../src';
 import * as assert from 'assert';
