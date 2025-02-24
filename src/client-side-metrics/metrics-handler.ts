@@ -31,26 +31,25 @@ type IMetricsCollectorData = {
   clientUid: string;
 };
 
-export interface OnOperationCompleteData {
-  firstResponseLatency?: number;
-  operationLatency: number;
-  retryCount?: number;
+interface StandardData {
   projectId: string;
   metricsCollectorData: IMetricsCollectorData;
   clientName: string;
-  finalOperationStatus: grpc.status;
   streamingOperation: StreamingState;
 }
 
-export interface OnAttemptCompleteData {
+export interface OnOperationCompleteData extends StandardData {
+  firstResponseLatency?: number;
+  operationLatency: number;
+  retryCount?: number;
+  finalOperationStatus: grpc.status;
+}
+
+export interface OnAttemptCompleteData extends StandardData {
   attemptLatency: number;
   serverLatency?: number;
   connectivityErrorCount: number;
-  projectId: string;
-  metricsCollectorData: IMetricsCollectorData;
-  clientName: string;
   attemptStatus: grpc.status;
-  streamingOperation: StreamingState;
 }
 
 /**
