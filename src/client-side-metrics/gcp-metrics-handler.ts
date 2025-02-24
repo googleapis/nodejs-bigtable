@@ -69,7 +69,10 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * Initializes the OpenTelemetry metrics instruments if they haven't been already.
    * Creates and registers metric instruments (histograms and counters) for various Bigtable client metrics.
    * Sets up a MeterProvider and configures a PeriodicExportingMetricReader for exporting metrics to Cloud Monitoring.
-   * @param {string} [projectId] The Google Cloud project ID. Used for metric export. If not provided, it will attempt to detect it from the environment.
+   *
+   * @param {MonitoredResourceData} [data] The data that will be used to set up the monitored resource
+   * which will be provided to the exporter in every export call.
+   *
    */
   private initialize(data: MonitoredResourceData) {
     if (!this.initialized) {
