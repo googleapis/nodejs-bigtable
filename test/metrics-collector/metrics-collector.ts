@@ -22,7 +22,7 @@ import {
   StreamingState,
 } from '../../src/client-side-metrics/client-side-metrics-attributes';
 import {grpc} from 'google-gax';
-import {expectedRequestsHandled} from './metrics-handler-fixture';
+import {expectedRequestsHandled} from '../../test-common/metrics-handler-fixture';
 import * as gax from 'google-gax';
 const root = gax.protobuf.loadSync(
   './protos/google/bigtable/v2/response_params.proto'
