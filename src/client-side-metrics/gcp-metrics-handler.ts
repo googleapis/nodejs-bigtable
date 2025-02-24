@@ -19,8 +19,7 @@ import {
 } from './metrics-handler';
 import * as Resources from '@opentelemetry/resources';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
-import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
-import {View} from '@opentelemetry/sdk-metrics';
+import {PushMetricExporter, View} from '@opentelemetry/sdk-metrics';
 const {
   Aggregation,
   ExplicitBucketHistogramAggregation,
@@ -57,14 +56,12 @@ interface MonitoredResourceData {
  * This handler records metrics such as operation latency, attempt latency, retry count, and more,
  * associating them with relevant attributes for detailed analysis in Cloud Monitoring.
  */
-export class GCPMetricsHandler<T extends MetricExporter>
-  implements IMetricsHandler
-{
+export class GCPMetricsHandler implements IMetricsHandler {
   private initialized = false;
   private otelMetrics?: Metrics;
-  private exporter: T;
+  private exporter: PushMetricExporter;
 
-  constructor(exporter: T) {
+  constructor(exporter: PushMetricExporter) {
     this.exporter = exporter;
   }
 
