@@ -258,7 +258,6 @@ export class CloudMonitoringExporter extends MetricExporter {
   ): void {
     (async () => {
       try {
-        // TODO: Remove casting.
         const request = metricsToRequest(metrics as unknown as ExportInput);
         await this.monitoringClient.createTimeSeries(
           request as ICreateTimeSeriesRequest
