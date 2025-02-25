@@ -23,7 +23,7 @@ import * as assert from 'assert';
 import {expectedOtelExportInput} from '../test-common/expected-otel-export-input';
 import {addFakeRecentTimestamps} from '../test-common/replace-timestamps';
 
-describe.only('Bigtable/CloudMonitoringExporter', () => {
+describe('Bigtable/CloudMonitoringExporter', () => {
   it('Should send an otel exported value to the CloudMonitoringExporter', done => {
     // TODO: In this test make sure the start time and end time are increasing?
     const fakeStartTime = Math.floor(Date.now() / 1000) - 2000;
