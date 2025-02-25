@@ -31,7 +31,21 @@ import {
   expectedOtelExportInput,
 } from '../../test-common/expected-otel-export-input';
 import * as assert from 'assert';
-import {replaceTimestamps} from '../../test-common/replace-timestamps';
+
+function replaceTimestamps(
+  request: typeof expectedOtelExportInput,
+  newStartTime: [number, number],
+  newEndTime: [number, number]
+) {
+  request.scopeMetrics.forEach(scopeMetric => {
+    scopeMetric.metrics.forEach(metric => {
+      metric.dataPoints.forEach(dataPoint => {
+        dataPoint.startTime = newStartTime;
+        dataPoint.endTime = newEndTime;
+      });
+    });
+  });
+}
 
 describe('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value ready for sending to the CloudMonitoringExporter', function (done) {
