@@ -21,13 +21,9 @@ import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import {Bigtable} from '../src';
 import * as assert from 'assert';
 import {expectedOtelExportInput} from '../test-common/expected-otel-export-input';
-import {addFakeRecentTimestamps} from '../test-common/replace-timestamps';
 
 describe('Bigtable/CloudMonitoringExporter', () => {
   it('Should send an otel exported value to the CloudMonitoringExporter', done => {
-    // TODO: In this test make sure the start time and end time are increasing?
-    const fakeStartTime = Math.floor(Date.now() / 1000) - 2000;
-    const fakeEndTime = fakeStartTime + 1000;
     // When this test is run, metrics should be visible at the following link:
     // https://pantheon.corp.google.com/monitoring/metrics-explorer;duration=PT1H?inv=1&invt=Abo9_A&project={projectId}
     // This test will add metrics so that they are available in Pantheon
@@ -59,10 +55,21 @@ describe('Bigtable/CloudMonitoringExporter', () => {
           /my-project/g,
           projectId
         )
-      );
-      addFakeRecentTimestamps(
-        transformedExportInput as unknown as typeof expectedOtelExportInput
-      );
+      ) as unknown as typeof expectedOtelExportInput;
+      {
+        // This replaces the fake dates in time series with recent dates in the right order.
+        let latestTime = Math.floor(Date.now() / 1000) - 5;
+        transformedExportInput.scopeMetrics.reverse().forEach(scopeMetric => {
+          scopeMetric.metrics.reverse().forEach(metric => {
+            metric.dataPoints.reverse().forEach(dataPoint => {
+              dataPoint.endTime = [latestTime, 0];
+              latestTime -= 5;
+              dataPoint.startTime = [latestTime, 0];
+              latestTime -= 5;
+            });
+          });
+        });
+      }
       const exporter = new CloudMonitoringExporter();
       exporter.export(
         transformedExportInput as unknown as ResourceMetrics,
