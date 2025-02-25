@@ -50,10 +50,12 @@ describe('Bigtable/GCPMetricsHandler', () => {
             exported = true;
             try {
               clearTimeout(timeout);
-              assert.deepStrictEqual(result, {code: 0});
+              assert.strictEqual(result.code, 0);
               done();
               resultCallback({code: 0});
             } catch (error) {
+              // Code isn't 0 so report the original error.
+              done(result);
               done(error);
             }
           } else {

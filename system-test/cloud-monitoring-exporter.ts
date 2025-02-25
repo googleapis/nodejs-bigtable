@@ -37,9 +37,11 @@ describe('Bigtable/CloudMonitoringExporter', () => {
         result: ExportResult
       ) => {
         try {
-          assert.deepStrictEqual(result, {code: 0});
+          assert.strictEqual(result.code, 0);
           done();
         } catch (error) {
+          // Code isn't 0 so report the original error.
+          done(result);
           done(error);
         }
       };

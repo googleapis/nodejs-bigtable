@@ -70,7 +70,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * Creates and registers metric instruments (histograms and counters) for various Bigtable client metrics.
    * Sets up a MeterProvider and configures a PeriodicExportingMetricReader for exporting metrics to Cloud Monitoring.
    *
-   * @param {MonitoredResourceData} [data] The data that will be used to set up the monitored resource
+   * @param {MonitoredResourceData} data The data that will be used to set up the monitored resource
    * which will be provided to the exporter in every export call.
    *
    */

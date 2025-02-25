@@ -266,8 +266,7 @@ export class CloudMonitoringExporter extends MetricExporter {
         const exportResult = {code: 0};
         resultCallback(exportResult);
       } catch (error) {
-        const exportResult = {code: (error as ServiceError).code as number};
-        resultCallback(exportResult);
+        resultCallback(error as ServiceError);
       }
     })();
   }
