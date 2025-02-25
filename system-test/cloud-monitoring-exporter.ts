@@ -17,18 +17,17 @@ import {
   CloudMonitoringExporter,
   ExportResult,
 } from '../src/client-side-metrics/exporter';
-import {
-  fakeEndTime,
-  fakeStartTime,
-} from '../test-common/expected-otel-export-input';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import {Bigtable} from '../src';
 import * as assert from 'assert';
 import {expectedOtelExportInput} from '../test-common/expected-otel-export-input';
 import {replaceTimestamps} from '../test-common/replace-timestamps';
 
-describe('Bigtable/CloudMonitoringExporter', () => {
+describe.only('Bigtable/CloudMonitoringExporter', () => {
   it('Should send an otel exported value to the CloudMonitoringExporter', done => {
+    // TODO: In this test make sure the start time and end time are increasing?
+    const fakeStartTime = Math.floor(Date.now() / 1000) - 2000;
+    const fakeEndTime = fakeStartTime + 1000;
     // When this test is run, metrics should be visible at the following link:
     // https://pantheon.corp.google.com/monitoring/metrics-explorer;duration=PT1H?inv=1&invt=Abo9_A&project={projectId}
     // This test will add metrics so that they are available in Pantheon
