@@ -21,7 +21,7 @@ import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import {Bigtable} from '../src';
 import * as assert from 'assert';
 import {expectedOtelExportInput} from '../test-common/expected-otel-export-input';
-import {replaceTimestamps} from '../test-common/replace-timestamps';
+import {addFakeRecentTimestamps} from '../test-common/replace-timestamps';
 
 describe.only('Bigtable/CloudMonitoringExporter', () => {
   it('Should send an otel exported value to the CloudMonitoringExporter', done => {
@@ -60,10 +60,8 @@ describe.only('Bigtable/CloudMonitoringExporter', () => {
           projectId
         )
       );
-      replaceTimestamps(
-        transformedExportInput as unknown as typeof expectedOtelExportInput,
-        [fakeStartTime, 0],
-        [fakeEndTime, 0]
+      addFakeRecentTimestamps(
+        transformedExportInput as unknown as typeof expectedOtelExportInput
       );
       const exporter = new CloudMonitoringExporter();
       exporter.export(

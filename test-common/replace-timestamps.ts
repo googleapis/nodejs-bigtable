@@ -14,6 +14,8 @@
 
 import {expectedOtelExportInput} from './expected-otel-export-input';
 
+// TODO: Move these methods into their respective modules or inline.
+
 export function replaceTimestamps(
   request: typeof expectedOtelExportInput,
   newStartTime: [number, number],
@@ -24,6 +26,23 @@ export function replaceTimestamps(
       metric.dataPoints.forEach(dataPoint => {
         dataPoint.startTime = newStartTime;
         dataPoint.endTime = newEndTime;
+      });
+    });
+  });
+}
+
+export function addFakeRecentTimestamps(
+  request: typeof expectedOtelExportInput
+) {
+  // TODO: Reference the error here.
+  let latestTime = Math.floor(Date.now() / 1000) - 2000;
+  [...request.scopeMetrics].reverse().forEach(scopeMetric => {
+    [...scopeMetric.metrics].reverse().forEach(metric => {
+      [...metric.dataPoints].reverse().forEach(dataPoint => {
+        dataPoint.endTime = [latestTime, 0];
+        latestTime -= 1000;
+        dataPoint.startTime = [latestTime, 0];
+        latestTime -= 1000;
       });
     });
   });
