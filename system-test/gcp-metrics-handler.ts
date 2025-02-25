@@ -39,7 +39,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
-      exporter ensures we only test the value export receives one time.
+      exported variable ensures we only test the value export receives one time.
       */
       let exported = false;
       function getTestResultCallback(
