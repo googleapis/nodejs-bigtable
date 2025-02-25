@@ -35,14 +35,14 @@ export function addFakeRecentTimestamps(
   request: typeof expectedOtelExportInput
 ) {
   // TODO: Reference the error here.
-  let latestTime = Math.floor(Date.now() / 1000) - 2000;
+  let latestTime = Math.floor(Date.now() / 1000) - 5;
   [...request.scopeMetrics].reverse().forEach(scopeMetric => {
     [...scopeMetric.metrics].reverse().forEach(metric => {
       [...metric.dataPoints].reverse().forEach(dataPoint => {
         dataPoint.endTime = [latestTime, 0];
-        latestTime -= 1000;
+        latestTime -= 5;
         dataPoint.startTime = [latestTime, 0];
-        latestTime -= 1000;
+        latestTime -= 5;
       });
     });
   });
