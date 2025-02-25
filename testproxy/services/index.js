@@ -24,6 +24,7 @@ const readRow = require('./read-row.js');
 const readRows = require('./read-rows.js');
 const removeClient = require('./remove-client.js');
 const sampleRowKeys = require('./sample-row-keys.js');
+const executeQuery = require('./execute-query.js');
 
 /*
  * Starts the client pool map and retrieves the object that
@@ -45,6 +46,7 @@ function getServicesImplementation() {
     readRows: readRows({clientMap}),
     removeClient: removeClient({clientMap}),
     sampleRowKeys: sampleRowKeys({clientMap}),
+    executeQuery: executeQuery({clientMap}),
   };
 }
 

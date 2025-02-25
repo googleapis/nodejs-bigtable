@@ -691,3 +691,15 @@ export class PartialFailureError extends Error {
     }
   }
 }
+// Retry on "received rst stream" errors
+export function isRstStreamError(error: ServiceError): boolean {
+  if (error.code === 13 && error.message) {
+    const error_message = (error.message || '').toLowerCase();
+    return (
+      error.code === 13 &&
+      (error_message.includes('rst_stream') ||
+        error_message.includes('rst stream'))
+    );
+  }
+  return false;
+}
