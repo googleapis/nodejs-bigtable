@@ -17,6 +17,17 @@ export const RETRY_COUNT_NAME =
 export const CONNECTIIVTY_ERROR_COUNT =
   'bigtable.googleapis.com/internal/client/connectivity_error_count';
 
+/**
+ * An example of the expected output format after converting
+ * `expectedOtelExportInput` using the `metricsToRequest` function.
+ *
+ * This object represents the data structure that is ready to be sent to the
+ * Google Cloud Monitoring API's `createTimeSeries` method. It demonstrates
+ * how OpenTelemetry metrics are transformed into the Cloud Monitoring format,
+ * including the structure of time series data, metric types, resource labels,
+ * and data point values.
+ *
+ */
 export const expectedOtelExportConvertedValue = {
   name: 'projects/my-project',
   timeSeries: [
