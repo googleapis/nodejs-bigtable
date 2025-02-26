@@ -73,6 +73,17 @@ export class GCPMetricsHandler implements IMetricsHandler {
   private otelMetrics?: Metrics;
   private exporter: PushMetricExporter;
 
+  /**
+   * The `GCPMetricsHandler` is responsible for managing and recording
+   * client-side metrics for Google Cloud Bigtable using OpenTelemetry. It
+   * handles the creation and configuration of various metric instruments
+   * (histograms and counters) and exports them to Google Cloud Monitoring
+   * through the provided `PushMetricExporter`.
+   *
+   * @param exporter - The `PushMetricExporter` instance to use for exporting
+   *   metrics to Google Cloud Monitoring. This exporter is responsible for
+   *   sending the collected metrics data to the monitoring backend. The provided exporter must be fully configured, for example the projectId must have been set.
+   */
   constructor(exporter: PushMetricExporter) {
     this.exporter = exporter;
   }
