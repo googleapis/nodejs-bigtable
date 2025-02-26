@@ -64,7 +64,7 @@ interface Metric<Attributes, Value> {
   }[];
 }
 
-type OtherMetric = Metric<
+type DistributionMetric = Metric<
   OnAttemptAttribute | OnOperationAttribute,
   {
     min?: number;
@@ -78,7 +78,7 @@ type OtherMetric = Metric<
   }
 >;
 
-type RetryMetric = Metric<OnAttemptAttribute | OnOperationAttribute, number>;
+type CounterMetric = Metric<OnAttemptAttribute | OnOperationAttribute, number>;
 
 export interface ExportInput {
   resource: {
@@ -99,13 +99,13 @@ export interface ExportInput {
       name: string;
       version: string;
     };
-    metrics: (RetryMetric | OtherMetric)[];
+    metrics: (CounterMetric | DistributionMetric)[];
   }[];
 }
 
-function isIntegerMetric(
-  metric: OtherMetric | RetryMetric
-): metric is RetryMetric {
+function isCounterMetric(
+  metric: DistributionMetric | CounterMetric
+): metric is CounterMetric {
   return (
     metric.descriptor.name === RETRY_COUNT_NAME ||
     metric.descriptor.name === CONNECTIIVTY_ERROR_COUNT
@@ -126,7 +126,7 @@ export function metricsToRequest(exportArgs: ExportInput) {
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const metric of scopeMetrics.metrics) {
       const metricName = metric.descriptor.name;
-      if (isIntegerMetric(metric)) {
+      if (isCounterMetric(metric)) {
         for (const dataPoint of metric.dataPoints) {
           // Extract attributes to labels based on their intended target (resource or metric)
           const allAttributes = dataPoint.attributes;
