@@ -27,6 +27,26 @@ export interface ExportResult {
   code: number;
 }
 
+/**
+ * Attributes associated with the completion of a single attempt of a Bigtable
+ * operation. These attributes provide context about the specific attempt,
+ * its status, and the method involved. They are used for recording metrics
+ * such as attempt latency and connectivity errors.
+ *
+ * @property methodName - The name of the Bigtable method that was attempted (e.g.,
+ *   'Bigtable.ReadRows', 'Bigtable.MutateRows').
+ * @property clientUid - A unique identifier for the client that initiated the
+ *   attempt.
+ * @property appProfileId - (Optional) The ID of the application profile used for
+ *   the attempt.
+ * @property attemptStatus - The status code of the attempt. A value of `0`
+ *   typically indicates success (grpc.status.OK), while other values indicate
+ *   different types of errors.
+ * @property streamingOperation - (Optional) Indicates if the operation is a streaming operation.
+ *   Will be "true" or "false" if present.
+ * @property clientName - The name of the client library making the attempt
+ *   (e.g., 'nodejs-bigtable', 'go-bigtable/1.35.0').
+ */
 interface OnAttemptAttribute {
   methodName: string;
   clientUid: string;
@@ -36,6 +56,26 @@ interface OnAttemptAttribute {
   clientName: string;
 }
 
+/**
+ * Attributes associated with the completion of a Bigtable operation. These
+ * attributes provide context about the operation, its final status, and the
+ * method involved. They are used for recording metrics such as operation
+ * latency.
+ *
+ * @property methodName - The name of the Bigtable method that was performed
+ *   (e.g., 'Bigtable.ReadRows', 'Bigtable.MutateRows').
+ * @property clientUid - A unique identifier for the client that initiated the
+ *   operation.
+ * @property appProfileId - (Optional) The ID of the application profile used for
+ *   the operation.
+ * @property finalOperationStatus - The final status code of the operation. A
+ *   value of `0` typically indicates success (grpc.status.OK), while other
+ *   values indicate different types of errors.
+ * @property streamingOperation - (Optional) Indicates if the operation is a streaming operation.
+ *   Will be "true" or "false" if present.
+ * @property clientName - The name of the client library performing the operation
+ *   (e.g., 'nodejs-bigtable', 'go-bigtable/1.35.0').
+ */
 interface OnOperationAttribute {
   methodName: string;
   clientUid: string;
@@ -45,6 +85,14 @@ interface OnOperationAttribute {
   clientName: string;
 }
 
+/**
+ * Represents a generic metric in the OpenTelemetry format.
+ *
+ * This interface describes the structure of a metric, which can represent
+ * either a counter or a distribution (histogram). It includes the metric's
+ * descriptor, the type of data it collects, and the actual data points.
+ *
+ */
 interface Metric<Attributes, Value> {
   descriptor: {
     name: string;
@@ -64,6 +112,16 @@ interface Metric<Attributes, Value> {
   }[];
 }
 
+/**
+ * Represents a metric that measures the distribution of values.
+ *
+ * Distribution metrics, also known as histograms, are used to track the
+ * statistical distribution of a set of measurements. They allow you to capture
+ * not only the count and sum of the measurements but also how they are spread
+ * across different ranges (buckets). This makes them suitable for tracking
+ * latencies, sizes, or other metrics where the distribution is important.
+ *
+ */
 type DistributionMetric = Metric<
   OnAttemptAttribute | OnOperationAttribute,
   {
@@ -112,6 +170,41 @@ function isCounterMetric(
   );
 }
 
+/**
+ * Converts OpenTelemetry metrics data into a format suitable for the Google Cloud
+ * Monitoring API's `createTimeSeries` method.
+ *
+ * This function transforms the structured metrics data, including resource and
+ * metric attributes, data points, and aggregation information, into an object
+ * that conforms to the expected request format of the Cloud Monitoring API.
+ *
+ * @param {ExportInput} exportArgs - The OpenTelemetry metrics data to be converted. This
+ *   object contains resource attributes, scope information, and a list of
+ *   metrics with their associated data points.
+ *
+ * @returns An object representing a `CreateTimeSeriesRequest`, ready for sending
+ *   to the Google Cloud Monitoring API. This object contains the project name
+ *   and an array of time series data points, formatted for ingestion by
+ *   Cloud Monitoring.
+ *
+ * @throws Will throw an error if there are issues converting the data.
+ *
+ * @remarks
+ *   The output format is specific to the Cloud Monitoring API and involves
+ *   mapping OpenTelemetry concepts to Cloud Monitoring's data model, including:
+ *   - Mapping resource attributes to resource labels.
+ *   - Mapping metric attributes to metric labels.
+ *   - Handling different metric types (counter, distribution).
+ *   - Converting data points to the correct structure, including start and end
+ *     times, values, and bucket information for distributions.
+ *
+ * @example
+ *   const exportInput: ExportInput = { ... }; // Example ExportInput object
+ *   const monitoringRequest = metricsToRequest(exportInput);
+ *   // monitoringRequest can now be used in monitoringClient.createTimeSeries(monitoringRequest)
+ *
+ *
+ */
 export function metricsToRequest(exportArgs: ExportInput) {
   const timeSeriesArray = [];
   const resourceLabels = {
@@ -248,7 +341,51 @@ export function metricsToRequest(exportArgs: ExportInput) {
   };
 }
 
-// TODO: Add test for when the export fails
+/**
+ * A custom OpenTelemetry `MetricExporter` that sends metrics data to Google Cloud
+ * Monitoring.
+ *
+ * This class extends the base `MetricExporter` from `@google-cloud/opentelemetry-cloud-monitoring-exporter`
+ * and handles the process of converting OpenTelemetry metrics data into the
+ * format required by the Google Cloud Monitoring API. It uses the
+ * `MetricServiceClient` to send the data to Google Cloud Monitoring's
+ * `createTimeSeries` method.
+ *
+ * @remarks
+ *   This exporter relies on the `metricsToRequest` function to perform the
+ *   necessary transformation of OpenTelemetry metrics into Cloud Monitoring
+ *   `TimeSeries` data.
+ *
+ *   The exporter is asynchronous and will not block the calling thread while
+ *   sending metrics. It manages the Google Cloud Monitoring client and handles
+ *   potential errors during the export process.
+ *
+ *   The class expects the `ResourceMetrics` to have been correctly configured
+ *   and populated with the required resource attributes to correctly identify
+ *   the monitored resource in Cloud Monitoring.
+ *
+ * @example
+ *   // Create an instance of the CloudMonitoringExporter
+ *   const exporter = new CloudMonitoringExporter();
+ *
+ *   // Use the exporter with a MeterProvider
+ *   const meterProvider = new MeterProvider({
+ *     resource: new Resource({
+ *       'service.name': 'my-service',
+ *       // ... other resource attributes
+ *     }),
+ *     readers: [new PeriodicExportingMetricReader({
+ *         exporter: exporter,
+ *         exportIntervalMillis: 10000 // Export every 10 seconds
+ *     })]
+ *   });
+ *
+ *   // Now start instrumenting your application using the meter
+ *   const meter = meterProvider.getMeter('my-meter');
+ *   // ... create counters, histograms, etc.
+ *
+ * @beta
+ */
 export class CloudMonitoringExporter extends MetricExporter {
   private monitoringClient = new MetricServiceClient();
 

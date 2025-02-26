@@ -724,6 +724,22 @@ export const expectedOtelExportConvertedValue = {
   ],
 };
 
+/**
+ * An example of an `ExportInput` object, representing OpenTelemetry metrics
+ * data in the format expected by the `metricsToRequest` function.
+ *
+ * This object demonstrates the structure of the input data, including
+ * resource attributes, scope information, and a collection of metrics
+ * (both counter and distribution types) with their associated data points.
+ *
+ * @remarks
+ *   This structure is designed to be converted into a Google Cloud Monitoring
+ *   `CreateTimeSeriesRequest` using the `metricsToRequest` function. It
+ *   includes various types of metrics that are sent by the Bigtable client
+ *   library, such as operation latencies, attempt latencies, retry counts,
+ *   and server latencies.
+ *
+ */
 export const expectedOtelExportInput = {
   resource: {
     _attributes: {
