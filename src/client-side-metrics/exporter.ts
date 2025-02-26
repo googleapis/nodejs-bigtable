@@ -136,8 +136,40 @@ type DistributionMetric = Metric<
   }
 >;
 
+/**
+ * Represents a metric that counts the number of occurrences of an event or
+ * the cumulative value of a quantity over time.
+ *
+ * Counter metrics are used to track quantities that increase over time, such
+ * as the number of requests, errors, or retries. They are always
+ * non-negative and can only increase or remain constant.
+ *
+ */
 type CounterMetric = Metric<OnAttemptAttribute | OnOperationAttribute, number>;
 
+/**
+ * Represents the input data structure for exporting OpenTelemetry metrics.
+ *
+ * This interface defines the structure of the object that is passed to the
+ * `metricsToRequest` function to convert OpenTelemetry metrics into a format
+ * suitable for the Google Cloud Monitoring API.
+ *
+ * It contains information about the monitored resource and an array of
+ * scope metrics, which include various types of metrics (counters and
+ * distributions) and their associated data points.
+ *
+ * @remarks
+ * This structure is specifically designed to hold OpenTelemetry metrics data
+ * as it is exported from the Bigtable client library. It represents the data
+ * before it is transformed into the Cloud Monitoring API's `TimeSeries`
+ * format.
+ *
+ * Each `CounterMetric` and `DistributionMetric` within the `scopeMetrics`
+ * array represents a different type of measurement, such as retry counts,
+ * operation latencies, attempt latencies etc. Each metric contains an array of dataPoints
+ * Each `dataPoint` contains the `attributes`, `startTime`, `endTime` and `value`.
+ * `value` will be a number for a counter metric and an object for a distribution metric.
+ */
 export interface ExportInput {
   resource: {
     _attributes: {
@@ -161,6 +193,24 @@ export interface ExportInput {
   }[];
 }
 
+/**
+ * Type guard function to determine if a given metric is a CounterMetric.
+ *
+ * This function checks if a metric is a CounterMetric by inspecting its
+ * `descriptor.name` property and comparing it against known counter metric
+ * names.
+ *
+ * @param metric - The metric to check. This can be either a
+ *   `DistributionMetric` or a `CounterMetric`.
+ * @returns `true` if the metric is a `CounterMetric`, `false` otherwise.
+ *
+ * @remarks
+ *   This function uses a type guard to narrow down the type of the `metric`
+ *   parameter to `CounterMetric` if it returns `true`. This allows TypeScript
+ *   to perform more precise type checking and provides better code
+ *   completion when working with metrics.
+ *
+ */
 function isCounterMetric(
   metric: DistributionMetric | CounterMetric
 ): metric is CounterMetric {
