@@ -119,10 +119,9 @@ export class GCPMetricsHandler implements IMetricsHandler {
           new View({
             instrumentName: name,
             name,
-            aggregation:
-              name === 'retry_count'
-                ? Aggregation.Sum()
-                : new ExplicitBucketHistogramAggregation(latencyBuckets),
+            aggregation: name.endsWith('latencies')
+              ? Aggregation.Sum()
+              : new ExplicitBucketHistogramAggregation(latencyBuckets),
           })
       );
       const meterProvider = new MeterProvider({
