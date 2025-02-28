@@ -367,7 +367,9 @@ export function metricsToRequest(exportArgs: ExportInput) {
                 value: {
                   distributionValue: {
                     count: String(dataPoint.value.count),
-                    mean: dataPoint.value.sum / dataPoint.value.count,
+                    mean: dataPoint.value.count
+                      ? dataPoint.value.sum / dataPoint.value.count
+                      : 0,
                     bucketOptions: {
                       explicitBuckets: {
                         bounds: dataPoint.value.buckets.boundaries,
