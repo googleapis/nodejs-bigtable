@@ -15746,6 +15746,7 @@
                          * @interface IUpdateTableRequest
                          * @property {google.bigtable.admin.v2.ITable|null} [table] UpdateTableRequest table
                          * @property {google.protobuf.IFieldMask|null} [updateMask] UpdateTableRequest updateMask
+                         * @property {boolean|null} [ignoreWarnings] UpdateTableRequest ignoreWarnings
                          */
     
                         /**
@@ -15780,6 +15781,14 @@
                         UpdateTableRequest.prototype.updateMask = null;
     
                         /**
+                         * UpdateTableRequest ignoreWarnings.
+                         * @member {boolean} ignoreWarnings
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @instance
+                         */
+                        UpdateTableRequest.prototype.ignoreWarnings = false;
+    
+                        /**
                          * Creates a new UpdateTableRequest instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.admin.v2.UpdateTableRequest
@@ -15807,6 +15816,8 @@
                                 $root.google.bigtable.admin.v2.Table.encode(message.table, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
                             if (message.updateMask != null && Object.hasOwnProperty.call(message, "updateMask"))
                                 $root.google.protobuf.FieldMask.encode(message.updateMask, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.ignoreWarnings != null && Object.hasOwnProperty.call(message, "ignoreWarnings"))
+                                writer.uint32(/* id 3, wireType 0 =*/24).bool(message.ignoreWarnings);
                             return writer;
                         };
     
@@ -15847,6 +15858,10 @@
                                     }
                                 case 2: {
                                         message.updateMask = $root.google.protobuf.FieldMask.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 3: {
+                                        message.ignoreWarnings = reader.bool();
                                         break;
                                     }
                                 default:
@@ -15894,6 +15909,9 @@
                                 if (error)
                                     return "updateMask." + error;
                             }
+                            if (message.ignoreWarnings != null && message.hasOwnProperty("ignoreWarnings"))
+                                if (typeof message.ignoreWarnings !== "boolean")
+                                    return "ignoreWarnings: boolean expected";
                             return null;
                         };
     
@@ -15919,6 +15937,8 @@
                                     throw TypeError(".google.bigtable.admin.v2.UpdateTableRequest.updateMask: object expected");
                                 message.updateMask = $root.google.protobuf.FieldMask.fromObject(object.updateMask);
                             }
+                            if (object.ignoreWarnings != null)
+                                message.ignoreWarnings = Boolean(object.ignoreWarnings);
                             return message;
                         };
     
@@ -15938,11 +15958,14 @@
                             if (options.defaults) {
                                 object.table = null;
                                 object.updateMask = null;
+                                object.ignoreWarnings = false;
                             }
                             if (message.table != null && message.hasOwnProperty("table"))
                                 object.table = $root.google.bigtable.admin.v2.Table.toObject(message.table, options);
                             if (message.updateMask != null && message.hasOwnProperty("updateMask"))
                                 object.updateMask = $root.google.protobuf.FieldMask.toObject(message.updateMask, options);
+                            if (message.ignoreWarnings != null && message.hasOwnProperty("ignoreWarnings"))
+                                object.ignoreWarnings = message.ignoreWarnings;
                             return object;
                         };
     
@@ -25354,6 +25377,7 @@
                          * @property {google.bigtable.admin.v2.IChangeStreamConfig|null} [changeStreamConfig] Table changeStreamConfig
                          * @property {boolean|null} [deletionProtection] Table deletionProtection
                          * @property {google.bigtable.admin.v2.Table.IAutomatedBackupPolicy|null} [automatedBackupPolicy] Table automatedBackupPolicy
+                         * @property {google.bigtable.admin.v2.Type.IStruct|null} [rowKeySchema] Table rowKeySchema
                          */
     
                         /**
@@ -25437,6 +25461,14 @@
                          */
                         Table.prototype.automatedBackupPolicy = null;
     
+                        /**
+                         * Table rowKeySchema.
+                         * @member {google.bigtable.admin.v2.Type.IStruct|null|undefined} rowKeySchema
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @instance
+                         */
+                        Table.prototype.rowKeySchema = null;
+    
                         // OneOf field names bound to virtual getters and setters
                         var $oneOfFields;
     
@@ -25497,6 +25529,8 @@
                                 writer.uint32(/* id 9, wireType 0 =*/72).bool(message.deletionProtection);
                             if (message.automatedBackupPolicy != null && Object.hasOwnProperty.call(message, "automatedBackupPolicy"))
                                 $root.google.bigtable.admin.v2.Table.AutomatedBackupPolicy.encode(message.automatedBackupPolicy, writer.uint32(/* id 13, wireType 2 =*/106).fork()).ldelim();
+                            if (message.rowKeySchema != null && Object.hasOwnProperty.call(message, "rowKeySchema"))
+                                $root.google.bigtable.admin.v2.Type.Struct.encode(message.rowKeySchema, writer.uint32(/* id 15, wireType 2 =*/122).fork()).ldelim();
                             return writer;
                         };
     
@@ -25601,6 +25635,10 @@
                                         message.automatedBackupPolicy = $root.google.bigtable.admin.v2.Table.AutomatedBackupPolicy.decode(reader, reader.uint32());
                                         break;
                                     }
+                                case 15: {
+                                        message.rowKeySchema = $root.google.bigtable.admin.v2.Type.Struct.decode(reader, reader.uint32());
+                                        break;
+                                    }
                                 default:
                                     reader.skipType(tag & 7);
                                     break;
@@ -25689,6 +25727,11 @@
                                         return "automatedBackupPolicy." + error;
                                 }
                             }
+                            if (message.rowKeySchema != null && message.hasOwnProperty("rowKeySchema")) {
+                                var error = $root.google.bigtable.admin.v2.Type.Struct.verify(message.rowKeySchema);
+                                if (error)
+                                    return "rowKeySchema." + error;
+                            }
                             return null;
                         };
     
@@ -25759,6 +25802,11 @@
                                     throw TypeError(".google.bigtable.admin.v2.Table.automatedBackupPolicy: object expected");
                                 message.automatedBackupPolicy = $root.google.bigtable.admin.v2.Table.AutomatedBackupPolicy.fromObject(object.automatedBackupPolicy);
                             }
+                            if (object.rowKeySchema != null) {
+                                if (typeof object.rowKeySchema !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Table.rowKeySchema: object expected");
+                                message.rowKeySchema = $root.google.bigtable.admin.v2.Type.Struct.fromObject(object.rowKeySchema);
+                            }
                             return message;
                         };
     
@@ -25785,6 +25833,7 @@
                                 object.restoreInfo = null;
                                 object.changeStreamConfig = null;
                                 object.deletionProtection = false;
+                                object.rowKeySchema = null;
                             }
                             if (message.name != null && message.hasOwnProperty("name"))
                                 object.name = message.name;
@@ -25812,6 +25861,8 @@
                                 if (options.oneofs)
                                     object.automatedBackupConfig = "automatedBackupPolicy";
                             }
+                            if (message.rowKeySchema != null && message.hasOwnProperty("rowKeySchema"))
+                                object.rowKeySchema = $root.google.bigtable.admin.v2.Type.Struct.toObject(message.rowKeySchema, options);
                             return object;
                         };
     
@@ -32136,6 +32187,7 @@
                                  * @memberof google.bigtable.admin.v2.Type.Int64
                                  * @interface IEncoding
                                  * @property {google.bigtable.admin.v2.Type.Int64.Encoding.IBigEndianBytes|null} [bigEndianBytes] Encoding bigEndianBytes
+                                 * @property {google.bigtable.admin.v2.Type.Int64.Encoding.IOrderedCodeBytes|null} [orderedCodeBytes] Encoding orderedCodeBytes
                                  */
     
                                 /**
@@ -32161,17 +32213,25 @@
                                  */
                                 Encoding.prototype.bigEndianBytes = null;
     
+                                /**
+                                 * Encoding orderedCodeBytes.
+                                 * @member {google.bigtable.admin.v2.Type.Int64.Encoding.IOrderedCodeBytes|null|undefined} orderedCodeBytes
+                                 * @memberof google.bigtable.admin.v2.Type.Int64.Encoding
+                                 * @instance
+                                 */
+                                Encoding.prototype.orderedCodeBytes = null;
+    
                                 // OneOf field names bound to virtual getters and setters
                                 var $oneOfFields;
     
                                 /**
                                  * Encoding encoding.
-                                 * @member {"bigEndianBytes"|undefined} encoding
+                                 * @member {"bigEndianBytes"|"orderedCodeBytes"|undefined} encoding
                                  * @memberof google.bigtable.admin.v2.Type.Int64.Encoding
                                  * @instance
                                  */
                                 Object.defineProperty(Encoding.prototype, "encoding", {
-                                    get: $util.oneOfGetter($oneOfFields = ["bigEndianBytes"]),
+                                    get: $util.oneOfGetter($oneOfFields = ["bigEndianBytes", "orderedCodeBytes"]),
                                     set: $util.oneOfSetter($oneOfFields)
                                 });
     
@@ -32201,6 +32261,8 @@
                                         writer = $Writer.create();
                                     if (message.bigEndianBytes != null && Object.hasOwnProperty.call(message, "bigEndianBytes"))
                                         $root.google.bigtable.admin.v2.Type.Int64.Encoding.BigEndianBytes.encode(message.bigEndianBytes, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                                    if (message.orderedCodeBytes != null && Object.hasOwnProperty.call(message, "orderedCodeBytes"))
+                                        $root.google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes.encode(message.orderedCodeBytes, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
                                     return writer;
                                 };
     
@@ -32237,6 +32299,10 @@
                                         switch (tag >>> 3) {
                                         case 1: {
                                                 message.bigEndianBytes = $root.google.bigtable.admin.v2.Type.Int64.Encoding.BigEndianBytes.decode(reader, reader.uint32());
+                                                break;
+                                            }
+                                        case 2: {
+                                                message.orderedCodeBytes = $root.google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes.decode(reader, reader.uint32());
                                                 break;
                                             }
                                         default:
@@ -32283,6 +32349,16 @@
                                                 return "bigEndianBytes." + error;
                                         }
                                     }
+                                    if (message.orderedCodeBytes != null && message.hasOwnProperty("orderedCodeBytes")) {
+                                        if (properties.encoding === 1)
+                                            return "encoding: multiple values";
+                                        properties.encoding = 1;
+                                        {
+                                            var error = $root.google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes.verify(message.orderedCodeBytes);
+                                            if (error)
+                                                return "orderedCodeBytes." + error;
+                                        }
+                                    }
                                     return null;
                                 };
     
@@ -32302,6 +32378,11 @@
                                         if (typeof object.bigEndianBytes !== "object")
                                             throw TypeError(".google.bigtable.admin.v2.Type.Int64.Encoding.bigEndianBytes: object expected");
                                         message.bigEndianBytes = $root.google.bigtable.admin.v2.Type.Int64.Encoding.BigEndianBytes.fromObject(object.bigEndianBytes);
+                                    }
+                                    if (object.orderedCodeBytes != null) {
+                                        if (typeof object.orderedCodeBytes !== "object")
+                                            throw TypeError(".google.bigtable.admin.v2.Type.Int64.Encoding.orderedCodeBytes: object expected");
+                                        message.orderedCodeBytes = $root.google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes.fromObject(object.orderedCodeBytes);
                                     }
                                     return message;
                                 };
@@ -32323,6 +32404,11 @@
                                         object.bigEndianBytes = $root.google.bigtable.admin.v2.Type.Int64.Encoding.BigEndianBytes.toObject(message.bigEndianBytes, options);
                                         if (options.oneofs)
                                             object.encoding = "bigEndianBytes";
+                                    }
+                                    if (message.orderedCodeBytes != null && message.hasOwnProperty("orderedCodeBytes")) {
+                                        object.orderedCodeBytes = $root.google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes.toObject(message.orderedCodeBytes, options);
+                                        if (options.oneofs)
+                                            object.encoding = "orderedCodeBytes";
                                     }
                                     return object;
                                 };
@@ -32559,6 +32645,181 @@
                                     };
     
                                     return BigEndianBytes;
+                                })();
+    
+                                Encoding.OrderedCodeBytes = (function() {
+    
+                                    /**
+                                     * Properties of an OrderedCodeBytes.
+                                     * @memberof google.bigtable.admin.v2.Type.Int64.Encoding
+                                     * @interface IOrderedCodeBytes
+                                     */
+    
+                                    /**
+                                     * Constructs a new OrderedCodeBytes.
+                                     * @memberof google.bigtable.admin.v2.Type.Int64.Encoding
+                                     * @classdesc Represents an OrderedCodeBytes.
+                                     * @implements IOrderedCodeBytes
+                                     * @constructor
+                                     * @param {google.bigtable.admin.v2.Type.Int64.Encoding.IOrderedCodeBytes=} [properties] Properties to set
+                                     */
+                                    function OrderedCodeBytes(properties) {
+                                        if (properties)
+                                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                                if (properties[keys[i]] != null)
+                                                    this[keys[i]] = properties[keys[i]];
+                                    }
+    
+                                    /**
+                                     * Creates a new OrderedCodeBytes instance using the specified properties.
+                                     * @function create
+                                     * @memberof google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Int64.Encoding.IOrderedCodeBytes=} [properties] Properties to set
+                                     * @returns {google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes} OrderedCodeBytes instance
+                                     */
+                                    OrderedCodeBytes.create = function create(properties) {
+                                        return new OrderedCodeBytes(properties);
+                                    };
+    
+                                    /**
+                                     * Encodes the specified OrderedCodeBytes message. Does not implicitly {@link google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes.verify|verify} messages.
+                                     * @function encode
+                                     * @memberof google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Int64.Encoding.IOrderedCodeBytes} message OrderedCodeBytes message or plain object to encode
+                                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                                     * @returns {$protobuf.Writer} Writer
+                                     */
+                                    OrderedCodeBytes.encode = function encode(message, writer) {
+                                        if (!writer)
+                                            writer = $Writer.create();
+                                        return writer;
+                                    };
+    
+                                    /**
+                                     * Encodes the specified OrderedCodeBytes message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes.verify|verify} messages.
+                                     * @function encodeDelimited
+                                     * @memberof google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Int64.Encoding.IOrderedCodeBytes} message OrderedCodeBytes message or plain object to encode
+                                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                                     * @returns {$protobuf.Writer} Writer
+                                     */
+                                    OrderedCodeBytes.encodeDelimited = function encodeDelimited(message, writer) {
+                                        return this.encode(message, writer).ldelim();
+                                    };
+    
+                                    /**
+                                     * Decodes an OrderedCodeBytes message from the specified reader or buffer.
+                                     * @function decode
+                                     * @memberof google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                                     * @param {number} [length] Message length if known beforehand
+                                     * @returns {google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes} OrderedCodeBytes
+                                     * @throws {Error} If the payload is not a reader or valid buffer
+                                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                     */
+                                    OrderedCodeBytes.decode = function decode(reader, length) {
+                                        if (!(reader instanceof $Reader))
+                                            reader = $Reader.create(reader);
+                                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes();
+                                        while (reader.pos < end) {
+                                            var tag = reader.uint32();
+                                            switch (tag >>> 3) {
+                                            default:
+                                                reader.skipType(tag & 7);
+                                                break;
+                                            }
+                                        }
+                                        return message;
+                                    };
+    
+                                    /**
+                                     * Decodes an OrderedCodeBytes message from the specified reader or buffer, length delimited.
+                                     * @function decodeDelimited
+                                     * @memberof google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                                     * @returns {google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes} OrderedCodeBytes
+                                     * @throws {Error} If the payload is not a reader or valid buffer
+                                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                     */
+                                    OrderedCodeBytes.decodeDelimited = function decodeDelimited(reader) {
+                                        if (!(reader instanceof $Reader))
+                                            reader = new $Reader(reader);
+                                        return this.decode(reader, reader.uint32());
+                                    };
+    
+                                    /**
+                                     * Verifies an OrderedCodeBytes message.
+                                     * @function verify
+                                     * @memberof google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {Object.<string,*>} message Plain object to verify
+                                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                                     */
+                                    OrderedCodeBytes.verify = function verify(message) {
+                                        if (typeof message !== "object" || message === null)
+                                            return "object expected";
+                                        return null;
+                                    };
+    
+                                    /**
+                                     * Creates an OrderedCodeBytes message from a plain object. Also converts values to their respective internal types.
+                                     * @function fromObject
+                                     * @memberof google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {Object.<string,*>} object Plain object
+                                     * @returns {google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes} OrderedCodeBytes
+                                     */
+                                    OrderedCodeBytes.fromObject = function fromObject(object) {
+                                        if (object instanceof $root.google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes)
+                                            return object;
+                                        return new $root.google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes();
+                                    };
+    
+                                    /**
+                                     * Creates a plain object from an OrderedCodeBytes message. Also converts values to other types if specified.
+                                     * @function toObject
+                                     * @memberof google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes} message OrderedCodeBytes
+                                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                                     * @returns {Object.<string,*>} Plain object
+                                     */
+                                    OrderedCodeBytes.toObject = function toObject() {
+                                        return {};
+                                    };
+    
+                                    /**
+                                     * Converts this OrderedCodeBytes to JSON.
+                                     * @function toJSON
+                                     * @memberof google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes
+                                     * @instance
+                                     * @returns {Object.<string,*>} JSON object
+                                     */
+                                    OrderedCodeBytes.prototype.toJSON = function toJSON() {
+                                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                                    };
+    
+                                    /**
+                                     * Gets the default type url for OrderedCodeBytes
+                                     * @function getTypeUrl
+                                     * @memberof google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                                     * @returns {string} The default type url
+                                     */
+                                    OrderedCodeBytes.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                                        if (typeUrlPrefix === undefined) {
+                                            typeUrlPrefix = "type.googleapis.com";
+                                        }
+                                        return typeUrlPrefix + "/google.bigtable.admin.v2.Type.Int64.Encoding.OrderedCodeBytes";
+                                    };
+    
+                                    return OrderedCodeBytes;
                                 })();
     
                                 return Encoding;
@@ -33098,6 +33359,7 @@
                              * Properties of a Timestamp.
                              * @memberof google.bigtable.admin.v2.Type
                              * @interface ITimestamp
+                             * @property {google.bigtable.admin.v2.Type.Timestamp.IEncoding|null} [encoding] Timestamp encoding
                              */
     
                             /**
@@ -33114,6 +33376,14 @@
                                         if (properties[keys[i]] != null)
                                             this[keys[i]] = properties[keys[i]];
                             }
+    
+                            /**
+                             * Timestamp encoding.
+                             * @member {google.bigtable.admin.v2.Type.Timestamp.IEncoding|null|undefined} encoding
+                             * @memberof google.bigtable.admin.v2.Type.Timestamp
+                             * @instance
+                             */
+                            Timestamp.prototype.encoding = null;
     
                             /**
                              * Creates a new Timestamp instance using the specified properties.
@@ -33139,6 +33409,8 @@
                             Timestamp.encode = function encode(message, writer) {
                                 if (!writer)
                                     writer = $Writer.create();
+                                if (message.encoding != null && Object.hasOwnProperty.call(message, "encoding"))
+                                    $root.google.bigtable.admin.v2.Type.Timestamp.Encoding.encode(message.encoding, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
                                 return writer;
                             };
     
@@ -33173,6 +33445,10 @@
                                 while (reader.pos < end) {
                                     var tag = reader.uint32();
                                     switch (tag >>> 3) {
+                                    case 1: {
+                                            message.encoding = $root.google.bigtable.admin.v2.Type.Timestamp.Encoding.decode(reader, reader.uint32());
+                                            break;
+                                        }
                                     default:
                                         reader.skipType(tag & 7);
                                         break;
@@ -33208,6 +33484,11 @@
                             Timestamp.verify = function verify(message) {
                                 if (typeof message !== "object" || message === null)
                                     return "object expected";
+                                if (message.encoding != null && message.hasOwnProperty("encoding")) {
+                                    var error = $root.google.bigtable.admin.v2.Type.Timestamp.Encoding.verify(message.encoding);
+                                    if (error)
+                                        return "encoding." + error;
+                                }
                                 return null;
                             };
     
@@ -33222,7 +33503,13 @@
                             Timestamp.fromObject = function fromObject(object) {
                                 if (object instanceof $root.google.bigtable.admin.v2.Type.Timestamp)
                                     return object;
-                                return new $root.google.bigtable.admin.v2.Type.Timestamp();
+                                var message = new $root.google.bigtable.admin.v2.Type.Timestamp();
+                                if (object.encoding != null) {
+                                    if (typeof object.encoding !== "object")
+                                        throw TypeError(".google.bigtable.admin.v2.Type.Timestamp.encoding: object expected");
+                                    message.encoding = $root.google.bigtable.admin.v2.Type.Timestamp.Encoding.fromObject(object.encoding);
+                                }
+                                return message;
                             };
     
                             /**
@@ -33234,8 +33521,15 @@
                              * @param {$protobuf.IConversionOptions} [options] Conversion options
                              * @returns {Object.<string,*>} Plain object
                              */
-                            Timestamp.toObject = function toObject() {
-                                return {};
+                            Timestamp.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults)
+                                    object.encoding = null;
+                                if (message.encoding != null && message.hasOwnProperty("encoding"))
+                                    object.encoding = $root.google.bigtable.admin.v2.Type.Timestamp.Encoding.toObject(message.encoding, options);
+                                return object;
                             };
     
                             /**
@@ -33263,6 +33557,233 @@
                                 }
                                 return typeUrlPrefix + "/google.bigtable.admin.v2.Type.Timestamp";
                             };
+    
+                            Timestamp.Encoding = (function() {
+    
+                                /**
+                                 * Properties of an Encoding.
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp
+                                 * @interface IEncoding
+                                 * @property {google.bigtable.admin.v2.Type.Int64.IEncoding|null} [unixMicrosInt64] Encoding unixMicrosInt64
+                                 */
+    
+                                /**
+                                 * Constructs a new Encoding.
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp
+                                 * @classdesc Represents an Encoding.
+                                 * @implements IEncoding
+                                 * @constructor
+                                 * @param {google.bigtable.admin.v2.Type.Timestamp.IEncoding=} [properties] Properties to set
+                                 */
+                                function Encoding(properties) {
+                                    if (properties)
+                                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                            if (properties[keys[i]] != null)
+                                                this[keys[i]] = properties[keys[i]];
+                                }
+    
+                                /**
+                                 * Encoding unixMicrosInt64.
+                                 * @member {google.bigtable.admin.v2.Type.Int64.IEncoding|null|undefined} unixMicrosInt64
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp.Encoding
+                                 * @instance
+                                 */
+                                Encoding.prototype.unixMicrosInt64 = null;
+    
+                                // OneOf field names bound to virtual getters and setters
+                                var $oneOfFields;
+    
+                                /**
+                                 * Encoding encoding.
+                                 * @member {"unixMicrosInt64"|undefined} encoding
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp.Encoding
+                                 * @instance
+                                 */
+                                Object.defineProperty(Encoding.prototype, "encoding", {
+                                    get: $util.oneOfGetter($oneOfFields = ["unixMicrosInt64"]),
+                                    set: $util.oneOfSetter($oneOfFields)
+                                });
+    
+                                /**
+                                 * Creates a new Encoding instance using the specified properties.
+                                 * @function create
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp.Encoding
+                                 * @static
+                                 * @param {google.bigtable.admin.v2.Type.Timestamp.IEncoding=} [properties] Properties to set
+                                 * @returns {google.bigtable.admin.v2.Type.Timestamp.Encoding} Encoding instance
+                                 */
+                                Encoding.create = function create(properties) {
+                                    return new Encoding(properties);
+                                };
+    
+                                /**
+                                 * Encodes the specified Encoding message. Does not implicitly {@link google.bigtable.admin.v2.Type.Timestamp.Encoding.verify|verify} messages.
+                                 * @function encode
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp.Encoding
+                                 * @static
+                                 * @param {google.bigtable.admin.v2.Type.Timestamp.IEncoding} message Encoding message or plain object to encode
+                                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                                 * @returns {$protobuf.Writer} Writer
+                                 */
+                                Encoding.encode = function encode(message, writer) {
+                                    if (!writer)
+                                        writer = $Writer.create();
+                                    if (message.unixMicrosInt64 != null && Object.hasOwnProperty.call(message, "unixMicrosInt64"))
+                                        $root.google.bigtable.admin.v2.Type.Int64.Encoding.encode(message.unixMicrosInt64, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                                    return writer;
+                                };
+    
+                                /**
+                                 * Encodes the specified Encoding message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Type.Timestamp.Encoding.verify|verify} messages.
+                                 * @function encodeDelimited
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp.Encoding
+                                 * @static
+                                 * @param {google.bigtable.admin.v2.Type.Timestamp.IEncoding} message Encoding message or plain object to encode
+                                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                                 * @returns {$protobuf.Writer} Writer
+                                 */
+                                Encoding.encodeDelimited = function encodeDelimited(message, writer) {
+                                    return this.encode(message, writer).ldelim();
+                                };
+    
+                                /**
+                                 * Decodes an Encoding message from the specified reader or buffer.
+                                 * @function decode
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp.Encoding
+                                 * @static
+                                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                                 * @param {number} [length] Message length if known beforehand
+                                 * @returns {google.bigtable.admin.v2.Type.Timestamp.Encoding} Encoding
+                                 * @throws {Error} If the payload is not a reader or valid buffer
+                                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                 */
+                                Encoding.decode = function decode(reader, length) {
+                                    if (!(reader instanceof $Reader))
+                                        reader = $Reader.create(reader);
+                                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Type.Timestamp.Encoding();
+                                    while (reader.pos < end) {
+                                        var tag = reader.uint32();
+                                        switch (tag >>> 3) {
+                                        case 1: {
+                                                message.unixMicrosInt64 = $root.google.bigtable.admin.v2.Type.Int64.Encoding.decode(reader, reader.uint32());
+                                                break;
+                                            }
+                                        default:
+                                            reader.skipType(tag & 7);
+                                            break;
+                                        }
+                                    }
+                                    return message;
+                                };
+    
+                                /**
+                                 * Decodes an Encoding message from the specified reader or buffer, length delimited.
+                                 * @function decodeDelimited
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp.Encoding
+                                 * @static
+                                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                                 * @returns {google.bigtable.admin.v2.Type.Timestamp.Encoding} Encoding
+                                 * @throws {Error} If the payload is not a reader or valid buffer
+                                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                 */
+                                Encoding.decodeDelimited = function decodeDelimited(reader) {
+                                    if (!(reader instanceof $Reader))
+                                        reader = new $Reader(reader);
+                                    return this.decode(reader, reader.uint32());
+                                };
+    
+                                /**
+                                 * Verifies an Encoding message.
+                                 * @function verify
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp.Encoding
+                                 * @static
+                                 * @param {Object.<string,*>} message Plain object to verify
+                                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                                 */
+                                Encoding.verify = function verify(message) {
+                                    if (typeof message !== "object" || message === null)
+                                        return "object expected";
+                                    var properties = {};
+                                    if (message.unixMicrosInt64 != null && message.hasOwnProperty("unixMicrosInt64")) {
+                                        properties.encoding = 1;
+                                        {
+                                            var error = $root.google.bigtable.admin.v2.Type.Int64.Encoding.verify(message.unixMicrosInt64);
+                                            if (error)
+                                                return "unixMicrosInt64." + error;
+                                        }
+                                    }
+                                    return null;
+                                };
+    
+                                /**
+                                 * Creates an Encoding message from a plain object. Also converts values to their respective internal types.
+                                 * @function fromObject
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp.Encoding
+                                 * @static
+                                 * @param {Object.<string,*>} object Plain object
+                                 * @returns {google.bigtable.admin.v2.Type.Timestamp.Encoding} Encoding
+                                 */
+                                Encoding.fromObject = function fromObject(object) {
+                                    if (object instanceof $root.google.bigtable.admin.v2.Type.Timestamp.Encoding)
+                                        return object;
+                                    var message = new $root.google.bigtable.admin.v2.Type.Timestamp.Encoding();
+                                    if (object.unixMicrosInt64 != null) {
+                                        if (typeof object.unixMicrosInt64 !== "object")
+                                            throw TypeError(".google.bigtable.admin.v2.Type.Timestamp.Encoding.unixMicrosInt64: object expected");
+                                        message.unixMicrosInt64 = $root.google.bigtable.admin.v2.Type.Int64.Encoding.fromObject(object.unixMicrosInt64);
+                                    }
+                                    return message;
+                                };
+    
+                                /**
+                                 * Creates a plain object from an Encoding message. Also converts values to other types if specified.
+                                 * @function toObject
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp.Encoding
+                                 * @static
+                                 * @param {google.bigtable.admin.v2.Type.Timestamp.Encoding} message Encoding
+                                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                                 * @returns {Object.<string,*>} Plain object
+                                 */
+                                Encoding.toObject = function toObject(message, options) {
+                                    if (!options)
+                                        options = {};
+                                    var object = {};
+                                    if (message.unixMicrosInt64 != null && message.hasOwnProperty("unixMicrosInt64")) {
+                                        object.unixMicrosInt64 = $root.google.bigtable.admin.v2.Type.Int64.Encoding.toObject(message.unixMicrosInt64, options);
+                                        if (options.oneofs)
+                                            object.encoding = "unixMicrosInt64";
+                                    }
+                                    return object;
+                                };
+    
+                                /**
+                                 * Converts this Encoding to JSON.
+                                 * @function toJSON
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp.Encoding
+                                 * @instance
+                                 * @returns {Object.<string,*>} JSON object
+                                 */
+                                Encoding.prototype.toJSON = function toJSON() {
+                                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                                };
+    
+                                /**
+                                 * Gets the default type url for Encoding
+                                 * @function getTypeUrl
+                                 * @memberof google.bigtable.admin.v2.Type.Timestamp.Encoding
+                                 * @static
+                                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                                 * @returns {string} The default type url
+                                 */
+                                Encoding.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                                    if (typeUrlPrefix === undefined) {
+                                        typeUrlPrefix = "type.googleapis.com";
+                                    }
+                                    return typeUrlPrefix + "/google.bigtable.admin.v2.Type.Timestamp.Encoding";
+                                };
+    
+                                return Encoding;
+                            })();
     
                             return Timestamp;
                         })();
@@ -33449,6 +33970,7 @@
                              * @memberof google.bigtable.admin.v2.Type
                              * @interface IStruct
                              * @property {Array.<google.bigtable.admin.v2.Type.Struct.IField>|null} [fields] Struct fields
+                             * @property {google.bigtable.admin.v2.Type.Struct.IEncoding|null} [encoding] Struct encoding
                              */
     
                             /**
@@ -33474,6 +33996,14 @@
                              * @instance
                              */
                             Struct.prototype.fields = $util.emptyArray;
+    
+                            /**
+                             * Struct encoding.
+                             * @member {google.bigtable.admin.v2.Type.Struct.IEncoding|null|undefined} encoding
+                             * @memberof google.bigtable.admin.v2.Type.Struct
+                             * @instance
+                             */
+                            Struct.prototype.encoding = null;
     
                             /**
                              * Creates a new Struct instance using the specified properties.
@@ -33502,6 +34032,8 @@
                                 if (message.fields != null && message.fields.length)
                                     for (var i = 0; i < message.fields.length; ++i)
                                         $root.google.bigtable.admin.v2.Type.Struct.Field.encode(message.fields[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                                if (message.encoding != null && Object.hasOwnProperty.call(message, "encoding"))
+                                    $root.google.bigtable.admin.v2.Type.Struct.Encoding.encode(message.encoding, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
                                 return writer;
                             };
     
@@ -33540,6 +34072,10 @@
                                             if (!(message.fields && message.fields.length))
                                                 message.fields = [];
                                             message.fields.push($root.google.bigtable.admin.v2.Type.Struct.Field.decode(reader, reader.uint32()));
+                                            break;
+                                        }
+                                    case 2: {
+                                            message.encoding = $root.google.bigtable.admin.v2.Type.Struct.Encoding.decode(reader, reader.uint32());
                                             break;
                                         }
                                     default:
@@ -33586,6 +34122,11 @@
                                             return "fields." + error;
                                     }
                                 }
+                                if (message.encoding != null && message.hasOwnProperty("encoding")) {
+                                    var error = $root.google.bigtable.admin.v2.Type.Struct.Encoding.verify(message.encoding);
+                                    if (error)
+                                        return "encoding." + error;
+                                }
                                 return null;
                             };
     
@@ -33611,6 +34152,11 @@
                                         message.fields[i] = $root.google.bigtable.admin.v2.Type.Struct.Field.fromObject(object.fields[i]);
                                     }
                                 }
+                                if (object.encoding != null) {
+                                    if (typeof object.encoding !== "object")
+                                        throw TypeError(".google.bigtable.admin.v2.Type.Struct.encoding: object expected");
+                                    message.encoding = $root.google.bigtable.admin.v2.Type.Struct.Encoding.fromObject(object.encoding);
+                                }
                                 return message;
                             };
     
@@ -33629,11 +34175,15 @@
                                 var object = {};
                                 if (options.arrays || options.defaults)
                                     object.fields = [];
+                                if (options.defaults)
+                                    object.encoding = null;
                                 if (message.fields && message.fields.length) {
                                     object.fields = [];
                                     for (var j = 0; j < message.fields.length; ++j)
                                         object.fields[j] = $root.google.bigtable.admin.v2.Type.Struct.Field.toObject(message.fields[j], options);
                                 }
+                                if (message.encoding != null && message.hasOwnProperty("encoding"))
+                                    object.encoding = $root.google.bigtable.admin.v2.Type.Struct.Encoding.toObject(message.encoding, options);
                                 return object;
                             };
     
@@ -33893,6 +34443,865 @@
                                 };
     
                                 return Field;
+                            })();
+    
+                            Struct.Encoding = (function() {
+    
+                                /**
+                                 * Properties of an Encoding.
+                                 * @memberof google.bigtable.admin.v2.Type.Struct
+                                 * @interface IEncoding
+                                 * @property {google.bigtable.admin.v2.Type.Struct.Encoding.ISingleton|null} [singleton] Encoding singleton
+                                 * @property {google.bigtable.admin.v2.Type.Struct.Encoding.IDelimitedBytes|null} [delimitedBytes] Encoding delimitedBytes
+                                 * @property {google.bigtable.admin.v2.Type.Struct.Encoding.IOrderedCodeBytes|null} [orderedCodeBytes] Encoding orderedCodeBytes
+                                 */
+    
+                                /**
+                                 * Constructs a new Encoding.
+                                 * @memberof google.bigtable.admin.v2.Type.Struct
+                                 * @classdesc Represents an Encoding.
+                                 * @implements IEncoding
+                                 * @constructor
+                                 * @param {google.bigtable.admin.v2.Type.Struct.IEncoding=} [properties] Properties to set
+                                 */
+                                function Encoding(properties) {
+                                    if (properties)
+                                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                            if (properties[keys[i]] != null)
+                                                this[keys[i]] = properties[keys[i]];
+                                }
+    
+                                /**
+                                 * Encoding singleton.
+                                 * @member {google.bigtable.admin.v2.Type.Struct.Encoding.ISingleton|null|undefined} singleton
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @instance
+                                 */
+                                Encoding.prototype.singleton = null;
+    
+                                /**
+                                 * Encoding delimitedBytes.
+                                 * @member {google.bigtable.admin.v2.Type.Struct.Encoding.IDelimitedBytes|null|undefined} delimitedBytes
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @instance
+                                 */
+                                Encoding.prototype.delimitedBytes = null;
+    
+                                /**
+                                 * Encoding orderedCodeBytes.
+                                 * @member {google.bigtable.admin.v2.Type.Struct.Encoding.IOrderedCodeBytes|null|undefined} orderedCodeBytes
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @instance
+                                 */
+                                Encoding.prototype.orderedCodeBytes = null;
+    
+                                // OneOf field names bound to virtual getters and setters
+                                var $oneOfFields;
+    
+                                /**
+                                 * Encoding encoding.
+                                 * @member {"singleton"|"delimitedBytes"|"orderedCodeBytes"|undefined} encoding
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @instance
+                                 */
+                                Object.defineProperty(Encoding.prototype, "encoding", {
+                                    get: $util.oneOfGetter($oneOfFields = ["singleton", "delimitedBytes", "orderedCodeBytes"]),
+                                    set: $util.oneOfSetter($oneOfFields)
+                                });
+    
+                                /**
+                                 * Creates a new Encoding instance using the specified properties.
+                                 * @function create
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @static
+                                 * @param {google.bigtable.admin.v2.Type.Struct.IEncoding=} [properties] Properties to set
+                                 * @returns {google.bigtable.admin.v2.Type.Struct.Encoding} Encoding instance
+                                 */
+                                Encoding.create = function create(properties) {
+                                    return new Encoding(properties);
+                                };
+    
+                                /**
+                                 * Encodes the specified Encoding message. Does not implicitly {@link google.bigtable.admin.v2.Type.Struct.Encoding.verify|verify} messages.
+                                 * @function encode
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @static
+                                 * @param {google.bigtable.admin.v2.Type.Struct.IEncoding} message Encoding message or plain object to encode
+                                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                                 * @returns {$protobuf.Writer} Writer
+                                 */
+                                Encoding.encode = function encode(message, writer) {
+                                    if (!writer)
+                                        writer = $Writer.create();
+                                    if (message.singleton != null && Object.hasOwnProperty.call(message, "singleton"))
+                                        $root.google.bigtable.admin.v2.Type.Struct.Encoding.Singleton.encode(message.singleton, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                                    if (message.delimitedBytes != null && Object.hasOwnProperty.call(message, "delimitedBytes"))
+                                        $root.google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes.encode(message.delimitedBytes, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                                    if (message.orderedCodeBytes != null && Object.hasOwnProperty.call(message, "orderedCodeBytes"))
+                                        $root.google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes.encode(message.orderedCodeBytes, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                                    return writer;
+                                };
+    
+                                /**
+                                 * Encodes the specified Encoding message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Type.Struct.Encoding.verify|verify} messages.
+                                 * @function encodeDelimited
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @static
+                                 * @param {google.bigtable.admin.v2.Type.Struct.IEncoding} message Encoding message or plain object to encode
+                                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                                 * @returns {$protobuf.Writer} Writer
+                                 */
+                                Encoding.encodeDelimited = function encodeDelimited(message, writer) {
+                                    return this.encode(message, writer).ldelim();
+                                };
+    
+                                /**
+                                 * Decodes an Encoding message from the specified reader or buffer.
+                                 * @function decode
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @static
+                                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                                 * @param {number} [length] Message length if known beforehand
+                                 * @returns {google.bigtable.admin.v2.Type.Struct.Encoding} Encoding
+                                 * @throws {Error} If the payload is not a reader or valid buffer
+                                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                 */
+                                Encoding.decode = function decode(reader, length) {
+                                    if (!(reader instanceof $Reader))
+                                        reader = $Reader.create(reader);
+                                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Type.Struct.Encoding();
+                                    while (reader.pos < end) {
+                                        var tag = reader.uint32();
+                                        switch (tag >>> 3) {
+                                        case 1: {
+                                                message.singleton = $root.google.bigtable.admin.v2.Type.Struct.Encoding.Singleton.decode(reader, reader.uint32());
+                                                break;
+                                            }
+                                        case 2: {
+                                                message.delimitedBytes = $root.google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes.decode(reader, reader.uint32());
+                                                break;
+                                            }
+                                        case 3: {
+                                                message.orderedCodeBytes = $root.google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes.decode(reader, reader.uint32());
+                                                break;
+                                            }
+                                        default:
+                                            reader.skipType(tag & 7);
+                                            break;
+                                        }
+                                    }
+                                    return message;
+                                };
+    
+                                /**
+                                 * Decodes an Encoding message from the specified reader or buffer, length delimited.
+                                 * @function decodeDelimited
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @static
+                                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                                 * @returns {google.bigtable.admin.v2.Type.Struct.Encoding} Encoding
+                                 * @throws {Error} If the payload is not a reader or valid buffer
+                                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                 */
+                                Encoding.decodeDelimited = function decodeDelimited(reader) {
+                                    if (!(reader instanceof $Reader))
+                                        reader = new $Reader(reader);
+                                    return this.decode(reader, reader.uint32());
+                                };
+    
+                                /**
+                                 * Verifies an Encoding message.
+                                 * @function verify
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @static
+                                 * @param {Object.<string,*>} message Plain object to verify
+                                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                                 */
+                                Encoding.verify = function verify(message) {
+                                    if (typeof message !== "object" || message === null)
+                                        return "object expected";
+                                    var properties = {};
+                                    if (message.singleton != null && message.hasOwnProperty("singleton")) {
+                                        properties.encoding = 1;
+                                        {
+                                            var error = $root.google.bigtable.admin.v2.Type.Struct.Encoding.Singleton.verify(message.singleton);
+                                            if (error)
+                                                return "singleton." + error;
+                                        }
+                                    }
+                                    if (message.delimitedBytes != null && message.hasOwnProperty("delimitedBytes")) {
+                                        if (properties.encoding === 1)
+                                            return "encoding: multiple values";
+                                        properties.encoding = 1;
+                                        {
+                                            var error = $root.google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes.verify(message.delimitedBytes);
+                                            if (error)
+                                                return "delimitedBytes." + error;
+                                        }
+                                    }
+                                    if (message.orderedCodeBytes != null && message.hasOwnProperty("orderedCodeBytes")) {
+                                        if (properties.encoding === 1)
+                                            return "encoding: multiple values";
+                                        properties.encoding = 1;
+                                        {
+                                            var error = $root.google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes.verify(message.orderedCodeBytes);
+                                            if (error)
+                                                return "orderedCodeBytes." + error;
+                                        }
+                                    }
+                                    return null;
+                                };
+    
+                                /**
+                                 * Creates an Encoding message from a plain object. Also converts values to their respective internal types.
+                                 * @function fromObject
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @static
+                                 * @param {Object.<string,*>} object Plain object
+                                 * @returns {google.bigtable.admin.v2.Type.Struct.Encoding} Encoding
+                                 */
+                                Encoding.fromObject = function fromObject(object) {
+                                    if (object instanceof $root.google.bigtable.admin.v2.Type.Struct.Encoding)
+                                        return object;
+                                    var message = new $root.google.bigtable.admin.v2.Type.Struct.Encoding();
+                                    if (object.singleton != null) {
+                                        if (typeof object.singleton !== "object")
+                                            throw TypeError(".google.bigtable.admin.v2.Type.Struct.Encoding.singleton: object expected");
+                                        message.singleton = $root.google.bigtable.admin.v2.Type.Struct.Encoding.Singleton.fromObject(object.singleton);
+                                    }
+                                    if (object.delimitedBytes != null) {
+                                        if (typeof object.delimitedBytes !== "object")
+                                            throw TypeError(".google.bigtable.admin.v2.Type.Struct.Encoding.delimitedBytes: object expected");
+                                        message.delimitedBytes = $root.google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes.fromObject(object.delimitedBytes);
+                                    }
+                                    if (object.orderedCodeBytes != null) {
+                                        if (typeof object.orderedCodeBytes !== "object")
+                                            throw TypeError(".google.bigtable.admin.v2.Type.Struct.Encoding.orderedCodeBytes: object expected");
+                                        message.orderedCodeBytes = $root.google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes.fromObject(object.orderedCodeBytes);
+                                    }
+                                    return message;
+                                };
+    
+                                /**
+                                 * Creates a plain object from an Encoding message. Also converts values to other types if specified.
+                                 * @function toObject
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @static
+                                 * @param {google.bigtable.admin.v2.Type.Struct.Encoding} message Encoding
+                                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                                 * @returns {Object.<string,*>} Plain object
+                                 */
+                                Encoding.toObject = function toObject(message, options) {
+                                    if (!options)
+                                        options = {};
+                                    var object = {};
+                                    if (message.singleton != null && message.hasOwnProperty("singleton")) {
+                                        object.singleton = $root.google.bigtable.admin.v2.Type.Struct.Encoding.Singleton.toObject(message.singleton, options);
+                                        if (options.oneofs)
+                                            object.encoding = "singleton";
+                                    }
+                                    if (message.delimitedBytes != null && message.hasOwnProperty("delimitedBytes")) {
+                                        object.delimitedBytes = $root.google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes.toObject(message.delimitedBytes, options);
+                                        if (options.oneofs)
+                                            object.encoding = "delimitedBytes";
+                                    }
+                                    if (message.orderedCodeBytes != null && message.hasOwnProperty("orderedCodeBytes")) {
+                                        object.orderedCodeBytes = $root.google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes.toObject(message.orderedCodeBytes, options);
+                                        if (options.oneofs)
+                                            object.encoding = "orderedCodeBytes";
+                                    }
+                                    return object;
+                                };
+    
+                                /**
+                                 * Converts this Encoding to JSON.
+                                 * @function toJSON
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @instance
+                                 * @returns {Object.<string,*>} JSON object
+                                 */
+                                Encoding.prototype.toJSON = function toJSON() {
+                                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                                };
+    
+                                /**
+                                 * Gets the default type url for Encoding
+                                 * @function getTypeUrl
+                                 * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                 * @static
+                                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                                 * @returns {string} The default type url
+                                 */
+                                Encoding.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                                    if (typeUrlPrefix === undefined) {
+                                        typeUrlPrefix = "type.googleapis.com";
+                                    }
+                                    return typeUrlPrefix + "/google.bigtable.admin.v2.Type.Struct.Encoding";
+                                };
+    
+                                Encoding.Singleton = (function() {
+    
+                                    /**
+                                     * Properties of a Singleton.
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                     * @interface ISingleton
+                                     */
+    
+                                    /**
+                                     * Constructs a new Singleton.
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                     * @classdesc Represents a Singleton.
+                                     * @implements ISingleton
+                                     * @constructor
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.ISingleton=} [properties] Properties to set
+                                     */
+                                    function Singleton(properties) {
+                                        if (properties)
+                                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                                if (properties[keys[i]] != null)
+                                                    this[keys[i]] = properties[keys[i]];
+                                    }
+    
+                                    /**
+                                     * Creates a new Singleton instance using the specified properties.
+                                     * @function create
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.Singleton
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.ISingleton=} [properties] Properties to set
+                                     * @returns {google.bigtable.admin.v2.Type.Struct.Encoding.Singleton} Singleton instance
+                                     */
+                                    Singleton.create = function create(properties) {
+                                        return new Singleton(properties);
+                                    };
+    
+                                    /**
+                                     * Encodes the specified Singleton message. Does not implicitly {@link google.bigtable.admin.v2.Type.Struct.Encoding.Singleton.verify|verify} messages.
+                                     * @function encode
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.Singleton
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.ISingleton} message Singleton message or plain object to encode
+                                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                                     * @returns {$protobuf.Writer} Writer
+                                     */
+                                    Singleton.encode = function encode(message, writer) {
+                                        if (!writer)
+                                            writer = $Writer.create();
+                                        return writer;
+                                    };
+    
+                                    /**
+                                     * Encodes the specified Singleton message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Type.Struct.Encoding.Singleton.verify|verify} messages.
+                                     * @function encodeDelimited
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.Singleton
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.ISingleton} message Singleton message or plain object to encode
+                                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                                     * @returns {$protobuf.Writer} Writer
+                                     */
+                                    Singleton.encodeDelimited = function encodeDelimited(message, writer) {
+                                        return this.encode(message, writer).ldelim();
+                                    };
+    
+                                    /**
+                                     * Decodes a Singleton message from the specified reader or buffer.
+                                     * @function decode
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.Singleton
+                                     * @static
+                                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                                     * @param {number} [length] Message length if known beforehand
+                                     * @returns {google.bigtable.admin.v2.Type.Struct.Encoding.Singleton} Singleton
+                                     * @throws {Error} If the payload is not a reader or valid buffer
+                                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                     */
+                                    Singleton.decode = function decode(reader, length) {
+                                        if (!(reader instanceof $Reader))
+                                            reader = $Reader.create(reader);
+                                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Type.Struct.Encoding.Singleton();
+                                        while (reader.pos < end) {
+                                            var tag = reader.uint32();
+                                            switch (tag >>> 3) {
+                                            default:
+                                                reader.skipType(tag & 7);
+                                                break;
+                                            }
+                                        }
+                                        return message;
+                                    };
+    
+                                    /**
+                                     * Decodes a Singleton message from the specified reader or buffer, length delimited.
+                                     * @function decodeDelimited
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.Singleton
+                                     * @static
+                                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                                     * @returns {google.bigtable.admin.v2.Type.Struct.Encoding.Singleton} Singleton
+                                     * @throws {Error} If the payload is not a reader or valid buffer
+                                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                     */
+                                    Singleton.decodeDelimited = function decodeDelimited(reader) {
+                                        if (!(reader instanceof $Reader))
+                                            reader = new $Reader(reader);
+                                        return this.decode(reader, reader.uint32());
+                                    };
+    
+                                    /**
+                                     * Verifies a Singleton message.
+                                     * @function verify
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.Singleton
+                                     * @static
+                                     * @param {Object.<string,*>} message Plain object to verify
+                                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                                     */
+                                    Singleton.verify = function verify(message) {
+                                        if (typeof message !== "object" || message === null)
+                                            return "object expected";
+                                        return null;
+                                    };
+    
+                                    /**
+                                     * Creates a Singleton message from a plain object. Also converts values to their respective internal types.
+                                     * @function fromObject
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.Singleton
+                                     * @static
+                                     * @param {Object.<string,*>} object Plain object
+                                     * @returns {google.bigtable.admin.v2.Type.Struct.Encoding.Singleton} Singleton
+                                     */
+                                    Singleton.fromObject = function fromObject(object) {
+                                        if (object instanceof $root.google.bigtable.admin.v2.Type.Struct.Encoding.Singleton)
+                                            return object;
+                                        return new $root.google.bigtable.admin.v2.Type.Struct.Encoding.Singleton();
+                                    };
+    
+                                    /**
+                                     * Creates a plain object from a Singleton message. Also converts values to other types if specified.
+                                     * @function toObject
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.Singleton
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.Singleton} message Singleton
+                                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                                     * @returns {Object.<string,*>} Plain object
+                                     */
+                                    Singleton.toObject = function toObject() {
+                                        return {};
+                                    };
+    
+                                    /**
+                                     * Converts this Singleton to JSON.
+                                     * @function toJSON
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.Singleton
+                                     * @instance
+                                     * @returns {Object.<string,*>} JSON object
+                                     */
+                                    Singleton.prototype.toJSON = function toJSON() {
+                                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                                    };
+    
+                                    /**
+                                     * Gets the default type url for Singleton
+                                     * @function getTypeUrl
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.Singleton
+                                     * @static
+                                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                                     * @returns {string} The default type url
+                                     */
+                                    Singleton.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                                        if (typeUrlPrefix === undefined) {
+                                            typeUrlPrefix = "type.googleapis.com";
+                                        }
+                                        return typeUrlPrefix + "/google.bigtable.admin.v2.Type.Struct.Encoding.Singleton";
+                                    };
+    
+                                    return Singleton;
+                                })();
+    
+                                Encoding.DelimitedBytes = (function() {
+    
+                                    /**
+                                     * Properties of a DelimitedBytes.
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                     * @interface IDelimitedBytes
+                                     * @property {Uint8Array|null} [delimiter] DelimitedBytes delimiter
+                                     */
+    
+                                    /**
+                                     * Constructs a new DelimitedBytes.
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                     * @classdesc Represents a DelimitedBytes.
+                                     * @implements IDelimitedBytes
+                                     * @constructor
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.IDelimitedBytes=} [properties] Properties to set
+                                     */
+                                    function DelimitedBytes(properties) {
+                                        if (properties)
+                                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                                if (properties[keys[i]] != null)
+                                                    this[keys[i]] = properties[keys[i]];
+                                    }
+    
+                                    /**
+                                     * DelimitedBytes delimiter.
+                                     * @member {Uint8Array} delimiter
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes
+                                     * @instance
+                                     */
+                                    DelimitedBytes.prototype.delimiter = $util.newBuffer([]);
+    
+                                    /**
+                                     * Creates a new DelimitedBytes instance using the specified properties.
+                                     * @function create
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.IDelimitedBytes=} [properties] Properties to set
+                                     * @returns {google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes} DelimitedBytes instance
+                                     */
+                                    DelimitedBytes.create = function create(properties) {
+                                        return new DelimitedBytes(properties);
+                                    };
+    
+                                    /**
+                                     * Encodes the specified DelimitedBytes message. Does not implicitly {@link google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes.verify|verify} messages.
+                                     * @function encode
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.IDelimitedBytes} message DelimitedBytes message or plain object to encode
+                                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                                     * @returns {$protobuf.Writer} Writer
+                                     */
+                                    DelimitedBytes.encode = function encode(message, writer) {
+                                        if (!writer)
+                                            writer = $Writer.create();
+                                        if (message.delimiter != null && Object.hasOwnProperty.call(message, "delimiter"))
+                                            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.delimiter);
+                                        return writer;
+                                    };
+    
+                                    /**
+                                     * Encodes the specified DelimitedBytes message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes.verify|verify} messages.
+                                     * @function encodeDelimited
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.IDelimitedBytes} message DelimitedBytes message or plain object to encode
+                                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                                     * @returns {$protobuf.Writer} Writer
+                                     */
+                                    DelimitedBytes.encodeDelimited = function encodeDelimited(message, writer) {
+                                        return this.encode(message, writer).ldelim();
+                                    };
+    
+                                    /**
+                                     * Decodes a DelimitedBytes message from the specified reader or buffer.
+                                     * @function decode
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes
+                                     * @static
+                                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                                     * @param {number} [length] Message length if known beforehand
+                                     * @returns {google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes} DelimitedBytes
+                                     * @throws {Error} If the payload is not a reader or valid buffer
+                                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                     */
+                                    DelimitedBytes.decode = function decode(reader, length) {
+                                        if (!(reader instanceof $Reader))
+                                            reader = $Reader.create(reader);
+                                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes();
+                                        while (reader.pos < end) {
+                                            var tag = reader.uint32();
+                                            switch (tag >>> 3) {
+                                            case 1: {
+                                                    message.delimiter = reader.bytes();
+                                                    break;
+                                                }
+                                            default:
+                                                reader.skipType(tag & 7);
+                                                break;
+                                            }
+                                        }
+                                        return message;
+                                    };
+    
+                                    /**
+                                     * Decodes a DelimitedBytes message from the specified reader or buffer, length delimited.
+                                     * @function decodeDelimited
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes
+                                     * @static
+                                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                                     * @returns {google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes} DelimitedBytes
+                                     * @throws {Error} If the payload is not a reader or valid buffer
+                                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                     */
+                                    DelimitedBytes.decodeDelimited = function decodeDelimited(reader) {
+                                        if (!(reader instanceof $Reader))
+                                            reader = new $Reader(reader);
+                                        return this.decode(reader, reader.uint32());
+                                    };
+    
+                                    /**
+                                     * Verifies a DelimitedBytes message.
+                                     * @function verify
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes
+                                     * @static
+                                     * @param {Object.<string,*>} message Plain object to verify
+                                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                                     */
+                                    DelimitedBytes.verify = function verify(message) {
+                                        if (typeof message !== "object" || message === null)
+                                            return "object expected";
+                                        if (message.delimiter != null && message.hasOwnProperty("delimiter"))
+                                            if (!(message.delimiter && typeof message.delimiter.length === "number" || $util.isString(message.delimiter)))
+                                                return "delimiter: buffer expected";
+                                        return null;
+                                    };
+    
+                                    /**
+                                     * Creates a DelimitedBytes message from a plain object. Also converts values to their respective internal types.
+                                     * @function fromObject
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes
+                                     * @static
+                                     * @param {Object.<string,*>} object Plain object
+                                     * @returns {google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes} DelimitedBytes
+                                     */
+                                    DelimitedBytes.fromObject = function fromObject(object) {
+                                        if (object instanceof $root.google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes)
+                                            return object;
+                                        var message = new $root.google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes();
+                                        if (object.delimiter != null)
+                                            if (typeof object.delimiter === "string")
+                                                $util.base64.decode(object.delimiter, message.delimiter = $util.newBuffer($util.base64.length(object.delimiter)), 0);
+                                            else if (object.delimiter.length >= 0)
+                                                message.delimiter = object.delimiter;
+                                        return message;
+                                    };
+    
+                                    /**
+                                     * Creates a plain object from a DelimitedBytes message. Also converts values to other types if specified.
+                                     * @function toObject
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes} message DelimitedBytes
+                                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                                     * @returns {Object.<string,*>} Plain object
+                                     */
+                                    DelimitedBytes.toObject = function toObject(message, options) {
+                                        if (!options)
+                                            options = {};
+                                        var object = {};
+                                        if (options.defaults)
+                                            if (options.bytes === String)
+                                                object.delimiter = "";
+                                            else {
+                                                object.delimiter = [];
+                                                if (options.bytes !== Array)
+                                                    object.delimiter = $util.newBuffer(object.delimiter);
+                                            }
+                                        if (message.delimiter != null && message.hasOwnProperty("delimiter"))
+                                            object.delimiter = options.bytes === String ? $util.base64.encode(message.delimiter, 0, message.delimiter.length) : options.bytes === Array ? Array.prototype.slice.call(message.delimiter) : message.delimiter;
+                                        return object;
+                                    };
+    
+                                    /**
+                                     * Converts this DelimitedBytes to JSON.
+                                     * @function toJSON
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes
+                                     * @instance
+                                     * @returns {Object.<string,*>} JSON object
+                                     */
+                                    DelimitedBytes.prototype.toJSON = function toJSON() {
+                                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                                    };
+    
+                                    /**
+                                     * Gets the default type url for DelimitedBytes
+                                     * @function getTypeUrl
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes
+                                     * @static
+                                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                                     * @returns {string} The default type url
+                                     */
+                                    DelimitedBytes.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                                        if (typeUrlPrefix === undefined) {
+                                            typeUrlPrefix = "type.googleapis.com";
+                                        }
+                                        return typeUrlPrefix + "/google.bigtable.admin.v2.Type.Struct.Encoding.DelimitedBytes";
+                                    };
+    
+                                    return DelimitedBytes;
+                                })();
+    
+                                Encoding.OrderedCodeBytes = (function() {
+    
+                                    /**
+                                     * Properties of an OrderedCodeBytes.
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                     * @interface IOrderedCodeBytes
+                                     */
+    
+                                    /**
+                                     * Constructs a new OrderedCodeBytes.
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding
+                                     * @classdesc Represents an OrderedCodeBytes.
+                                     * @implements IOrderedCodeBytes
+                                     * @constructor
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.IOrderedCodeBytes=} [properties] Properties to set
+                                     */
+                                    function OrderedCodeBytes(properties) {
+                                        if (properties)
+                                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                                if (properties[keys[i]] != null)
+                                                    this[keys[i]] = properties[keys[i]];
+                                    }
+    
+                                    /**
+                                     * Creates a new OrderedCodeBytes instance using the specified properties.
+                                     * @function create
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.IOrderedCodeBytes=} [properties] Properties to set
+                                     * @returns {google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes} OrderedCodeBytes instance
+                                     */
+                                    OrderedCodeBytes.create = function create(properties) {
+                                        return new OrderedCodeBytes(properties);
+                                    };
+    
+                                    /**
+                                     * Encodes the specified OrderedCodeBytes message. Does not implicitly {@link google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes.verify|verify} messages.
+                                     * @function encode
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.IOrderedCodeBytes} message OrderedCodeBytes message or plain object to encode
+                                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                                     * @returns {$protobuf.Writer} Writer
+                                     */
+                                    OrderedCodeBytes.encode = function encode(message, writer) {
+                                        if (!writer)
+                                            writer = $Writer.create();
+                                        return writer;
+                                    };
+    
+                                    /**
+                                     * Encodes the specified OrderedCodeBytes message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes.verify|verify} messages.
+                                     * @function encodeDelimited
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.IOrderedCodeBytes} message OrderedCodeBytes message or plain object to encode
+                                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                                     * @returns {$protobuf.Writer} Writer
+                                     */
+                                    OrderedCodeBytes.encodeDelimited = function encodeDelimited(message, writer) {
+                                        return this.encode(message, writer).ldelim();
+                                    };
+    
+                                    /**
+                                     * Decodes an OrderedCodeBytes message from the specified reader or buffer.
+                                     * @function decode
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                                     * @param {number} [length] Message length if known beforehand
+                                     * @returns {google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes} OrderedCodeBytes
+                                     * @throws {Error} If the payload is not a reader or valid buffer
+                                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                     */
+                                    OrderedCodeBytes.decode = function decode(reader, length) {
+                                        if (!(reader instanceof $Reader))
+                                            reader = $Reader.create(reader);
+                                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes();
+                                        while (reader.pos < end) {
+                                            var tag = reader.uint32();
+                                            switch (tag >>> 3) {
+                                            default:
+                                                reader.skipType(tag & 7);
+                                                break;
+                                            }
+                                        }
+                                        return message;
+                                    };
+    
+                                    /**
+                                     * Decodes an OrderedCodeBytes message from the specified reader or buffer, length delimited.
+                                     * @function decodeDelimited
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                                     * @returns {google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes} OrderedCodeBytes
+                                     * @throws {Error} If the payload is not a reader or valid buffer
+                                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                                     */
+                                    OrderedCodeBytes.decodeDelimited = function decodeDelimited(reader) {
+                                        if (!(reader instanceof $Reader))
+                                            reader = new $Reader(reader);
+                                        return this.decode(reader, reader.uint32());
+                                    };
+    
+                                    /**
+                                     * Verifies an OrderedCodeBytes message.
+                                     * @function verify
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {Object.<string,*>} message Plain object to verify
+                                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                                     */
+                                    OrderedCodeBytes.verify = function verify(message) {
+                                        if (typeof message !== "object" || message === null)
+                                            return "object expected";
+                                        return null;
+                                    };
+    
+                                    /**
+                                     * Creates an OrderedCodeBytes message from a plain object. Also converts values to their respective internal types.
+                                     * @function fromObject
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {Object.<string,*>} object Plain object
+                                     * @returns {google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes} OrderedCodeBytes
+                                     */
+                                    OrderedCodeBytes.fromObject = function fromObject(object) {
+                                        if (object instanceof $root.google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes)
+                                            return object;
+                                        return new $root.google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes();
+                                    };
+    
+                                    /**
+                                     * Creates a plain object from an OrderedCodeBytes message. Also converts values to other types if specified.
+                                     * @function toObject
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes} message OrderedCodeBytes
+                                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                                     * @returns {Object.<string,*>} Plain object
+                                     */
+                                    OrderedCodeBytes.toObject = function toObject() {
+                                        return {};
+                                    };
+    
+                                    /**
+                                     * Converts this OrderedCodeBytes to JSON.
+                                     * @function toJSON
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes
+                                     * @instance
+                                     * @returns {Object.<string,*>} JSON object
+                                     */
+                                    OrderedCodeBytes.prototype.toJSON = function toJSON() {
+                                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                                    };
+    
+                                    /**
+                                     * Gets the default type url for OrderedCodeBytes
+                                     * @function getTypeUrl
+                                     * @memberof google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes
+                                     * @static
+                                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                                     * @returns {string} The default type url
+                                     */
+                                    OrderedCodeBytes.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                                        if (typeUrlPrefix === undefined) {
+                                            typeUrlPrefix = "type.googleapis.com";
+                                        }
+                                        return typeUrlPrefix + "/google.bigtable.admin.v2.Type.Struct.Encoding.OrderedCodeBytes";
+                                    };
+    
+                                    return OrderedCodeBytes;
+                                })();
+    
+                                return Encoding;
                             })();
     
                             return Struct;

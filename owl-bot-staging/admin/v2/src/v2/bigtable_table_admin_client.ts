@@ -1918,9 +1918,12 @@ export class BigtableTableAdminClient {
  *   * `change_stream_config`
  *   * `change_stream_config.retention_period`
  *   * `deletion_protection`
+ *   * `row_key_schema`
  *
  *   If `column_families` is set in `update_mask`, it will return an
  *   UNIMPLEMENTED error.
+ * @param {boolean} [request.ignoreWarnings]
+ *   Optional. If true, ignore safety checks when updating the table.
  * @param {object} [options]
  *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
  * @returns {Promise} - The promise which resolves to an array.

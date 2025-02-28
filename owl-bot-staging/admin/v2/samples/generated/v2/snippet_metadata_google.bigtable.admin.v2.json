@@ -1210,7 +1210,7 @@
       "segments": [
         {
           "start": 25,
-          "end": 69,
+          "end": 74,
           "type": "FULL"
         }
       ],
@@ -1226,6 +1226,10 @@
           {
             "name": "update_mask",
             "type": ".google.protobuf.FieldMask"
+          },
+          {
+            "name": "ignore_warnings",
+            "type": "TYPE_BOOL"
           }
         ],
         "resultType": ".google.longrunning.Operation",

@@ -42,10 +42,15 @@ function main(table, updateMask) {
    *  * `change_stream_config`
    *  * `change_stream_config.retention_period`
    *  * `deletion_protection`
+   *  * `row_key_schema`
    *  If `column_families` is set in `update_mask`, it will return an
    *  UNIMPLEMENTED error.
    */
   // const updateMask = {}
+  /**
+   *  Optional. If true, ignore safety checks when updating the table.
+   */
+  // const ignoreWarnings = true
 
   // Imports the Admin library
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
