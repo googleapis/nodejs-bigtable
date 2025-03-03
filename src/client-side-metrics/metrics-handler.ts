@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-  OnAttemptCompleteAttributes,
-  OnOperationCompleteAttributes,
-} from '../../common/client-side-metrics-attributes';
+import {MethodName, StreamingState} from './client-side-metrics-attributes';
+import {grpc} from 'google-gax';
 
 /**
  * The interfaces below use undefined instead of null to indicate a metric is
@@ -23,22 +21,35 @@ import {
  * without requiring users to change the methods in their metrics handler.
  */
 
-/**
- * Metrics related to the completion of a Bigtable operation.
- */
-export interface OnOperationCompleteMetrics {
+type IMetricsCollectorData = {
+  instanceId: string;
+  table: string;
+  cluster?: string;
+  zone?: string;
+  appProfileId?: string;
+  methodName: MethodName;
+  clientUid: string;
+};
+
+interface StandardData {
+  projectId: string;
+  metricsCollectorData: IMetricsCollectorData;
+  clientName: string;
+  streamingOperation: StreamingState;
+}
+
+export interface OnOperationCompleteData extends StandardData {
   firstResponseLatency?: number;
   operationLatency: number;
   retryCount?: number;
+  finalOperationStatus: grpc.status;
 }
 
-/**
- * Metrics related to the completion of a single attempt of a Bigtable operation.
- */
-export interface OnAttemptCompleteMetrics {
+export interface OnAttemptCompleteData extends StandardData {
   attemptLatency: number;
   serverLatency?: number;
   connectivityErrorCount: number;
+  attemptStatus: grpc.status;
 }
 
 /**
@@ -48,20 +59,13 @@ export interface OnAttemptCompleteMetrics {
 export interface IMetricsHandler {
   /**
    * Called when an operation completes (successfully or unsuccessfully).
-   * @param {OnOperationCompleteMetrics} metrics Metrics related to the completed operation.
-   * @param {OnOperationCompleteAttributes} attributes Attributes associated with the completed operation.
+   * @param {OnOperationCompleteData} data Metrics and attributes related to the completed operation.
    */
-  onOperationComplete?(
-    metrics: OnOperationCompleteMetrics,
-    attributes: OnOperationCompleteAttributes
-  ): void;
+  onOperationComplete?(data: OnOperationCompleteData): void;
+
   /**
    * Called when an attempt (e.g., an RPC attempt) completes.
-   * @param {OnAttemptCompleteMetrics} metrics Metrics related to the completed attempt.
-   * @param {OnAttemptCompleteAttributes} attributes Attributes associated with the completed attempt.
+   * @param {OnAttemptCompleteData} data Metrics and attributes related to the completed attempt.
    */
-  onAttemptComplete?(
-    metrics: OnAttemptCompleteMetrics,
-    attributes: OnAttemptCompleteAttributes
-  ): void;
+  onAttemptComplete?(data: OnAttemptCompleteData): void;
 }

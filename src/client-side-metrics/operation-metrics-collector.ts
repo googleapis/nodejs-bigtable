@@ -14,55 +14,13 @@
 
 import * as fs from 'fs';
 import {IMetricsHandler} from './metrics-handler';
-import {
-  AttemptOnlyAttributes,
-  MethodName,
-  OnAttemptCompleteInfo,
-  OnOperationCompleteAttributes,
-  OperationOnlyAttributes,
-} from '../../common/client-side-metrics-attributes';
+import {MethodName, StreamingState} from './client-side-metrics-attributes';
+import {grpc} from 'google-gax';
 import * as gax from 'google-gax';
 const root = gax.protobuf.loadSync(
   './protos/google/bigtable/v2/response_params.proto'
 );
 const ResponseParams = root.lookupType('ResponseParams');
-
-/**
- * An interface representing a Date-like object.  Provides a `getTime` method
- * for retrieving the time value in milliseconds.  Used for abstracting time
- * in tests.
- */
-interface DateLike {
-  /**
-   * Returns the time value in milliseconds.
-   * @returns The time value in milliseconds.
-   */
-  getTime(): number;
-}
-
-/**
- * Interface for a provider that returns DateLike objects. Used for mocking dates in tests.
- */
-export interface DateProvider {
-  /**
-   * Returns a DateLike object.
-   * @returns A DateLike object representing the current time or a fake time value.
-   */
-  getDate(): DateLike;
-}
-
-/**
- * The default DateProvider implementation.  Returns the current date and time.
- */
-export class DefaultDateProvider {
-  /**
-   * Returns a new Date object representing the current time.
-   * @returns {Date} The current date and time.
-   */
-  getDate() {
-    return new Date();
-  }
-}
 
 /**
  * An interface representing a tabular API surface, such as a Bigtable table.
@@ -74,6 +32,7 @@ export interface ITabularApiSurface {
   id: string;
   bigtable: {
     appProfileId?: string;
+    clientUid: string;
   };
 }
 
@@ -94,7 +53,8 @@ const version = JSON.parse(packageJSON.toString()).version;
 enum MetricsCollectorState {
   OPERATION_NOT_STARTED,
   OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS,
-  OPERATION_STARTED_ATTEMPT_IN_PROGRESS,
+  OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
+  OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED,
   OPERATION_COMPLETE,
 }
 
@@ -103,38 +63,32 @@ enum MetricsCollectorState {
  */
 export class OperationMetricsCollector {
   private state: MetricsCollectorState;
-  private operationStartTime: DateLike | null;
-  private attemptStartTime: DateLike | null;
+  private operationStartTime: Date | null;
+  private attemptStartTime: Date | null;
   private zone: string | undefined;
   private cluster: string | undefined;
   private tabularApiSurface: ITabularApiSurface;
   private methodName: MethodName;
-  private projectId?: string;
   private attemptCount = 0;
-  private receivedFirstResponse: boolean;
   private metricsHandlers: IMetricsHandler[];
   private firstResponseLatency: number | null;
   private serverTimeRead: boolean;
   private serverTime: number | null;
-  private dateProvider: DateProvider;
-  private connectivityErrorCount = 0;
+  private connectivityErrorCount: number;
+  private streamingOperation: StreamingState;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
    * @param {IMetricsHandler[]} metricsHandlers The metrics handlers used for recording metrics.
    * @param {MethodName} methodName The name of the method being traced.
-   * @param {string} projectId The id of the project.
-   * @param {DateProvider} dateProvider A provider for date/time information (for testing).
+   * @param {StreamingState} streamingOperation Whether or not the call is a streaming operation.
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
     metricsHandlers: IMetricsHandler[],
     methodName: MethodName,
-    projectId?: string,
-    dateProvider?: DateProvider
+    streamingOperation: StreamingState
   ) {
-    console.log('Metrics collector length');
-    console.log(metricsHandlers.length);
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
     this.cluster = undefined;
@@ -142,77 +96,24 @@ export class OperationMetricsCollector {
     this.methodName = methodName;
     this.operationStartTime = null;
     this.attemptStartTime = null;
-    this.receivedFirstResponse = false;
     this.metricsHandlers = metricsHandlers;
     this.firstResponseLatency = null;
     this.serverTimeRead = false;
     this.serverTime = null;
-    this.projectId = projectId;
-    if (dateProvider) {
-      this.dateProvider = dateProvider;
-    } else {
-      this.dateProvider = new DefaultDateProvider();
-    }
+    this.connectivityErrorCount = 0;
+    this.streamingOperation = streamingOperation;
   }
 
-  /**
-   * Assembles the basic attributes for metrics. These attributes provide
-   * context about the Bigtable environment and the operation being performed.
-   * @param {string} projectId The Google Cloud project ID.
-   * @returns {Attributes} An object containing the basic attributes.
-   */
-  private getBasicAttributes(projectId: string) {
+  private getMetricsCollectorData() {
     return {
-      projectId,
       instanceId: this.tabularApiSurface.instance.id,
       table: this.tabularApiSurface.id,
       cluster: this.cluster,
       zone: this.zone,
       appProfileId: this.tabularApiSurface.bigtable.appProfileId,
       methodName: this.methodName,
-      clientName: `nodejs-bigtable/${version}`,
+      clientUid: this.tabularApiSurface.bigtable.clientUid,
     };
-  }
-
-  /**
-   * Assembles the attributes for an entire operation.  These attributes
-   * provide context about the Bigtable environment, the operation being
-   * performed, and the final status of the operation. Includes whether the
-   * operation was a streaming operation or not.
-   *
-   * @param {string} projectId The Google Cloud project ID.
-   * @param {OperationOnlyAttributes} operationOnlyAttributes The attributes of the operation.
-   * @returns {OnOperationCompleteAttributes} An object containing the attributes
-   * for operation latency metrics.
-   */
-  private getOperationAttributes(
-    projectId: string,
-    operationOnlyAttributes: OperationOnlyAttributes
-  ): OnOperationCompleteAttributes {
-    return Object.assign(
-      operationOnlyAttributes,
-      this.getBasicAttributes(projectId)
-    );
-  }
-
-  /**
-   * Assembles the attributes for attempt metrics. These attributes provide context
-   * about the Bigtable environment, the operation being performed, the status
-   * of the attempt and whether the operation was a streaming operation or not.
-   *
-   * @param {string} projectId The Google Cloud project ID.
-   * @param {AttemptOnlyAttributes} attemptOnlyAttributes The attributes of the attempt.
-   * @returns {OnAttemptCompleteAttributes} The attributes all metrics recorded
-   * in the onAttemptComplete handler.
-   */
-  private getAttemptAttributes(
-    projectId: string,
-    attemptOnlyAttributes: AttemptOnlyAttributes
-  ) {
-    return Object.assign(
-      attemptOnlyAttributes,
-      this.getBasicAttributes(projectId)
-    );
   }
 
   /**
@@ -220,9 +121,8 @@ export class OperationMetricsCollector {
    */
   onOperationStart() {
     if (this.state === MetricsCollectorState.OPERATION_NOT_STARTED) {
-      this.operationStartTime = this.dateProvider.getDate();
+      this.operationStartTime = new Date();
       this.firstResponseLatency = null;
-      this.receivedFirstResponse = false;
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
     } else {
@@ -232,36 +132,34 @@ export class OperationMetricsCollector {
 
   /**
    * Called when an attempt (e.g., an RPC attempt) completes. Records attempt latencies.
-   * @param {OnAttemptCompleteInfo} info Information about the completed attempt.
+   * @param {string} projectId The id of the project.
+   * @param {grpc.status} attemptStatus The grpc status for the attempt.
    */
-  onAttemptComplete(info: OnAttemptCompleteInfo) {
-    console.log('onAttemptComplete collector');
+  onAttemptComplete(projectId: string, attemptStatus: grpc.status) {
     if (
-      this.state === MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS
+      this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
+      this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED
     ) {
-      console.log('in state');
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
       this.attemptCount++;
-      const endTime = this.dateProvider.getDate();
-      const projectId = this.projectId;
+      const endTime = new Date();
       if (projectId && this.attemptStartTime) {
-        console.log('after attempt start time');
-        const attributes = this.getAttemptAttributes(projectId, info);
         const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
         this.metricsHandlers.forEach(metricsHandler => {
-          console.log('metrics handler loop');
           if (metricsHandler.onAttemptComplete) {
-            console.log('calling onAttemptComplete');
-            console.log('calling onAttemptComplete');
-            metricsHandler.onAttemptComplete(
-              {
-                attemptLatency: totalTime,
-                serverLatency: this.serverTime ?? undefined,
-                connectivityErrorCount: this.connectivityErrorCount,
-              },
-              attributes
-            );
+            metricsHandler.onAttemptComplete({
+              attemptLatency: totalTime,
+              serverLatency: this.serverTime ?? undefined,
+              connectivityErrorCount: this.connectivityErrorCount,
+              streamingOperation: this.streamingOperation,
+              attemptStatus,
+              clientName: `nodejs-bigtable/${version}`,
+              metricsCollectorData: this.getMetricsCollectorData(),
+              projectId,
+            });
           }
         });
       }
@@ -278,8 +176,9 @@ export class OperationMetricsCollector {
       this.state ===
       MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
     ) {
-      this.state = MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS;
-      this.attemptStartTime = this.dateProvider.getDate();
+      this.state =
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET;
+      this.attemptStartTime = new Date();
       this.serverTime = null;
       this.serverTimeRead = false;
       this.connectivityErrorCount = 0;
@@ -291,14 +190,17 @@ export class OperationMetricsCollector {
   /**
    * Called when the first response is received. Records first response latencies.
    */
-  onResponse() {
-    const endTime = this.dateProvider.getDate();
-    const projectId = this.projectId;
-    if (projectId && this.operationStartTime) {
-      const totalTime = endTime.getTime() - this.operationStartTime.getTime();
-      if (!this.receivedFirstResponse) {
-        this.receivedFirstResponse = true;
-        this.firstResponseLatency = totalTime;
+  onResponse(projectId: string) {
+    if (
+      this.state ===
+      MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET
+    ) {
+      this.state =
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
+      const endTime = new Date();
+      if (projectId && this.operationStartTime) {
+        this.firstResponseLatency =
+          endTime.getTime() - this.operationStartTime.getTime();
       }
     }
   }
@@ -306,35 +208,31 @@ export class OperationMetricsCollector {
   /**
    * Called when an operation completes (successfully or unsuccessfully).
    * Records operation latencies, retry counts, and connectivity error counts.
-   * @param {OperationOnlyAttributes} info Information about the completed operation.
+   * @param {string} projectId The id of the project.
+   * @param {grpc.status} finalOperationStatus Information about the completed operation.
    */
-  onOperationComplete(info: OperationOnlyAttributes) {
+  onOperationComplete(projectId: string, finalOperationStatus: grpc.status) {
     if (
       this.state ===
       MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
     ) {
       this.state = MetricsCollectorState.OPERATION_COMPLETE;
-      const endTime = this.dateProvider.getDate();
-      const projectId = this.projectId;
+      const endTime = new Date();
       if (projectId && this.operationStartTime) {
         const totalTime = endTime.getTime() - this.operationStartTime.getTime();
         {
-          // This block records operation latency metrics.
-          const operationLatencyAttributes = this.getOperationAttributes(
-            projectId,
-            info
-          );
-          const metrics = {
-            operationLatency: totalTime,
-            retryCount: this.attemptCount - 1,
-            firstResponseLatency: this.firstResponseLatency ?? undefined,
-          };
           this.metricsHandlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
-              metricsHandler.onOperationComplete(
-                metrics,
-                operationLatencyAttributes
-              );
+              metricsHandler.onOperationComplete({
+                finalOperationStatus: finalOperationStatus,
+                streamingOperation: this.streamingOperation,
+                metricsCollectorData: this.getMetricsCollectorData(),
+                clientName: `nodejs-bigtable/${version}`,
+                projectId,
+                operationLatency: totalTime,
+                retryCount: this.attemptCount - 1,
+                firstResponseLatency: this.firstResponseLatency ?? undefined,
+              });
             }
           });
         }
@@ -349,7 +247,7 @@ export class OperationMetricsCollector {
    * @param {object} metadata The received metadata.
    */
   onMetadataReceived(metadata: {
-    internalRepr: Map<string, Buffer>;
+    internalRepr: Map<string, string[]>;
     options: {};
   }) {
     const mappedEntries = new Map(
@@ -358,18 +256,18 @@ export class OperationMetricsCollector {
         value.toString(),
       ])
     );
-    const durationValues = mappedEntries.get('server-timing')?.split('dur=');
-    if (durationValues && durationValues[1]) {
+    const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
+    const SERVER_TIMING_KEY = 'server-timing';
+    const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
+    const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
+    if (matchedDuration && matchedDuration[1]) {
       if (!this.serverTimeRead) {
         this.serverTimeRead = true;
-        const serverTime = parseInt(durationValues[1]);
-        const projectId = this.projectId;
-        if (projectId) {
-          this.serverTime = serverTime;
-        }
+        this.serverTime = isNaN(parseInt(matchedDuration[1]))
+          ? null
+          : parseInt(matchedDuration[1]);
       }
     } else {
-      // TODO: Handle directPath traffic
       this.connectivityErrorCount++;
     }
   }
@@ -378,31 +276,25 @@ export class OperationMetricsCollector {
    * Called when status information is received. Extracts zone and cluster information.
    * @param {object} status The received status information.
    */
-  onStatusReceived(status: {
-    metadata: {internalRepr: Map<string, Buffer>; options: {}};
+  onStatusMetadataReceived(status: {
+    metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
   }) {
-    const mappedEntries = new Map(
-      Array.from(status.metadata.internalRepr.entries(), ([key, value]) => [
-        key,
-        value.toString(),
-      ])
-    );
+    const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
     const mappedValue = status.metadata.internalRepr.get(
-      'x-goog-ext-425905942-bin'
-    ) as Buffer;
-    const result = ResponseParams.decode(
-      mappedValue[0] as unknown as Buffer,
-      2
+      INSTANCE_INFORMATION_KEY
+    ) as Buffer[];
+    const decodedValue = ResponseParams.decode(
+      mappedValue[0],
+      mappedValue[0].length
     );
-    const instanceInformation = mappedEntries
-      .get('x-goog-ext-425905942-bin')
-      ?.replace(new RegExp('\\n', 'g'), '')
-      .split('\r');
-    if (instanceInformation && instanceInformation[0]) {
-      this.zone = instanceInformation[0];
+    if (decodedValue && (decodedValue as unknown as {zoneId: string}).zoneId) {
+      this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
     }
-    if (instanceInformation && instanceInformation[1]) {
-      this.cluster = instanceInformation[1];
+    if (
+      decodedValue &&
+      (decodedValue as unknown as {clusterId: string}).clusterId
+    ) {
+      this.cluster = (decodedValue as unknown as {clusterId: string}).clusterId;
     }
   }
 }
