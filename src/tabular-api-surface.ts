@@ -12,26 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {DefaultDateProvider, OperationMetricsCollector,} from './client-side-metrics/operation-metrics-collector';
 import {promisifyAll} from '@google-cloud/promisify';
-import arrify = require('arrify');
 import {Instance} from './instance';
 import {Mutation} from './mutation';
-import {
-  AbortableDuplex,
-  Bigtable,
-  Entry,
-  MutateOptions,
-  SampleRowKeysCallback,
-  SampleRowsKeysResponse,
-} from './index';
-import {Filter, BoundData, RawFilter} from './filter';
+import {AbortableDuplex, Bigtable, Entry, MutateOptions, SampleRowKeysCallback, SampleRowsKeysResponse,} from './index';
+import {BoundData, Filter, RawFilter} from './filter';
 import {Row} from './row';
-import {
-  ChunkPushData,
-  ChunkPushLastScannedRowData,
-  ChunkTransformer,
-  DataEvent,
-} from './chunktransformer';
+import {ChunkPushData, ChunkPushLastScannedRowData, ChunkTransformer, DataEvent,} from './chunktransformer';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {google} from '../protos/protos';
 import {CallOptions, grpc, ServiceError} from 'google-gax';
@@ -39,6 +27,13 @@ import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {TableUtils} from './utils/table';
+import {IMetricsHandler} from './client-side-metrics/metrics-handler';
+import {MethodName} from '../common/client-side-metrics-attributes';
+import {StreamingState} from './client-side-metrics/client-side-metrics-attributes';
+
+let attemptCounter = 0;
+
+import arrify = require('arrify');
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -210,6 +205,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * region_tag:bigtable_api_table_readstream
    */
   createReadStream(opts?: GetRowsOptions) {
+    attemptCounter++;
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
     let activeRequestStream: AbortableDuplex | null;
@@ -225,11 +221,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     rowKeys = options.keys || [];
 
     /*
-    The following line of code sets the timeout if it was provided while
-    creating the client. This will be used to determine if the client should
-    retry on DEADLINE_EXCEEDED errors. Eventually, this will be handled
-    downstream in google-gax.
-     */
+      The following line of code sets the timeout if it was provided while
+      creating the client. This will be used to determine if the client should
+      retry on DEADLINE_EXCEEDED errors. Eventually, this will be handled
+      downstream in google-gax.
+       */
     const timeout =
       opts?.gaxOptions?.timeout ||
       (this?.bigtable?.options?.BigtableClient?.clientConfig?.interfaces &&
@@ -286,14 +282,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         const row = event;
         if (TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
           /*
-          Sometimes duplicate rows reach this point. To avoid delivering
-          duplicate rows to the user, rows are thrown away if they don't exceed
-          the last row key. We can expect each row to reach this point and rows
-          are delivered in order so if the last row key equals or exceeds the
-          row id then we know data for this row has already reached this point
-          and been delivered to the user. In this case we want to throw the row
-          away and we do not want to deliver this row to the user again.
-           */
+            Sometimes duplicate rows reach this point. To avoid delivering
+            duplicate rows to the user, rows are thrown away if they don't exceed
+            the last row key. We can expect each row to reach this point and rows
+            are delivered in order so if the last row key equals or exceeds the
+            row id then we know data for this row has already reached this point
+            and been delivered to the user. In this case we want to throw the row
+            away and we do not want to deliver this row to the user again.
+             */
           callback();
           return;
         }
@@ -332,14 +328,25 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
-
+    // this.bigtable.getProjectId_((err, projectId) => {
+    const metricsCollector = new OperationMetricsCollector(
+      this,
+      this.bigtable.options.metricsHandlers as IMetricsHandler[],
+      MethodName.READ_ROWS,
+      StreamingState.STREAMING
+    );
+    metricsCollector.onOperationStart();
     const makeNewRequest = () => {
+      metricsCollector.onAttemptStart();
+
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
       retryTimer = null;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
+      chunkTransformer = new ChunkTransformer({
+        decode: options.decode,
+      } as any);
 
       // If the viewName is provided then request will be made for an
       // authorized view. Otherwise, the request is made for a table.
@@ -507,8 +514,26 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return false;
       };
 
+      requestStream
+        .on(
+          'metadata',
+          (metadata: {internalRepr: Map<string, Buffer>; options: {}}) => {
+            console.log(`event metadata: ${this.bigtable.projectId}`);
+            metricsCollector.onMetadataReceived(metadata);
+          }
+        )
+        .on(
+          'status',
+          (status: {
+            metadata: {internalRepr: Map<string, Buffer>; options: {}};
+          }) => {
+            console.log(`event status: ${this.bigtable.projectId}`);
+            metricsCollector.onStatusReceived(status);
+          }
+        );
       rowStream
         .on('error', (error: ServiceError) => {
+          console.log(`event error: ${this.bigtable.projectId}`);
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
@@ -532,6 +557,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               numConsecutiveErrors,
               backOffSettings
             );
+            metricsCollector.onAttemptComplete({
+              attemptStatus: error.code,
+              streamingOperation: true,
+            });
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
             if (
@@ -547,21 +576,41 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               //
               error.code = grpc.status.CANCELLED;
             }
+            metricsCollector.onAttemptComplete({
+              attemptStatus: error.code,
+              streamingOperation: true,
+            });
+            metricsCollector.onOperationComplete({
+              finalOperationStatus: error.code,
+              streamingOperation: true,
+            });
             userStream.emit('error', error);
           }
         })
         .on('data', _ => {
+          console.log(`event data: ${this.bigtable.projectId}`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
+          metricsCollector.onResponse();
         })
         .on('end', () => {
+          console.log(`event end: ${this.bigtable.projectId}`);
+          numRequestsMade++;
           activeRequestStream = null;
+          metricsCollector.onAttemptComplete({
+            attemptStatus: 0, // Grpc OK status
+            streamingOperation: true,
+          });
+          metricsCollector.onOperationComplete({
+            finalOperationStatus: 0, // Grpc OK status
+            streamingOperation: true,
+          });
         });
       rowStreamPipe(rowStream, userStream);
     };
-
     makeNewRequest();
+    // });
     return userStream;
   }
 
