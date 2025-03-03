@@ -36,10 +36,11 @@ import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
 import {IMetricsHandler} from './client-side-metrics/metrics-handler';
-import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
+
+const crypto = require('crypto');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const PKG = require('../../package.json');
@@ -421,6 +422,7 @@ export class Bigtable {
   appProfileId?: string;
   projectName: string;
   shouldReplaceProjectIdToken: boolean;
+  clientUid = crypto.randomUUID();
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;

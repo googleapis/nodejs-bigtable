@@ -12,14 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {DefaultDateProvider, OperationMetricsCollector,} from './client-side-metrics/operation-metrics-collector';
+import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
 import {promisifyAll} from '@google-cloud/promisify';
 import {Instance} from './instance';
 import {Mutation} from './mutation';
-import {AbortableDuplex, Bigtable, Entry, MutateOptions, SampleRowKeysCallback, SampleRowsKeysResponse,} from './index';
+import {
+  AbortableDuplex,
+  Bigtable,
+  Entry,
+  MutateOptions,
+  SampleRowKeysCallback,
+  SampleRowsKeysResponse,
+} from './index';
 import {BoundData, Filter, RawFilter} from './filter';
 import {Row} from './row';
-import {ChunkPushData, ChunkPushLastScannedRowData, ChunkTransformer, DataEvent,} from './chunktransformer';
+import {
+  ChunkPushData,
+  ChunkPushLastScannedRowData,
+  ChunkTransformer,
+  DataEvent,
+} from './chunktransformer';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {google} from '../protos/protos';
 import {CallOptions, grpc, ServiceError} from 'google-gax';
@@ -28,12 +40,16 @@ import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {TableUtils} from './utils/table';
 import {IMetricsHandler} from './client-side-metrics/metrics-handler';
-import {MethodName} from '../common/client-side-metrics-attributes';
-import {StreamingState} from './client-side-metrics/client-side-metrics-attributes';
+import {
+  MethodName,
+  StreamingState,
+} from './client-side-metrics/client-side-metrics-attributes';
 
 let attemptCounter = 0;
 
 import arrify = require('arrify');
+import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
+import {CloudMonitoringExporter} from './client-side-metrics/exporter';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -331,7 +347,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     // this.bigtable.getProjectId_((err, projectId) => {
     const metricsCollector = new OperationMetricsCollector(
       this,
-      this.bigtable.options.metricsHandlers as IMetricsHandler[],
+      [new GCPMetricsHandler(new CloudMonitoringExporter())],
       MethodName.READ_ROWS,
       StreamingState.STREAMING
     );
@@ -517,7 +533,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       requestStream
         .on(
           'metadata',
-          (metadata: {internalRepr: Map<string, Buffer>; options: {}}) => {
+          (metadata: {internalRepr: Map<string, string[]>; options: {}}) => {
             console.log(`event metadata: ${this.bigtable.projectId}`);
             metricsCollector.onMetadataReceived(metadata);
           }
@@ -525,10 +541,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on(
           'status',
           (status: {
-            metadata: {internalRepr: Map<string, Buffer>; options: {}};
+            metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
           }) => {
             console.log(`event status: ${this.bigtable.projectId}`);
-            metricsCollector.onStatusReceived(status);
+            metricsCollector.onStatusMetadataReceived(status);
           }
         );
       rowStream
@@ -557,10 +573,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               numConsecutiveErrors,
               backOffSettings
             );
-            metricsCollector.onAttemptComplete({
-              attemptStatus: error.code,
-              streamingOperation: true,
-            });
+            metricsCollector.onAttemptComplete(
+              this.bigtable.projectId,
+              error.code
+            );
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
             if (
@@ -576,14 +592,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               //
               error.code = grpc.status.CANCELLED;
             }
-            metricsCollector.onAttemptComplete({
-              attemptStatus: error.code,
-              streamingOperation: true,
-            });
-            metricsCollector.onOperationComplete({
-              finalOperationStatus: error.code,
-              streamingOperation: true,
-            });
+            metricsCollector.onAttemptComplete(
+              this.bigtable.projectId,
+              error.code
+            );
+            metricsCollector.onOperationComplete(
+              this.bigtable.projectId,
+              error.code
+            );
             userStream.emit('error', error);
           }
         })
@@ -592,20 +608,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
-          metricsCollector.onResponse();
+          metricsCollector.onResponse(this.bigtable.projectId);
         })
         .on('end', () => {
           console.log(`event end: ${this.bigtable.projectId}`);
           numRequestsMade++;
           activeRequestStream = null;
-          metricsCollector.onAttemptComplete({
-            attemptStatus: 0, // Grpc OK status
-            streamingOperation: true,
-          });
-          metricsCollector.onOperationComplete({
-            finalOperationStatus: 0, // Grpc OK status
-            streamingOperation: true,
-          });
+          metricsCollector.onAttemptComplete(
+            this.bigtable.projectId,
+            grpc.status.OK
+          );
+          metricsCollector.onOperationComplete(
+            this.bigtable.projectId,
+            grpc.status.OK
+          );
         });
       rowStreamPipe(rowStream, userStream);
     };
