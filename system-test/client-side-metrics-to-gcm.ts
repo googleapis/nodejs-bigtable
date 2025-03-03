@@ -12,17 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// TODO: Must be put in root folder or will not run
+
 import {describe, it, before, after} from 'mocha';
 import * as fs from 'node:fs';
-import {Bigtable} from '../../src/index';
+import {Bigtable} from '../src';
 import {
   ITabularApiSurface,
   OperationMetricsCollector,
-} from '../../src/client-side-metrics/operation-metrics-collector';
-import {IMetricsHandler} from '../../src/client-side-metrics/metrics-handler';
+} from '../src/client-side-metrics/operation-metrics-collector';
+import {IMetricsHandler} from '../src/client-side-metrics/metrics-handler';
 import * as proxyquire from 'proxyquire';
-import {TabularApiSurface} from '../../src/tabular-api-surface';
-import {google} from '../../protos/protos';
+import {TabularApiSurface} from '../src/tabular-api-surface';
+import {google} from '../protos/protos';
 
 class Logger {
   private messages = '';
