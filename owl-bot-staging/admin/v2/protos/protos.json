@@ -377,7 +377,7 @@
                           "responseType": "google.protobuf.Empty",
                           "options": {
                             "(google.api.http).delete": "/v2/{name=projects/*/instances/*/appProfiles/*}",
-                            "(google.api.method_signature)": "name"
+                            "(google.api.method_signature)": "name,ignore_warnings"
                           },
                           "parsedOptions": [
                             {
@@ -387,6 +387,9 @@
                             },
                             {
                               "(google.api.method_signature)": "name"
+                            },
+                            {
+                              "(google.api.method_signature)": "name,ignore_warnings"
                             }
                           ]
                         },
@@ -396,13 +399,25 @@
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*}:getIamPolicy",
                             "(google.api.http).body": "*",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/logicalViews/*}:getIamPolicy",
+                            "(google.api.http).additional_bindings.body": "*",
                             "(google.api.method_signature)": "resource"
                           },
                           "parsedOptions": [
                             {
                               "(google.api.http)": {
                                 "post": "/v2/{resource=projects/*/instances/*}:getIamPolicy",
-                                "body": "*"
+                                "body": "*",
+                                "additional_bindings": [
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/materializedViews/*}:getIamPolicy",
+                                    "body": "*"
+                                  },
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/logicalViews/*}:getIamPolicy",
+                                    "body": "*"
+                                  }
+                                ]
                               }
                             },
                             {
@@ -416,13 +431,25 @@
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*}:setIamPolicy",
                             "(google.api.http).body": "*",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/logicalViews/*}:setIamPolicy",
+                            "(google.api.http).additional_bindings.body": "*",
                             "(google.api.method_signature)": "resource,policy"
                           },
                           "parsedOptions": [
                             {
                               "(google.api.http)": {
                                 "post": "/v2/{resource=projects/*/instances/*}:setIamPolicy",
-                                "body": "*"
+                                "body": "*",
+                                "additional_bindings": [
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/materializedViews/*}:setIamPolicy",
+                                    "body": "*"
+                                  },
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/logicalViews/*}:setIamPolicy",
+                                    "body": "*"
+                                  }
+                                ]
                               }
                             },
                             {
@@ -436,13 +463,25 @@
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*}:testIamPermissions",
                             "(google.api.http).body": "*",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/logicalViews/*}:testIamPermissions",
+                            "(google.api.http).additional_bindings.body": "*",
                             "(google.api.method_signature)": "resource,permissions"
                           },
                           "parsedOptions": [
                             {
                               "(google.api.http)": {
                                 "post": "/v2/{resource=projects/*/instances/*}:testIamPermissions",
-                                "body": "*"
+                                "body": "*",
+                                "additional_bindings": [
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/materializedViews/*}:testIamPermissions",
+                                    "body": "*"
+                                  },
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/logicalViews/*}:testIamPermissions",
+                                    "body": "*"
+                                  }
+                                ]
                               }
                             },
                             {
@@ -961,15 +1000,140 @@
                         }
                       }
                     },
+                    "CreateLogicalViewRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
+                          }
+                        },
+                        "logicalViewId": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "logicalView": {
+                          "type": "LogicalView",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "CreateLogicalViewMetadata": {
+                      "fields": {
+                        "originalRequest": {
+                          "type": "CreateLogicalViewRequest",
+                          "id": 1
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "UpdateLogicalViewRequest": {
+                      "fields": {
+                        "logicalView": {
+                          "type": "LogicalView",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "updateMask": {
+                          "type": "google.protobuf.FieldMask",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        }
+                      }
+                    },
+                    "UpdateLogicalViewMetadata": {
+                      "fields": {
+                        "originalRequest": {
+                          "type": "UpdateLogicalViewRequest",
+                          "id": 1
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "CreateMaterializedViewRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
+                          }
+                        },
+                        "materializedViewId": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "materializedView": {
+                          "type": "MaterializedView",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "CreateMaterializedViewMetadata": {
+                      "fields": {
+                        "originalRequest": {
+                          "type": "CreateMaterializedViewRequest",
+                          "id": 1
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
                     "Instance": {
                       "options": {
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/Instance",
-                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}"
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}",
+                        "(google.api.resource).plural": "instances",
+                        "(google.api.resource).singular": "instance"
                       },
                       "oneofs": {
                         "_satisfiesPzs": {
                           "oneof": [
                             "satisfiesPzs"
+                          ]
+                        },
+                        "_satisfiesPzi": {
+                          "oneof": [
+                            "satisfiesPzi"
                           ]
                         }
                       },
@@ -987,7 +1151,10 @@
                         },
                         "state": {
                           "type": "State",
-                          "id": 3
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         },
                         "type": {
                           "type": "Type",
@@ -1008,6 +1175,14 @@
                         "satisfiesPzs": {
                           "type": "bool",
                           "id": 8,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY",
+                            "proto3_optional": true
+                          }
+                        },
+                        "satisfiesPzi": {
+                          "type": "bool",
+                          "id": 11,
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY",
                             "proto3_optional": true
@@ -1064,7 +1239,9 @@
                     "Cluster": {
                       "options": {
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/Cluster",
-                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}"
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}",
+                        "(google.api.resource).plural": "clusters",
+                        "(google.api.resource).singular": "cluster"
                       },
                       "oneofs": {
                         "config": {
@@ -1182,7 +1359,9 @@
                     "AppProfile": {
                       "options": {
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/AppProfile",
-                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/appProfiles/{app_profile}"
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/appProfiles/{app_profile}",
+                        "(google.api.resource).plural": "appProfiles",
+                        "(google.api.resource).singular": "appProfile"
                       },
                       "oneofs": {
                         "routingPolicy": {
@@ -1321,7 +1500,9 @@
                     "HotTablet": {
                       "options": {
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/HotTablet",
-                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}/hotTablets/{hot_tablet}"
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}/hotTablets/{hot_tablet}",
+                        "(google.api.resource).plural": "hotTablets",
+                        "(google.api.resource).singular": "hotTablet"
                       },
                       "fields": {
                         "name": {
@@ -1363,6 +1544,72 @@
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
+                        }
+                      }
+                    },
+                    "LogicalView": {
+                      "options": {
+                        "(google.api.resource).type": "bigtableadmin.googleapis.com/LogicalView",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/logicalViews/{logical_view}",
+                        "(google.api.resource).plural": "logicalViews",
+                        "(google.api.resource).singular": "logicalView"
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "IDENTIFIER"
+                          }
+                        },
+                        "query": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "etag": {
+                          "type": "string",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        }
+                      }
+                    },
+                    "MaterializedView": {
+                      "options": {
+                        "(google.api.resource).type": "bigtableadmin.googleapis.com/MaterializedView",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/materializedViews/{materialized_view}",
+                        "(google.api.resource).plural": "materializedViews",
+                        "(google.api.resource).singular": "materializedView"
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "IDENTIFIER"
+                          }
+                        },
+                        "query": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "IMMUTABLE"
+                          }
+                        },
+                        "etag": {
+                          "type": "string",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        },
+                        "deletionProtection": {
+                          "type": "bool",
+                          "id": 6
                         }
                       }
                     },

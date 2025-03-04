@@ -45,8 +45,9 @@ function main(location, state, nodeScalingFactor, defaultStorageType, encryption
    */
   // const state = {}
   /**
-   *  The number of nodes allocated to this cluster. More nodes enable higher
-   *  throughput and more consistent performance.
+   *  The number of nodes in the cluster. If no value is set,
+   *  Cloud Bigtable automatically allocates nodes based on your data footprint
+   *  and optimized for 50% storage utilization.
    */
   // const serveNodes = 1234
   /**

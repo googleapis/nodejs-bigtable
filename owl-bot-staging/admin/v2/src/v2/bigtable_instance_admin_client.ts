@@ -195,6 +195,12 @@ export class BigtableInstanceAdminClient {
       instancePathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}'
       ),
+      logicalViewPathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}/logicalViews/{logical_view}'
+      ),
+      materializedViewPathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}/materializedViews/{materialized_view}'
+      ),
       projectPathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}'
       ),
@@ -593,8 +599,7 @@ export class BigtableInstanceAdminClient {
  *   Can be changed at any time, but should be kept globally unique
  *   to avoid confusion.
  * @param {google.bigtable.admin.v2.Instance.State} request.state
- *   (`OutputOnly`)
- *   The current state of the instance.
+ *   Output only. The current state of the instance.
  * @param {google.bigtable.admin.v2.Instance.Type} request.type
  *   The type of the instance. Defaults to `PRODUCTION`.
  * @param {number[]} request.labels
@@ -610,10 +615,12 @@ export class BigtableInstanceAdminClient {
  *   * No more than 64 labels can be associated with a given resource.
  *   * Keys and values must both be under 128 bytes.
  * @param {google.protobuf.Timestamp} request.createTime
- *   Output only. A server-assigned timestamp representing when this Instance
- *   was created. For instances created before this field was added (August
- *   2021), this value is `seconds: 0, nanos: 1`.
+ *   Output only. A commit timestamp representing when this Instance was
+ *   created. For instances created before this field was added (August 2021),
+ *   this value is `seconds: 0, nanos: 1`.
  * @param {boolean} request.satisfiesPzs
+ *   Output only. Reserved for future use.
+ * @param {boolean} request.satisfiesPzi
  *   Output only. Reserved for future use.
  * @param {object} [options]
  *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
@@ -1453,7 +1460,6 @@ export class BigtableInstanceAdminClient {
  *   cluster ID, e.g., just `mycluster` rather than
  *   `projects/myproject/instances/myinstance/clusters/mycluster`.
  *   Fields marked `OutputOnly` must be left blank.
- *   Currently, at most four clusters can be specified.
  * @param {object} [options]
  *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
  * @returns {Promise} - The promise which resolves to an array.
@@ -1752,8 +1758,9 @@ export class BigtableInstanceAdminClient {
  * @param {google.bigtable.admin.v2.Cluster.State} request.state
  *   Output only. The current state of the cluster.
  * @param {number} request.serveNodes
- *   The number of nodes allocated to this cluster. More nodes enable higher
- *   throughput and more consistent performance.
+ *   The number of nodes in the cluster. If no value is set,
+ *   Cloud Bigtable automatically allocates nodes based on your data footprint
+ *   and optimized for 50% storage utilization.
  * @param {google.bigtable.admin.v2.Cluster.NodeScalingFactor} request.nodeScalingFactor
  *   Immutable. The node scaling factor of this cluster.
  * @param {google.bigtable.admin.v2.Cluster.ClusterConfig} request.clusterConfig
@@ -2798,6 +2805,104 @@ export class BigtableInstanceAdminClient {
    */
   matchInstanceFromInstanceName(instanceName: string) {
     return this.pathTemplates.instancePathTemplate.match(instanceName).instance;
+  }
+
+  /**
+   * Return a fully-qualified logicalView resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @param {string} logical_view
+   * @returns {string} Resource name string.
+   */
+  logicalViewPath(project:string,instance:string,logicalView:string) {
+    return this.pathTemplates.logicalViewPathTemplate.render({
+      project: project,
+      instance: instance,
+      logical_view: logicalView,
+    });
+  }
+
+  /**
+   * Parse the project from LogicalView resource.
+   *
+   * @param {string} logicalViewName
+   *   A fully-qualified path representing LogicalView resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromLogicalViewName(logicalViewName: string) {
+    return this.pathTemplates.logicalViewPathTemplate.match(logicalViewName).project;
+  }
+
+  /**
+   * Parse the instance from LogicalView resource.
+   *
+   * @param {string} logicalViewName
+   *   A fully-qualified path representing LogicalView resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromLogicalViewName(logicalViewName: string) {
+    return this.pathTemplates.logicalViewPathTemplate.match(logicalViewName).instance;
+  }
+
+  /**
+   * Parse the logical_view from LogicalView resource.
+   *
+   * @param {string} logicalViewName
+   *   A fully-qualified path representing LogicalView resource.
+   * @returns {string} A string representing the logical_view.
+   */
+  matchLogicalViewFromLogicalViewName(logicalViewName: string) {
+    return this.pathTemplates.logicalViewPathTemplate.match(logicalViewName).logical_view;
+  }
+
+  /**
+   * Return a fully-qualified materializedView resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @param {string} materialized_view
+   * @returns {string} Resource name string.
+   */
+  materializedViewPath(project:string,instance:string,materializedView:string) {
+    return this.pathTemplates.materializedViewPathTemplate.render({
+      project: project,
+      instance: instance,
+      materialized_view: materializedView,
+    });
+  }
+
+  /**
+   * Parse the project from MaterializedView resource.
+   *
+   * @param {string} materializedViewName
+   *   A fully-qualified path representing MaterializedView resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromMaterializedViewName(materializedViewName: string) {
+    return this.pathTemplates.materializedViewPathTemplate.match(materializedViewName).project;
+  }
+
+  /**
+   * Parse the instance from MaterializedView resource.
+   *
+   * @param {string} materializedViewName
+   *   A fully-qualified path representing MaterializedView resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromMaterializedViewName(materializedViewName: string) {
+    return this.pathTemplates.materializedViewPathTemplate.match(materializedViewName).instance;
+  }
+
+  /**
+   * Parse the materialized_view from MaterializedView resource.
+   *
+   * @param {string} materializedViewName
+   *   A fully-qualified path representing MaterializedView resource.
+   * @returns {string} A string representing the materialized_view.
+   */
+  matchMaterializedViewFromMaterializedViewName(materializedViewName: string) {
+    return this.pathTemplates.materializedViewPathTemplate.match(materializedViewName).materialized_view;
   }
 
   /**

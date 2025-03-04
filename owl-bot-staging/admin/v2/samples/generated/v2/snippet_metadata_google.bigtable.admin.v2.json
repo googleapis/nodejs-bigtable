@@ -22,7 +22,7 @@
       "segments": [
         {
           "start": 25,
-          "end": 77,
+          "end": 76,
           "type": "FULL"
         }
       ],
@@ -158,7 +158,7 @@
       "segments": [
         {
           "start": 25,
-          "end": 94,
+          "end": 99,
           "type": "FULL"
         }
       ],
@@ -193,6 +193,10 @@
           },
           {
             "name": "satisfies_pzs",
+            "type": "TYPE_BOOL"
+          },
+          {
+            "name": "satisfies_pzi",
             "type": "TYPE_BOOL"
           }
         ],
@@ -438,7 +442,7 @@
       "segments": [
         {
           "start": 25,
-          "end": 92,
+          "end": 93,
           "type": "FULL"
         }
       ],

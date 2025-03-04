@@ -49,7 +49,6 @@ function main(parent, instanceId, instance, clusters) {
    *  cluster ID, e.g., just `mycluster` rather than
    *  `projects/myproject/instances/myinstance/clusters/mycluster`.
    *  Fields marked `OutputOnly` must be left blank.
-   *  Currently, at most four clusters can be specified.
    */
   // const clusters = [1,2,3,4]
 

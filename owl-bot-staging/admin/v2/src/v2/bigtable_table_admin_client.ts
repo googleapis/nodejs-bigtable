@@ -197,6 +197,12 @@ export class BigtableTableAdminClient {
       instancePathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}'
       ),
+      logicalViewPathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}/logicalViews/{logical_view}'
+      ),
+      materializedViewPathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}/materializedViews/{materialized_view}'
+      ),
       projectPathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}'
       ),
@@ -4030,6 +4036,104 @@ export class BigtableTableAdminClient {
    */
   matchInstanceFromInstanceName(instanceName: string) {
     return this.pathTemplates.instancePathTemplate.match(instanceName).instance;
+  }
+
+  /**
+   * Return a fully-qualified logicalView resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @param {string} logical_view
+   * @returns {string} Resource name string.
+   */
+  logicalViewPath(project:string,instance:string,logicalView:string) {
+    return this.pathTemplates.logicalViewPathTemplate.render({
+      project: project,
+      instance: instance,
+      logical_view: logicalView,
+    });
+  }
+
+  /**
+   * Parse the project from LogicalView resource.
+   *
+   * @param {string} logicalViewName
+   *   A fully-qualified path representing LogicalView resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromLogicalViewName(logicalViewName: string) {
+    return this.pathTemplates.logicalViewPathTemplate.match(logicalViewName).project;
+  }
+
+  /**
+   * Parse the instance from LogicalView resource.
+   *
+   * @param {string} logicalViewName
+   *   A fully-qualified path representing LogicalView resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromLogicalViewName(logicalViewName: string) {
+    return this.pathTemplates.logicalViewPathTemplate.match(logicalViewName).instance;
+  }
+
+  /**
+   * Parse the logical_view from LogicalView resource.
+   *
+   * @param {string} logicalViewName
+   *   A fully-qualified path representing LogicalView resource.
+   * @returns {string} A string representing the logical_view.
+   */
+  matchLogicalViewFromLogicalViewName(logicalViewName: string) {
+    return this.pathTemplates.logicalViewPathTemplate.match(logicalViewName).logical_view;
+  }
+
+  /**
+   * Return a fully-qualified materializedView resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @param {string} materialized_view
+   * @returns {string} Resource name string.
+   */
+  materializedViewPath(project:string,instance:string,materializedView:string) {
+    return this.pathTemplates.materializedViewPathTemplate.render({
+      project: project,
+      instance: instance,
+      materialized_view: materializedView,
+    });
+  }
+
+  /**
+   * Parse the project from MaterializedView resource.
+   *
+   * @param {string} materializedViewName
+   *   A fully-qualified path representing MaterializedView resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromMaterializedViewName(materializedViewName: string) {
+    return this.pathTemplates.materializedViewPathTemplate.match(materializedViewName).project;
+  }
+
+  /**
+   * Parse the instance from MaterializedView resource.
+   *
+   * @param {string} materializedViewName
+   *   A fully-qualified path representing MaterializedView resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromMaterializedViewName(materializedViewName: string) {
+    return this.pathTemplates.materializedViewPathTemplate.match(materializedViewName).instance;
+  }
+
+  /**
+   * Parse the materialized_view from MaterializedView resource.
+   *
+   * @param {string} materializedViewName
+   *   A fully-qualified path representing MaterializedView resource.
+   * @returns {string} A string representing the materialized_view.
+   */
+  matchMaterializedViewFromMaterializedViewName(materializedViewName: string) {
+    return this.pathTemplates.materializedViewPathTemplate.match(materializedViewName).materialized_view;
   }
 
   /**
