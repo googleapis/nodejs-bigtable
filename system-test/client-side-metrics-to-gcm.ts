@@ -41,6 +41,7 @@ describe.only('Bigtable/MetricsCollector', () => {
     exported variable ensures we only test the value export receives one time.
     */
     let exported = false;
+
     class TestExporter extends CloudMonitoringExporter {
       export(
         metrics: ResourceMetrics,
@@ -69,6 +70,7 @@ describe.only('Bigtable/MetricsCollector', () => {
         super(new TestExporter());
       }
     }
+
     const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
       './client-side-metrics/gcp-metrics-handler': {
         GCPMetricsHandler: TestGCPMetricsHandler,
@@ -132,7 +134,7 @@ describe.only('Bigtable/MetricsCollector', () => {
 
   it('should read rows after inserting data', done => {
     (async () => {
-      mockBigtable(done);
+      await mockBigtable(done);
       const instance = bigtable.instance(instanceId);
       const table = instance.table(tableId);
       await table.getRows();
