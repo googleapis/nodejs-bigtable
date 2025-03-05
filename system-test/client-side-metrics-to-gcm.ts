@@ -15,107 +15,100 @@
 // TODO: Must be put in root folder or will not run
 
 import {describe, it, before, after} from 'mocha';
-import * as fs from 'node:fs';
 import {Bigtable} from '../src';
-import {
-  ITabularApiSurface,
-  OperationMetricsCollector,
-} from '../src/client-side-metrics/operation-metrics-collector';
-import {IMetricsHandler} from '../src/client-side-metrics/metrics-handler';
 import * as proxyquire from 'proxyquire';
 import {TabularApiSurface} from '../src/tabular-api-surface';
-import {google} from '../protos/protos';
-
-class Logger {
-  private messages = '';
-
-  log(message: string) {
-    console.log(message);
-    this.messages = this.messages + message + '\n';
-  }
-
-  getMessages() {
-    return this.messages;
-  }
-}
-
-const logger = new Logger();
-
-/*
-class TestMetricsCollector extends OperationMetricsCollector {
-  constructor(
-      tabularApiSurface: ITabularApiSurface,
-      metricsHandlers: IMetricsHandler[],
-      methodName: MethodName,
-      projectId?: string
-  ) {
-    super(
-        tabularApiSurface,
-        metricsHandlers,
-        methodName,
-        projectId,
-        new TestDateProvider(logger)
-    );
-  }
-}
- */
+import {PushMetricExporter, ResourceMetrics} from '@opentelemetry/sdk-metrics';
+import {
+  CloudMonitoringExporter,
+  ExportResult,
+} from '../src/client-side-metrics/exporter';
+import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
+import * as mocha from 'mocha';
 
 describe.only('Bigtable/MetricsCollector', () => {
-  /*
-  const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
-    './client-side-metrics/operation-metrics-collector': {
-      MetricsCollector: TestMetricsCollector,
-    },
-  }).TabularApiSurface;
-  const FakeTable: TabularApiSurface = proxyquire('../src/table.js', {
-    './tabular-api-surface.js': {Table: FakeTabularApiSurface},
-  }).Table;
-  const FakeInstance = proxyquire('../src/instance.js', {
-    './table.js': {Table: FakeTable},
-  }).Instance;
-  const FakeBigtable = proxyquire('../src/index.js', {
-    './instance.js': {Table: FakeInstance},
-  }).Bigtable;
-   */
-  const bigtable = new Bigtable();
+  async function mockBigtable(done: mocha.Done) {
+    /*
+    We need to create a timeout here because if we don't then mocha shuts down
+    the test as it is sleeping before the GCPMetricsHandler has a chance to
+    export the data.
+    */
+    const timeout = setTimeout(() => {}, 120000);
+    class TestExporter extends CloudMonitoringExporter {
+      export(
+        metrics: ResourceMetrics,
+        resultCallback: (result: ExportResult) => void
+      ): void {
+        super.export(metrics, (result: ExportResult) => {
+          if (result.code === 0) {
+            clearTimeout(timeout);
+            done();
+          } else {
+            done(result); // Report the error to the test runner.
+          }
+        });
+      }
+    }
+
+    class TestGCPMetricsHandler extends GCPMetricsHandler {
+      constructor(exporter: PushMetricExporter) {
+        super(new TestExporter());
+      }
+    }
+    const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
+      './client-side-metrics/gcp-metrics-handler': {
+        GCPMetricsHandler: TestGCPMetricsHandler,
+      },
+    }).TabularApiSurface;
+    const FakeTable: TabularApiSurface = proxyquire('../src/table.js', {
+      './tabular-api-surface.js': {TabularApiSurface: FakeTabularApiSurface},
+    }).Table;
+    const FakeInstance = proxyquire('../src/instance.js', {
+      './table.js': {Table: FakeTable},
+    }).Instance;
+    const FakeBigtable = proxyquire('../src/index.js', {
+      './instance.js': {Instance: FakeInstance},
+    }).Bigtable;
+    bigtable = new FakeBigtable();
+
+    const instance = bigtable.instance(instanceId);
+    const [instanceInfo] = await instance.exists();
+    if (!instanceInfo) {
+      const [, operation] = await instance.create({
+        clusters: {
+          id: 'fake-cluster3',
+          location: 'us-west1-c',
+          nodes: 1,
+        },
+      });
+      await operation.promise();
+    }
+
+    const table = instance.table(tableId);
+    const [tableExists] = await table.exists();
+    if (!tableExists) {
+      await table.create({families: [columnFamilyId]}); // Create column family
+    } else {
+      // Check if column family exists and create it if not.
+      const [families] = await table.getFamilies();
+
+      if (
+        !families.some((family: {id: string}) => family.id === columnFamilyId)
+      ) {
+        await table.createFamily(columnFamilyId);
+      }
+    }
+  }
+
   const instanceId = 'emulator-test-instance';
   const tableId = 'my-table';
   const columnFamilyId = 'cf1';
+  let bigtable: Bigtable;
 
   before(async () => {
-    // TODO: Change `any`
-    const instance = bigtable.instance(instanceId);
-    try {
-      const [instanceInfo] = await instance.exists();
-      if (!instanceInfo) {
-        const [, operation] = await instance.create({
-          clusters: {
-            id: 'fake-cluster3',
-            location: 'us-west1-c',
-            nodes: 1,
-          },
-        });
-        await operation.promise();
-      }
-
-      const table = instance.table(tableId);
-      const [tableExists] = await table.exists();
-      if (!tableExists) {
-        await table.create({families: [columnFamilyId]}); // Create column family
-      } else {
-        // Check if column family exists and create it if not.
-        const [families] = await table.getFamilies();
-
-        if (
-          !families.some((family: {id: string}) => family.id === columnFamilyId)
-        ) {
-          await table.createFamily(columnFamilyId);
-        }
-      }
-    } catch (error) {
-      console.error('Error during setup:', error);
-      // Consider re-throwing error, to actually stop tests.
-    }
+    // This line is added just to make sure the bigtable variable is assigned.
+    // It is needed to solve a compile time error in the after hook.
+    bigtable = new Bigtable();
   });
 
   after(async () => {
@@ -123,23 +116,12 @@ describe.only('Bigtable/MetricsCollector', () => {
     await instance.delete({});
   });
 
-  it('should read rows after inserting data', async () => {
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-    for (let i = 0; i < 100; i++) {
+  it('should read rows after inserting data', done => {
+    (async () => {
+      mockBigtable(done);
+      const instance = bigtable.instance(instanceId);
+      const table = instance.table(tableId);
       await table.getRows();
-    }
-    const myString = logger.getMessages(); // 'This is the string I want to write to the file.';
-    const filename = 'metricsCollected.txt';
-    console.log('waiting');
-    await new Promise(resolve => {
-      setTimeout(async () => {
-        resolve('value');
-      }, 30_000);
-    });
-    console.log('stop waiting');
-
-    // Write the string to the file
-    fs.writeFileSync(filename, myString);
+    })();
   });
 });
