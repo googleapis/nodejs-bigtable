@@ -141,9 +141,8 @@ export class GCPMetricsHandler implements IMetricsHandler {
         readers: [
           // Register the exporter
           new PeriodicExportingMetricReader({
-            // Export metrics every 10 seconds. 5 seconds is the smallest sample period allowed by
-            // Cloud Monitoring.
-            exportIntervalMillis: 1_000,
+            // Export metrics every 60 seconds.
+            exportIntervalMillis: 60_000,
             exporter: this.exporter,
           }),
         ],
