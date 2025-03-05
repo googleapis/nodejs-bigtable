@@ -15,10 +15,11 @@
 // TODO: Must be put in root folder or will not run
 
 import {describe, it, before, after} from 'mocha';
+import * as assert from 'assert';
 import {Bigtable} from '../src';
 import * as proxyquire from 'proxyquire';
 import {TabularApiSurface} from '../src/tabular-api-surface';
-import {PushMetricExporter, ResourceMetrics} from '@opentelemetry/sdk-metrics';
+import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import {
   CloudMonitoringExporter,
   ExportResult,
@@ -34,24 +35,37 @@ describe.only('Bigtable/MetricsCollector', () => {
     export the data.
     */
     const timeout = setTimeout(() => {}, 120000);
+    /*
+    The exporter is called every x seconds, but we only want to test the value
+    it receives once. Since done cannot be called multiple times in mocha,
+    exported variable ensures we only test the value export receives one time.
+    */
+    let exported = false;
     class TestExporter extends CloudMonitoringExporter {
       export(
         metrics: ResourceMetrics,
         resultCallback: (result: ExportResult) => void
       ): void {
         super.export(metrics, (result: ExportResult) => {
-          if (result.code === 0) {
-            clearTimeout(timeout);
-            done();
-          } else {
-            done(result); // Report the error to the test runner.
+          if (!exported) {
+            exported = true;
+            try {
+              clearTimeout(timeout);
+              assert.strictEqual(result.code, 0);
+              done();
+              resultCallback({code: 0});
+            } catch (error) {
+              // Code isn't 0 so report the original error.
+              done(result);
+              done(error);
+            }
           }
         });
       }
     }
 
     class TestGCPMetricsHandler extends GCPMetricsHandler {
-      constructor(exporter: PushMetricExporter) {
+      constructor() {
         super(new TestExporter());
       }
     }
