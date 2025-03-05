@@ -261,16 +261,18 @@ export class OperationMetricsCollector {
     const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
     const SERVER_TIMING_KEY = 'server-timing';
     const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
-    const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
-    if (matchedDuration && matchedDuration[1]) {
-      if (!this.serverTimeRead) {
-        this.serverTimeRead = true;
-        this.serverTime = isNaN(parseInt(matchedDuration[1]))
-          ? null
-          : parseInt(matchedDuration[1]);
+    if (durationValues) {
+      const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
+      if (matchedDuration && matchedDuration[1]) {
+        if (!this.serverTimeRead) {
+          this.serverTimeRead = true;
+          this.serverTime = isNaN(parseInt(matchedDuration[1]))
+            ? null
+            : parseInt(matchedDuration[1]);
+        }
+      } else {
+        this.connectivityErrorCount++;
       }
-    } else {
-      this.connectivityErrorCount++;
     }
   }
 

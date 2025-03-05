@@ -39,7 +39,6 @@ import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {TableUtils} from './utils/table';
-import {IMetricsHandler} from './client-side-metrics/metrics-handler';
 import {
   MethodName,
   StreamingState,
