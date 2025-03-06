@@ -128,7 +128,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
         views: viewList,
         resource: new Resources.Resource({
           'service.name': 'Cloud Bigtable Table',
-          'cloud.resource_manager.project_id': data.projectId,
           'monitored_resource.type': 'bigtable_client_raw',
           'monitored_resource.project_id': data.projectId,
           'monitored_resource.instance_id': data.instanceId,
@@ -139,9 +138,8 @@ export class GCPMetricsHandler implements IMetricsHandler {
         readers: [
           // Register the exporter
           new PeriodicExportingMetricReader({
-            // Export metrics every 10 seconds. 5 seconds is the smallest sample period allowed by
-            // Cloud Monitoring.
-            exportIntervalMillis: 1_000,
+            // Export metrics every 60 seconds.
+            exportIntervalMillis: 60_000,
             exporter: this.exporter,
           }),
         ],

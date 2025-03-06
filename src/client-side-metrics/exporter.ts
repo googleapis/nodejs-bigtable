@@ -167,9 +167,6 @@ type CounterMetric = Metric<number>;
  */
 export interface ExportInput {
   resource: {
-    _attributes: {
-      'cloud.resource_manager.project_id': string;
-    };
     _syncAttributes: {
       'monitored_resource.type': string;
       'monitored_resource.project_id': string;
@@ -333,7 +330,7 @@ export function metricsToRequest(exportArgs: ExportInput) {
     }
   }
   return {
-    name: `projects/${exportArgs.resource._attributes['cloud.resource_manager.project_id']}`,
+    name: `projects/${exportArgs.resource._syncAttributes['monitored_resource.project_id']}`,
     timeSeries: timeSeriesArray,
   };
 }
