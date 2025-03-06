@@ -104,14 +104,12 @@ interface Metric<Value> {
   };
   aggregationTemporality?: number;
   dataPointType?: number;
-  dataPoints: DataPoint<Value>[];
-}
-
-interface DataPoint<Value> {
-  attributes: OnAttemptAttribute | OnOperationAttribute;
-  startTime: number[];
-  endTime: number[];
-  value: Value;
+  dataPoints: {
+    attributes: OnAttemptAttribute | OnOperationAttribute;
+    startTime: number[];
+    endTime: number[];
+    value: Value;
+  }[];
 }
 
 interface DistributionValue {
@@ -194,6 +192,15 @@ export interface ExportInput {
   }[];
 }
 
+/**
+ * Type guard function to determine if a given value is a counter value (a number).
+ *
+ * This function checks if a value, which could be either a `DistributionValue`
+ * object or a `number`, is specifically a `number`. This is used to differentiate
+ * between counter metrics (which have numeric values) and distribution metrics
+ * (which have more complex, object-based values).
+ *
+ */
 function isCounterValue(value: DistributionValue | number): value is number {
   return typeof value === 'number';
 }
