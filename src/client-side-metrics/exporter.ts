@@ -282,50 +282,47 @@ export function metricsToRequest(exportArgs: ExportInput) {
             seconds: dataPoint.startTime[0],
           },
         };
-        if (isCounterValue(value)) {
-          const timeSeries = {
-            metric,
-            resource,
-            valueType: 'INT64',
-            points: [
-              {
-                interval,
-                value: {
-                  int64Value: dataPoint.value,
-                },
-              },
-            ],
-          };
-          timeSeriesArray.push(timeSeries);
-        } else {
-          // Extract attributes to labels based on their intended target (resource or metric)
-          const timeSeries = {
-            metric,
-            resource,
-            metricKind: 'CUMULATIVE',
-            valueType: 'DISTRIBUTION',
-            points: [
-              {
-                interval,
-                value: {
-                  distributionValue: {
-                    count: String(value.count),
-                    mean: value.count ? value.sum / value.count : 0,
-                    bucketOptions: {
-                      explicitBuckets: {
-                        bounds: value.buckets.boundaries,
-                      },
-                    },
-                    bucketCounts: value.buckets.counts.map(String),
+        const timeSeries = isCounterValue(value)
+          ? {
+              metric,
+              resource,
+              valueType: 'INT64',
+              points: [
+                {
+                  interval,
+                  value: {
+                    int64Value: dataPoint.value,
                   },
                 },
-              },
-            ],
-            unit:
-              (metric as unknown as DistributionMetric).descriptor.unit || 'ms', // Default to 'ms' if no unit is specified
-          };
-          timeSeriesArray.push(timeSeries);
-        }
+              ],
+            }
+          : {
+              metric,
+              resource,
+              metricKind: 'CUMULATIVE',
+              valueType: 'DISTRIBUTION',
+              points: [
+                {
+                  interval,
+                  value: {
+                    distributionValue: {
+                      count: String(value.count),
+                      mean: value.count ? value.sum / value.count : 0,
+                      bucketOptions: {
+                        explicitBuckets: {
+                          bounds: value.buckets.boundaries,
+                        },
+                      },
+                      bucketCounts: value.buckets.counts.map(String),
+                    },
+                  },
+                },
+              ],
+              unit:
+                (metric as unknown as DistributionMetric).descriptor.unit ||
+                'ms', // Default to 'ms' if no unit is specified
+            };
+        timeSeriesArray.push(timeSeries);
       }
     }
   }
