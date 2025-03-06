@@ -129,7 +129,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
         resource: new Resources.Resource({
           'service.name': 'Cloud Bigtable Table',
           'cloud.provider': 'gcp',
-          'cloud.platform': 'gce_instance',
           'cloud.resource_manager.project_id': data.projectId,
           'monitored_resource.type': 'bigtable_client_raw',
           'monitored_resource.project_id': data.projectId,
