@@ -252,9 +252,14 @@ export function metricsToRequest(exportArgs: ExportInput) {
       const metricName = scopeMetric.descriptor.name;
       for (const dataPoint of scopeMetric.dataPoints) {
         const value = dataPoint.value;
-        // Extract attributes to labels based on their intended target (resource or metric)
         const allAttributes = dataPoint.attributes;
         const streaming = allAttributes.streamingOperation;
+        /*
+        metricLabels are built from the open telemetry attributes that are set
+        when a data point is recorded. This means that for one metric there may
+        be multiple time series' with different attributes, but the resource
+        labels will always be the same for a particular export call.
+         */
         const metricLabels = Object.assign(
           {
             app_profile: allAttributes.appProfileId,
