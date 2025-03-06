@@ -252,9 +252,9 @@ export function metricsToRequest(exportArgs: ExportInput) {
     zone: exportArgs.resource._syncAttributes['monitored_resource.zone'],
   };
   for (const scopeMetrics of exportArgs.scopeMetrics) {
-    for (const metric of scopeMetrics.metrics) {
-      const metricName = metric.descriptor.name;
-      for (const dataPoint of metric.dataPoints) {
+    for (const scopeMetric of scopeMetrics.metrics) {
+      const metricName = scopeMetric.descriptor.name;
+      for (const dataPoint of scopeMetric.dataPoints) {
         const value = dataPoint.value;
         // Extract attributes to labels based on their intended target (resource or metric)
         const allAttributes = dataPoint.attributes;
@@ -289,50 +289,45 @@ export function metricsToRequest(exportArgs: ExportInput) {
             seconds: dataPoint.startTime[0],
           },
         };
-        if (isCounterValue(value)) {
-          const timeSeries = {
-            metric,
-            resource,
-            valueType: 'INT64',
-            points: [
-              {
-                interval,
-                value: {
-                  int64Value: dataPoint.value,
-                },
-              },
-            ],
-          };
-          timeSeriesArray.push(timeSeries);
-        } else {
-          // Extract attributes to labels based on their intended target (resource or metric)
-          const timeSeries = {
-            metric,
-            resource,
-            metricKind: 'CUMULATIVE',
-            valueType: 'DISTRIBUTION',
-            points: [
-              {
-                interval,
-                value: {
-                  distributionValue: {
-                    count: String(value.count),
-                    mean: value.count ? value.sum / value.count : 0,
-                    bucketOptions: {
-                      explicitBuckets: {
-                        bounds: value.buckets.boundaries,
-                      },
-                    },
-                    bucketCounts: value.buckets.counts.map(String),
+        const timeSeries = isCounterValue(value)
+          ? {
+              metric,
+              resource,
+              valueType: 'INT64',
+              points: [
+                {
+                  interval,
+                  value: {
+                    int64Value: dataPoint.value,
                   },
                 },
-              },
-            ],
-            unit:
-              (metric as unknown as DistributionMetric).descriptor.unit || 'ms', // Default to 'ms' if no unit is specified
-          };
-          timeSeriesArray.push(timeSeries);
-        }
+              ],
+            }
+          : {
+              metric,
+              resource,
+              metricKind: 'CUMULATIVE',
+              valueType: 'DISTRIBUTION',
+              points: [
+                {
+                  interval,
+                  value: {
+                    distributionValue: {
+                      count: String(value.count),
+                      mean: value.count ? value.sum / value.count : 0,
+                      bucketOptions: {
+                        explicitBuckets: {
+                          bounds: value.buckets.boundaries,
+                        },
+                      },
+                      bucketCounts: value.buckets.counts.map(String),
+                    },
+                  },
+                },
+              ],
+              unit: scopeMetric.descriptor.unit || 'ms', // Default to 'ms' if no unit is specified
+            };
+        timeSeriesArray.push(timeSeries);
       }
     }
   }
