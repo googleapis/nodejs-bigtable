@@ -176,7 +176,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
           }
         ),
         applicationBlockingLatencies: meter.createHistogram(
-          'bigtable.googleapis.com/internal/client/application_blocking_latencies',
+          'bigtable.googleapis.com/internal/client/application_latencies',
           {
             description:
               'The time from when the client receives the response to a request until the application reads the response. This metric is most relevant for ReadRows requests. The start and stop times for this metric depend on the way that you send the read request; see Application blocking latencies timer examples for details.',
@@ -217,7 +217,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
           }
         ),
         clientBlockingLatencies: meter.createHistogram(
-          'bigtable.googleapis.com/internal/client/client_blocking_latencies',
+          'bigtable.googleapis.com/internal/client/throttling_latencies',
           {
             description:
               'Latencies introduced when the client blocks the sending of more requests to the server because of too many pending requests in a bulk operation.',
