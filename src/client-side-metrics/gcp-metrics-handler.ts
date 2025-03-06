@@ -128,7 +128,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
         views: viewList,
         resource: new Resources.Resource({
           'service.name': 'Cloud Bigtable Table',
-          'cloud.provider': 'gcp',
           'cloud.resource_manager.project_id': data.projectId,
           'monitored_resource.type': 'bigtable_client_raw',
           'monitored_resource.project_id': data.projectId,
