@@ -249,48 +249,47 @@ export function metricsToRequest(exportArgs: ExportInput) {
       const metricName = metric.descriptor.name;
       for (const dataPoint of metric.dataPoints) {
         const value = dataPoint.value;
+        // Extract attributes to labels based on their intended target (resource or metric)
+        const allAttributes = dataPoint.attributes;
+        const streaming = allAttributes.streamingOperation;
+        const metricLabels = Object.assign(
+          {
+            app_profile: allAttributes.appProfileId,
+            client_name: allAttributes.clientName,
+            method: allAttributes.methodName,
+            status:
+              (allAttributes as OnAttemptAttribute).attemptStatus?.toString() ??
+              (
+                allAttributes as OnOperationAttribute
+              ).finalOperationStatus?.toString(),
+            client_uid: allAttributes.clientUid,
+          },
+          streaming ? {streaming} : null
+        );
+        const metric = {
+          type: metricName,
+          labels: metricLabels,
+        };
+        const resource = {
+          type: exportArgs.resource._syncAttributes['monitored_resource.type'],
+          labels: resourceLabels,
+        };
+        const interval = {
+          endTime: {
+            seconds: dataPoint.endTime[0],
+          },
+          startTime: {
+            seconds: dataPoint.startTime[0],
+          },
+        };
         if (isCounterValue(value)) {
-          // Extract attributes to labels based on their intended target (resource or metric)
-          const allAttributes = dataPoint.attributes;
-          const streaming = allAttributes.streamingOperation;
-          const metricLabels = Object.assign(
-            {
-              app_profile: allAttributes.appProfileId,
-              client_name: allAttributes.clientName,
-              method: allAttributes.methodName,
-              status:
-                (
-                  allAttributes as OnAttemptAttribute
-                ).attemptStatus?.toString() ??
-                (
-                  allAttributes as OnOperationAttribute
-                ).finalOperationStatus?.toString(),
-              client_uid: allAttributes.clientUid,
-            },
-            streaming ? {streaming} : null
-          );
           const timeSeries = {
-            metric: {
-              type: metricName,
-              labels: metricLabels,
-            },
-            resource: {
-              type: exportArgs.resource._syncAttributes[
-                'monitored_resource.type'
-              ],
-              labels: resourceLabels,
-            },
+            metric,
+            resource,
             valueType: 'INT64',
             points: [
               {
-                interval: {
-                  endTime: {
-                    seconds: dataPoint.endTime[0],
-                  },
-                  startTime: {
-                    seconds: dataPoint.startTime[0],
-                  },
-                },
+                interval,
                 value: {
                   int64Value: dataPoint.value,
                 },
@@ -300,47 +299,14 @@ export function metricsToRequest(exportArgs: ExportInput) {
           timeSeriesArray.push(timeSeries);
         } else {
           // Extract attributes to labels based on their intended target (resource or metric)
-          const allAttributes = dataPoint.attributes;
-          const streaming = allAttributes.streamingOperation;
-          const metricLabels = Object.assign(
-            {
-              app_profile: allAttributes.appProfileId,
-              client_name: allAttributes.clientName,
-              method: allAttributes.methodName,
-              status:
-                (
-                  allAttributes as OnAttemptAttribute
-                ).attemptStatus?.toString() ??
-                (
-                  allAttributes as OnOperationAttribute
-                ).finalOperationStatus?.toString(),
-              client_uid: allAttributes.clientUid,
-            },
-            streaming ? {streaming} : null
-          );
           const timeSeries = {
-            metric: {
-              type: metricName,
-              labels: metricLabels,
-            },
-            resource: {
-              type: exportArgs.resource._syncAttributes[
-                'monitored_resource.type'
-              ],
-              labels: resourceLabels,
-            },
+            metric,
+            resource,
             metricKind: 'CUMULATIVE',
             valueType: 'DISTRIBUTION',
             points: [
               {
-                interval: {
-                  endTime: {
-                    seconds: dataPoint.endTime[0],
-                  },
-                  startTime: {
-                    seconds: dataPoint.startTime[0],
-                  },
-                },
+                interval,
                 value: {
                   distributionValue: {
                     count: String(value.count),
@@ -355,7 +321,8 @@ export function metricsToRequest(exportArgs: ExportInput) {
                 },
               },
             ],
-            unit: metric.descriptor.unit || 'ms', // Default to 'ms' if no unit is specified
+            unit:
+              (metric as unknown as DistributionMetric).descriptor.unit || 'ms', // Default to 'ms' if no unit is specified
           };
           timeSeriesArray.push(timeSeries);
         }
