@@ -21,12 +21,10 @@ import {TabularApiSurface} from '../src/tabular-api-surface';
 import * as mocha from 'mocha';
 import * as assert from 'assert';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
-import {
-  OnOperationCompleteData,
-} from '../src/client-side-metrics/metrics-handler';
+import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
 
 describe.only('Bigtable/MetricsCollector', () => {
-  async function mockBigtable(done: mocha.Done) {
+  async function mockBigtable(projectId: string, done: mocha.Done) {
     class TestGCPMetricsHandler extends TestMetricsHandler {
       onOperationComplete(data: OnOperationCompleteData) {
         super.onOperationComplete(data);
@@ -50,7 +48,7 @@ describe.only('Bigtable/MetricsCollector', () => {
             zone: 'us-west1-c',
             methodName: 'Bigtable.ReadRows',
           },
-          projectId: 'cloud-native-db-dpes-shared',
+          projectId,
         });
         const secondRequest = this.requestsHandled[1] as any;
         delete secondRequest.operationLatency;
@@ -68,7 +66,7 @@ describe.only('Bigtable/MetricsCollector', () => {
             zone: 'us-west1-c',
             methodName: 'Bigtable.ReadRows',
           },
-          projectId: 'cloud-native-db-dpes-shared',
+          projectId,
           retryCount: 0,
         });
         // Do assertion checks here to
@@ -137,9 +135,18 @@ describe.only('Bigtable/MetricsCollector', () => {
     await instance.delete({});
   });
 
-  it('should read rows after inserting data', done => {
+  it('should send the metrics to the metrics handler for a ReadRows call', done => {
     (async () => {
-      await mockBigtable(done);
+      const projectId: string = await new Promise((resolve, reject) => {
+        bigtable.getProjectId_((err, projectId) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(projectId as string);
+          }
+        });
+      });
+      await mockBigtable(projectId, done);
       const instance = bigtable.instance(instanceId);
       const table = instance.table(tableId);
       await table.getRows();

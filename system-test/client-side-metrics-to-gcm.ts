@@ -132,7 +132,7 @@ describe('Bigtable/MetricsCollector', () => {
     await instance.delete({});
   });
 
-  it('should read rows after inserting data', done => {
+  it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
     (async () => {
       await mockBigtable(done);
       const instance = bigtable.instance(instanceId);
