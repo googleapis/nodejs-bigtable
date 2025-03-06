@@ -15,59 +15,64 @@
 // TODO: Must be put in root folder or will not run
 
 import {describe, it, before, after} from 'mocha';
-import * as assert from 'assert';
 import {Bigtable} from '../src';
 import * as proxyquire from 'proxyquire';
 import {TabularApiSurface} from '../src/tabular-api-surface';
-import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
-import {
-  CloudMonitoringExporter,
-  ExportResult,
-} from '../src/client-side-metrics/exporter';
-import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 import * as mocha from 'mocha';
+import * as assert from 'assert';
+import {TestMetricsHandler} from '../test-common/test-metrics-handler';
+import {
+  OnOperationCompleteData,
+} from '../src/client-side-metrics/metrics-handler';
 
 describe.only('Bigtable/MetricsCollector', () => {
   async function mockBigtable(done: mocha.Done) {
-    /*
-    We need to create a timeout here because if we don't then mocha shuts down
-    the test as it is sleeping before the GCPMetricsHandler has a chance to
-    export the data.
-    */
-    const timeout = setTimeout(() => {}, 120000);
-    /*
-    The exporter is called every x seconds, but we only want to test the value
-    it receives once. Since done cannot be called multiple times in mocha,
-    exported variable ensures we only test the value export receives one time.
-    */
-    let exported = false;
-
-    class TestExporter extends CloudMonitoringExporter {
-      export(
-        metrics: ResourceMetrics,
-        resultCallback: (result: ExportResult) => void
-      ): void {
-        super.export(metrics, (result: ExportResult) => {
-          if (!exported) {
-            exported = true;
-            try {
-              clearTimeout(timeout);
-              assert.strictEqual(result.code, 0);
-              done();
-              resultCallback({code: 0});
-            } catch (error) {
-              // Code isn't 0 so report the original error.
-              done(result);
-              done(error);
-            }
-          }
+    class TestGCPMetricsHandler extends TestMetricsHandler {
+      onOperationComplete(data: OnOperationCompleteData) {
+        super.onOperationComplete(data);
+        assert.strictEqual(this.requestsHandled.length, 2);
+        const firstRequest = this.requestsHandled[0] as any;
+        // We would expect these parameters to be different every time so delete
+        // them from the comparison.
+        delete firstRequest.attemptLatency;
+        delete firstRequest.serverLatency;
+        delete firstRequest.metricsCollectorData.clientUid;
+        delete firstRequest.metricsCollectorData.appProfileId;
+        assert.deepStrictEqual(firstRequest, {
+          connectivityErrorCount: 0,
+          streamingOperation: 'true',
+          attemptStatus: 0,
+          clientName: 'nodejs-bigtable',
+          metricsCollectorData: {
+            instanceId: 'emulator-test-instance',
+            table: 'my-table',
+            cluster: 'fake-cluster3',
+            zone: 'us-west1-c',
+            methodName: 'Bigtable.ReadRows',
+          },
+          projectId: 'cloud-native-db-dpes-shared',
         });
-      }
-    }
-
-    class TestGCPMetricsHandler extends GCPMetricsHandler {
-      constructor() {
-        super(new TestExporter());
+        const secondRequest = this.requestsHandled[1] as any;
+        delete secondRequest.operationLatency;
+        delete secondRequest.firstResponseLatency;
+        delete secondRequest.metricsCollectorData.clientUid;
+        delete secondRequest.metricsCollectorData.appProfileId;
+        assert.deepStrictEqual(secondRequest, {
+          finalOperationStatus: 0,
+          streamingOperation: 'true',
+          clientName: 'nodejs-bigtable',
+          metricsCollectorData: {
+            instanceId: 'emulator-test-instance',
+            table: 'my-table',
+            cluster: 'fake-cluster3',
+            zone: 'us-west1-c',
+            methodName: 'Bigtable.ReadRows',
+          },
+          projectId: 'cloud-native-db-dpes-shared',
+          retryCount: 0,
+        });
+        // Do assertion checks here to
+        done();
       }
     }
 
