@@ -93,7 +93,7 @@ interface OnOperationAttribute {
  * descriptor, the type of data it collects, and the actual data points.
  *
  */
-interface Metric<Attributes, Value> {
+interface Metric<Value> {
   descriptor: {
     name: string;
     unit: string;
@@ -104,12 +104,25 @@ interface Metric<Attributes, Value> {
   };
   aggregationTemporality?: number;
   dataPointType?: number;
-  dataPoints: {
-    attributes: Attributes;
-    startTime: number[];
-    endTime: number[];
-    value: Value;
-  }[];
+  dataPoints: DataPoint<Value>[];
+}
+
+interface DataPoint<Value> {
+  attributes: OnAttemptAttribute | OnOperationAttribute;
+  startTime: number[];
+  endTime: number[];
+  value: Value;
+}
+
+interface DistributionValue {
+  min?: number;
+  max?: number;
+  sum: number;
+  count: number;
+  buckets: {
+    boundaries: number[];
+    counts: number[];
+  };
 }
 
 /**
@@ -122,19 +135,7 @@ interface Metric<Attributes, Value> {
  * latencies, sizes, or other metrics where the distribution is important.
  *
  */
-type DistributionMetric = Metric<
-  OnAttemptAttribute | OnOperationAttribute,
-  {
-    min?: number;
-    max?: number;
-    sum: number;
-    count: number;
-    buckets: {
-      boundaries: number[];
-      counts: number[];
-    };
-  }
->;
+type DistributionMetric = Metric<DistributionValue>;
 
 /**
  * Represents a metric that counts the number of occurrences of an event or
@@ -145,7 +146,7 @@ type DistributionMetric = Metric<
  * non-negative and can only increase or remain constant.
  *
  */
-type CounterMetric = Metric<OnAttemptAttribute | OnOperationAttribute, number>;
+type CounterMetric = Metric<number>;
 
 /**
  * Represents the input data structure for exporting OpenTelemetry metrics.
@@ -193,31 +194,8 @@ export interface ExportInput {
   }[];
 }
 
-/**
- * Type guard function to determine if a given metric is a CounterMetric.
- *
- * This function checks if a metric is a CounterMetric by inspecting its
- * `descriptor.name` property and comparing it against known counter metric
- * names.
- *
- * @param metric - The metric to check. This can be either a
- *   `DistributionMetric` or a `CounterMetric`.
- * @returns `true` if the metric is a `CounterMetric`, `false` otherwise.
- *
- * @remarks
- *   This function uses a type guard to narrow down the type of the `metric`
- *   parameter to `CounterMetric` if it returns `true`. This allows TypeScript
- *   to perform more precise type checking and provides better code
- *   completion when working with metrics.
- *
- */
-function isCounterMetric(
-  metric: DistributionMetric | CounterMetric
-): metric is CounterMetric {
-  return (
-    metric.descriptor.name === RETRY_COUNT_NAME ||
-    metric.descriptor.name === CONNECTIIVTY_ERROR_COUNT
-  );
+function isCounterValue(value: DistributionValue | number): value is number {
+  return typeof value === 'number';
 }
 
 /**
@@ -269,8 +247,9 @@ export function metricsToRequest(exportArgs: ExportInput) {
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const metric of scopeMetrics.metrics) {
       const metricName = metric.descriptor.name;
-      if (isCounterMetric(metric)) {
-        for (const dataPoint of metric.dataPoints) {
+      for (const dataPoint of metric.dataPoints) {
+        const value = dataPoint.value;
+        if (isCounterValue(value)) {
           // Extract attributes to labels based on their intended target (resource or metric)
           const allAttributes = dataPoint.attributes;
           const streaming = allAttributes.streamingOperation;
@@ -319,9 +298,7 @@ export function metricsToRequest(exportArgs: ExportInput) {
             ],
           };
           timeSeriesArray.push(timeSeries);
-        }
-      } else {
-        for (const dataPoint of metric.dataPoints) {
+        } else {
           // Extract attributes to labels based on their intended target (resource or metric)
           const allAttributes = dataPoint.attributes;
           const streaming = allAttributes.streamingOperation;
@@ -366,16 +343,14 @@ export function metricsToRequest(exportArgs: ExportInput) {
                 },
                 value: {
                   distributionValue: {
-                    count: String(dataPoint.value.count),
-                    mean: dataPoint.value.count
-                      ? dataPoint.value.sum / dataPoint.value.count
-                      : 0,
+                    count: String(value.count),
+                    mean: value.count ? value.sum / value.count : 0,
                     bucketOptions: {
                       explicitBuckets: {
-                        bounds: dataPoint.value.buckets.boundaries,
+                        bounds: value.buckets.boundaries,
                       },
                     },
-                    bucketCounts: dataPoint.value.buckets.counts.map(String),
+                    bucketCounts: value.buckets.counts.map(String),
                   },
                 },
               },
