@@ -96,7 +96,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * which will be provided to the exporter in every export call.
    *
    */
-  private initialize(data: MonitoredResourceData): Metrics {
+  private getMetrics(data: MonitoredResourceData): Metrics {
     if (!this.otelInstruments) {
       const latencyBuckets = [
         0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20,
@@ -236,7 +236,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    const otelInstruments = this.initialize({
+    const otelInstruments = this.getMetrics({
       projectId: data.projectId,
       instanceId: data.metricsCollectorData.instanceId,
       table: data.metricsCollectorData.table,
@@ -268,7 +268,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    const otelInstruments = this.initialize({
+    const otelInstruments = this.getMetrics({
       projectId: data.projectId,
       instanceId: data.metricsCollectorData.instanceId,
       table: data.metricsCollectorData.table,
