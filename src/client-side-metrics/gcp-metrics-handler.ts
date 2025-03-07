@@ -70,7 +70,7 @@ interface MonitoredResourceData {
  */
 export class GCPMetricsHandler implements IMetricsHandler {
   private initialized = false;
-  private otelMetrics?: Metrics;
+  private otelInstruments?: Metrics;
   private exporter: PushMetricExporter;
 
   /**
@@ -145,7 +145,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
         ],
       });
       const meter = meterProvider.getMeter('bigtable.googleapis.com');
-      this.otelMetrics = {
+      this.otelInstruments = {
         operationLatencies: meter.createHistogram(
           'bigtable.googleapis.com/internal/client/operation_latencies',
           {
@@ -251,12 +251,12 @@ export class GCPMetricsHandler implements IMetricsHandler {
       finalOperationStatus: data.finalOperationStatus,
       clientName: data.clientName,
     };
-    this.otelMetrics?.operationLatencies.record(data.operationLatency, {
+    this.otelInstruments?.operationLatencies.record(data.operationLatency, {
       streamingOperation: data.streamingOperation,
       ...commonAttributes,
     });
-    this.otelMetrics?.retryCount.add(data.retryCount, commonAttributes);
-    this.otelMetrics?.firstResponseLatencies.record(
+    this.otelInstruments?.retryCount.add(data.retryCount, commonAttributes);
+    this.otelInstruments?.firstResponseLatencies.record(
       data.firstResponseLatency,
       commonAttributes
     );
@@ -283,15 +283,15 @@ export class GCPMetricsHandler implements IMetricsHandler {
       attemptStatus: data.attemptStatus,
       clientName: data.clientName,
     };
-    this.otelMetrics?.attemptLatencies.record(data.attemptLatency, {
+    this.otelInstruments?.attemptLatencies.record(data.attemptLatency, {
       streamingOperation: data.streamingOperation,
       ...commonAttributes,
     });
-    this.otelMetrics?.connectivityErrorCount.add(
+    this.otelInstruments?.connectivityErrorCount.add(
       data.connectivityErrorCount,
       commonAttributes
     );
-    this.otelMetrics?.serverLatencies.record(data.serverLatency, {
+    this.otelInstruments?.serverLatencies.record(data.serverLatency, {
       streamingOperation: data.streamingOperation,
       ...commonAttributes,
     });
