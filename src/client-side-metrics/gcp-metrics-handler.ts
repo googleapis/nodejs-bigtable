@@ -69,7 +69,6 @@ interface MonitoredResourceData {
  * associating them with relevant attributes for detailed analysis in Cloud Monitoring.
  */
 export class GCPMetricsHandler implements IMetricsHandler {
-  private initialized = false;
   private otelInstruments?: Metrics;
   private exporter: PushMetricExporter;
 
@@ -97,9 +96,8 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * which will be provided to the exporter in every export call.
    *
    */
-  private initialize(data: MonitoredResourceData) {
-    if (!this.initialized) {
-      this.initialized = true;
+  private initialize(data: MonitoredResourceData): Metrics {
+    if (!this.otelInstruments) {
       const latencyBuckets = [
         0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20,
         25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250, 300, 400, 500, 650,
@@ -229,6 +227,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
         ),
       };
     }
+    return this.otelInstruments;
   }
 
   /**
@@ -237,7 +236,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    this.initialize({
+    const otelInstruments = this.initialize({
       projectId: data.projectId,
       instanceId: data.metricsCollectorData.instanceId,
       table: data.metricsCollectorData.table,
@@ -251,12 +250,12 @@ export class GCPMetricsHandler implements IMetricsHandler {
       finalOperationStatus: data.finalOperationStatus,
       clientName: data.clientName,
     };
-    this.otelInstruments?.operationLatencies.record(data.operationLatency, {
+    otelInstruments.operationLatencies.record(data.operationLatency, {
       streamingOperation: data.streamingOperation,
       ...commonAttributes,
     });
-    this.otelInstruments?.retryCount.add(data.retryCount, commonAttributes);
-    this.otelInstruments?.firstResponseLatencies.record(
+    otelInstruments.retryCount.add(data.retryCount, commonAttributes);
+    otelInstruments?.firstResponseLatencies.record(
       data.firstResponseLatency,
       commonAttributes
     );
@@ -269,7 +268,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    this.initialize({
+    const otelInstruments = this.initialize({
       projectId: data.projectId,
       instanceId: data.metricsCollectorData.instanceId,
       table: data.metricsCollectorData.table,
@@ -283,15 +282,15 @@ export class GCPMetricsHandler implements IMetricsHandler {
       attemptStatus: data.attemptStatus,
       clientName: data.clientName,
     };
-    this.otelInstruments?.attemptLatencies.record(data.attemptLatency, {
+    otelInstruments.attemptLatencies.record(data.attemptLatency, {
       streamingOperation: data.streamingOperation,
       ...commonAttributes,
     });
-    this.otelInstruments?.connectivityErrorCount.add(
+    otelInstruments.connectivityErrorCount.add(
       data.connectivityErrorCount,
       commonAttributes
     );
-    this.otelInstruments?.serverLatencies.record(data.serverLatency, {
+    otelInstruments.serverLatencies.record(data.serverLatency, {
       streamingOperation: data.streamingOperation,
       ...commonAttributes,
     });
