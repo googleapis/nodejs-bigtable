@@ -642,6 +642,110 @@ describe('v2.BigtableClient', () => {
         });
     });
 
+    describe('prepareQuery', () => {
+        it('invokes prepareQuery without error', async () => {
+            const client = new bigtableModule.v2.BigtableClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.v2.PrepareQueryRequest()
+            );
+            // path template is empty
+            request.appProfileId = 'value';
+            const expectedHeaderRequestParams = 'app_profile_id=value';
+            const expectedResponse = generateSampleMessage(
+              new protos.google.bigtable.v2.PrepareQueryResponse()
+            );
+            client.innerApiCalls.prepareQuery = stubSimpleCall(expectedResponse);
+            const [response] = await client.prepareQuery(request);
+            assert.deepStrictEqual(response, expectedResponse);
+            const actualRequest = (client.innerApiCalls.prepareQuery as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.prepareQuery as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes prepareQuery without error using callback', async () => {
+            const client = new bigtableModule.v2.BigtableClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.v2.PrepareQueryRequest()
+            );
+            // path template is empty
+            request.appProfileId = 'value';
+            const expectedHeaderRequestParams = 'app_profile_id=value';
+            const expectedResponse = generateSampleMessage(
+              new protos.google.bigtable.v2.PrepareQueryResponse()
+            );
+            client.innerApiCalls.prepareQuery = stubSimpleCallWithCallback(expectedResponse);
+            const promise = new Promise((resolve, reject) => {
+                 client.prepareQuery(
+                    request,
+                    (err?: Error|null, result?: protos.google.bigtable.v2.IPrepareQueryResponse|null) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(result);
+                        }
+                    });
+            });
+            const response = await promise;
+            assert.deepStrictEqual(response, expectedResponse);
+            const actualRequest = (client.innerApiCalls.prepareQuery as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.prepareQuery as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes prepareQuery with error', async () => {
+            const client = new bigtableModule.v2.BigtableClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.v2.PrepareQueryRequest()
+            );
+            // path template is empty
+            request.appProfileId = 'value';
+            const expectedHeaderRequestParams = 'app_profile_id=value';
+            const expectedError = new Error('expected');
+            client.innerApiCalls.prepareQuery = stubSimpleCall(undefined, expectedError);
+            await assert.rejects(client.prepareQuery(request), expectedError);
+            const actualRequest = (client.innerApiCalls.prepareQuery as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.prepareQuery as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes prepareQuery with closed client', async () => {
+            const client = new bigtableModule.v2.BigtableClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.v2.PrepareQueryRequest()
+            );
+            // path template is empty
+            request.appProfileId = 'value';
+            const expectedError = new Error('The client has already been closed.');
+            client.close();
+            await assert.rejects(client.prepareQuery(request), expectedError);
+        });
+    });
+
     describe('readRows', () => {
         it('invokes readRows without error', async () => {
             const client = new bigtableModule.v2.BigtableClient({

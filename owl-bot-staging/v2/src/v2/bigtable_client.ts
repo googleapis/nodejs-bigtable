@@ -239,7 +239,7 @@ export class BigtableClient {
     // Iterate over each of the methods that the service provides
     // and create an API call method for each.
     const bigtableStubMethods =
-        ['readRows', 'sampleRowKeys', 'mutateRow', 'mutateRows', 'checkAndMutateRow', 'pingAndWarm', 'readModifyWriteRow', 'generateInitialChangeStreamPartitions', 'readChangeStream', 'executeQuery'];
+        ['readRows', 'sampleRowKeys', 'mutateRow', 'mutateRows', 'checkAndMutateRow', 'pingAndWarm', 'readModifyWriteRow', 'generateInitialChangeStreamPartitions', 'readChangeStream', 'prepareQuery', 'executeQuery'];
     for (const methodName of bigtableStubMethods) {
       const callPromise = this.bigtableStub.then(
         stub => (...args: Array<{}>) => {
@@ -823,6 +823,119 @@ export class BigtableClient {
     this.initialize();
     return this.innerApiCalls.readModifyWriteRow(request, options, callback);
   }
+/**
+ * Prepares a GoogleSQL query for execution on a particular Bigtable instance.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.instanceName
+ *   Required. The unique name of the instance against which the query should be
+ *   executed.
+ *   Values are of the form `projects/<project>/instances/<instance>`
+ * @param {string} [request.appProfileId]
+ *   Optional. This value specifies routing for preparing the query. Note that
+ *   this `app_profile_id` is only used for preparing the query. The actual
+ *   query execution will use the app profile specified in the
+ *   `ExecuteQueryRequest`. If not specified, the `default` application profile
+ *   will be used.
+ * @param {string} request.query
+ *   Required. The query string.
+ * @param {google.bigtable.v2.ProtoFormat} request.protoFormat
+ *   Protocol buffer format as described by ProtoSchema and ProtoRows
+ *   messages.
+ * @param {number[]} request.paramTypes
+ *   Required. `param_types` is a map of parameter identifier strings to their
+ *   `Type`s.
+ *
+ *   In query string, a parameter placeholder consists of the
+ *   `@` character followed by the parameter name (for example, `@firstName`) in
+ *   the query string.
+ *
+ *   For example, if param_types["firstName"] = Bytes then @firstName will be a
+ *   query parameter of type Bytes. The specific `Value` to be used for the
+ *   query execution must be sent in `ExecuteQueryRequest` in the `params` map.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing {@link protos.google.bigtable.v2.PrepareQueryResponse|PrepareQueryResponse}.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
+ *   for more details and examples.
+ */
+  prepareQuery(
+      request?: protos.google.bigtable.v2.IPrepareQueryRequest,
+      options?: CallOptions):
+      Promise<[
+        protos.google.bigtable.v2.IPrepareQueryResponse,
+        protos.google.bigtable.v2.IPrepareQueryRequest|undefined, {}|undefined
+      ]>;
+  prepareQuery(
+      request: protos.google.bigtable.v2.IPrepareQueryRequest,
+      options: CallOptions,
+      callback: Callback<
+          protos.google.bigtable.v2.IPrepareQueryResponse,
+          protos.google.bigtable.v2.IPrepareQueryRequest|null|undefined,
+          {}|null|undefined>): void;
+  prepareQuery(
+      request: protos.google.bigtable.v2.IPrepareQueryRequest,
+      callback: Callback<
+          protos.google.bigtable.v2.IPrepareQueryResponse,
+          protos.google.bigtable.v2.IPrepareQueryRequest|null|undefined,
+          {}|null|undefined>): void;
+  prepareQuery(
+      request?: protos.google.bigtable.v2.IPrepareQueryRequest,
+      optionsOrCallback?: CallOptions|Callback<
+          protos.google.bigtable.v2.IPrepareQueryResponse,
+          protos.google.bigtable.v2.IPrepareQueryRequest|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          protos.google.bigtable.v2.IPrepareQueryResponse,
+          protos.google.bigtable.v2.IPrepareQueryRequest|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        protos.google.bigtable.v2.IPrepareQueryResponse,
+        protos.google.bigtable.v2.IPrepareQueryRequest|undefined, {}|undefined
+      ]>|void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    }
+    else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    let routingParameter = {};
+    {
+      const fieldValue = request.instanceName;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue.toString().match(RegExp('(?<name>projects/[^/]+/instances/[^/]+)'));
+        if (match) {
+          const parameterValue = match.groups?.['name'] ?? fieldValue;
+          Object.assign(routingParameter, { name: parameterValue });
+        }
+      }
+    }
+    {
+      const fieldValue = request.appProfileId;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue.toString().match(RegExp('(?<app_profile_id>.*)'));
+        if (match) {
+          const parameterValue = match.groups?.['app_profile_id'] ?? fieldValue;
+          Object.assign(routingParameter, { app_profile_id: parameterValue });
+        }
+      }
+    }
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams(
+      routingParameter
+    );
+    this.initialize();
+    return this.innerApiCalls.prepareQuery(request, options, callback);
+  }
 
 /**
  * Streams back the contents of all requested rows in key order, optionally
@@ -1193,7 +1306,7 @@ export class BigtableClient {
   }
 
 /**
- * Executes a BTQL query against a particular Cloud Bigtable instance.
+ * Executes a SQL query against a particular Bigtable instance.
  *
  * @param {Object} request
  *   The request object that will be sent.
@@ -1206,6 +1319,19 @@ export class BigtableClient {
  *   the `default` application profile will be used.
  * @param {string} request.query
  *   Required. The query string.
+ *
+ *   Exactly one of `query` and `prepared_query` is required. Setting both
+ *   or neither is an `INVALID_ARGUMENT`.
+ * @param {Buffer} request.preparedQuery
+ *   A prepared query that was returned from `PrepareQueryResponse`.
+ *
+ *   Exactly one of `query` and `prepared_query` is required. Setting both
+ *   or neither is an `INVALID_ARGUMENT`.
+ *
+ *   Setting this field also places restrictions on several other fields:
+ *   - `data_format` must be empty.
+ *   - `validate_only` must be false.
+ *   - `params` must match the `param_types` set in the `PrepareQueryRequest`.
  * @param {google.bigtable.v2.ProtoFormat} request.protoFormat
  *   Protocol buffer format as described by ProtoSchema and ProtoRows
  *   messages.
@@ -1226,17 +1352,21 @@ export class BigtableClient {
  *
  *   For example, if
  *   `params["firstName"] = bytes_value: "foo" type {bytes_type {}}`
- *    then `@firstName` will be replaced with googlesql bytes value "foo" in the
- *    query string during query evaluation.
+ *   then `@firstName` will be replaced with googlesql bytes value "foo" in the
+ *   query string during query evaluation.
  *
- *   In case of Value.kind is not set, it will be set to corresponding null
- *   value in googlesql.
- *    `params["firstName"] =  type {string_type {}}`
- *    then `@firstName` will be replaced with googlesql null string.
+ *   If `Value.kind` is not set, the value is treated as a NULL value of the
+ *   given type. For example, if
+ *   `params["firstName"] = type {string_type {}}`
+ *   then `@firstName` will be replaced with googlesql null string.
  *
- *   Value.type should always be set and no inference of type will be made from
- *   Value.kind. If Value.type is not set, we will return INVALID_ARGUMENT
- *   error.
+ *   If `query` is set, any empty `Value.type` in the map will be rejected with
+ *   `INVALID_ARGUMENT`.
+ *
+ *   If `prepared_query` is set, any empty `Value.type` in the map will be
+ *   inferred from the `param_types` in the `PrepareQueryRequest`. Any non-empty
+ *   `Value.type` must match the corresponding `param_types` entry, or be
+ *   rejected with `INVALID_ARGUMENT`.
  * @param {object} [options]
  *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
  * @returns {Stream}

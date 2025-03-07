@@ -30,6 +30,11 @@
                 "readModifyWriteRow"
               ]
             },
+            "PrepareQuery": {
+              "methods": [
+                "prepareQuery"
+              ]
+            },
             "ReadRows": {
               "methods": [
                 "readRows"
@@ -83,6 +88,11 @@
             "ReadModifyWriteRow": {
               "methods": [
                 "readModifyWriteRow"
+              ]
+            },
+            "PrepareQuery": {
+              "methods": [
+                "prepareQuery"
               ]
             }
           }

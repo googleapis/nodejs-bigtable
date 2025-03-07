@@ -399,6 +399,44 @@
                         }
                       ]
                     },
+                    "PrepareQuery": {
+                      "requestType": "PrepareQueryRequest",
+                      "responseType": "PrepareQueryResponse",
+                      "options": {
+                        "(google.api.http).post": "/v2/{instance_name=projects/*/instances/*}:prepareQuery",
+                        "(google.api.http).body": "*",
+                        "(google.api.routing).routing_parameters.field": "app_profile_id",
+                        "(google.api.routing).routing_parameters.path_template": "{name=projects/*/instances/*}",
+                        "(google.api.method_signature)": "instance_name,query,app_profile_id"
+                      },
+                      "parsedOptions": [
+                        {
+                          "(google.api.http)": {
+                            "post": "/v2/{instance_name=projects/*/instances/*}:prepareQuery",
+                            "body": "*"
+                          }
+                        },
+                        {
+                          "(google.api.routing)": {
+                            "routing_parameters": [
+                              {
+                                "field": "instance_name",
+                                "path_template": "{name=projects/*/instances/*}"
+                              },
+                              {
+                                "field": "app_profile_id"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "(google.api.method_signature)": "instance_name,query"
+                        },
+                        {
+                          "(google.api.method_signature)": "instance_name,query,app_profile_id"
+                        }
+                      ]
+                    },
                     "ExecuteQuery": {
                       "requestType": "ExecuteQueryRequest",
                       "responseType": "ExecuteQueryResponse",
@@ -1091,12 +1129,20 @@
                       "type": "string",
                       "id": 3,
                       "options": {
+                        "deprecated": true,
                         "(google.api.field_behavior)": "REQUIRED"
                       }
                     },
+                    "preparedQuery": {
+                      "type": "bytes",
+                      "id": 9
+                    },
                     "protoFormat": {
                       "type": "ProtoFormat",
-                      "id": 4
+                      "id": 4,
+                      "options": {
+                        "deprecated": true
+                      }
                     },
                     "resumeToken": {
                       "type": "bytes",
@@ -1132,6 +1178,67 @@
                     "results": {
                       "type": "PartialResultSet",
                       "id": 2
+                    }
+                  }
+                },
+                "PrepareQueryRequest": {
+                  "oneofs": {
+                    "dataFormat": {
+                      "oneof": [
+                        "protoFormat"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "instanceName": {
+                      "type": "string",
+                      "id": 1,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
+                      }
+                    },
+                    "appProfileId": {
+                      "type": "string",
+                      "id": 2,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL"
+                      }
+                    },
+                    "query": {
+                      "type": "string",
+                      "id": 3,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED"
+                      }
+                    },
+                    "protoFormat": {
+                      "type": "ProtoFormat",
+                      "id": 4
+                    },
+                    "paramTypes": {
+                      "keyType": "string",
+                      "type": "Type",
+                      "id": 6,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED"
+                      }
+                    }
+                  }
+                },
+                "PrepareQueryResponse": {
+                  "fields": {
+                    "metadata": {
+                      "type": "ResultSetMetadata",
+                      "id": 1
+                    },
+                    "preparedQuery": {
+                      "type": "bytes",
+                      "id": 2
+                    },
+                    "validUntil": {
+                      "type": "google.protobuf.Timestamp",
+                      "id": 3
                     }
                   }
                 },
@@ -1785,6 +1892,11 @@
                       "oneof": [
                         "protoRowsBatch"
                       ]
+                    },
+                    "_batchChecksum": {
+                      "oneof": [
+                        "batchChecksum"
+                      ]
                     }
                   },
                   "fields": {
@@ -1792,9 +1904,20 @@
                       "type": "ProtoRowsBatch",
                       "id": 3
                     },
+                    "batchChecksum": {
+                      "type": "uint32",
+                      "id": 6,
+                      "options": {
+                        "proto3_optional": true
+                      }
+                    },
                     "resumeToken": {
                       "type": "bytes",
                       "id": 5
+                    },
+                    "reset": {
+                      "type": "bool",
+                      "id": 7
                     },
                     "estimatedBatchSize": {
                       "type": "int32",

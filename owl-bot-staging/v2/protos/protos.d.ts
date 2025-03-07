@@ -170,6 +170,20 @@ export namespace google {
                 public readChangeStream(request: google.bigtable.v2.IReadChangeStreamRequest): Promise<google.bigtable.v2.ReadChangeStreamResponse>;
 
                 /**
+                 * Calls PrepareQuery.
+                 * @param request PrepareQueryRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and PrepareQueryResponse
+                 */
+                public prepareQuery(request: google.bigtable.v2.IPrepareQueryRequest, callback: google.bigtable.v2.Bigtable.PrepareQueryCallback): void;
+
+                /**
+                 * Calls PrepareQuery.
+                 * @param request PrepareQueryRequest message or plain object
+                 * @returns Promise
+                 */
+                public prepareQuery(request: google.bigtable.v2.IPrepareQueryRequest): Promise<google.bigtable.v2.PrepareQueryResponse>;
+
+                /**
                  * Calls ExecuteQuery.
                  * @param request ExecuteQueryRequest message or plain object
                  * @param callback Node-style callback called with the error, if any, and ExecuteQueryResponse
@@ -248,6 +262,13 @@ export namespace google {
                  * @param [response] ReadChangeStreamResponse
                  */
                 type ReadChangeStreamCallback = (error: (Error|null), response?: google.bigtable.v2.ReadChangeStreamResponse) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|prepareQuery}.
+                 * @param error Error, if any
+                 * @param [response] PrepareQueryResponse
+                 */
+                type PrepareQueryCallback = (error: (Error|null), response?: google.bigtable.v2.PrepareQueryResponse) => void;
 
                 /**
                  * Callback as used by {@link google.bigtable.v2.Bigtable|executeQuery}.
@@ -3311,6 +3332,9 @@ export namespace google {
                 /** ExecuteQueryRequest query */
                 query?: (string|null);
 
+                /** ExecuteQueryRequest preparedQuery */
+                preparedQuery?: (Uint8Array|string|null);
+
                 /** ExecuteQueryRequest protoFormat */
                 protoFormat?: (google.bigtable.v2.IProtoFormat|null);
 
@@ -3338,6 +3362,9 @@ export namespace google {
 
                 /** ExecuteQueryRequest query. */
                 public query: string;
+
+                /** ExecuteQueryRequest preparedQuery. */
+                public preparedQuery: (Uint8Array|string);
 
                 /** ExecuteQueryRequest protoFormat. */
                 public protoFormat?: (google.bigtable.v2.IProtoFormat|null);
@@ -3529,6 +3556,239 @@ export namespace google {
 
                 /**
                  * Gets the default type url for ExecuteQueryResponse
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a PrepareQueryRequest. */
+            interface IPrepareQueryRequest {
+
+                /** PrepareQueryRequest instanceName */
+                instanceName?: (string|null);
+
+                /** PrepareQueryRequest appProfileId */
+                appProfileId?: (string|null);
+
+                /** PrepareQueryRequest query */
+                query?: (string|null);
+
+                /** PrepareQueryRequest protoFormat */
+                protoFormat?: (google.bigtable.v2.IProtoFormat|null);
+
+                /** PrepareQueryRequest paramTypes */
+                paramTypes?: ({ [k: string]: google.bigtable.v2.IType }|null);
+            }
+
+            /** Represents a PrepareQueryRequest. */
+            class PrepareQueryRequest implements IPrepareQueryRequest {
+
+                /**
+                 * Constructs a new PrepareQueryRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IPrepareQueryRequest);
+
+                /** PrepareQueryRequest instanceName. */
+                public instanceName: string;
+
+                /** PrepareQueryRequest appProfileId. */
+                public appProfileId: string;
+
+                /** PrepareQueryRequest query. */
+                public query: string;
+
+                /** PrepareQueryRequest protoFormat. */
+                public protoFormat?: (google.bigtable.v2.IProtoFormat|null);
+
+                /** PrepareQueryRequest paramTypes. */
+                public paramTypes: { [k: string]: google.bigtable.v2.IType };
+
+                /** PrepareQueryRequest dataFormat. */
+                public dataFormat?: "protoFormat";
+
+                /**
+                 * Creates a new PrepareQueryRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns PrepareQueryRequest instance
+                 */
+                public static create(properties?: google.bigtable.v2.IPrepareQueryRequest): google.bigtable.v2.PrepareQueryRequest;
+
+                /**
+                 * Encodes the specified PrepareQueryRequest message. Does not implicitly {@link google.bigtable.v2.PrepareQueryRequest.verify|verify} messages.
+                 * @param message PrepareQueryRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IPrepareQueryRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified PrepareQueryRequest message, length delimited. Does not implicitly {@link google.bigtable.v2.PrepareQueryRequest.verify|verify} messages.
+                 * @param message PrepareQueryRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IPrepareQueryRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a PrepareQueryRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns PrepareQueryRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.PrepareQueryRequest;
+
+                /**
+                 * Decodes a PrepareQueryRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns PrepareQueryRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.PrepareQueryRequest;
+
+                /**
+                 * Verifies a PrepareQueryRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a PrepareQueryRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns PrepareQueryRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.PrepareQueryRequest;
+
+                /**
+                 * Creates a plain object from a PrepareQueryRequest message. Also converts values to other types if specified.
+                 * @param message PrepareQueryRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.PrepareQueryRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this PrepareQueryRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for PrepareQueryRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a PrepareQueryResponse. */
+            interface IPrepareQueryResponse {
+
+                /** PrepareQueryResponse metadata */
+                metadata?: (google.bigtable.v2.IResultSetMetadata|null);
+
+                /** PrepareQueryResponse preparedQuery */
+                preparedQuery?: (Uint8Array|string|null);
+
+                /** PrepareQueryResponse validUntil */
+                validUntil?: (google.protobuf.ITimestamp|null);
+            }
+
+            /** Represents a PrepareQueryResponse. */
+            class PrepareQueryResponse implements IPrepareQueryResponse {
+
+                /**
+                 * Constructs a new PrepareQueryResponse.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IPrepareQueryResponse);
+
+                /** PrepareQueryResponse metadata. */
+                public metadata?: (google.bigtable.v2.IResultSetMetadata|null);
+
+                /** PrepareQueryResponse preparedQuery. */
+                public preparedQuery: (Uint8Array|string);
+
+                /** PrepareQueryResponse validUntil. */
+                public validUntil?: (google.protobuf.ITimestamp|null);
+
+                /**
+                 * Creates a new PrepareQueryResponse instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns PrepareQueryResponse instance
+                 */
+                public static create(properties?: google.bigtable.v2.IPrepareQueryResponse): google.bigtable.v2.PrepareQueryResponse;
+
+                /**
+                 * Encodes the specified PrepareQueryResponse message. Does not implicitly {@link google.bigtable.v2.PrepareQueryResponse.verify|verify} messages.
+                 * @param message PrepareQueryResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IPrepareQueryResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified PrepareQueryResponse message, length delimited. Does not implicitly {@link google.bigtable.v2.PrepareQueryResponse.verify|verify} messages.
+                 * @param message PrepareQueryResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IPrepareQueryResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a PrepareQueryResponse message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns PrepareQueryResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.PrepareQueryResponse;
+
+                /**
+                 * Decodes a PrepareQueryResponse message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns PrepareQueryResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.PrepareQueryResponse;
+
+                /**
+                 * Verifies a PrepareQueryResponse message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a PrepareQueryResponse message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns PrepareQueryResponse
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.PrepareQueryResponse;
+
+                /**
+                 * Creates a plain object from a PrepareQueryResponse message. Also converts values to other types if specified.
+                 * @param message PrepareQueryResponse
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.PrepareQueryResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this PrepareQueryResponse to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for PrepareQueryResponse
                  * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                  * @returns The default type url
                  */
@@ -7080,8 +7340,14 @@ export namespace google {
                 /** PartialResultSet protoRowsBatch */
                 protoRowsBatch?: (google.bigtable.v2.IProtoRowsBatch|null);
 
+                /** PartialResultSet batchChecksum */
+                batchChecksum?: (number|null);
+
                 /** PartialResultSet resumeToken */
                 resumeToken?: (Uint8Array|string|null);
+
+                /** PartialResultSet reset */
+                reset?: (boolean|null);
 
                 /** PartialResultSet estimatedBatchSize */
                 estimatedBatchSize?: (number|null);
@@ -7099,8 +7365,14 @@ export namespace google {
                 /** PartialResultSet protoRowsBatch. */
                 public protoRowsBatch?: (google.bigtable.v2.IProtoRowsBatch|null);
 
+                /** PartialResultSet batchChecksum. */
+                public batchChecksum?: (number|null);
+
                 /** PartialResultSet resumeToken. */
                 public resumeToken: (Uint8Array|string);
+
+                /** PartialResultSet reset. */
+                public reset: boolean;
 
                 /** PartialResultSet estimatedBatchSize. */
                 public estimatedBatchSize: number;

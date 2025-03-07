@@ -387,6 +387,39 @@
                      */
     
                     /**
+                     * Callback as used by {@link google.bigtable.v2.Bigtable|prepareQuery}.
+                     * @memberof google.bigtable.v2.Bigtable
+                     * @typedef PrepareQueryCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {google.bigtable.v2.PrepareQueryResponse} [response] PrepareQueryResponse
+                     */
+    
+                    /**
+                     * Calls PrepareQuery.
+                     * @function prepareQuery
+                     * @memberof google.bigtable.v2.Bigtable
+                     * @instance
+                     * @param {google.bigtable.v2.IPrepareQueryRequest} request PrepareQueryRequest message or plain object
+                     * @param {google.bigtable.v2.Bigtable.PrepareQueryCallback} callback Node-style callback called with the error, if any, and PrepareQueryResponse
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(Bigtable.prototype.prepareQuery = function prepareQuery(request, callback) {
+                        return this.rpcCall(prepareQuery, $root.google.bigtable.v2.PrepareQueryRequest, $root.google.bigtable.v2.PrepareQueryResponse, request, callback);
+                    }, "name", { value: "PrepareQuery" });
+    
+                    /**
+                     * Calls PrepareQuery.
+                     * @function prepareQuery
+                     * @memberof google.bigtable.v2.Bigtable
+                     * @instance
+                     * @param {google.bigtable.v2.IPrepareQueryRequest} request PrepareQueryRequest message or plain object
+                     * @returns {Promise<google.bigtable.v2.PrepareQueryResponse>} Promise
+                     * @variation 2
+                     */
+    
+                    /**
                      * Callback as used by {@link google.bigtable.v2.Bigtable|executeQuery}.
                      * @memberof google.bigtable.v2.Bigtable
                      * @typedef ExecuteQueryCallback
@@ -8081,6 +8114,7 @@
                      * @property {string|null} [instanceName] ExecuteQueryRequest instanceName
                      * @property {string|null} [appProfileId] ExecuteQueryRequest appProfileId
                      * @property {string|null} [query] ExecuteQueryRequest query
+                     * @property {Uint8Array|null} [preparedQuery] ExecuteQueryRequest preparedQuery
                      * @property {google.bigtable.v2.IProtoFormat|null} [protoFormat] ExecuteQueryRequest protoFormat
                      * @property {Uint8Array|null} [resumeToken] ExecuteQueryRequest resumeToken
                      * @property {Object.<string,google.bigtable.v2.IValue>|null} [params] ExecuteQueryRequest params
@@ -8125,6 +8159,14 @@
                      * @instance
                      */
                     ExecuteQueryRequest.prototype.query = "";
+    
+                    /**
+                     * ExecuteQueryRequest preparedQuery.
+                     * @member {Uint8Array} preparedQuery
+                     * @memberof google.bigtable.v2.ExecuteQueryRequest
+                     * @instance
+                     */
+                    ExecuteQueryRequest.prototype.preparedQuery = $util.newBuffer([]);
     
                     /**
                      * ExecuteQueryRequest protoFormat.
@@ -8203,6 +8245,8 @@
                             }
                         if (message.resumeToken != null && Object.hasOwnProperty.call(message, "resumeToken"))
                             writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.resumeToken);
+                        if (message.preparedQuery != null && Object.hasOwnProperty.call(message, "preparedQuery"))
+                            writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.preparedQuery);
                         return writer;
                     };
     
@@ -8247,6 +8291,10 @@
                                 }
                             case 3: {
                                     message.query = reader.string();
+                                    break;
+                                }
+                            case 9: {
+                                    message.preparedQuery = reader.bytes();
                                     break;
                                 }
                             case 4: {
@@ -8325,6 +8373,9 @@
                         if (message.query != null && message.hasOwnProperty("query"))
                             if (!$util.isString(message.query))
                                 return "query: string expected";
+                        if (message.preparedQuery != null && message.hasOwnProperty("preparedQuery"))
+                            if (!(message.preparedQuery && typeof message.preparedQuery.length === "number" || $util.isString(message.preparedQuery)))
+                                return "preparedQuery: buffer expected";
                         if (message.protoFormat != null && message.hasOwnProperty("protoFormat")) {
                             properties.dataFormat = 1;
                             {
@@ -8367,6 +8418,11 @@
                             message.appProfileId = String(object.appProfileId);
                         if (object.query != null)
                             message.query = String(object.query);
+                        if (object.preparedQuery != null)
+                            if (typeof object.preparedQuery === "string")
+                                $util.base64.decode(object.preparedQuery, message.preparedQuery = $util.newBuffer($util.base64.length(object.preparedQuery)), 0);
+                            else if (object.preparedQuery.length >= 0)
+                                message.preparedQuery = object.preparedQuery;
                         if (object.protoFormat != null) {
                             if (typeof object.protoFormat !== "object")
                                 throw TypeError(".google.bigtable.v2.ExecuteQueryRequest.protoFormat: object expected");
@@ -8416,6 +8472,13 @@
                                 if (options.bytes !== Array)
                                     object.resumeToken = $util.newBuffer(object.resumeToken);
                             }
+                            if (options.bytes === String)
+                                object.preparedQuery = "";
+                            else {
+                                object.preparedQuery = [];
+                                if (options.bytes !== Array)
+                                    object.preparedQuery = $util.newBuffer(object.preparedQuery);
+                            }
                         }
                         if (message.instanceName != null && message.hasOwnProperty("instanceName"))
                             object.instanceName = message.instanceName;
@@ -8436,6 +8499,8 @@
                         }
                         if (message.resumeToken != null && message.hasOwnProperty("resumeToken"))
                             object.resumeToken = options.bytes === String ? $util.base64.encode(message.resumeToken, 0, message.resumeToken.length) : options.bytes === Array ? Array.prototype.slice.call(message.resumeToken) : message.resumeToken;
+                        if (message.preparedQuery != null && message.hasOwnProperty("preparedQuery"))
+                            object.preparedQuery = options.bytes === String ? $util.base64.encode(message.preparedQuery, 0, message.preparedQuery.length) : options.bytes === Array ? Array.prototype.slice.call(message.preparedQuery) : message.preparedQuery;
                         return object;
                     };
     
@@ -8728,6 +8793,639 @@
                     };
     
                     return ExecuteQueryResponse;
+                })();
+    
+                v2.PrepareQueryRequest = (function() {
+    
+                    /**
+                     * Properties of a PrepareQueryRequest.
+                     * @memberof google.bigtable.v2
+                     * @interface IPrepareQueryRequest
+                     * @property {string|null} [instanceName] PrepareQueryRequest instanceName
+                     * @property {string|null} [appProfileId] PrepareQueryRequest appProfileId
+                     * @property {string|null} [query] PrepareQueryRequest query
+                     * @property {google.bigtable.v2.IProtoFormat|null} [protoFormat] PrepareQueryRequest protoFormat
+                     * @property {Object.<string,google.bigtable.v2.IType>|null} [paramTypes] PrepareQueryRequest paramTypes
+                     */
+    
+                    /**
+                     * Constructs a new PrepareQueryRequest.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a PrepareQueryRequest.
+                     * @implements IPrepareQueryRequest
+                     * @constructor
+                     * @param {google.bigtable.v2.IPrepareQueryRequest=} [properties] Properties to set
+                     */
+                    function PrepareQueryRequest(properties) {
+                        this.paramTypes = {};
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * PrepareQueryRequest instanceName.
+                     * @member {string} instanceName
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @instance
+                     */
+                    PrepareQueryRequest.prototype.instanceName = "";
+    
+                    /**
+                     * PrepareQueryRequest appProfileId.
+                     * @member {string} appProfileId
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @instance
+                     */
+                    PrepareQueryRequest.prototype.appProfileId = "";
+    
+                    /**
+                     * PrepareQueryRequest query.
+                     * @member {string} query
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @instance
+                     */
+                    PrepareQueryRequest.prototype.query = "";
+    
+                    /**
+                     * PrepareQueryRequest protoFormat.
+                     * @member {google.bigtable.v2.IProtoFormat|null|undefined} protoFormat
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @instance
+                     */
+                    PrepareQueryRequest.prototype.protoFormat = null;
+    
+                    /**
+                     * PrepareQueryRequest paramTypes.
+                     * @member {Object.<string,google.bigtable.v2.IType>} paramTypes
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @instance
+                     */
+                    PrepareQueryRequest.prototype.paramTypes = $util.emptyObject;
+    
+                    // OneOf field names bound to virtual getters and setters
+                    var $oneOfFields;
+    
+                    /**
+                     * PrepareQueryRequest dataFormat.
+                     * @member {"protoFormat"|undefined} dataFormat
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @instance
+                     */
+                    Object.defineProperty(PrepareQueryRequest.prototype, "dataFormat", {
+                        get: $util.oneOfGetter($oneOfFields = ["protoFormat"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+    
+                    /**
+                     * Creates a new PrepareQueryRequest instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @static
+                     * @param {google.bigtable.v2.IPrepareQueryRequest=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.PrepareQueryRequest} PrepareQueryRequest instance
+                     */
+                    PrepareQueryRequest.create = function create(properties) {
+                        return new PrepareQueryRequest(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified PrepareQueryRequest message. Does not implicitly {@link google.bigtable.v2.PrepareQueryRequest.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @static
+                     * @param {google.bigtable.v2.IPrepareQueryRequest} message PrepareQueryRequest message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PrepareQueryRequest.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.instanceName != null && Object.hasOwnProperty.call(message, "instanceName"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.instanceName);
+                        if (message.appProfileId != null && Object.hasOwnProperty.call(message, "appProfileId"))
+                            writer.uint32(/* id 2, wireType 2 =*/18).string(message.appProfileId);
+                        if (message.query != null && Object.hasOwnProperty.call(message, "query"))
+                            writer.uint32(/* id 3, wireType 2 =*/26).string(message.query);
+                        if (message.protoFormat != null && Object.hasOwnProperty.call(message, "protoFormat"))
+                            $root.google.bigtable.v2.ProtoFormat.encode(message.protoFormat, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                        if (message.paramTypes != null && Object.hasOwnProperty.call(message, "paramTypes"))
+                            for (var keys = Object.keys(message.paramTypes), i = 0; i < keys.length; ++i) {
+                                writer.uint32(/* id 6, wireType 2 =*/50).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
+                                $root.google.bigtable.v2.Type.encode(message.paramTypes[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                            }
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified PrepareQueryRequest message, length delimited. Does not implicitly {@link google.bigtable.v2.PrepareQueryRequest.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @static
+                     * @param {google.bigtable.v2.IPrepareQueryRequest} message PrepareQueryRequest message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PrepareQueryRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a PrepareQueryRequest message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.PrepareQueryRequest} PrepareQueryRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PrepareQueryRequest.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.PrepareQueryRequest(), key, value;
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.instanceName = reader.string();
+                                    break;
+                                }
+                            case 2: {
+                                    message.appProfileId = reader.string();
+                                    break;
+                                }
+                            case 3: {
+                                    message.query = reader.string();
+                                    break;
+                                }
+                            case 4: {
+                                    message.protoFormat = $root.google.bigtable.v2.ProtoFormat.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 6: {
+                                    if (message.paramTypes === $util.emptyObject)
+                                        message.paramTypes = {};
+                                    var end2 = reader.uint32() + reader.pos;
+                                    key = "";
+                                    value = null;
+                                    while (reader.pos < end2) {
+                                        var tag2 = reader.uint32();
+                                        switch (tag2 >>> 3) {
+                                        case 1:
+                                            key = reader.string();
+                                            break;
+                                        case 2:
+                                            value = $root.google.bigtable.v2.Type.decode(reader, reader.uint32());
+                                            break;
+                                        default:
+                                            reader.skipType(tag2 & 7);
+                                            break;
+                                        }
+                                    }
+                                    message.paramTypes[key] = value;
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a PrepareQueryRequest message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.PrepareQueryRequest} PrepareQueryRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PrepareQueryRequest.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a PrepareQueryRequest message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    PrepareQueryRequest.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        var properties = {};
+                        if (message.instanceName != null && message.hasOwnProperty("instanceName"))
+                            if (!$util.isString(message.instanceName))
+                                return "instanceName: string expected";
+                        if (message.appProfileId != null && message.hasOwnProperty("appProfileId"))
+                            if (!$util.isString(message.appProfileId))
+                                return "appProfileId: string expected";
+                        if (message.query != null && message.hasOwnProperty("query"))
+                            if (!$util.isString(message.query))
+                                return "query: string expected";
+                        if (message.protoFormat != null && message.hasOwnProperty("protoFormat")) {
+                            properties.dataFormat = 1;
+                            {
+                                var error = $root.google.bigtable.v2.ProtoFormat.verify(message.protoFormat);
+                                if (error)
+                                    return "protoFormat." + error;
+                            }
+                        }
+                        if (message.paramTypes != null && message.hasOwnProperty("paramTypes")) {
+                            if (!$util.isObject(message.paramTypes))
+                                return "paramTypes: object expected";
+                            var key = Object.keys(message.paramTypes);
+                            for (var i = 0; i < key.length; ++i) {
+                                var error = $root.google.bigtable.v2.Type.verify(message.paramTypes[key[i]]);
+                                if (error)
+                                    return "paramTypes." + error;
+                            }
+                        }
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a PrepareQueryRequest message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.PrepareQueryRequest} PrepareQueryRequest
+                     */
+                    PrepareQueryRequest.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.PrepareQueryRequest)
+                            return object;
+                        var message = new $root.google.bigtable.v2.PrepareQueryRequest();
+                        if (object.instanceName != null)
+                            message.instanceName = String(object.instanceName);
+                        if (object.appProfileId != null)
+                            message.appProfileId = String(object.appProfileId);
+                        if (object.query != null)
+                            message.query = String(object.query);
+                        if (object.protoFormat != null) {
+                            if (typeof object.protoFormat !== "object")
+                                throw TypeError(".google.bigtable.v2.PrepareQueryRequest.protoFormat: object expected");
+                            message.protoFormat = $root.google.bigtable.v2.ProtoFormat.fromObject(object.protoFormat);
+                        }
+                        if (object.paramTypes) {
+                            if (typeof object.paramTypes !== "object")
+                                throw TypeError(".google.bigtable.v2.PrepareQueryRequest.paramTypes: object expected");
+                            message.paramTypes = {};
+                            for (var keys = Object.keys(object.paramTypes), i = 0; i < keys.length; ++i) {
+                                if (typeof object.paramTypes[keys[i]] !== "object")
+                                    throw TypeError(".google.bigtable.v2.PrepareQueryRequest.paramTypes: object expected");
+                                message.paramTypes[keys[i]] = $root.google.bigtable.v2.Type.fromObject(object.paramTypes[keys[i]]);
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a PrepareQueryRequest message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @static
+                     * @param {google.bigtable.v2.PrepareQueryRequest} message PrepareQueryRequest
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    PrepareQueryRequest.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.objects || options.defaults)
+                            object.paramTypes = {};
+                        if (options.defaults) {
+                            object.instanceName = "";
+                            object.appProfileId = "";
+                            object.query = "";
+                        }
+                        if (message.instanceName != null && message.hasOwnProperty("instanceName"))
+                            object.instanceName = message.instanceName;
+                        if (message.appProfileId != null && message.hasOwnProperty("appProfileId"))
+                            object.appProfileId = message.appProfileId;
+                        if (message.query != null && message.hasOwnProperty("query"))
+                            object.query = message.query;
+                        if (message.protoFormat != null && message.hasOwnProperty("protoFormat")) {
+                            object.protoFormat = $root.google.bigtable.v2.ProtoFormat.toObject(message.protoFormat, options);
+                            if (options.oneofs)
+                                object.dataFormat = "protoFormat";
+                        }
+                        var keys2;
+                        if (message.paramTypes && (keys2 = Object.keys(message.paramTypes)).length) {
+                            object.paramTypes = {};
+                            for (var j = 0; j < keys2.length; ++j)
+                                object.paramTypes[keys2[j]] = $root.google.bigtable.v2.Type.toObject(message.paramTypes[keys2[j]], options);
+                        }
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this PrepareQueryRequest to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    PrepareQueryRequest.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for PrepareQueryRequest
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.PrepareQueryRequest
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    PrepareQueryRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.PrepareQueryRequest";
+                    };
+    
+                    return PrepareQueryRequest;
+                })();
+    
+                v2.PrepareQueryResponse = (function() {
+    
+                    /**
+                     * Properties of a PrepareQueryResponse.
+                     * @memberof google.bigtable.v2
+                     * @interface IPrepareQueryResponse
+                     * @property {google.bigtable.v2.IResultSetMetadata|null} [metadata] PrepareQueryResponse metadata
+                     * @property {Uint8Array|null} [preparedQuery] PrepareQueryResponse preparedQuery
+                     * @property {google.protobuf.ITimestamp|null} [validUntil] PrepareQueryResponse validUntil
+                     */
+    
+                    /**
+                     * Constructs a new PrepareQueryResponse.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a PrepareQueryResponse.
+                     * @implements IPrepareQueryResponse
+                     * @constructor
+                     * @param {google.bigtable.v2.IPrepareQueryResponse=} [properties] Properties to set
+                     */
+                    function PrepareQueryResponse(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * PrepareQueryResponse metadata.
+                     * @member {google.bigtable.v2.IResultSetMetadata|null|undefined} metadata
+                     * @memberof google.bigtable.v2.PrepareQueryResponse
+                     * @instance
+                     */
+                    PrepareQueryResponse.prototype.metadata = null;
+    
+                    /**
+                     * PrepareQueryResponse preparedQuery.
+                     * @member {Uint8Array} preparedQuery
+                     * @memberof google.bigtable.v2.PrepareQueryResponse
+                     * @instance
+                     */
+                    PrepareQueryResponse.prototype.preparedQuery = $util.newBuffer([]);
+    
+                    /**
+                     * PrepareQueryResponse validUntil.
+                     * @member {google.protobuf.ITimestamp|null|undefined} validUntil
+                     * @memberof google.bigtable.v2.PrepareQueryResponse
+                     * @instance
+                     */
+                    PrepareQueryResponse.prototype.validUntil = null;
+    
+                    /**
+                     * Creates a new PrepareQueryResponse instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.PrepareQueryResponse
+                     * @static
+                     * @param {google.bigtable.v2.IPrepareQueryResponse=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.PrepareQueryResponse} PrepareQueryResponse instance
+                     */
+                    PrepareQueryResponse.create = function create(properties) {
+                        return new PrepareQueryResponse(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified PrepareQueryResponse message. Does not implicitly {@link google.bigtable.v2.PrepareQueryResponse.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.PrepareQueryResponse
+                     * @static
+                     * @param {google.bigtable.v2.IPrepareQueryResponse} message PrepareQueryResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PrepareQueryResponse.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.metadata != null && Object.hasOwnProperty.call(message, "metadata"))
+                            $root.google.bigtable.v2.ResultSetMetadata.encode(message.metadata, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.preparedQuery != null && Object.hasOwnProperty.call(message, "preparedQuery"))
+                            writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.preparedQuery);
+                        if (message.validUntil != null && Object.hasOwnProperty.call(message, "validUntil"))
+                            $root.google.protobuf.Timestamp.encode(message.validUntil, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified PrepareQueryResponse message, length delimited. Does not implicitly {@link google.bigtable.v2.PrepareQueryResponse.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.PrepareQueryResponse
+                     * @static
+                     * @param {google.bigtable.v2.IPrepareQueryResponse} message PrepareQueryResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PrepareQueryResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a PrepareQueryResponse message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.PrepareQueryResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.PrepareQueryResponse} PrepareQueryResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PrepareQueryResponse.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.PrepareQueryResponse();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.metadata = $root.google.bigtable.v2.ResultSetMetadata.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 2: {
+                                    message.preparedQuery = reader.bytes();
+                                    break;
+                                }
+                            case 3: {
+                                    message.validUntil = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a PrepareQueryResponse message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.PrepareQueryResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.PrepareQueryResponse} PrepareQueryResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PrepareQueryResponse.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a PrepareQueryResponse message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.PrepareQueryResponse
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    PrepareQueryResponse.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                            var error = $root.google.bigtable.v2.ResultSetMetadata.verify(message.metadata);
+                            if (error)
+                                return "metadata." + error;
+                        }
+                        if (message.preparedQuery != null && message.hasOwnProperty("preparedQuery"))
+                            if (!(message.preparedQuery && typeof message.preparedQuery.length === "number" || $util.isString(message.preparedQuery)))
+                                return "preparedQuery: buffer expected";
+                        if (message.validUntil != null && message.hasOwnProperty("validUntil")) {
+                            var error = $root.google.protobuf.Timestamp.verify(message.validUntil);
+                            if (error)
+                                return "validUntil." + error;
+                        }
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a PrepareQueryResponse message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.PrepareQueryResponse
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.PrepareQueryResponse} PrepareQueryResponse
+                     */
+                    PrepareQueryResponse.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.PrepareQueryResponse)
+                            return object;
+                        var message = new $root.google.bigtable.v2.PrepareQueryResponse();
+                        if (object.metadata != null) {
+                            if (typeof object.metadata !== "object")
+                                throw TypeError(".google.bigtable.v2.PrepareQueryResponse.metadata: object expected");
+                            message.metadata = $root.google.bigtable.v2.ResultSetMetadata.fromObject(object.metadata);
+                        }
+                        if (object.preparedQuery != null)
+                            if (typeof object.preparedQuery === "string")
+                                $util.base64.decode(object.preparedQuery, message.preparedQuery = $util.newBuffer($util.base64.length(object.preparedQuery)), 0);
+                            else if (object.preparedQuery.length >= 0)
+                                message.preparedQuery = object.preparedQuery;
+                        if (object.validUntil != null) {
+                            if (typeof object.validUntil !== "object")
+                                throw TypeError(".google.bigtable.v2.PrepareQueryResponse.validUntil: object expected");
+                            message.validUntil = $root.google.protobuf.Timestamp.fromObject(object.validUntil);
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a PrepareQueryResponse message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.PrepareQueryResponse
+                     * @static
+                     * @param {google.bigtable.v2.PrepareQueryResponse} message PrepareQueryResponse
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    PrepareQueryResponse.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            object.metadata = null;
+                            if (options.bytes === String)
+                                object.preparedQuery = "";
+                            else {
+                                object.preparedQuery = [];
+                                if (options.bytes !== Array)
+                                    object.preparedQuery = $util.newBuffer(object.preparedQuery);
+                            }
+                            object.validUntil = null;
+                        }
+                        if (message.metadata != null && message.hasOwnProperty("metadata"))
+                            object.metadata = $root.google.bigtable.v2.ResultSetMetadata.toObject(message.metadata, options);
+                        if (message.preparedQuery != null && message.hasOwnProperty("preparedQuery"))
+                            object.preparedQuery = options.bytes === String ? $util.base64.encode(message.preparedQuery, 0, message.preparedQuery.length) : options.bytes === Array ? Array.prototype.slice.call(message.preparedQuery) : message.preparedQuery;
+                        if (message.validUntil != null && message.hasOwnProperty("validUntil"))
+                            object.validUntil = $root.google.protobuf.Timestamp.toObject(message.validUntil, options);
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this PrepareQueryResponse to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.PrepareQueryResponse
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    PrepareQueryResponse.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for PrepareQueryResponse
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.PrepareQueryResponse
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    PrepareQueryResponse.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.PrepareQueryResponse";
+                    };
+    
+                    return PrepareQueryResponse;
                 })();
     
                 v2.Row = (function() {
@@ -17805,7 +18503,9 @@
                      * @memberof google.bigtable.v2
                      * @interface IPartialResultSet
                      * @property {google.bigtable.v2.IProtoRowsBatch|null} [protoRowsBatch] PartialResultSet protoRowsBatch
+                     * @property {number|null} [batchChecksum] PartialResultSet batchChecksum
                      * @property {Uint8Array|null} [resumeToken] PartialResultSet resumeToken
+                     * @property {boolean|null} [reset] PartialResultSet reset
                      * @property {number|null} [estimatedBatchSize] PartialResultSet estimatedBatchSize
                      */
     
@@ -17833,12 +18533,28 @@
                     PartialResultSet.prototype.protoRowsBatch = null;
     
                     /**
+                     * PartialResultSet batchChecksum.
+                     * @member {number|null|undefined} batchChecksum
+                     * @memberof google.bigtable.v2.PartialResultSet
+                     * @instance
+                     */
+                    PartialResultSet.prototype.batchChecksum = null;
+    
+                    /**
                      * PartialResultSet resumeToken.
                      * @member {Uint8Array} resumeToken
                      * @memberof google.bigtable.v2.PartialResultSet
                      * @instance
                      */
                     PartialResultSet.prototype.resumeToken = $util.newBuffer([]);
+    
+                    /**
+                     * PartialResultSet reset.
+                     * @member {boolean} reset
+                     * @memberof google.bigtable.v2.PartialResultSet
+                     * @instance
+                     */
+                    PartialResultSet.prototype.reset = false;
     
                     /**
                      * PartialResultSet estimatedBatchSize.
@@ -17859,6 +18575,12 @@
                      */
                     Object.defineProperty(PartialResultSet.prototype, "partialRows", {
                         get: $util.oneOfGetter($oneOfFields = ["protoRowsBatch"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+    
+                    // Virtual OneOf for proto3 optional field
+                    Object.defineProperty(PartialResultSet.prototype, "_batchChecksum", {
+                        get: $util.oneOfGetter($oneOfFields = ["batchChecksum"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
     
@@ -17892,6 +18614,10 @@
                             writer.uint32(/* id 4, wireType 0 =*/32).int32(message.estimatedBatchSize);
                         if (message.resumeToken != null && Object.hasOwnProperty.call(message, "resumeToken"))
                             writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.resumeToken);
+                        if (message.batchChecksum != null && Object.hasOwnProperty.call(message, "batchChecksum"))
+                            writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.batchChecksum);
+                        if (message.reset != null && Object.hasOwnProperty.call(message, "reset"))
+                            writer.uint32(/* id 7, wireType 0 =*/56).bool(message.reset);
                         return writer;
                     };
     
@@ -17930,8 +18656,16 @@
                                     message.protoRowsBatch = $root.google.bigtable.v2.ProtoRowsBatch.decode(reader, reader.uint32());
                                     break;
                                 }
+                            case 6: {
+                                    message.batchChecksum = reader.uint32();
+                                    break;
+                                }
                             case 5: {
                                     message.resumeToken = reader.bytes();
+                                    break;
+                                }
+                            case 7: {
+                                    message.reset = reader.bool();
                                     break;
                                 }
                             case 4: {
@@ -17982,9 +18716,17 @@
                                     return "protoRowsBatch." + error;
                             }
                         }
+                        if (message.batchChecksum != null && message.hasOwnProperty("batchChecksum")) {
+                            properties._batchChecksum = 1;
+                            if (!$util.isInteger(message.batchChecksum))
+                                return "batchChecksum: integer expected";
+                        }
                         if (message.resumeToken != null && message.hasOwnProperty("resumeToken"))
                             if (!(message.resumeToken && typeof message.resumeToken.length === "number" || $util.isString(message.resumeToken)))
                                 return "resumeToken: buffer expected";
+                        if (message.reset != null && message.hasOwnProperty("reset"))
+                            if (typeof message.reset !== "boolean")
+                                return "reset: boolean expected";
                         if (message.estimatedBatchSize != null && message.hasOwnProperty("estimatedBatchSize"))
                             if (!$util.isInteger(message.estimatedBatchSize))
                                 return "estimatedBatchSize: integer expected";
@@ -18008,11 +18750,15 @@
                                 throw TypeError(".google.bigtable.v2.PartialResultSet.protoRowsBatch: object expected");
                             message.protoRowsBatch = $root.google.bigtable.v2.ProtoRowsBatch.fromObject(object.protoRowsBatch);
                         }
+                        if (object.batchChecksum != null)
+                            message.batchChecksum = object.batchChecksum >>> 0;
                         if (object.resumeToken != null)
                             if (typeof object.resumeToken === "string")
                                 $util.base64.decode(object.resumeToken, message.resumeToken = $util.newBuffer($util.base64.length(object.resumeToken)), 0);
                             else if (object.resumeToken.length >= 0)
                                 message.resumeToken = object.resumeToken;
+                        if (object.reset != null)
+                            message.reset = Boolean(object.reset);
                         if (object.estimatedBatchSize != null)
                             message.estimatedBatchSize = object.estimatedBatchSize | 0;
                         return message;
@@ -18040,6 +18786,7 @@
                                 if (options.bytes !== Array)
                                     object.resumeToken = $util.newBuffer(object.resumeToken);
                             }
+                            object.reset = false;
                         }
                         if (message.protoRowsBatch != null && message.hasOwnProperty("protoRowsBatch")) {
                             object.protoRowsBatch = $root.google.bigtable.v2.ProtoRowsBatch.toObject(message.protoRowsBatch, options);
@@ -18050,6 +18797,13 @@
                             object.estimatedBatchSize = message.estimatedBatchSize;
                         if (message.resumeToken != null && message.hasOwnProperty("resumeToken"))
                             object.resumeToken = options.bytes === String ? $util.base64.encode(message.resumeToken, 0, message.resumeToken.length) : options.bytes === Array ? Array.prototype.slice.call(message.resumeToken) : message.resumeToken;
+                        if (message.batchChecksum != null && message.hasOwnProperty("batchChecksum")) {
+                            object.batchChecksum = message.batchChecksum;
+                            if (options.oneofs)
+                                object._batchChecksum = "batchChecksum";
+                        }
+                        if (message.reset != null && message.hasOwnProperty("reset"))
+                            object.reset = message.reset;
                         return object;
                     };
     
