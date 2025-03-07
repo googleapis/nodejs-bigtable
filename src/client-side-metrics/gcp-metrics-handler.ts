@@ -244,28 +244,22 @@ export class GCPMetricsHandler implements IMetricsHandler {
       cluster: data.metricsCollectorData.cluster,
       zone: data.metricsCollectorData.zone,
     });
+    const commonAttributes = {
+      appProfileId: data.metricsCollectorData.appProfileId,
+      methodName: data.metricsCollectorData.methodName,
+      clientUid: data.metricsCollectorData.clientUid,
+      finalOperationStatus: data.finalOperationStatus,
+      clientName: data.clientName,
+    };
     this.otelMetrics?.operationLatencies.record(data.operationLatency, {
-      appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
-      finalOperationStatus: data.finalOperationStatus,
       streamingOperation: data.streamingOperation,
-      clientName: data.clientName,
+      ...commonAttributes,
     });
-    this.otelMetrics?.retryCount.add(data.retryCount, {
-      appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
-      finalOperationStatus: data.finalOperationStatus,
-      clientName: data.clientName,
-    });
-    this.otelMetrics?.firstResponseLatencies.record(data.firstResponseLatency, {
-      appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
-      finalOperationStatus: data.finalOperationStatus,
-      clientName: data.clientName,
-    });
+    this.otelMetrics?.retryCount.add(data.retryCount, commonAttributes);
+    this.otelMetrics?.firstResponseLatencies.record(
+      data.firstResponseLatency,
+      commonAttributes
+    );
   }
 
   /**
@@ -282,28 +276,24 @@ export class GCPMetricsHandler implements IMetricsHandler {
       cluster: data.metricsCollectorData.cluster,
       zone: data.metricsCollectorData.zone,
     });
+    const commonAttributes = {
+      appProfileId: data.metricsCollectorData.appProfileId,
+      methodName: data.metricsCollectorData.methodName,
+      clientUid: data.metricsCollectorData.clientUid,
+      attemptStatus: data.attemptStatus,
+      clientName: data.clientName,
+    };
     this.otelMetrics?.attemptLatencies.record(data.attemptLatency, {
-      appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
-      attemptStatus: data.attemptStatus,
       streamingOperation: data.streamingOperation,
-      clientName: data.clientName,
+      ...commonAttributes,
     });
-    this.otelMetrics?.connectivityErrorCount.add(data.connectivityErrorCount, {
-      appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
-      attemptStatus: data.attemptStatus,
-      clientName: data.clientName,
-    });
+    this.otelMetrics?.connectivityErrorCount.add(
+      data.connectivityErrorCount,
+      commonAttributes
+    );
     this.otelMetrics?.serverLatencies.record(data.serverLatency, {
-      appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
-      attemptStatus: data.attemptStatus,
       streamingOperation: data.streamingOperation,
-      clientName: data.clientName,
+      ...commonAttributes,
     });
   }
 }
