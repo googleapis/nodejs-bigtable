@@ -339,6 +339,146 @@ export namespace google {
                      * @returns Promise
                      */
                     public listHotTablets(request: google.bigtable.admin.v2.IListHotTabletsRequest): Promise<google.bigtable.admin.v2.ListHotTabletsResponse>;
+
+                    /**
+                     * Calls CreateLogicalView.
+                     * @param request CreateLogicalViewRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Operation
+                     */
+                    public createLogicalView(request: google.bigtable.admin.v2.ICreateLogicalViewRequest, callback: google.bigtable.admin.v2.BigtableInstanceAdmin.CreateLogicalViewCallback): void;
+
+                    /**
+                     * Calls CreateLogicalView.
+                     * @param request CreateLogicalViewRequest message or plain object
+                     * @returns Promise
+                     */
+                    public createLogicalView(request: google.bigtable.admin.v2.ICreateLogicalViewRequest): Promise<google.longrunning.Operation>;
+
+                    /**
+                     * Calls GetLogicalView.
+                     * @param request GetLogicalViewRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and LogicalView
+                     */
+                    public getLogicalView(request: google.bigtable.admin.v2.IGetLogicalViewRequest, callback: google.bigtable.admin.v2.BigtableInstanceAdmin.GetLogicalViewCallback): void;
+
+                    /**
+                     * Calls GetLogicalView.
+                     * @param request GetLogicalViewRequest message or plain object
+                     * @returns Promise
+                     */
+                    public getLogicalView(request: google.bigtable.admin.v2.IGetLogicalViewRequest): Promise<google.bigtable.admin.v2.LogicalView>;
+
+                    /**
+                     * Calls ListLogicalViews.
+                     * @param request ListLogicalViewsRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and ListLogicalViewsResponse
+                     */
+                    public listLogicalViews(request: google.bigtable.admin.v2.IListLogicalViewsRequest, callback: google.bigtable.admin.v2.BigtableInstanceAdmin.ListLogicalViewsCallback): void;
+
+                    /**
+                     * Calls ListLogicalViews.
+                     * @param request ListLogicalViewsRequest message or plain object
+                     * @returns Promise
+                     */
+                    public listLogicalViews(request: google.bigtable.admin.v2.IListLogicalViewsRequest): Promise<google.bigtable.admin.v2.ListLogicalViewsResponse>;
+
+                    /**
+                     * Calls UpdateLogicalView.
+                     * @param request UpdateLogicalViewRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Operation
+                     */
+                    public updateLogicalView(request: google.bigtable.admin.v2.IUpdateLogicalViewRequest, callback: google.bigtable.admin.v2.BigtableInstanceAdmin.UpdateLogicalViewCallback): void;
+
+                    /**
+                     * Calls UpdateLogicalView.
+                     * @param request UpdateLogicalViewRequest message or plain object
+                     * @returns Promise
+                     */
+                    public updateLogicalView(request: google.bigtable.admin.v2.IUpdateLogicalViewRequest): Promise<google.longrunning.Operation>;
+
+                    /**
+                     * Calls DeleteLogicalView.
+                     * @param request DeleteLogicalViewRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Empty
+                     */
+                    public deleteLogicalView(request: google.bigtable.admin.v2.IDeleteLogicalViewRequest, callback: google.bigtable.admin.v2.BigtableInstanceAdmin.DeleteLogicalViewCallback): void;
+
+                    /**
+                     * Calls DeleteLogicalView.
+                     * @param request DeleteLogicalViewRequest message or plain object
+                     * @returns Promise
+                     */
+                    public deleteLogicalView(request: google.bigtable.admin.v2.IDeleteLogicalViewRequest): Promise<google.protobuf.Empty>;
+
+                    /**
+                     * Calls CreateMaterializedView.
+                     * @param request CreateMaterializedViewRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Operation
+                     */
+                    public createMaterializedView(request: google.bigtable.admin.v2.ICreateMaterializedViewRequest, callback: google.bigtable.admin.v2.BigtableInstanceAdmin.CreateMaterializedViewCallback): void;
+
+                    /**
+                     * Calls CreateMaterializedView.
+                     * @param request CreateMaterializedViewRequest message or plain object
+                     * @returns Promise
+                     */
+                    public createMaterializedView(request: google.bigtable.admin.v2.ICreateMaterializedViewRequest): Promise<google.longrunning.Operation>;
+
+                    /**
+                     * Calls GetMaterializedView.
+                     * @param request GetMaterializedViewRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and MaterializedView
+                     */
+                    public getMaterializedView(request: google.bigtable.admin.v2.IGetMaterializedViewRequest, callback: google.bigtable.admin.v2.BigtableInstanceAdmin.GetMaterializedViewCallback): void;
+
+                    /**
+                     * Calls GetMaterializedView.
+                     * @param request GetMaterializedViewRequest message or plain object
+                     * @returns Promise
+                     */
+                    public getMaterializedView(request: google.bigtable.admin.v2.IGetMaterializedViewRequest): Promise<google.bigtable.admin.v2.MaterializedView>;
+
+                    /**
+                     * Calls ListMaterializedViews.
+                     * @param request ListMaterializedViewsRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and ListMaterializedViewsResponse
+                     */
+                    public listMaterializedViews(request: google.bigtable.admin.v2.IListMaterializedViewsRequest, callback: google.bigtable.admin.v2.BigtableInstanceAdmin.ListMaterializedViewsCallback): void;
+
+                    /**
+                     * Calls ListMaterializedViews.
+                     * @param request ListMaterializedViewsRequest message or plain object
+                     * @returns Promise
+                     */
+                    public listMaterializedViews(request: google.bigtable.admin.v2.IListMaterializedViewsRequest): Promise<google.bigtable.admin.v2.ListMaterializedViewsResponse>;
+
+                    /**
+                     * Calls UpdateMaterializedView.
+                     * @param request UpdateMaterializedViewRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Operation
+                     */
+                    public updateMaterializedView(request: google.bigtable.admin.v2.IUpdateMaterializedViewRequest, callback: google.bigtable.admin.v2.BigtableInstanceAdmin.UpdateMaterializedViewCallback): void;
+
+                    /**
+                     * Calls UpdateMaterializedView.
+                     * @param request UpdateMaterializedViewRequest message or plain object
+                     * @returns Promise
+                     */
+                    public updateMaterializedView(request: google.bigtable.admin.v2.IUpdateMaterializedViewRequest): Promise<google.longrunning.Operation>;
+
+                    /**
+                     * Calls DeleteMaterializedView.
+                     * @param request DeleteMaterializedViewRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Empty
+                     */
+                    public deleteMaterializedView(request: google.bigtable.admin.v2.IDeleteMaterializedViewRequest, callback: google.bigtable.admin.v2.BigtableInstanceAdmin.DeleteMaterializedViewCallback): void;
+
+                    /**
+                     * Calls DeleteMaterializedView.
+                     * @param request DeleteMaterializedViewRequest message or plain object
+                     * @returns Promise
+                     */
+                    public deleteMaterializedView(request: google.bigtable.admin.v2.IDeleteMaterializedViewRequest): Promise<google.protobuf.Empty>;
                 }
 
                 namespace BigtableInstanceAdmin {
@@ -489,6 +629,76 @@ export namespace google {
                      * @param [response] ListHotTabletsResponse
                      */
                     type ListHotTabletsCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListHotTabletsResponse) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|createLogicalView}.
+                     * @param error Error, if any
+                     * @param [response] Operation
+                     */
+                    type CreateLogicalViewCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getLogicalView}.
+                     * @param error Error, if any
+                     * @param [response] LogicalView
+                     */
+                    type GetLogicalViewCallback = (error: (Error|null), response?: google.bigtable.admin.v2.LogicalView) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|listLogicalViews}.
+                     * @param error Error, if any
+                     * @param [response] ListLogicalViewsResponse
+                     */
+                    type ListLogicalViewsCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListLogicalViewsResponse) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|updateLogicalView}.
+                     * @param error Error, if any
+                     * @param [response] Operation
+                     */
+                    type UpdateLogicalViewCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|deleteLogicalView}.
+                     * @param error Error, if any
+                     * @param [response] Empty
+                     */
+                    type DeleteLogicalViewCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|createMaterializedView}.
+                     * @param error Error, if any
+                     * @param [response] Operation
+                     */
+                    type CreateMaterializedViewCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getMaterializedView}.
+                     * @param error Error, if any
+                     * @param [response] MaterializedView
+                     */
+                    type GetMaterializedViewCallback = (error: (Error|null), response?: google.bigtable.admin.v2.MaterializedView) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|listMaterializedViews}.
+                     * @param error Error, if any
+                     * @param [response] ListMaterializedViewsResponse
+                     */
+                    type ListMaterializedViewsCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListMaterializedViewsResponse) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|updateMaterializedView}.
+                     * @param error Error, if any
+                     * @param [response] Operation
+                     */
+                    type UpdateMaterializedViewCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|deleteMaterializedView}.
+                     * @param error Error, if any
+                     * @param [response] Empty
+                     */
+                    type DeleteMaterializedViewCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
                 }
 
                 /** Properties of a CreateInstanceRequest. */
@@ -3583,6 +3793,315 @@ export namespace google {
                     public static getTypeUrl(typeUrlPrefix?: string): string;
                 }
 
+                /** Properties of a GetLogicalViewRequest. */
+                interface IGetLogicalViewRequest {
+
+                    /** GetLogicalViewRequest name */
+                    name?: (string|null);
+                }
+
+                /** Represents a GetLogicalViewRequest. */
+                class GetLogicalViewRequest implements IGetLogicalViewRequest {
+
+                    /**
+                     * Constructs a new GetLogicalViewRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IGetLogicalViewRequest);
+
+                    /** GetLogicalViewRequest name. */
+                    public name: string;
+
+                    /**
+                     * Creates a new GetLogicalViewRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns GetLogicalViewRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IGetLogicalViewRequest): google.bigtable.admin.v2.GetLogicalViewRequest;
+
+                    /**
+                     * Encodes the specified GetLogicalViewRequest message. Does not implicitly {@link google.bigtable.admin.v2.GetLogicalViewRequest.verify|verify} messages.
+                     * @param message GetLogicalViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IGetLogicalViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified GetLogicalViewRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.GetLogicalViewRequest.verify|verify} messages.
+                     * @param message GetLogicalViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IGetLogicalViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a GetLogicalViewRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns GetLogicalViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.GetLogicalViewRequest;
+
+                    /**
+                     * Decodes a GetLogicalViewRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns GetLogicalViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.GetLogicalViewRequest;
+
+                    /**
+                     * Verifies a GetLogicalViewRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a GetLogicalViewRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns GetLogicalViewRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.GetLogicalViewRequest;
+
+                    /**
+                     * Creates a plain object from a GetLogicalViewRequest message. Also converts values to other types if specified.
+                     * @param message GetLogicalViewRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.GetLogicalViewRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this GetLogicalViewRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for GetLogicalViewRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a ListLogicalViewsRequest. */
+                interface IListLogicalViewsRequest {
+
+                    /** ListLogicalViewsRequest parent */
+                    parent?: (string|null);
+
+                    /** ListLogicalViewsRequest pageSize */
+                    pageSize?: (number|null);
+
+                    /** ListLogicalViewsRequest pageToken */
+                    pageToken?: (string|null);
+                }
+
+                /** Represents a ListLogicalViewsRequest. */
+                class ListLogicalViewsRequest implements IListLogicalViewsRequest {
+
+                    /**
+                     * Constructs a new ListLogicalViewsRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IListLogicalViewsRequest);
+
+                    /** ListLogicalViewsRequest parent. */
+                    public parent: string;
+
+                    /** ListLogicalViewsRequest pageSize. */
+                    public pageSize: number;
+
+                    /** ListLogicalViewsRequest pageToken. */
+                    public pageToken: string;
+
+                    /**
+                     * Creates a new ListLogicalViewsRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns ListLogicalViewsRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IListLogicalViewsRequest): google.bigtable.admin.v2.ListLogicalViewsRequest;
+
+                    /**
+                     * Encodes the specified ListLogicalViewsRequest message. Does not implicitly {@link google.bigtable.admin.v2.ListLogicalViewsRequest.verify|verify} messages.
+                     * @param message ListLogicalViewsRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IListLogicalViewsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified ListLogicalViewsRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListLogicalViewsRequest.verify|verify} messages.
+                     * @param message ListLogicalViewsRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IListLogicalViewsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a ListLogicalViewsRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns ListLogicalViewsRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.ListLogicalViewsRequest;
+
+                    /**
+                     * Decodes a ListLogicalViewsRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns ListLogicalViewsRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.ListLogicalViewsRequest;
+
+                    /**
+                     * Verifies a ListLogicalViewsRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a ListLogicalViewsRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns ListLogicalViewsRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.ListLogicalViewsRequest;
+
+                    /**
+                     * Creates a plain object from a ListLogicalViewsRequest message. Also converts values to other types if specified.
+                     * @param message ListLogicalViewsRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.ListLogicalViewsRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this ListLogicalViewsRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for ListLogicalViewsRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a ListLogicalViewsResponse. */
+                interface IListLogicalViewsResponse {
+
+                    /** ListLogicalViewsResponse logicalViews */
+                    logicalViews?: (google.bigtable.admin.v2.ILogicalView[]|null);
+
+                    /** ListLogicalViewsResponse nextPageToken */
+                    nextPageToken?: (string|null);
+                }
+
+                /** Represents a ListLogicalViewsResponse. */
+                class ListLogicalViewsResponse implements IListLogicalViewsResponse {
+
+                    /**
+                     * Constructs a new ListLogicalViewsResponse.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IListLogicalViewsResponse);
+
+                    /** ListLogicalViewsResponse logicalViews. */
+                    public logicalViews: google.bigtable.admin.v2.ILogicalView[];
+
+                    /** ListLogicalViewsResponse nextPageToken. */
+                    public nextPageToken: string;
+
+                    /**
+                     * Creates a new ListLogicalViewsResponse instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns ListLogicalViewsResponse instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IListLogicalViewsResponse): google.bigtable.admin.v2.ListLogicalViewsResponse;
+
+                    /**
+                     * Encodes the specified ListLogicalViewsResponse message. Does not implicitly {@link google.bigtable.admin.v2.ListLogicalViewsResponse.verify|verify} messages.
+                     * @param message ListLogicalViewsResponse message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IListLogicalViewsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified ListLogicalViewsResponse message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListLogicalViewsResponse.verify|verify} messages.
+                     * @param message ListLogicalViewsResponse message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IListLogicalViewsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a ListLogicalViewsResponse message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns ListLogicalViewsResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.ListLogicalViewsResponse;
+
+                    /**
+                     * Decodes a ListLogicalViewsResponse message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns ListLogicalViewsResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.ListLogicalViewsResponse;
+
+                    /**
+                     * Verifies a ListLogicalViewsResponse message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a ListLogicalViewsResponse message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns ListLogicalViewsResponse
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.ListLogicalViewsResponse;
+
+                    /**
+                     * Creates a plain object from a ListLogicalViewsResponse message. Also converts values to other types if specified.
+                     * @param message ListLogicalViewsResponse
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.ListLogicalViewsResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this ListLogicalViewsResponse to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for ListLogicalViewsResponse
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
                 /** Properties of an UpdateLogicalViewRequest. */
                 interface IUpdateLogicalViewRequest {
 
@@ -3789,6 +4308,109 @@ export namespace google {
 
                     /**
                      * Gets the default type url for UpdateLogicalViewMetadata
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a DeleteLogicalViewRequest. */
+                interface IDeleteLogicalViewRequest {
+
+                    /** DeleteLogicalViewRequest name */
+                    name?: (string|null);
+
+                    /** DeleteLogicalViewRequest etag */
+                    etag?: (string|null);
+                }
+
+                /** Represents a DeleteLogicalViewRequest. */
+                class DeleteLogicalViewRequest implements IDeleteLogicalViewRequest {
+
+                    /**
+                     * Constructs a new DeleteLogicalViewRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IDeleteLogicalViewRequest);
+
+                    /** DeleteLogicalViewRequest name. */
+                    public name: string;
+
+                    /** DeleteLogicalViewRequest etag. */
+                    public etag: string;
+
+                    /**
+                     * Creates a new DeleteLogicalViewRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns DeleteLogicalViewRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IDeleteLogicalViewRequest): google.bigtable.admin.v2.DeleteLogicalViewRequest;
+
+                    /**
+                     * Encodes the specified DeleteLogicalViewRequest message. Does not implicitly {@link google.bigtable.admin.v2.DeleteLogicalViewRequest.verify|verify} messages.
+                     * @param message DeleteLogicalViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IDeleteLogicalViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified DeleteLogicalViewRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.DeleteLogicalViewRequest.verify|verify} messages.
+                     * @param message DeleteLogicalViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IDeleteLogicalViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a DeleteLogicalViewRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns DeleteLogicalViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.DeleteLogicalViewRequest;
+
+                    /**
+                     * Decodes a DeleteLogicalViewRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns DeleteLogicalViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.DeleteLogicalViewRequest;
+
+                    /**
+                     * Verifies a DeleteLogicalViewRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a DeleteLogicalViewRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns DeleteLogicalViewRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.DeleteLogicalViewRequest;
+
+                    /**
+                     * Creates a plain object from a DeleteLogicalViewRequest message. Also converts values to other types if specified.
+                     * @param message DeleteLogicalViewRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.DeleteLogicalViewRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this DeleteLogicalViewRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for DeleteLogicalViewRequest
                      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns The default type url
                      */
@@ -4007,6 +4629,630 @@ export namespace google {
 
                     /**
                      * Gets the default type url for CreateMaterializedViewMetadata
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a GetMaterializedViewRequest. */
+                interface IGetMaterializedViewRequest {
+
+                    /** GetMaterializedViewRequest name */
+                    name?: (string|null);
+                }
+
+                /** Represents a GetMaterializedViewRequest. */
+                class GetMaterializedViewRequest implements IGetMaterializedViewRequest {
+
+                    /**
+                     * Constructs a new GetMaterializedViewRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IGetMaterializedViewRequest);
+
+                    /** GetMaterializedViewRequest name. */
+                    public name: string;
+
+                    /**
+                     * Creates a new GetMaterializedViewRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns GetMaterializedViewRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IGetMaterializedViewRequest): google.bigtable.admin.v2.GetMaterializedViewRequest;
+
+                    /**
+                     * Encodes the specified GetMaterializedViewRequest message. Does not implicitly {@link google.bigtable.admin.v2.GetMaterializedViewRequest.verify|verify} messages.
+                     * @param message GetMaterializedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IGetMaterializedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified GetMaterializedViewRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.GetMaterializedViewRequest.verify|verify} messages.
+                     * @param message GetMaterializedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IGetMaterializedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a GetMaterializedViewRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns GetMaterializedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.GetMaterializedViewRequest;
+
+                    /**
+                     * Decodes a GetMaterializedViewRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns GetMaterializedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.GetMaterializedViewRequest;
+
+                    /**
+                     * Verifies a GetMaterializedViewRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a GetMaterializedViewRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns GetMaterializedViewRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.GetMaterializedViewRequest;
+
+                    /**
+                     * Creates a plain object from a GetMaterializedViewRequest message. Also converts values to other types if specified.
+                     * @param message GetMaterializedViewRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.GetMaterializedViewRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this GetMaterializedViewRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for GetMaterializedViewRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a ListMaterializedViewsRequest. */
+                interface IListMaterializedViewsRequest {
+
+                    /** ListMaterializedViewsRequest parent */
+                    parent?: (string|null);
+
+                    /** ListMaterializedViewsRequest pageSize */
+                    pageSize?: (number|null);
+
+                    /** ListMaterializedViewsRequest pageToken */
+                    pageToken?: (string|null);
+                }
+
+                /** Represents a ListMaterializedViewsRequest. */
+                class ListMaterializedViewsRequest implements IListMaterializedViewsRequest {
+
+                    /**
+                     * Constructs a new ListMaterializedViewsRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IListMaterializedViewsRequest);
+
+                    /** ListMaterializedViewsRequest parent. */
+                    public parent: string;
+
+                    /** ListMaterializedViewsRequest pageSize. */
+                    public pageSize: number;
+
+                    /** ListMaterializedViewsRequest pageToken. */
+                    public pageToken: string;
+
+                    /**
+                     * Creates a new ListMaterializedViewsRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns ListMaterializedViewsRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IListMaterializedViewsRequest): google.bigtable.admin.v2.ListMaterializedViewsRequest;
+
+                    /**
+                     * Encodes the specified ListMaterializedViewsRequest message. Does not implicitly {@link google.bigtable.admin.v2.ListMaterializedViewsRequest.verify|verify} messages.
+                     * @param message ListMaterializedViewsRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IListMaterializedViewsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified ListMaterializedViewsRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListMaterializedViewsRequest.verify|verify} messages.
+                     * @param message ListMaterializedViewsRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IListMaterializedViewsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a ListMaterializedViewsRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns ListMaterializedViewsRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.ListMaterializedViewsRequest;
+
+                    /**
+                     * Decodes a ListMaterializedViewsRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns ListMaterializedViewsRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.ListMaterializedViewsRequest;
+
+                    /**
+                     * Verifies a ListMaterializedViewsRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a ListMaterializedViewsRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns ListMaterializedViewsRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.ListMaterializedViewsRequest;
+
+                    /**
+                     * Creates a plain object from a ListMaterializedViewsRequest message. Also converts values to other types if specified.
+                     * @param message ListMaterializedViewsRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.ListMaterializedViewsRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this ListMaterializedViewsRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for ListMaterializedViewsRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a ListMaterializedViewsResponse. */
+                interface IListMaterializedViewsResponse {
+
+                    /** ListMaterializedViewsResponse materializedViews */
+                    materializedViews?: (google.bigtable.admin.v2.IMaterializedView[]|null);
+
+                    /** ListMaterializedViewsResponse nextPageToken */
+                    nextPageToken?: (string|null);
+                }
+
+                /** Represents a ListMaterializedViewsResponse. */
+                class ListMaterializedViewsResponse implements IListMaterializedViewsResponse {
+
+                    /**
+                     * Constructs a new ListMaterializedViewsResponse.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IListMaterializedViewsResponse);
+
+                    /** ListMaterializedViewsResponse materializedViews. */
+                    public materializedViews: google.bigtable.admin.v2.IMaterializedView[];
+
+                    /** ListMaterializedViewsResponse nextPageToken. */
+                    public nextPageToken: string;
+
+                    /**
+                     * Creates a new ListMaterializedViewsResponse instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns ListMaterializedViewsResponse instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IListMaterializedViewsResponse): google.bigtable.admin.v2.ListMaterializedViewsResponse;
+
+                    /**
+                     * Encodes the specified ListMaterializedViewsResponse message. Does not implicitly {@link google.bigtable.admin.v2.ListMaterializedViewsResponse.verify|verify} messages.
+                     * @param message ListMaterializedViewsResponse message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IListMaterializedViewsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified ListMaterializedViewsResponse message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListMaterializedViewsResponse.verify|verify} messages.
+                     * @param message ListMaterializedViewsResponse message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IListMaterializedViewsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a ListMaterializedViewsResponse message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns ListMaterializedViewsResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.ListMaterializedViewsResponse;
+
+                    /**
+                     * Decodes a ListMaterializedViewsResponse message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns ListMaterializedViewsResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.ListMaterializedViewsResponse;
+
+                    /**
+                     * Verifies a ListMaterializedViewsResponse message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a ListMaterializedViewsResponse message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns ListMaterializedViewsResponse
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.ListMaterializedViewsResponse;
+
+                    /**
+                     * Creates a plain object from a ListMaterializedViewsResponse message. Also converts values to other types if specified.
+                     * @param message ListMaterializedViewsResponse
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.ListMaterializedViewsResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this ListMaterializedViewsResponse to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for ListMaterializedViewsResponse
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of an UpdateMaterializedViewRequest. */
+                interface IUpdateMaterializedViewRequest {
+
+                    /** UpdateMaterializedViewRequest materializedView */
+                    materializedView?: (google.bigtable.admin.v2.IMaterializedView|null);
+
+                    /** UpdateMaterializedViewRequest updateMask */
+                    updateMask?: (google.protobuf.IFieldMask|null);
+                }
+
+                /** Represents an UpdateMaterializedViewRequest. */
+                class UpdateMaterializedViewRequest implements IUpdateMaterializedViewRequest {
+
+                    /**
+                     * Constructs a new UpdateMaterializedViewRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IUpdateMaterializedViewRequest);
+
+                    /** UpdateMaterializedViewRequest materializedView. */
+                    public materializedView?: (google.bigtable.admin.v2.IMaterializedView|null);
+
+                    /** UpdateMaterializedViewRequest updateMask. */
+                    public updateMask?: (google.protobuf.IFieldMask|null);
+
+                    /**
+                     * Creates a new UpdateMaterializedViewRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns UpdateMaterializedViewRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IUpdateMaterializedViewRequest): google.bigtable.admin.v2.UpdateMaterializedViewRequest;
+
+                    /**
+                     * Encodes the specified UpdateMaterializedViewRequest message. Does not implicitly {@link google.bigtable.admin.v2.UpdateMaterializedViewRequest.verify|verify} messages.
+                     * @param message UpdateMaterializedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IUpdateMaterializedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified UpdateMaterializedViewRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UpdateMaterializedViewRequest.verify|verify} messages.
+                     * @param message UpdateMaterializedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IUpdateMaterializedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an UpdateMaterializedViewRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns UpdateMaterializedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.UpdateMaterializedViewRequest;
+
+                    /**
+                     * Decodes an UpdateMaterializedViewRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns UpdateMaterializedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.UpdateMaterializedViewRequest;
+
+                    /**
+                     * Verifies an UpdateMaterializedViewRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an UpdateMaterializedViewRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns UpdateMaterializedViewRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.UpdateMaterializedViewRequest;
+
+                    /**
+                     * Creates a plain object from an UpdateMaterializedViewRequest message. Also converts values to other types if specified.
+                     * @param message UpdateMaterializedViewRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.UpdateMaterializedViewRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this UpdateMaterializedViewRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for UpdateMaterializedViewRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of an UpdateMaterializedViewMetadata. */
+                interface IUpdateMaterializedViewMetadata {
+
+                    /** UpdateMaterializedViewMetadata originalRequest */
+                    originalRequest?: (google.bigtable.admin.v2.IUpdateMaterializedViewRequest|null);
+
+                    /** UpdateMaterializedViewMetadata startTime */
+                    startTime?: (google.protobuf.ITimestamp|null);
+
+                    /** UpdateMaterializedViewMetadata endTime */
+                    endTime?: (google.protobuf.ITimestamp|null);
+                }
+
+                /** Represents an UpdateMaterializedViewMetadata. */
+                class UpdateMaterializedViewMetadata implements IUpdateMaterializedViewMetadata {
+
+                    /**
+                     * Constructs a new UpdateMaterializedViewMetadata.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IUpdateMaterializedViewMetadata);
+
+                    /** UpdateMaterializedViewMetadata originalRequest. */
+                    public originalRequest?: (google.bigtable.admin.v2.IUpdateMaterializedViewRequest|null);
+
+                    /** UpdateMaterializedViewMetadata startTime. */
+                    public startTime?: (google.protobuf.ITimestamp|null);
+
+                    /** UpdateMaterializedViewMetadata endTime. */
+                    public endTime?: (google.protobuf.ITimestamp|null);
+
+                    /**
+                     * Creates a new UpdateMaterializedViewMetadata instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns UpdateMaterializedViewMetadata instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IUpdateMaterializedViewMetadata): google.bigtable.admin.v2.UpdateMaterializedViewMetadata;
+
+                    /**
+                     * Encodes the specified UpdateMaterializedViewMetadata message. Does not implicitly {@link google.bigtable.admin.v2.UpdateMaterializedViewMetadata.verify|verify} messages.
+                     * @param message UpdateMaterializedViewMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IUpdateMaterializedViewMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified UpdateMaterializedViewMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UpdateMaterializedViewMetadata.verify|verify} messages.
+                     * @param message UpdateMaterializedViewMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IUpdateMaterializedViewMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an UpdateMaterializedViewMetadata message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns UpdateMaterializedViewMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.UpdateMaterializedViewMetadata;
+
+                    /**
+                     * Decodes an UpdateMaterializedViewMetadata message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns UpdateMaterializedViewMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.UpdateMaterializedViewMetadata;
+
+                    /**
+                     * Verifies an UpdateMaterializedViewMetadata message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an UpdateMaterializedViewMetadata message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns UpdateMaterializedViewMetadata
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.UpdateMaterializedViewMetadata;
+
+                    /**
+                     * Creates a plain object from an UpdateMaterializedViewMetadata message. Also converts values to other types if specified.
+                     * @param message UpdateMaterializedViewMetadata
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.UpdateMaterializedViewMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this UpdateMaterializedViewMetadata to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for UpdateMaterializedViewMetadata
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a DeleteMaterializedViewRequest. */
+                interface IDeleteMaterializedViewRequest {
+
+                    /** DeleteMaterializedViewRequest name */
+                    name?: (string|null);
+
+                    /** DeleteMaterializedViewRequest etag */
+                    etag?: (string|null);
+                }
+
+                /** Represents a DeleteMaterializedViewRequest. */
+                class DeleteMaterializedViewRequest implements IDeleteMaterializedViewRequest {
+
+                    /**
+                     * Constructs a new DeleteMaterializedViewRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IDeleteMaterializedViewRequest);
+
+                    /** DeleteMaterializedViewRequest name. */
+                    public name: string;
+
+                    /** DeleteMaterializedViewRequest etag. */
+                    public etag: string;
+
+                    /**
+                     * Creates a new DeleteMaterializedViewRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns DeleteMaterializedViewRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IDeleteMaterializedViewRequest): google.bigtable.admin.v2.DeleteMaterializedViewRequest;
+
+                    /**
+                     * Encodes the specified DeleteMaterializedViewRequest message. Does not implicitly {@link google.bigtable.admin.v2.DeleteMaterializedViewRequest.verify|verify} messages.
+                     * @param message DeleteMaterializedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IDeleteMaterializedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified DeleteMaterializedViewRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.DeleteMaterializedViewRequest.verify|verify} messages.
+                     * @param message DeleteMaterializedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IDeleteMaterializedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a DeleteMaterializedViewRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns DeleteMaterializedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.DeleteMaterializedViewRequest;
+
+                    /**
+                     * Decodes a DeleteMaterializedViewRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns DeleteMaterializedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.DeleteMaterializedViewRequest;
+
+                    /**
+                     * Verifies a DeleteMaterializedViewRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a DeleteMaterializedViewRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns DeleteMaterializedViewRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.DeleteMaterializedViewRequest;
+
+                    /**
+                     * Creates a plain object from a DeleteMaterializedViewRequest message. Also converts values to other types if specified.
+                     * @param message DeleteMaterializedViewRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.DeleteMaterializedViewRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this DeleteMaterializedViewRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for DeleteMaterializedViewRequest
                      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns The default type url
                      */

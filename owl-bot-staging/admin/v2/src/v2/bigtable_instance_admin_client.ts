@@ -219,7 +219,11 @@ export class BigtableInstanceAdminClient {
       listAppProfiles:
           new this._gaxModule.PageDescriptor('pageToken', 'nextPageToken', 'appProfiles'),
       listHotTablets:
-          new this._gaxModule.PageDescriptor('pageToken', 'nextPageToken', 'hotTablets')
+          new this._gaxModule.PageDescriptor('pageToken', 'nextPageToken', 'hotTablets'),
+      listLogicalViews:
+          new this._gaxModule.PageDescriptor('pageToken', 'nextPageToken', 'logicalViews'),
+      listMaterializedViews:
+          new this._gaxModule.PageDescriptor('pageToken', 'nextPageToken', 'materializedViews')
     };
 
     const protoFilesRoot = this._gaxModule.protobuf.Root.fromJSON(jsonProtos);
@@ -259,6 +263,22 @@ export class BigtableInstanceAdminClient {
       '.google.bigtable.admin.v2.AppProfile') as gax.protobuf.Type;
     const updateAppProfileMetadata = protoFilesRoot.lookup(
       '.google.bigtable.admin.v2.UpdateAppProfileMetadata') as gax.protobuf.Type;
+    const createLogicalViewResponse = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.LogicalView') as gax.protobuf.Type;
+    const createLogicalViewMetadata = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.CreateLogicalViewMetadata') as gax.protobuf.Type;
+    const updateLogicalViewResponse = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.LogicalView') as gax.protobuf.Type;
+    const updateLogicalViewMetadata = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.UpdateLogicalViewMetadata') as gax.protobuf.Type;
+    const createMaterializedViewResponse = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.MaterializedView') as gax.protobuf.Type;
+    const createMaterializedViewMetadata = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.CreateMaterializedViewMetadata') as gax.protobuf.Type;
+    const updateMaterializedViewResponse = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.MaterializedView') as gax.protobuf.Type;
+    const updateMaterializedViewMetadata = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.UpdateMaterializedViewMetadata') as gax.protobuf.Type;
 
     this.descriptors.longrunning = {
       createInstance: new this._gaxModule.LongrunningDescriptor(
@@ -284,7 +304,23 @@ export class BigtableInstanceAdminClient {
       updateAppProfile: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         updateAppProfileResponse.decode.bind(updateAppProfileResponse),
-        updateAppProfileMetadata.decode.bind(updateAppProfileMetadata))
+        updateAppProfileMetadata.decode.bind(updateAppProfileMetadata)),
+      createLogicalView: new this._gaxModule.LongrunningDescriptor(
+        this.operationsClient,
+        createLogicalViewResponse.decode.bind(createLogicalViewResponse),
+        createLogicalViewMetadata.decode.bind(createLogicalViewMetadata)),
+      updateLogicalView: new this._gaxModule.LongrunningDescriptor(
+        this.operationsClient,
+        updateLogicalViewResponse.decode.bind(updateLogicalViewResponse),
+        updateLogicalViewMetadata.decode.bind(updateLogicalViewMetadata)),
+      createMaterializedView: new this._gaxModule.LongrunningDescriptor(
+        this.operationsClient,
+        createMaterializedViewResponse.decode.bind(createMaterializedViewResponse),
+        createMaterializedViewMetadata.decode.bind(createMaterializedViewMetadata)),
+      updateMaterializedView: new this._gaxModule.LongrunningDescriptor(
+        this.operationsClient,
+        updateMaterializedViewResponse.decode.bind(updateMaterializedViewResponse),
+        updateMaterializedViewMetadata.decode.bind(updateMaterializedViewMetadata))
     };
 
     // Put together the default options sent with requests.
@@ -330,7 +366,7 @@ export class BigtableInstanceAdminClient {
     // Iterate over each of the methods that the service provides
     // and create an API call method for each.
     const bigtableInstanceAdminStubMethods =
-        ['createInstance', 'getInstance', 'listInstances', 'updateInstance', 'partialUpdateInstance', 'deleteInstance', 'createCluster', 'getCluster', 'listClusters', 'updateCluster', 'partialUpdateCluster', 'deleteCluster', 'createAppProfile', 'getAppProfile', 'listAppProfiles', 'updateAppProfile', 'deleteAppProfile', 'getIamPolicy', 'setIamPolicy', 'testIamPermissions', 'listHotTablets'];
+        ['createInstance', 'getInstance', 'listInstances', 'updateInstance', 'partialUpdateInstance', 'deleteInstance', 'createCluster', 'getCluster', 'listClusters', 'updateCluster', 'partialUpdateCluster', 'deleteCluster', 'createAppProfile', 'getAppProfile', 'listAppProfiles', 'updateAppProfile', 'deleteAppProfile', 'getIamPolicy', 'setIamPolicy', 'testIamPermissions', 'listHotTablets', 'createLogicalView', 'getLogicalView', 'listLogicalViews', 'updateLogicalView', 'deleteLogicalView', 'createMaterializedView', 'getMaterializedView', 'listMaterializedViews', 'updateMaterializedView', 'deleteMaterializedView'];
     for (const methodName of bigtableInstanceAdminStubMethods) {
       const callPromise = this.bigtableInstanceAdminStub.then(
         stub => (...args: Array<{}>) => {
@@ -1433,6 +1469,303 @@ export class BigtableInstanceAdminClient {
     this.initialize();
     return this.innerApiCalls.testIamPermissions(request, options, callback);
   }
+/**
+ * Gets information about a logical view.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. The unique name of the requested logical view. Values are of the
+ *   form `projects/{project}/instances/{instance}/logicalViews/{logical_view}`.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing {@link protos.google.bigtable.admin.v2.LogicalView|LogicalView}.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.get_logical_view.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_GetLogicalView_async
+ */
+  getLogicalView(
+      request?: protos.google.bigtable.admin.v2.IGetLogicalViewRequest,
+      options?: CallOptions):
+      Promise<[
+        protos.google.bigtable.admin.v2.ILogicalView,
+        protos.google.bigtable.admin.v2.IGetLogicalViewRequest|undefined, {}|undefined
+      ]>;
+  getLogicalView(
+      request: protos.google.bigtable.admin.v2.IGetLogicalViewRequest,
+      options: CallOptions,
+      callback: Callback<
+          protos.google.bigtable.admin.v2.ILogicalView,
+          protos.google.bigtable.admin.v2.IGetLogicalViewRequest|null|undefined,
+          {}|null|undefined>): void;
+  getLogicalView(
+      request: protos.google.bigtable.admin.v2.IGetLogicalViewRequest,
+      callback: Callback<
+          protos.google.bigtable.admin.v2.ILogicalView,
+          protos.google.bigtable.admin.v2.IGetLogicalViewRequest|null|undefined,
+          {}|null|undefined>): void;
+  getLogicalView(
+      request?: protos.google.bigtable.admin.v2.IGetLogicalViewRequest,
+      optionsOrCallback?: CallOptions|Callback<
+          protos.google.bigtable.admin.v2.ILogicalView,
+          protos.google.bigtable.admin.v2.IGetLogicalViewRequest|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          protos.google.bigtable.admin.v2.ILogicalView,
+          protos.google.bigtable.admin.v2.IGetLogicalViewRequest|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        protos.google.bigtable.admin.v2.ILogicalView,
+        protos.google.bigtable.admin.v2.IGetLogicalViewRequest|undefined, {}|undefined
+      ]>|void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    }
+    else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'name': request.name ?? '',
+    });
+    this.initialize();
+    return this.innerApiCalls.getLogicalView(request, options, callback);
+  }
+/**
+ * Deletes a logical view from an instance.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. The unique name of the logical view to be deleted.
+ *   Format:
+ *   `projects/{project}/instances/{instance}/logicalViews/{logical_view}`.
+ * @param {string} [request.etag]
+ *   Optional. The current etag of the logical view.
+ *   If an etag is provided and does not match the current etag of the
+ *   logical view, deletion will be blocked and an ABORTED error will be
+ *   returned.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing {@link protos.google.protobuf.Empty|Empty}.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.delete_logical_view.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_DeleteLogicalView_async
+ */
+  deleteLogicalView(
+      request?: protos.google.bigtable.admin.v2.IDeleteLogicalViewRequest,
+      options?: CallOptions):
+      Promise<[
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteLogicalViewRequest|undefined, {}|undefined
+      ]>;
+  deleteLogicalView(
+      request: protos.google.bigtable.admin.v2.IDeleteLogicalViewRequest,
+      options: CallOptions,
+      callback: Callback<
+          protos.google.protobuf.IEmpty,
+          protos.google.bigtable.admin.v2.IDeleteLogicalViewRequest|null|undefined,
+          {}|null|undefined>): void;
+  deleteLogicalView(
+      request: protos.google.bigtable.admin.v2.IDeleteLogicalViewRequest,
+      callback: Callback<
+          protos.google.protobuf.IEmpty,
+          protos.google.bigtable.admin.v2.IDeleteLogicalViewRequest|null|undefined,
+          {}|null|undefined>): void;
+  deleteLogicalView(
+      request?: protos.google.bigtable.admin.v2.IDeleteLogicalViewRequest,
+      optionsOrCallback?: CallOptions|Callback<
+          protos.google.protobuf.IEmpty,
+          protos.google.bigtable.admin.v2.IDeleteLogicalViewRequest|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          protos.google.protobuf.IEmpty,
+          protos.google.bigtable.admin.v2.IDeleteLogicalViewRequest|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteLogicalViewRequest|undefined, {}|undefined
+      ]>|void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    }
+    else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'name': request.name ?? '',
+    });
+    this.initialize();
+    return this.innerApiCalls.deleteLogicalView(request, options, callback);
+  }
+/**
+ * Gets information about a materialized view.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. The unique name of the requested materialized view. Values are of
+ *   the form
+ *   `projects/{project}/instances/{instance}/materializedViews/{materialized_view}`.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing {@link protos.google.bigtable.admin.v2.MaterializedView|MaterializedView}.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.get_materialized_view.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_GetMaterializedView_async
+ */
+  getMaterializedView(
+      request?: protos.google.bigtable.admin.v2.IGetMaterializedViewRequest,
+      options?: CallOptions):
+      Promise<[
+        protos.google.bigtable.admin.v2.IMaterializedView,
+        protos.google.bigtable.admin.v2.IGetMaterializedViewRequest|undefined, {}|undefined
+      ]>;
+  getMaterializedView(
+      request: protos.google.bigtable.admin.v2.IGetMaterializedViewRequest,
+      options: CallOptions,
+      callback: Callback<
+          protos.google.bigtable.admin.v2.IMaterializedView,
+          protos.google.bigtable.admin.v2.IGetMaterializedViewRequest|null|undefined,
+          {}|null|undefined>): void;
+  getMaterializedView(
+      request: protos.google.bigtable.admin.v2.IGetMaterializedViewRequest,
+      callback: Callback<
+          protos.google.bigtable.admin.v2.IMaterializedView,
+          protos.google.bigtable.admin.v2.IGetMaterializedViewRequest|null|undefined,
+          {}|null|undefined>): void;
+  getMaterializedView(
+      request?: protos.google.bigtable.admin.v2.IGetMaterializedViewRequest,
+      optionsOrCallback?: CallOptions|Callback<
+          protos.google.bigtable.admin.v2.IMaterializedView,
+          protos.google.bigtable.admin.v2.IGetMaterializedViewRequest|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          protos.google.bigtable.admin.v2.IMaterializedView,
+          protos.google.bigtable.admin.v2.IGetMaterializedViewRequest|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        protos.google.bigtable.admin.v2.IMaterializedView,
+        protos.google.bigtable.admin.v2.IGetMaterializedViewRequest|undefined, {}|undefined
+      ]>|void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    }
+    else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'name': request.name ?? '',
+    });
+    this.initialize();
+    return this.innerApiCalls.getMaterializedView(request, options, callback);
+  }
+/**
+ * Deletes a materialized view from an instance.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.name
+ *   Required. The unique name of the materialized view to be deleted.
+ *   Format:
+ *   `projects/{project}/instances/{instance}/materializedViews/{materialized_view}`.
+ * @param {string} [request.etag]
+ *   Optional. The current etag of the materialized view.
+ *   If an etag is provided and does not match the current etag of the
+ *   materialized view, deletion will be blocked and an ABORTED error will be
+ *   returned.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing {@link protos.google.protobuf.Empty|Empty}.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.delete_materialized_view.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_DeleteMaterializedView_async
+ */
+  deleteMaterializedView(
+      request?: protos.google.bigtable.admin.v2.IDeleteMaterializedViewRequest,
+      options?: CallOptions):
+      Promise<[
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteMaterializedViewRequest|undefined, {}|undefined
+      ]>;
+  deleteMaterializedView(
+      request: protos.google.bigtable.admin.v2.IDeleteMaterializedViewRequest,
+      options: CallOptions,
+      callback: Callback<
+          protos.google.protobuf.IEmpty,
+          protos.google.bigtable.admin.v2.IDeleteMaterializedViewRequest|null|undefined,
+          {}|null|undefined>): void;
+  deleteMaterializedView(
+      request: protos.google.bigtable.admin.v2.IDeleteMaterializedViewRequest,
+      callback: Callback<
+          protos.google.protobuf.IEmpty,
+          protos.google.bigtable.admin.v2.IDeleteMaterializedViewRequest|null|undefined,
+          {}|null|undefined>): void;
+  deleteMaterializedView(
+      request?: protos.google.bigtable.admin.v2.IDeleteMaterializedViewRequest,
+      optionsOrCallback?: CallOptions|Callback<
+          protos.google.protobuf.IEmpty,
+          protos.google.bigtable.admin.v2.IDeleteMaterializedViewRequest|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          protos.google.protobuf.IEmpty,
+          protos.google.bigtable.admin.v2.IDeleteMaterializedViewRequest|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteMaterializedViewRequest|undefined, {}|undefined
+      ]>|void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    }
+    else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'name': request.name ?? '',
+    });
+    this.initialize();
+    return this.innerApiCalls.deleteMaterializedView(request, options, callback);
+  }
 
 /**
  * Create an instance within a project.
@@ -2049,6 +2382,386 @@ export class BigtableInstanceAdminClient {
     const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.updateAppProfile, this._gaxModule.createDefaultBackoffSettings());
     return decodeOperation as LROperation<protos.google.bigtable.admin.v2.AppProfile, protos.google.bigtable.admin.v2.UpdateAppProfileMetadata>;
   }
+/**
+ * Creates a logical view within an instance.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. The parent instance where this logical view will be created.
+ *   Format: `projects/{project}/instances/{instance}`.
+ * @param {string} request.logicalViewId
+ *   Required. The ID to use for the logical view, which will become the final
+ *   component of the logical view's resource name.
+ * @param {google.bigtable.admin.v2.LogicalView} request.logicalView
+ *   Required. The logical view to create.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing
+ *   a long running operation. Its `promise()` method returns a promise
+ *   you can `await` for.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.create_logical_view.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateLogicalView_async
+ */
+  createLogicalView(
+      request?: protos.google.bigtable.admin.v2.ICreateLogicalViewRequest,
+      options?: CallOptions):
+      Promise<[
+        LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.ICreateLogicalViewMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>;
+  createLogicalView(
+      request: protos.google.bigtable.admin.v2.ICreateLogicalViewRequest,
+      options: CallOptions,
+      callback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.ICreateLogicalViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+  createLogicalView(
+      request: protos.google.bigtable.admin.v2.ICreateLogicalViewRequest,
+      callback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.ICreateLogicalViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+  createLogicalView(
+      request?: protos.google.bigtable.admin.v2.ICreateLogicalViewRequest,
+      optionsOrCallback?: CallOptions|Callback<
+          LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.ICreateLogicalViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.ICreateLogicalViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.ICreateLogicalViewMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>|void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    }
+    else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'parent': request.parent ?? '',
+    });
+    this.initialize();
+    return this.innerApiCalls.createLogicalView(request, options, callback);
+  }
+/**
+ * Check the status of the long running operation returned by `createLogicalView()`.
+ * @param {String} name
+ *   The operation name that will be passed.
+ * @returns {Promise} - The promise which resolves to an object.
+ *   The decoded operation object has result and metadata field to get information from.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.create_logical_view.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateLogicalView_async
+ */
+  async checkCreateLogicalViewProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.LogicalView, protos.google.bigtable.admin.v2.CreateLogicalViewMetadata>>{
+    const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.createLogicalView, this._gaxModule.createDefaultBackoffSettings());
+    return decodeOperation as LROperation<protos.google.bigtable.admin.v2.LogicalView, protos.google.bigtable.admin.v2.CreateLogicalViewMetadata>;
+  }
+/**
+ * Updates a logical view within an instance.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {google.bigtable.admin.v2.LogicalView} request.logicalView
+ *   Required. The logical view to update.
+ *
+ *   The logical view's `name` field is used to identify the view to update.
+ *   Format:
+ *   `projects/{project}/instances/{instance}/logicalViews/{logical_view}`.
+ * @param {google.protobuf.FieldMask} [request.updateMask]
+ *   Optional. The list of fields to update.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing
+ *   a long running operation. Its `promise()` method returns a promise
+ *   you can `await` for.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.update_logical_view.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateLogicalView_async
+ */
+  updateLogicalView(
+      request?: protos.google.bigtable.admin.v2.IUpdateLogicalViewRequest,
+      options?: CallOptions):
+      Promise<[
+        LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.IUpdateLogicalViewMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>;
+  updateLogicalView(
+      request: protos.google.bigtable.admin.v2.IUpdateLogicalViewRequest,
+      options: CallOptions,
+      callback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.IUpdateLogicalViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+  updateLogicalView(
+      request: protos.google.bigtable.admin.v2.IUpdateLogicalViewRequest,
+      callback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.IUpdateLogicalViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+  updateLogicalView(
+      request?: protos.google.bigtable.admin.v2.IUpdateLogicalViewRequest,
+      optionsOrCallback?: CallOptions|Callback<
+          LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.IUpdateLogicalViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.IUpdateLogicalViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.IUpdateLogicalViewMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>|void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    }
+    else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'logical_view.name': request.logicalView!.name ?? '',
+    });
+    this.initialize();
+    return this.innerApiCalls.updateLogicalView(request, options, callback);
+  }
+/**
+ * Check the status of the long running operation returned by `updateLogicalView()`.
+ * @param {String} name
+ *   The operation name that will be passed.
+ * @returns {Promise} - The promise which resolves to an object.
+ *   The decoded operation object has result and metadata field to get information from.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.update_logical_view.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateLogicalView_async
+ */
+  async checkUpdateLogicalViewProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.LogicalView, protos.google.bigtable.admin.v2.UpdateLogicalViewMetadata>>{
+    const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.updateLogicalView, this._gaxModule.createDefaultBackoffSettings());
+    return decodeOperation as LROperation<protos.google.bigtable.admin.v2.LogicalView, protos.google.bigtable.admin.v2.UpdateLogicalViewMetadata>;
+  }
+/**
+ * Creates a materialized view within an instance.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. The parent instance where this materialized view will be created.
+ *   Format: `projects/{project}/instances/{instance}`.
+ * @param {string} request.materializedViewId
+ *   Required. The ID to use for the materialized view, which will become the
+ *   final component of the materialized view's resource name.
+ * @param {google.bigtable.admin.v2.MaterializedView} request.materializedView
+ *   Required. The materialized view to create.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing
+ *   a long running operation. Its `promise()` method returns a promise
+ *   you can `await` for.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.create_materialized_view.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateMaterializedView_async
+ */
+  createMaterializedView(
+      request?: protos.google.bigtable.admin.v2.ICreateMaterializedViewRequest,
+      options?: CallOptions):
+      Promise<[
+        LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.ICreateMaterializedViewMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>;
+  createMaterializedView(
+      request: protos.google.bigtable.admin.v2.ICreateMaterializedViewRequest,
+      options: CallOptions,
+      callback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.ICreateMaterializedViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+  createMaterializedView(
+      request: protos.google.bigtable.admin.v2.ICreateMaterializedViewRequest,
+      callback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.ICreateMaterializedViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+  createMaterializedView(
+      request?: protos.google.bigtable.admin.v2.ICreateMaterializedViewRequest,
+      optionsOrCallback?: CallOptions|Callback<
+          LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.ICreateMaterializedViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.ICreateMaterializedViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.ICreateMaterializedViewMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>|void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    }
+    else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'parent': request.parent ?? '',
+    });
+    this.initialize();
+    return this.innerApiCalls.createMaterializedView(request, options, callback);
+  }
+/**
+ * Check the status of the long running operation returned by `createMaterializedView()`.
+ * @param {String} name
+ *   The operation name that will be passed.
+ * @returns {Promise} - The promise which resolves to an object.
+ *   The decoded operation object has result and metadata field to get information from.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.create_materialized_view.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateMaterializedView_async
+ */
+  async checkCreateMaterializedViewProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.MaterializedView, protos.google.bigtable.admin.v2.CreateMaterializedViewMetadata>>{
+    const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.createMaterializedView, this._gaxModule.createDefaultBackoffSettings());
+    return decodeOperation as LROperation<protos.google.bigtable.admin.v2.MaterializedView, protos.google.bigtable.admin.v2.CreateMaterializedViewMetadata>;
+  }
+/**
+ * Updates a materialized view within an instance.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {google.bigtable.admin.v2.MaterializedView} request.materializedView
+ *   Required. The materialized view to update.
+ *
+ *   The materialized view's `name` field is used to identify the view to
+ *   update. Format:
+ *   `projects/{project}/instances/{instance}/materializedViews/{materialized_view}`.
+ * @param {google.protobuf.FieldMask} [request.updateMask]
+ *   Optional. The list of fields to update.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is an object representing
+ *   a long running operation. Its `promise()` method returns a promise
+ *   you can `await` for.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.update_materialized_view.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateMaterializedView_async
+ */
+  updateMaterializedView(
+      request?: protos.google.bigtable.admin.v2.IUpdateMaterializedViewRequest,
+      options?: CallOptions):
+      Promise<[
+        LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.IUpdateMaterializedViewMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>;
+  updateMaterializedView(
+      request: protos.google.bigtable.admin.v2.IUpdateMaterializedViewRequest,
+      options: CallOptions,
+      callback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.IUpdateMaterializedViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+  updateMaterializedView(
+      request: protos.google.bigtable.admin.v2.IUpdateMaterializedViewRequest,
+      callback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.IUpdateMaterializedViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>): void;
+  updateMaterializedView(
+      request?: protos.google.bigtable.admin.v2.IUpdateMaterializedViewRequest,
+      optionsOrCallback?: CallOptions|Callback<
+          LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.IUpdateMaterializedViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>,
+      callback?: Callback<
+          LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.IUpdateMaterializedViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>):
+      Promise<[
+        LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.IUpdateMaterializedViewMetadata>,
+        protos.google.longrunning.IOperation|undefined, {}|undefined
+      ]>|void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    }
+    else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'materialized_view.name': request.materializedView!.name ?? '',
+    });
+    this.initialize();
+    return this.innerApiCalls.updateMaterializedView(request, options, callback);
+  }
+/**
+ * Check the status of the long running operation returned by `updateMaterializedView()`.
+ * @param {String} name
+ *   The operation name that will be passed.
+ * @returns {Promise} - The promise which resolves to an object.
+ *   The decoded operation object has result and metadata field to get information from.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.update_materialized_view.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateMaterializedView_async
+ */
+  async checkUpdateMaterializedViewProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.MaterializedView, protos.google.bigtable.admin.v2.UpdateMaterializedViewMetadata>>{
+    const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.updateMaterializedView, this._gaxModule.createDefaultBackoffSettings());
+    return decodeOperation as LROperation<protos.google.bigtable.admin.v2.MaterializedView, protos.google.bigtable.admin.v2.UpdateMaterializedViewMetadata>;
+  }
  /**
  * Lists information about app profiles in an instance.
  *
@@ -2482,6 +3195,388 @@ export class BigtableInstanceAdminClient {
       request as {},
       callSettings
     ) as AsyncIterable<protos.google.bigtable.admin.v2.IHotTablet>;
+  }
+ /**
+ * Lists information about logical views in an instance.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. The unique name of the instance for which the list of logical
+ *   views is requested. Values are of the form
+ *   `projects/{project}/instances/{instance}`.
+ * @param {number} [request.pageSize]
+ *   Optional. The maximum number of logical views to return. The service may
+ *   return fewer than this value
+ * @param {string} [request.pageToken]
+ *   Optional. A page token, received from a previous `ListLogicalViews` call.
+ *   Provide this to retrieve the subsequent page.
+ *
+ *   When paginating, all other parameters provided to `ListLogicalViews` must
+ *   match the call that provided the page token.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is Array of {@link protos.google.bigtable.admin.v2.LogicalView|LogicalView}.
+ *   The client library will perform auto-pagination by default: it will call the API as many
+ *   times as needed and will merge results from all the pages into this array.
+ *   Note that it can affect your quota.
+ *   We recommend using `listLogicalViewsAsync()`
+ *   method described below for async iteration which you can stop as needed.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#auto-pagination | documentation }
+ *   for more details and examples.
+ */
+  listLogicalViews(
+      request?: protos.google.bigtable.admin.v2.IListLogicalViewsRequest,
+      options?: CallOptions):
+      Promise<[
+        protos.google.bigtable.admin.v2.ILogicalView[],
+        protos.google.bigtable.admin.v2.IListLogicalViewsRequest|null,
+        protos.google.bigtable.admin.v2.IListLogicalViewsResponse
+      ]>;
+  listLogicalViews(
+      request: protos.google.bigtable.admin.v2.IListLogicalViewsRequest,
+      options: CallOptions,
+      callback: PaginationCallback<
+          protos.google.bigtable.admin.v2.IListLogicalViewsRequest,
+          protos.google.bigtable.admin.v2.IListLogicalViewsResponse|null|undefined,
+          protos.google.bigtable.admin.v2.ILogicalView>): void;
+  listLogicalViews(
+      request: protos.google.bigtable.admin.v2.IListLogicalViewsRequest,
+      callback: PaginationCallback<
+          protos.google.bigtable.admin.v2.IListLogicalViewsRequest,
+          protos.google.bigtable.admin.v2.IListLogicalViewsResponse|null|undefined,
+          protos.google.bigtable.admin.v2.ILogicalView>): void;
+  listLogicalViews(
+      request?: protos.google.bigtable.admin.v2.IListLogicalViewsRequest,
+      optionsOrCallback?: CallOptions|PaginationCallback<
+          protos.google.bigtable.admin.v2.IListLogicalViewsRequest,
+          protos.google.bigtable.admin.v2.IListLogicalViewsResponse|null|undefined,
+          protos.google.bigtable.admin.v2.ILogicalView>,
+      callback?: PaginationCallback<
+          protos.google.bigtable.admin.v2.IListLogicalViewsRequest,
+          protos.google.bigtable.admin.v2.IListLogicalViewsResponse|null|undefined,
+          protos.google.bigtable.admin.v2.ILogicalView>):
+      Promise<[
+        protos.google.bigtable.admin.v2.ILogicalView[],
+        protos.google.bigtable.admin.v2.IListLogicalViewsRequest|null,
+        protos.google.bigtable.admin.v2.IListLogicalViewsResponse
+      ]>|void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    }
+    else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'parent': request.parent ?? '',
+    });
+    this.initialize();
+    return this.innerApiCalls.listLogicalViews(request, options, callback);
+  }
+
+/**
+ * Equivalent to `listLogicalViews`, but returns a NodeJS Stream object.
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. The unique name of the instance for which the list of logical
+ *   views is requested. Values are of the form
+ *   `projects/{project}/instances/{instance}`.
+ * @param {number} [request.pageSize]
+ *   Optional. The maximum number of logical views to return. The service may
+ *   return fewer than this value
+ * @param {string} [request.pageToken]
+ *   Optional. A page token, received from a previous `ListLogicalViews` call.
+ *   Provide this to retrieve the subsequent page.
+ *
+ *   When paginating, all other parameters provided to `ListLogicalViews` must
+ *   match the call that provided the page token.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Stream}
+ *   An object stream which emits an object representing {@link protos.google.bigtable.admin.v2.LogicalView|LogicalView} on 'data' event.
+ *   The client library will perform auto-pagination by default: it will call the API as many
+ *   times as needed. Note that it can affect your quota.
+ *   We recommend using `listLogicalViewsAsync()`
+ *   method described below for async iteration which you can stop as needed.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#auto-pagination | documentation }
+ *   for more details and examples.
+ */
+  listLogicalViewsStream(
+      request?: protos.google.bigtable.admin.v2.IListLogicalViewsRequest,
+      options?: CallOptions):
+    Transform{
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'parent': request.parent ?? '',
+    });
+    const defaultCallSettings = this._defaults['listLogicalViews'];
+    const callSettings = defaultCallSettings.merge(options);
+    this.initialize();
+    return this.descriptors.page.listLogicalViews.createStream(
+      this.innerApiCalls.listLogicalViews as GaxCall,
+      request,
+      callSettings
+    );
+  }
+
+/**
+ * Equivalent to `listLogicalViews`, but returns an iterable object.
+ *
+ * `for`-`await`-`of` syntax is used with the iterable to get response elements on-demand.
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. The unique name of the instance for which the list of logical
+ *   views is requested. Values are of the form
+ *   `projects/{project}/instances/{instance}`.
+ * @param {number} [request.pageSize]
+ *   Optional. The maximum number of logical views to return. The service may
+ *   return fewer than this value
+ * @param {string} [request.pageToken]
+ *   Optional. A page token, received from a previous `ListLogicalViews` call.
+ *   Provide this to retrieve the subsequent page.
+ *
+ *   When paginating, all other parameters provided to `ListLogicalViews` must
+ *   match the call that provided the page token.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Object}
+ *   An iterable Object that allows {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols | async iteration }.
+ *   When you iterate the returned iterable, each element will be an object representing
+ *   {@link protos.google.bigtable.admin.v2.LogicalView|LogicalView}. The API will be called under the hood as needed, once per the page,
+ *   so you can stop the iteration when you don't need more results.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#auto-pagination | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.list_logical_views.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_ListLogicalViews_async
+ */
+  listLogicalViewsAsync(
+      request?: protos.google.bigtable.admin.v2.IListLogicalViewsRequest,
+      options?: CallOptions):
+    AsyncIterable<protos.google.bigtable.admin.v2.ILogicalView>{
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'parent': request.parent ?? '',
+    });
+    const defaultCallSettings = this._defaults['listLogicalViews'];
+    const callSettings = defaultCallSettings.merge(options);
+    this.initialize();
+    return this.descriptors.page.listLogicalViews.asyncIterate(
+      this.innerApiCalls['listLogicalViews'] as GaxCall,
+      request as {},
+      callSettings
+    ) as AsyncIterable<protos.google.bigtable.admin.v2.ILogicalView>;
+  }
+ /**
+ * Lists information about materialized views in an instance.
+ *
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. The unique name of the instance for which the list of
+ *   materialized views is requested. Values are of the form
+ *   `projects/{project}/instances/{instance}`.
+ * @param {number} [request.pageSize]
+ *   Optional. The maximum number of materialized views to return. The service
+ *   may return fewer than this value
+ * @param {string} [request.pageToken]
+ *   Optional. A page token, received from a previous `ListMaterializedViews`
+ *   call. Provide this to retrieve the subsequent page.
+ *
+ *   When paginating, all other parameters provided to `ListMaterializedViews`
+ *   must match the call that provided the page token.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Promise} - The promise which resolves to an array.
+ *   The first element of the array is Array of {@link protos.google.bigtable.admin.v2.MaterializedView|MaterializedView}.
+ *   The client library will perform auto-pagination by default: it will call the API as many
+ *   times as needed and will merge results from all the pages into this array.
+ *   Note that it can affect your quota.
+ *   We recommend using `listMaterializedViewsAsync()`
+ *   method described below for async iteration which you can stop as needed.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#auto-pagination | documentation }
+ *   for more details and examples.
+ */
+  listMaterializedViews(
+      request?: protos.google.bigtable.admin.v2.IListMaterializedViewsRequest,
+      options?: CallOptions):
+      Promise<[
+        protos.google.bigtable.admin.v2.IMaterializedView[],
+        protos.google.bigtable.admin.v2.IListMaterializedViewsRequest|null,
+        protos.google.bigtable.admin.v2.IListMaterializedViewsResponse
+      ]>;
+  listMaterializedViews(
+      request: protos.google.bigtable.admin.v2.IListMaterializedViewsRequest,
+      options: CallOptions,
+      callback: PaginationCallback<
+          protos.google.bigtable.admin.v2.IListMaterializedViewsRequest,
+          protos.google.bigtable.admin.v2.IListMaterializedViewsResponse|null|undefined,
+          protos.google.bigtable.admin.v2.IMaterializedView>): void;
+  listMaterializedViews(
+      request: protos.google.bigtable.admin.v2.IListMaterializedViewsRequest,
+      callback: PaginationCallback<
+          protos.google.bigtable.admin.v2.IListMaterializedViewsRequest,
+          protos.google.bigtable.admin.v2.IListMaterializedViewsResponse|null|undefined,
+          protos.google.bigtable.admin.v2.IMaterializedView>): void;
+  listMaterializedViews(
+      request?: protos.google.bigtable.admin.v2.IListMaterializedViewsRequest,
+      optionsOrCallback?: CallOptions|PaginationCallback<
+          protos.google.bigtable.admin.v2.IListMaterializedViewsRequest,
+          protos.google.bigtable.admin.v2.IListMaterializedViewsResponse|null|undefined,
+          protos.google.bigtable.admin.v2.IMaterializedView>,
+      callback?: PaginationCallback<
+          protos.google.bigtable.admin.v2.IListMaterializedViewsRequest,
+          protos.google.bigtable.admin.v2.IListMaterializedViewsResponse|null|undefined,
+          protos.google.bigtable.admin.v2.IMaterializedView>):
+      Promise<[
+        protos.google.bigtable.admin.v2.IMaterializedView[],
+        protos.google.bigtable.admin.v2.IListMaterializedViewsRequest|null,
+        protos.google.bigtable.admin.v2.IListMaterializedViewsResponse
+      ]>|void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    }
+    else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'parent': request.parent ?? '',
+    });
+    this.initialize();
+    return this.innerApiCalls.listMaterializedViews(request, options, callback);
+  }
+
+/**
+ * Equivalent to `listMaterializedViews`, but returns a NodeJS Stream object.
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. The unique name of the instance for which the list of
+ *   materialized views is requested. Values are of the form
+ *   `projects/{project}/instances/{instance}`.
+ * @param {number} [request.pageSize]
+ *   Optional. The maximum number of materialized views to return. The service
+ *   may return fewer than this value
+ * @param {string} [request.pageToken]
+ *   Optional. A page token, received from a previous `ListMaterializedViews`
+ *   call. Provide this to retrieve the subsequent page.
+ *
+ *   When paginating, all other parameters provided to `ListMaterializedViews`
+ *   must match the call that provided the page token.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Stream}
+ *   An object stream which emits an object representing {@link protos.google.bigtable.admin.v2.MaterializedView|MaterializedView} on 'data' event.
+ *   The client library will perform auto-pagination by default: it will call the API as many
+ *   times as needed. Note that it can affect your quota.
+ *   We recommend using `listMaterializedViewsAsync()`
+ *   method described below for async iteration which you can stop as needed.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#auto-pagination | documentation }
+ *   for more details and examples.
+ */
+  listMaterializedViewsStream(
+      request?: protos.google.bigtable.admin.v2.IListMaterializedViewsRequest,
+      options?: CallOptions):
+    Transform{
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'parent': request.parent ?? '',
+    });
+    const defaultCallSettings = this._defaults['listMaterializedViews'];
+    const callSettings = defaultCallSettings.merge(options);
+    this.initialize();
+    return this.descriptors.page.listMaterializedViews.createStream(
+      this.innerApiCalls.listMaterializedViews as GaxCall,
+      request,
+      callSettings
+    );
+  }
+
+/**
+ * Equivalent to `listMaterializedViews`, but returns an iterable object.
+ *
+ * `for`-`await`-`of` syntax is used with the iterable to get response elements on-demand.
+ * @param {Object} request
+ *   The request object that will be sent.
+ * @param {string} request.parent
+ *   Required. The unique name of the instance for which the list of
+ *   materialized views is requested. Values are of the form
+ *   `projects/{project}/instances/{instance}`.
+ * @param {number} [request.pageSize]
+ *   Optional. The maximum number of materialized views to return. The service
+ *   may return fewer than this value
+ * @param {string} [request.pageToken]
+ *   Optional. A page token, received from a previous `ListMaterializedViews`
+ *   call. Provide this to retrieve the subsequent page.
+ *
+ *   When paginating, all other parameters provided to `ListMaterializedViews`
+ *   must match the call that provided the page token.
+ * @param {object} [options]
+ *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+ * @returns {Object}
+ *   An iterable Object that allows {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols | async iteration }.
+ *   When you iterate the returned iterable, each element will be an object representing
+ *   {@link protos.google.bigtable.admin.v2.MaterializedView|MaterializedView}. The API will be called under the hood as needed, once per the page,
+ *   so you can stop the iteration when you don't need more results.
+ *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#auto-pagination | documentation }
+ *   for more details and examples.
+ * @example <caption>include:samples/generated/v2/bigtable_instance_admin.list_materialized_views.js</caption>
+ * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_ListMaterializedViews_async
+ */
+  listMaterializedViewsAsync(
+      request?: protos.google.bigtable.admin.v2.IListMaterializedViewsRequest,
+      options?: CallOptions):
+    AsyncIterable<protos.google.bigtable.admin.v2.IMaterializedView>{
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = this._gaxModule.routingHeader.fromParams({
+      'parent': request.parent ?? '',
+    });
+    const defaultCallSettings = this._defaults['listMaterializedViews'];
+    const callSettings = defaultCallSettings.merge(options);
+    this.initialize();
+    return this.descriptors.page.listMaterializedViews.asyncIterate(
+      this.innerApiCalls['listMaterializedViews'] as GaxCall,
+      request as {},
+      callSettings
+    ) as AsyncIterable<protos.google.bigtable.admin.v2.IMaterializedView>;
   }
   // --------------------
   // -- Path templates --
