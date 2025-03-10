@@ -180,6 +180,9 @@ export class BigtableClient {
       instancePathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}'
       ),
+      materializedViewPathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}/materializedViews/{materialized_view}'
+      ),
       tablePathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/tables/{table}'
       ),
@@ -956,6 +959,11 @@ export class BigtableClient {
  *
  *   Values are of the form
  *   `projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorized_view>`.
+ * @param {string} [request.materializedViewName]
+ *   Optional. The unique name of the MaterializedView from which to read.
+ *
+ *   Values are of the form
+ *   `projects/<project>/instances/<instance>/materializedViews/<materialized_view>`.
  * @param {string} request.appProfileId
  *   This value specifies routing for replication. If not specified, the
  *   "default" application profile will be used.
@@ -1057,6 +1065,11 @@ export class BigtableClient {
  *
  *   Values are of the form
  *   `projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorized_view>`.
+ * @param {string} [request.materializedViewName]
+ *   Optional. The unique name of the MaterializedView from which to read.
+ *
+ *   Values are of the form
+ *   `projects/<project>/instances/<instance>/materializedViews/<materialized_view>`.
  * @param {string} request.appProfileId
  *   This value specifies routing for replication. If not specified, the
  *   "default" application profile will be used.
@@ -1512,6 +1525,55 @@ export class BigtableClient {
    */
   matchInstanceFromInstanceName(instanceName: string) {
     return this.pathTemplates.instancePathTemplate.match(instanceName).instance;
+  }
+
+  /**
+   * Return a fully-qualified materializedView resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @param {string} materialized_view
+   * @returns {string} Resource name string.
+   */
+  materializedViewPath(project:string,instance:string,materializedView:string) {
+    return this.pathTemplates.materializedViewPathTemplate.render({
+      project: project,
+      instance: instance,
+      materialized_view: materializedView,
+    });
+  }
+
+  /**
+   * Parse the project from MaterializedView resource.
+   *
+   * @param {string} materializedViewName
+   *   A fully-qualified path representing MaterializedView resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromMaterializedViewName(materializedViewName: string) {
+    return this.pathTemplates.materializedViewPathTemplate.match(materializedViewName).project;
+  }
+
+  /**
+   * Parse the instance from MaterializedView resource.
+   *
+   * @param {string} materializedViewName
+   *   A fully-qualified path representing MaterializedView resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromMaterializedViewName(materializedViewName: string) {
+    return this.pathTemplates.materializedViewPathTemplate.match(materializedViewName).instance;
+  }
+
+  /**
+   * Parse the materialized_view from MaterializedView resource.
+   *
+   * @param {string} materializedViewName
+   *   A fully-qualified path representing MaterializedView resource.
+   * @returns {string} A string representing the materialized_view.
+   */
+  matchMaterializedViewFromMaterializedViewName(materializedViewName: string) {
+    return this.pathTemplates.materializedViewPathTemplate.match(materializedViewName).materialized_view;
   }
 
   /**

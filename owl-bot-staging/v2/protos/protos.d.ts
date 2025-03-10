@@ -287,6 +287,9 @@ export namespace google {
                 /** ReadRowsRequest authorizedViewName */
                 authorizedViewName?: (string|null);
 
+                /** ReadRowsRequest materializedViewName */
+                materializedViewName?: (string|null);
+
                 /** ReadRowsRequest appProfileId */
                 appProfileId?: (string|null);
 
@@ -320,6 +323,9 @@ export namespace google {
 
                 /** ReadRowsRequest authorizedViewName. */
                 public authorizedViewName: string;
+
+                /** ReadRowsRequest materializedViewName. */
+                public materializedViewName: string;
 
                 /** ReadRowsRequest appProfileId. */
                 public appProfileId: string;
@@ -696,6 +702,9 @@ export namespace google {
                 /** SampleRowKeysRequest authorizedViewName */
                 authorizedViewName?: (string|null);
 
+                /** SampleRowKeysRequest materializedViewName */
+                materializedViewName?: (string|null);
+
                 /** SampleRowKeysRequest appProfileId */
                 appProfileId?: (string|null);
             }
@@ -714,6 +723,9 @@ export namespace google {
 
                 /** SampleRowKeysRequest authorizedViewName. */
                 public authorizedViewName: string;
+
+                /** SampleRowKeysRequest materializedViewName. */
+                public materializedViewName: string;
 
                 /** SampleRowKeysRequest appProfileId. */
                 public appProfileId: string;

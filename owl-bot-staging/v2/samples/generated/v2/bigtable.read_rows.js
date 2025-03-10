@@ -45,6 +45,12 @@ function main() {
    */
   // const authorizedViewName = 'abc123'
   /**
+   *  Optional. The unique name of the MaterializedView from which to read.
+   *  Values are of the form
+   *  `projects/<project>/instances/<instance>/materializedViews/<materialized_view>`.
+   */
+  // const materializedViewName = 'abc123'
+  /**
    *  This value specifies routing for replication. If not specified, the
    *  "default" application profile will be used.
    */

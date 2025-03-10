@@ -22,7 +22,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 102,
+          "end": 108,
           "type": "FULL"
         }
       ],
@@ -37,6 +37,10 @@
           },
           {
             "name": "authorized_view_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "materialized_view_name",
             "type": "TYPE_STRING"
           },
           {
@@ -90,7 +94,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 72,
+          "end": 78,
           "type": "FULL"
         }
       ],
@@ -105,6 +109,10 @@
           },
           {
             "name": "authorized_view_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "materialized_view_name",
             "type": "TYPE_STRING"
           },
           {

@@ -16,8 +16,8 @@
                 "java_package": "com.google.bigtable.v2",
                 "php_namespace": "Google\\Cloud\\Bigtable\\V2",
                 "ruby_package": "Google::Cloud::Bigtable::V2",
-                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/AuthorizedView",
-                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}"
+                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/MaterializedView",
+                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}/materializedViews/{materialized_view}"
               },
               "nested": {
                 "Bigtable": {
@@ -496,6 +496,14 @@
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
                       }
                     },
+                    "materializedViewName": {
+                      "type": "string",
+                      "id": 11,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/MaterializedView"
+                      }
+                    },
                     "appProfileId": {
                       "type": "string",
                       "id": 5
@@ -615,6 +623,14 @@
                       "options": {
                         "(google.api.field_behavior)": "OPTIONAL",
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
+                      }
+                    },
+                    "materializedViewName": {
+                      "type": "string",
+                      "id": 5,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/MaterializedView"
                       }
                     },
                     "appProfileId": {

@@ -1640,6 +1640,52 @@ describe('v2.BigtableClient', () => {
             });
         });
 
+        describe('materializedView', () => {
+            const fakePath = "/rendered/path/materializedView";
+            const expectedParameters = {
+                project: "projectValue",
+                instance: "instanceValue",
+                materialized_view: "materializedViewValue",
+            };
+            const client = new bigtableModule.v2.BigtableClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            client.initialize();
+            client.pathTemplates.materializedViewPathTemplate.render =
+                sinon.stub().returns(fakePath);
+            client.pathTemplates.materializedViewPathTemplate.match =
+                sinon.stub().returns(expectedParameters);
+
+            it('materializedViewPath', () => {
+                const result = client.materializedViewPath("projectValue", "instanceValue", "materializedViewValue");
+                assert.strictEqual(result, fakePath);
+                assert((client.pathTemplates.materializedViewPathTemplate.render as SinonStub)
+                    .getCall(-1).calledWith(expectedParameters));
+            });
+
+            it('matchProjectFromMaterializedViewName', () => {
+                const result = client.matchProjectFromMaterializedViewName(fakePath);
+                assert.strictEqual(result, "projectValue");
+                assert((client.pathTemplates.materializedViewPathTemplate.match as SinonStub)
+                    .getCall(-1).calledWith(fakePath));
+            });
+
+            it('matchInstanceFromMaterializedViewName', () => {
+                const result = client.matchInstanceFromMaterializedViewName(fakePath);
+                assert.strictEqual(result, "instanceValue");
+                assert((client.pathTemplates.materializedViewPathTemplate.match as SinonStub)
+                    .getCall(-1).calledWith(fakePath));
+            });
+
+            it('matchMaterializedViewFromMaterializedViewName', () => {
+                const result = client.matchMaterializedViewFromMaterializedViewName(fakePath);
+                assert.strictEqual(result, "materializedViewValue");
+                assert((client.pathTemplates.materializedViewPathTemplate.match as SinonStub)
+                    .getCall(-1).calledWith(fakePath));
+            });
+        });
+
         describe('table', () => {
             const fakePath = "/rendered/path/table";
             const expectedParameters = {

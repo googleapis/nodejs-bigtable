@@ -463,6 +463,7 @@
                      * @interface IReadRowsRequest
                      * @property {string|null} [tableName] ReadRowsRequest tableName
                      * @property {string|null} [authorizedViewName] ReadRowsRequest authorizedViewName
+                     * @property {string|null} [materializedViewName] ReadRowsRequest materializedViewName
                      * @property {string|null} [appProfileId] ReadRowsRequest appProfileId
                      * @property {google.bigtable.v2.IRowSet|null} [rows] ReadRowsRequest rows
                      * @property {google.bigtable.v2.IRowFilter|null} [filter] ReadRowsRequest filter
@@ -501,6 +502,14 @@
                      * @instance
                      */
                     ReadRowsRequest.prototype.authorizedViewName = "";
+    
+                    /**
+                     * ReadRowsRequest materializedViewName.
+                     * @member {string} materializedViewName
+                     * @memberof google.bigtable.v2.ReadRowsRequest
+                     * @instance
+                     */
+                    ReadRowsRequest.prototype.materializedViewName = "";
     
                     /**
                      * ReadRowsRequest appProfileId.
@@ -590,6 +599,8 @@
                             writer.uint32(/* id 7, wireType 0 =*/56).bool(message.reversed);
                         if (message.authorizedViewName != null && Object.hasOwnProperty.call(message, "authorizedViewName"))
                             writer.uint32(/* id 9, wireType 2 =*/74).string(message.authorizedViewName);
+                        if (message.materializedViewName != null && Object.hasOwnProperty.call(message, "materializedViewName"))
+                            writer.uint32(/* id 11, wireType 2 =*/90).string(message.materializedViewName);
                         return writer;
                     };
     
@@ -630,6 +641,10 @@
                                 }
                             case 9: {
                                     message.authorizedViewName = reader.string();
+                                    break;
+                                }
+                            case 11: {
+                                    message.materializedViewName = reader.string();
                                     break;
                                 }
                             case 5: {
@@ -697,6 +712,9 @@
                         if (message.authorizedViewName != null && message.hasOwnProperty("authorizedViewName"))
                             if (!$util.isString(message.authorizedViewName))
                                 return "authorizedViewName: string expected";
+                        if (message.materializedViewName != null && message.hasOwnProperty("materializedViewName"))
+                            if (!$util.isString(message.materializedViewName))
+                                return "materializedViewName: string expected";
                         if (message.appProfileId != null && message.hasOwnProperty("appProfileId"))
                             if (!$util.isString(message.appProfileId))
                                 return "appProfileId: string expected";
@@ -744,6 +762,8 @@
                             message.tableName = String(object.tableName);
                         if (object.authorizedViewName != null)
                             message.authorizedViewName = String(object.authorizedViewName);
+                        if (object.materializedViewName != null)
+                            message.materializedViewName = String(object.materializedViewName);
                         if (object.appProfileId != null)
                             message.appProfileId = String(object.appProfileId);
                         if (object.rows != null) {
@@ -816,6 +836,7 @@
                             object.requestStatsView = options.enums === String ? "REQUEST_STATS_VIEW_UNSPECIFIED" : 0;
                             object.reversed = false;
                             object.authorizedViewName = "";
+                            object.materializedViewName = "";
                         }
                         if (message.tableName != null && message.hasOwnProperty("tableName"))
                             object.tableName = message.tableName;
@@ -836,6 +857,8 @@
                             object.reversed = message.reversed;
                         if (message.authorizedViewName != null && message.hasOwnProperty("authorizedViewName"))
                             object.authorizedViewName = message.authorizedViewName;
+                        if (message.materializedViewName != null && message.hasOwnProperty("materializedViewName"))
+                            object.materializedViewName = message.materializedViewName;
                         return object;
                     };
     
@@ -1650,6 +1673,7 @@
                      * @interface ISampleRowKeysRequest
                      * @property {string|null} [tableName] SampleRowKeysRequest tableName
                      * @property {string|null} [authorizedViewName] SampleRowKeysRequest authorizedViewName
+                     * @property {string|null} [materializedViewName] SampleRowKeysRequest materializedViewName
                      * @property {string|null} [appProfileId] SampleRowKeysRequest appProfileId
                      */
     
@@ -1683,6 +1707,14 @@
                      * @instance
                      */
                     SampleRowKeysRequest.prototype.authorizedViewName = "";
+    
+                    /**
+                     * SampleRowKeysRequest materializedViewName.
+                     * @member {string} materializedViewName
+                     * @memberof google.bigtable.v2.SampleRowKeysRequest
+                     * @instance
+                     */
+                    SampleRowKeysRequest.prototype.materializedViewName = "";
     
                     /**
                      * SampleRowKeysRequest appProfileId.
@@ -1722,6 +1754,8 @@
                             writer.uint32(/* id 2, wireType 2 =*/18).string(message.appProfileId);
                         if (message.authorizedViewName != null && Object.hasOwnProperty.call(message, "authorizedViewName"))
                             writer.uint32(/* id 4, wireType 2 =*/34).string(message.authorizedViewName);
+                        if (message.materializedViewName != null && Object.hasOwnProperty.call(message, "materializedViewName"))
+                            writer.uint32(/* id 5, wireType 2 =*/42).string(message.materializedViewName);
                         return writer;
                     };
     
@@ -1762,6 +1796,10 @@
                                 }
                             case 4: {
                                     message.authorizedViewName = reader.string();
+                                    break;
+                                }
+                            case 5: {
+                                    message.materializedViewName = reader.string();
                                     break;
                                 }
                             case 2: {
@@ -1809,6 +1847,9 @@
                         if (message.authorizedViewName != null && message.hasOwnProperty("authorizedViewName"))
                             if (!$util.isString(message.authorizedViewName))
                                 return "authorizedViewName: string expected";
+                        if (message.materializedViewName != null && message.hasOwnProperty("materializedViewName"))
+                            if (!$util.isString(message.materializedViewName))
+                                return "materializedViewName: string expected";
                         if (message.appProfileId != null && message.hasOwnProperty("appProfileId"))
                             if (!$util.isString(message.appProfileId))
                                 return "appProfileId: string expected";
@@ -1831,6 +1872,8 @@
                             message.tableName = String(object.tableName);
                         if (object.authorizedViewName != null)
                             message.authorizedViewName = String(object.authorizedViewName);
+                        if (object.materializedViewName != null)
+                            message.materializedViewName = String(object.materializedViewName);
                         if (object.appProfileId != null)
                             message.appProfileId = String(object.appProfileId);
                         return message;
@@ -1853,6 +1896,7 @@
                             object.tableName = "";
                             object.appProfileId = "";
                             object.authorizedViewName = "";
+                            object.materializedViewName = "";
                         }
                         if (message.tableName != null && message.hasOwnProperty("tableName"))
                             object.tableName = message.tableName;
@@ -1860,6 +1904,8 @@
                             object.appProfileId = message.appProfileId;
                         if (message.authorizedViewName != null && message.hasOwnProperty("authorizedViewName"))
                             object.authorizedViewName = message.authorizedViewName;
+                        if (message.materializedViewName != null && message.hasOwnProperty("materializedViewName"))
+                            object.materializedViewName = message.materializedViewName;
                         return object;
                     };
     
