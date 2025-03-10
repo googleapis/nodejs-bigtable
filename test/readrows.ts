@@ -429,7 +429,7 @@ describe('Bigtable/ReadRows', () => {
         });
 
         for await (const row of stream) {
-          console.log('in for loop');
+          console.log(`in for loop ${row.id}`);
           dataResults.push(row.id);
           await sleep(50);
         }
