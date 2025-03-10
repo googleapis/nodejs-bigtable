@@ -15,7 +15,53 @@
 import {describe, it, before, after} from 'mocha';
 import {Bigtable} from '../src/.';
 
-describe.only('Bigtable/MetricsCollector', () => {
+async function createColumnFamilyIfNotExists(
+  projectId: string,
+  instanceId: string,
+  tableId: string,
+  columnFamilyId: string
+) {
+  const bigtable = new Bigtable({projectId});
+  const instance = bigtable.instance(instanceId);
+  const table = instance.table(tableId);
+
+  try {
+    const [tableExists] = await table.exists();
+    if (!tableExists) {
+      console.log(
+        `Table ${tableId} does not exist. Cannot create column family.`
+      );
+      return;
+    }
+
+    // Check if the column family exists
+    const [families] = await table.getFamilies();
+    const familyExists = families.some(family => family.id === columnFamilyId);
+
+    if (!familyExists) {
+      console.log(
+        `Column family ${columnFamilyId} does not exist. Creating it...`
+      );
+      await table.createFamily(columnFamilyId);
+      console.log(`Column family ${columnFamilyId} created successfully.`);
+    } else {
+      console.log(`Column family ${columnFamilyId} already exists.`);
+    }
+  } catch (error) {
+    console.error(
+      `Error while checking or creating column family ${columnFamilyId}:`,
+      error
+    );
+  }
+}
+
+// Example Usage (replace with your actual values):
+const projectId = 'your-project-id'; // Replace with your project ID
+const instanceId = 'your-instance-id'; // Replace with your instance ID
+const tableId = 'your-table-id'; // Replace with your table ID
+const columnFamilyId = 'stats_summary';
+
+describe.only('Bigtable/IterativeTest', () => {
   const instanceId = 'emulator-test-instance';
   const tableId = 'my-table';
   const columnFamilyId = 'cf1';
@@ -65,6 +111,62 @@ describe.only('Bigtable/MetricsCollector', () => {
   it('should read rows after inserting data', async () => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
+
+    const timestamp = new Date();
+    const rowToInsert = {
+      key: 'phone#4c410523#20190501',
+      data: {
+        stats_summary: {
+          connected_cell: {
+            value: 1,
+            timestamp,
+          },
+          connected_wifi: {
+            value: 1,
+            timestamp,
+          },
+          os_build: {
+            value: 'PQ2A.190405.003',
+            timestamp,
+          },
+        },
+      },
+    };
+    const rowToInsert2 = {
+      key: 'phone#4c410523#20190502',
+      data: {
+        stats_summary: {
+          connected_cell: {
+            value: 1,
+            timestamp,
+          },
+          connected_wifi: {
+            value: 1,
+            timestamp,
+          },
+          os_build: {
+            value: 'PQ2A.190405.003',
+            timestamp,
+          },
+        },
+      },
+    };
+    const projectId: string = await new Promise((resolve, reject) => {
+      bigtable.getProjectId_((err, projectId) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(projectId as string);
+        }
+      });
+    });
+    await createColumnFamilyIfNotExists(
+      projectId,
+      instanceId,
+      tableId,
+      'stats_summary' // columnFamilyId
+    );
+    await table.insert([rowToInsert, rowToInsert2]);
     const stream = table.createReadStream();
     for await (const row of stream) {
       console.log('printing row id');
