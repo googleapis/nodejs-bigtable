@@ -33,7 +33,7 @@ const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
 
 function debugLog(text: string) {
   if (DEBUG) {
-    console.log(text);
+    // console.log(text);
   }
 }
 
@@ -389,6 +389,47 @@ describe('Bigtable/ReadRows', () => {
         });
 
         for await (const row of stream) {
+          dataResults.push(row.id);
+          await sleep(50);
+        }
+        const expectedResults = Array.from(Array(150).keys())
+          .map(i => '00000000' + i.toString())
+          .map(i => i.slice(-8));
+        assert.deepStrictEqual(dataResults, expectedResults);
+        done();
+      } catch (error) {
+        done(error);
+      }
+    })();
+  });
+  it.only('should still alternate between readrows and transform when there is backpressure', function (done) {
+    setWindowsTestTimeout(this);
+    const dataResults = [];
+
+    // keyTo and keyFrom are not provided so they will be determined from
+    // the request that is passed in.
+    service.setService({
+      ReadRows: ReadRowsImpl.createService({
+        errorAfterChunkNo: 100, // the server will error after sending this chunk (not row)
+        valueSize: 1,
+        chunkSize: 1,
+        chunksPerResponse: 1,
+        debugLog,
+      }) as ServerImplementationInterface,
+    });
+    const sleep = (ms: number) => {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    };
+    (async () => {
+      try {
+        // 150 rows must be enough to reproduce issues with losing the data and to create backpressure
+        const stream = table.createReadStream({
+          start: '00000000',
+          end: '00000150',
+        });
+
+        for await (const row of stream) {
+          console.log('in for loop');
           dataResults.push(row.id);
           await sleep(50);
         }

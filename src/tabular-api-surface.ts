@@ -299,8 +299,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
         lastRowKey = row.id;
         rowsRead++;
+        console.log('transforming');
         callback(null, row);
       },
+      /*
+      read(size: number) {
+        console.log('reading');
+      },
+       */
     });
 
     // The caller should be able to call userStream.end() to stop receiving
