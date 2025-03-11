@@ -46,7 +46,7 @@ export function getRMWRRequest(request: RMWRRequestData): RMRWRequest {
   }
 
   const requestRules = arrify(rules).map(rule => {
-    const column = Mutation.parseColumnName(rule.column);
+    const column = Mutation.parseColumnName((rule as Rule).column);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ruleData: any = {
       familyName: column.family,
