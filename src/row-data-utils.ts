@@ -166,19 +166,19 @@ class RowDataUtils {
     }
 
     rules = arrify(rules).map(rule => {
-      const column = Mutation.parseColumnName(rule.column);
+      const column = Mutation.parseColumnName((rule as Rule).column);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const ruleData: any = {
         familyName: column.family,
         columnQualifier: Mutation.convertToBytes(column.qualifier!),
       };
 
-      if (rule.append) {
-        ruleData.appendValue = Mutation.convertToBytes(rule.append);
+      if ((rule as Rule).append) {
+        ruleData.appendValue = Mutation.convertToBytes((rule as Rule).append);
       }
 
-      if (rule.increment) {
-        ruleData.incrementAmount = rule.increment;
+      if ((rule as Rule).increment) {
+        ruleData.incrementAmount = (rule as Rule).increment;
       }
 
       return ruleData;
