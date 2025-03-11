@@ -53,12 +53,12 @@ export function getRMWRRequest(request: RMWRRequestData): RMRWRequest {
       columnQualifier: Mutation.convertToBytes(column.qualifier!),
     };
 
-    if (rule.append) {
-      ruleData.appendValue = Mutation.convertToBytes(rule.append);
+    if ((rule as Rule).append) {
+      ruleData.appendValue = Mutation.convertToBytes((rule as Rule).append);
     }
 
-    if (rule.increment) {
-      ruleData.incrementAmount = rule.increment;
+    if ((rule as Rule).increment) {
+      ruleData.incrementAmount = (rule as Rule).increment;
     }
 
     return ruleData;
