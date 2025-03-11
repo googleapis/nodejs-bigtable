@@ -1042,7 +1042,7 @@ export class Table extends TabularApiSurface {
         : callback!;
 
     if (policy.etag !== null && policy.etag !== undefined) {
-      (policy.etag as {} as Buffer) = Buffer.from(policy.etag);
+      (policy.etag as {} as Buffer) = Buffer.from(policy.etag as string);
     }
     const reqOpts = {
       resource: this.name,
