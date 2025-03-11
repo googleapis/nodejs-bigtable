@@ -28,6 +28,7 @@ import {
   CreateInstanceCallback,
   CreateInstanceResponse,
   IInstance,
+  ClusterInfo,
 } from './instance';
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
@@ -634,39 +635,43 @@ export class Bigtable {
 
     reqOpts.clusters = arrify(options.clusters).reduce(
       (clusters, cluster) => {
-        if (!(cluster as Cluster).id) {
+        if (!(cluster as ClusterInfo).id) {
           throw new Error(
             'A cluster was provided without an `id` property defined.',
           );
         }
 
         if (
-          typeof cluster.key !== 'undefined' &&
-          typeof cluster.encryption !== 'undefined'
+          typeof (cluster as ClusterInfo).key !== 'undefined' &&
+          typeof (cluster as ClusterInfo).encryption !== 'undefined'
         ) {
           throw new Error(
             'A cluster was provided with both `encryption` and `key` defined.',
           );
         }
-        ClusterUtils.validateClusterMetadata(cluster);
-        clusters[cluster.id!] =
+        ClusterUtils.validateClusterMetadata(cluster as BasicClusterConfig);
+        clusters[(cluster as ClusterInfo).id!] =
           ClusterUtils.getClusterBaseConfigWithFullLocation(
-            cluster,
+            cluster as ClusterInfo,
             this.projectId,
             undefined,
           );
-        Object.assign(clusters[cluster.id!], {
-          defaultStorageType: Cluster.getStorageType_(cluster.storage!),
+        Object.assign(clusters[(cluster as ClusterInfo).id!], {
+          defaultStorageType: Cluster.getStorageType_(
+            (cluster as ClusterInfo).storage!,
+          ),
         });
 
-        if (cluster.key) {
-          clusters[cluster.id!].encryptionConfig = {
-            kmsKeyName: cluster.key,
+        if ((cluster as ClusterInfo).key) {
+          clusters[(cluster as ClusterInfo).id!].encryptionConfig = {
+            kmsKeyName: (cluster as ClusterInfo).key,
           };
         }
 
-        if (cluster.encryption) {
-          clusters[cluster.id!].encryptionConfig = cluster.encryption;
+        if ((cluster as ClusterInfo).encryption) {
+          clusters[(cluster as ClusterInfo).id!].encryptionConfig = (
+            cluster as ClusterInfo
+          ).encryption;
         }
 
         return clusters;
