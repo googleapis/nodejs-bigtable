@@ -14,7 +14,7 @@
 
 import * as assert from 'assert';
 import {describe, it, before, beforeEach, afterEach} from 'mocha';
-import * as Long from 'long';
+const Long = require('long');
 import * as proxyquire from 'proxyquire';
 import * as sn from 'sinon';
 
