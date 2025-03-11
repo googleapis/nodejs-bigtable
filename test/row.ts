@@ -331,7 +331,7 @@ describe('Bigtable/Row', () => {
         (val, options) => {
           assert.deepStrictEqual(options, {userOptions: formatOptions});
           return val.replace('unconverted', 'converted');
-        }
+        },
       );
 
       const timestamp1 = 123;
@@ -408,7 +408,7 @@ describe('Bigtable/Row', () => {
         (val, options) => {
           assert.deepStrictEqual(options, {userOptions: formatOptions});
           return val.toString(formatOptions.encoding);
-        }
+        },
       );
 
       const chunks = [
@@ -646,7 +646,7 @@ describe('Bigtable/Row', () => {
       (row.bigtable.request as Function) = (
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         config: any,
-        callback: Function
+        callback: Function,
       ) => {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'readModifyWriteRow');
@@ -676,7 +676,7 @@ describe('Bigtable/Row', () => {
       (bigtableInstance.request as Function) = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
-          bigtableInstance.appProfileId
+          bigtableInstance.appProfileId,
         );
         done();
       };
@@ -700,7 +700,7 @@ describe('Bigtable/Row', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mutation: any,
         gaxOptions: {},
-        callback: Function
+        callback: Function,
       ) => {
         assert.strictEqual(mutation.key, ROW_ID);
         assert.strictEqual(mutation.method, FakeMutation.methods.DELETE);
@@ -738,7 +738,7 @@ describe('Bigtable/Row', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mutation: any,
         gaxOptions: {},
-        callback: Function
+        callback: Function,
       ) => {
         assert.strictEqual(mutation.key, ROW_ID);
         assert.strictEqual(mutation.data, columns);
@@ -819,7 +819,7 @@ describe('Bigtable/Row', () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (gaxOptions_ as any).testProperty,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (gaxOptions as any).testProperty
+          (gaxOptions as any).testProperty,
         );
         done();
       });
@@ -904,15 +904,15 @@ describe('Bigtable/Row', () => {
         assert.strictEqual(config.reqOpts.rowKey, CONVERTED_ROW_ID);
         assert.deepStrictEqual(
           config.reqOpts.predicateFilter,
-          fakeParsedFilter
+          fakeParsedFilter,
         );
         assert.deepStrictEqual(
           config.reqOpts.trueMutations,
-          fakeMutations.mutations
+          fakeMutations.mutations,
         );
         assert.deepStrictEqual(
           config.reqOpts.falseMutations,
-          fakeMutations.mutations
+          fakeMutations.mutations,
         );
 
         assert.strictEqual(config.gaxOpts, undefined);
@@ -930,7 +930,7 @@ describe('Bigtable/Row', () => {
           onMatch: mutations,
           onNoMatch: mutations,
         },
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -955,7 +955,7 @@ describe('Bigtable/Row', () => {
       sandbox.stub(bigtableInstance, 'request').callsFake(config => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
-          bigtableInstance.appProfileId
+          bigtableInstance.appProfileId,
         );
         done();
       });
@@ -974,7 +974,7 @@ describe('Bigtable/Row', () => {
           assert.strictEqual(matched, null);
           assert.strictEqual(response, apiResponse);
           done();
-        }
+        },
       );
     });
 
@@ -991,7 +991,7 @@ describe('Bigtable/Row', () => {
           assert(matched);
           assert.strictEqual(response, apiResponse);
           done();
-        }
+        },
       );
     });
   });
@@ -1450,7 +1450,7 @@ describe('Bigtable/Row', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         entry: any,
         gaxOptions: {},
-        callback: Function
+        callback: Function,
       ) => {
         assert.strictEqual(entry.data, data);
         callback(); // done()
