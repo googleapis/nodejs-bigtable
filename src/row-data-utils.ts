@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const dotProp = require('dot-prop');
+import * as dotProp from 'dot-prop';
 import {Filter, RawFilter} from './filter';
 import {
   CreateRulesCallback,
@@ -44,6 +44,41 @@ export interface RowProperties {
     bigtable: Bigtable;
   };
   reqOpts: TabularApiSurfaceRequest;
+}
+
+function getNestedValue(obj: any, path: any) {
+  if (!obj || typeof obj !== 'object' || !path) {
+    return undefined;
+  }
+
+  const keys = path.split('.');
+  let current = obj;
+
+  for (const key of keys) {
+    if (current && typeof current === 'object' && key in current) {
+      current = current[key];
+    } else {
+      return undefined; // Path not found
+    }
+  }
+
+  return current;
+}
+
+function getValueFromData(data: any, column: any) {
+  const path = column.replace(':', '.');
+  const nestedValue = getNestedValue(data, path);
+
+  if (
+    Array.isArray(nestedValue) &&
+    nestedValue.length > 0 &&
+    nestedValue[0] &&
+    'value' in nestedValue[0]
+  ) {
+    return nestedValue[0].value;
+  }
+
+  return undefined; // Or handle the case where the path or structure is not as expected
 }
 
 /**
@@ -247,7 +282,7 @@ class RowDataUtils {
         return;
       }
       const data = this.formatFamilies_Util(resp!.row!.families!);
-      const value = dotProp.get(data, column.replace(':', '.'))[0].value;
+      const value = getValueFromData(data, column);
 
       callback(null, value, resp);
     });
