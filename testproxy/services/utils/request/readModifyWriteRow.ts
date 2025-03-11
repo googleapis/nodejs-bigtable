@@ -70,7 +70,7 @@ export function getRMWRRequest(request: RMWRRequestData): RMRWRequest {
       rules: requestRules,
     },
     reqOpts,
-    appProfileId ? {appProfileId} : null
+    appProfileId ? {appProfileId} : null,
   );
 }
 
@@ -94,7 +94,7 @@ export function getRMWRRequestInverse(request: RMRWRequest): RMWRRequestData {
 
       if (rule.appendValue) {
         ruleData.append = Mutation.convertFromBytes(
-          rule.appendValue as Bytes
+          rule.appendValue as Bytes,
         ) as string;
       }
 
@@ -114,11 +114,11 @@ export function getRMWRRequestInverse(request: RMRWRequest): RMWRRequestData {
       reqOpts: Object.assign(
         {},
         tableName ? {tableName} : null,
-        authorizedViewName ? {authorizedViewName} : null
+        authorizedViewName ? {authorizedViewName} : null,
       ),
       id: Mutation.convertFromBytes(request.rowKey as Bytes) as string,
       rules: rules,
     },
-    appProfileId ? {appProfileId} : null
+    appProfileId ? {appProfileId} : null,
   );
 }

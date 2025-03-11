@@ -40,12 +40,12 @@ describe('Bigtable/AuthorizedViews', () => {
     function mockCallbackRequest(
       done: mocha.Done,
       compareFn: (requestCount: number) => unknown,
-      resp?: {}
+      resp?: {},
     ) {
       let requestCount = 0;
       table.bigtable.request = (
         config?: any,
-        callback?: RequestCallback<any>
+        callback?: RequestCallback<any>,
       ) => {
         try {
           requestCount++;
@@ -125,7 +125,7 @@ describe('Bigtable/AuthorizedViews', () => {
                   },
                   rowsLimit: 5,
                 },
-                getBaseRequestOptions(requestCount)
+                getBaseRequestOptions(requestCount),
               ),
             };
           });
@@ -340,7 +340,7 @@ describe('Bigtable/AuthorizedViews', () => {
                       },
                     ],
                   },
-                  getBaseRequestOptions(requestCount)
+                  getBaseRequestOptions(requestCount),
                 ),
               };
             },
@@ -364,7 +364,7 @@ describe('Bigtable/AuthorizedViews', () => {
                   },
                 ],
               },
-            }
+            },
           );
         }
 
@@ -428,7 +428,7 @@ describe('Bigtable/AuthorizedViews', () => {
                     ],
                     falseMutations: [],
                   },
-                  getBaseRequestOptions(requestCount)
+                  getBaseRequestOptions(requestCount),
                 ),
               };
             },
@@ -452,7 +452,7 @@ describe('Bigtable/AuthorizedViews', () => {
                   },
                 ],
               },
-            }
+            },
           );
         }
 
@@ -478,7 +478,7 @@ describe('Bigtable/AuthorizedViews', () => {
               {
                 onMatch: mutations,
                 gaxOptions: {maxRetries: 4},
-              }
+              },
             );
             done();
           })();
