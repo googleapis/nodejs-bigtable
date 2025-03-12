@@ -22,6 +22,7 @@ import type {Callback, CallOptions, Descriptors, ClientOptions} from 'google-gax
 import {PassThrough} from 'stream';
 import * as protos from '../../protos/protos';
 import jsonProtos = require('../../protos/protos.json');
+import {loggingUtils as logging} from 'google-gax';
 
 /**
  * Client JSON configuration object, loaded from
@@ -46,6 +47,8 @@ export class BigtableClient {
   private _defaults: {[method: string]: gax.CallSettings};
   private _universeDomain: string;
   private _servicePath: string;
+  private _log = logging.log('bigtable');
+
   auth: gax.GoogleAuth;
   descriptors: Descriptors = {
     page: {},
@@ -80,7 +83,7 @@ export class BigtableClient {
    *     Developer's Console, e.g. 'grape-spaceship-123'. We will also check
    *     the environment variable GCLOUD_PROJECT for your project ID. If your
    *     app is running in an environment which supports
-   *     {@link https://developers.google.com/identity/protocols/application-default-credentials Application Default Credentials},
+   *     {@link https://cloud.google.com/docs/authentication/application-default-credentials Application Default Credentials},
    *     your project ID will be detected automatically.
    * @param {string} [options.apiEndpoint] - The domain name of the
    *     API remote host.
@@ -474,7 +477,25 @@ export class BigtableClient {
       routingParameter
     );
     this.initialize();
-    return this.innerApiCalls.mutateRow(request, options, callback);
+    this._log.info('mutateRow request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.v2.IMutateRowResponse,
+        protos.google.bigtable.v2.IMutateRowRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('mutateRow response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.mutateRow(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.v2.IMutateRowResponse,
+        protos.google.bigtable.v2.IMutateRowRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('mutateRow response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Mutates a row atomically based on the output of a predicate Reader filter.
@@ -606,7 +627,25 @@ export class BigtableClient {
       routingParameter
     );
     this.initialize();
-    return this.innerApiCalls.checkAndMutateRow(request, options, callback);
+    this._log.info('checkAndMutateRow request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+        protos.google.bigtable.v2.ICheckAndMutateRowRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('checkAndMutateRow response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.checkAndMutateRow(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+        protos.google.bigtable.v2.ICheckAndMutateRowRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('checkAndMutateRow response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Warm up associated instance metadata for this connection.
@@ -701,7 +740,25 @@ export class BigtableClient {
       routingParameter
     );
     this.initialize();
-    return this.innerApiCalls.pingAndWarm(request, options, callback);
+    this._log.info('pingAndWarm request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.v2.IPingAndWarmResponse,
+        protos.google.bigtable.v2.IPingAndWarmRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('pingAndWarm response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.pingAndWarm(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.v2.IPingAndWarmResponse,
+        protos.google.bigtable.v2.IPingAndWarmRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('pingAndWarm response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Modifies a row atomically on the server. The method reads the latest
@@ -824,7 +881,25 @@ export class BigtableClient {
       routingParameter
     );
     this.initialize();
-    return this.innerApiCalls.readModifyWriteRow(request, options, callback);
+    this._log.info('readModifyWriteRow request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.v2.IReadModifyWriteRowResponse,
+        protos.google.bigtable.v2.IReadModifyWriteRowRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('readModifyWriteRow response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.readModifyWriteRow(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.v2.IReadModifyWriteRowResponse,
+        protos.google.bigtable.v2.IReadModifyWriteRowRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('readModifyWriteRow response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Prepares a GoogleSQL query for execution on a particular Bigtable instance.
@@ -937,7 +1012,25 @@ export class BigtableClient {
       routingParameter
     );
     this.initialize();
-    return this.innerApiCalls.prepareQuery(request, options, callback);
+    this._log.info('prepareQuery request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.v2.IPrepareQueryResponse,
+        protos.google.bigtable.v2.IPrepareQueryRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('prepareQuery response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.prepareQuery(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.v2.IPrepareQueryResponse,
+        protos.google.bigtable.v2.IPrepareQueryRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('prepareQuery response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 
 /**
@@ -1043,6 +1136,7 @@ export class BigtableClient {
       routingParameter
     );
     this.initialize();
+    this._log.info('readRows stream %j', options);
     return this.innerApiCalls.readRows(request, options);
   }
 
@@ -1125,6 +1219,7 @@ export class BigtableClient {
       routingParameter
     );
     this.initialize();
+    this._log.info('sampleRowKeys stream %j', options);
     return this.innerApiCalls.sampleRowKeys(request, options);
   }
 
@@ -1208,6 +1303,7 @@ export class BigtableClient {
       routingParameter
     );
     this.initialize();
+    this._log.info('mutateRows stream %j', options);
     return this.innerApiCalls.mutateRows(request, options);
   }
 
@@ -1249,6 +1345,7 @@ export class BigtableClient {
       'table_name': request.tableName ?? '',
     });
     this.initialize();
+    this._log.info('generateInitialChangeStreamPartitions stream %j', options);
     return this.innerApiCalls.generateInitialChangeStreamPartitions(request, options);
   }
 
@@ -1315,6 +1412,7 @@ export class BigtableClient {
       'table_name': request.tableName ?? '',
     });
     this.initialize();
+    this._log.info('readChangeStream stream %j', options);
     return this.innerApiCalls.readChangeStream(request, options);
   }
 
@@ -1422,6 +1520,7 @@ export class BigtableClient {
       routingParameter
     );
     this.initialize();
+    this._log.info('executeQuery stream %j', options);
     return this.innerApiCalls.executeQuery(request, options);
   }
 
@@ -1634,6 +1733,7 @@ export class BigtableClient {
   close(): Promise<void> {
     if (this.bigtableStub && !this._terminated) {
       return this.bigtableStub.then(stub => {
+        this._log.info('ending gRPC channel');
         this._terminated = true;
         stub.close();
       });

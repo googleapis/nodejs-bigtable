@@ -22,6 +22,7 @@ import type {Callback, CallOptions, Descriptors, ClientOptions, GrpcClientOption
 import {Transform} from 'stream';
 import * as protos from '../../protos/protos';
 import jsonProtos = require('../../protos/protos.json');
+import {loggingUtils as logging} from 'google-gax';
 
 /**
  * Client JSON configuration object, loaded from
@@ -48,6 +49,8 @@ export class BigtableInstanceAdminClient {
   private _defaults: {[method: string]: gax.CallSettings};
   private _universeDomain: string;
   private _servicePath: string;
+  private _log = logging.log('bigtable');
+
   auth: gax.GoogleAuth;
   descriptors: Descriptors = {
     page: {},
@@ -83,7 +86,7 @@ export class BigtableInstanceAdminClient {
    *     Developer's Console, e.g. 'grape-spaceship-123'. We will also check
    *     the environment variable GCLOUD_PROJECT for your project ID. If your
    *     app is running in an environment which supports
-   *     {@link https://developers.google.com/identity/protocols/application-default-credentials Application Default Credentials},
+   *     {@link https://cloud.google.com/docs/authentication/application-default-credentials Application Default Credentials},
    *     your project ID will be detected automatically.
    * @param {string} [options.apiEndpoint] - The domain name of the
    *     API remote host.
@@ -545,7 +548,25 @@ export class BigtableInstanceAdminClient {
       'name': request.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.getInstance(request, options, callback);
+    this._log.info('getInstance request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.admin.v2.IInstance,
+        protos.google.bigtable.admin.v2.IGetInstanceRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('getInstance response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.getInstance(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.admin.v2.IInstance,
+        protos.google.bigtable.admin.v2.IGetInstanceRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('getInstance response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Lists information about instances in a project.
@@ -618,7 +639,25 @@ export class BigtableInstanceAdminClient {
       'parent': request.parent ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.listInstances(request, options, callback);
+    this._log.info('listInstances request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.admin.v2.IListInstancesResponse,
+        protos.google.bigtable.admin.v2.IListInstancesRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('listInstances response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.listInstances(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.admin.v2.IListInstancesResponse,
+        protos.google.bigtable.admin.v2.IListInstancesRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('listInstances response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Updates an instance within a project. This method updates only the display
@@ -719,7 +758,25 @@ export class BigtableInstanceAdminClient {
       'name': request.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.updateInstance(request, options, callback);
+    this._log.info('updateInstance request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.admin.v2.IInstance,
+        protos.google.bigtable.admin.v2.IInstance|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('updateInstance response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.updateInstance(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.admin.v2.IInstance,
+        protos.google.bigtable.admin.v2.IInstance|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('updateInstance response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Delete an instance from a project.
@@ -790,7 +847,25 @@ export class BigtableInstanceAdminClient {
       'name': request.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.deleteInstance(request, options, callback);
+    this._log.info('deleteInstance request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteInstanceRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('deleteInstance response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.deleteInstance(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteInstanceRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('deleteInstance response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Gets information about a cluster.
@@ -861,7 +936,25 @@ export class BigtableInstanceAdminClient {
       'name': request.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.getCluster(request, options, callback);
+    this._log.info('getCluster request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.admin.v2.ICluster,
+        protos.google.bigtable.admin.v2.IGetClusterRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('getCluster response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.getCluster(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.admin.v2.ICluster,
+        protos.google.bigtable.admin.v2.IGetClusterRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('getCluster response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Lists information about clusters in an instance.
@@ -937,7 +1030,25 @@ export class BigtableInstanceAdminClient {
       'parent': request.parent ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.listClusters(request, options, callback);
+    this._log.info('listClusters request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.admin.v2.IListClustersResponse,
+        protos.google.bigtable.admin.v2.IListClustersRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('listClusters response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.listClusters(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.admin.v2.IListClustersResponse,
+        protos.google.bigtable.admin.v2.IListClustersRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('listClusters response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Deletes a cluster from an instance.
@@ -1008,7 +1119,25 @@ export class BigtableInstanceAdminClient {
       'name': request.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.deleteCluster(request, options, callback);
+    this._log.info('deleteCluster request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteClusterRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('deleteCluster response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.deleteCluster(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteClusterRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('deleteCluster response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Creates an app profile within an instance.
@@ -1088,7 +1217,25 @@ export class BigtableInstanceAdminClient {
       'parent': request.parent ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.createAppProfile(request, options, callback);
+    this._log.info('createAppProfile request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.admin.v2.IAppProfile,
+        protos.google.bigtable.admin.v2.ICreateAppProfileRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('createAppProfile response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.createAppProfile(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.admin.v2.IAppProfile,
+        protos.google.bigtable.admin.v2.ICreateAppProfileRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('createAppProfile response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Gets information about an app profile.
@@ -1159,7 +1306,25 @@ export class BigtableInstanceAdminClient {
       'name': request.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.getAppProfile(request, options, callback);
+    this._log.info('getAppProfile request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.admin.v2.IAppProfile,
+        protos.google.bigtable.admin.v2.IGetAppProfileRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('getAppProfile response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.getAppProfile(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.admin.v2.IAppProfile,
+        protos.google.bigtable.admin.v2.IGetAppProfileRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('getAppProfile response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Deletes an app profile from an instance.
@@ -1233,7 +1398,25 @@ export class BigtableInstanceAdminClient {
       'name': request.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.deleteAppProfile(request, options, callback);
+    this._log.info('deleteAppProfile request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteAppProfileRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('deleteAppProfile response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.deleteAppProfile(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteAppProfileRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('deleteAppProfile response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Gets the access control policy for an instance resource. Returns an empty
@@ -1308,7 +1491,25 @@ export class BigtableInstanceAdminClient {
       'resource': request.resource ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.getIamPolicy(request, options, callback);
+    this._log.info('getIamPolicy request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.iam.v1.IPolicy,
+        protos.google.iam.v1.IGetIamPolicyRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('getIamPolicy response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.getIamPolicy(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.iam.v1.IPolicy,
+        protos.google.iam.v1.IGetIamPolicyRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('getIamPolicy response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Sets the access control policy on an instance resource. Replaces any
@@ -1391,7 +1592,25 @@ export class BigtableInstanceAdminClient {
       'resource': request.resource ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.setIamPolicy(request, options, callback);
+    this._log.info('setIamPolicy request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.iam.v1.IPolicy,
+        protos.google.iam.v1.ISetIamPolicyRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('setIamPolicy response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.setIamPolicy(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.iam.v1.IPolicy,
+        protos.google.iam.v1.ISetIamPolicyRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('setIamPolicy response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Returns permissions that the caller has on the specified instance resource.
@@ -1467,7 +1686,25 @@ export class BigtableInstanceAdminClient {
       'resource': request.resource ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.testIamPermissions(request, options, callback);
+    this._log.info('testIamPermissions request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.iam.v1.ITestIamPermissionsResponse,
+        protos.google.iam.v1.ITestIamPermissionsRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('testIamPermissions response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.testIamPermissions(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.iam.v1.ITestIamPermissionsResponse,
+        protos.google.iam.v1.ITestIamPermissionsRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('testIamPermissions response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Gets information about a logical view.
@@ -1538,7 +1775,25 @@ export class BigtableInstanceAdminClient {
       'name': request.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.getLogicalView(request, options, callback);
+    this._log.info('getLogicalView request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.admin.v2.ILogicalView,
+        protos.google.bigtable.admin.v2.IGetLogicalViewRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('getLogicalView response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.getLogicalView(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.admin.v2.ILogicalView,
+        protos.google.bigtable.admin.v2.IGetLogicalViewRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('getLogicalView response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Deletes a logical view from an instance.
@@ -1615,7 +1870,25 @@ export class BigtableInstanceAdminClient {
       'name': request.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.deleteLogicalView(request, options, callback);
+    this._log.info('deleteLogicalView request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteLogicalViewRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('deleteLogicalView response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.deleteLogicalView(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteLogicalViewRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('deleteLogicalView response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Gets information about a materialized view.
@@ -1687,7 +1960,25 @@ export class BigtableInstanceAdminClient {
       'name': request.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.getMaterializedView(request, options, callback);
+    this._log.info('getMaterializedView request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.bigtable.admin.v2.IMaterializedView,
+        protos.google.bigtable.admin.v2.IGetMaterializedViewRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('getMaterializedView response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.getMaterializedView(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.bigtable.admin.v2.IMaterializedView,
+        protos.google.bigtable.admin.v2.IGetMaterializedViewRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('getMaterializedView response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 /**
  * Deletes a materialized view from an instance.
@@ -1764,7 +2055,25 @@ export class BigtableInstanceAdminClient {
       'name': request.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.deleteMaterializedView(request, options, callback);
+    this._log.info('deleteMaterializedView request %j', request);
+    const wrappedCallback: Callback<
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteMaterializedViewRequest|null|undefined,
+        {}|null|undefined>|undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('deleteMaterializedView response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls.deleteMaterializedView(request, options, wrappedCallback)
+      ?.then(([response, options, rawResponse]: [
+        protos.google.protobuf.IEmpty,
+        protos.google.bigtable.admin.v2.IDeleteMaterializedViewRequest|undefined,
+        {}|undefined
+      ]) => {
+        this._log.info('deleteMaterializedView response %j', response);
+        return [response, options, rawResponse];
+      });
   }
 
 /**
@@ -1856,7 +2165,24 @@ export class BigtableInstanceAdminClient {
       'parent': request.parent ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.createInstance(request, options, callback);
+    const wrappedCallback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.IInstance, protos.google.bigtable.admin.v2.ICreateInstanceMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>|undefined = callback
+      ? (error, response, rawResponse, _) => {
+          this._log.info('createInstance response %j', rawResponse);
+          callback!(error, response, rawResponse, _); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('createInstance request %j', request);
+    return this.innerApiCalls.createInstance(request, options, wrappedCallback)
+    ?.then(([response, rawResponse, _]: [
+      LROperation<protos.google.bigtable.admin.v2.IInstance, protos.google.bigtable.admin.v2.ICreateInstanceMetadata>,
+      protos.google.longrunning.IOperation|undefined, {}|undefined
+    ]) => {
+      this._log.info('createInstance response %j', rawResponse);
+      return [response, rawResponse, _];
+    });
   }
 /**
  * Check the status of the long running operation returned by `createInstance()`.
@@ -1870,6 +2196,7 @@ export class BigtableInstanceAdminClient {
  * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateInstance_async
  */
   async checkCreateInstanceProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.Instance, protos.google.bigtable.admin.v2.CreateInstanceMetadata>>{
+    this._log.info('createInstance long-running');
     const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.createInstance, this._gaxModule.createDefaultBackoffSettings());
@@ -1949,7 +2276,24 @@ export class BigtableInstanceAdminClient {
       'instance.name': request.instance!.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.partialUpdateInstance(request, options, callback);
+    const wrappedCallback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.IInstance, protos.google.bigtable.admin.v2.IUpdateInstanceMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>|undefined = callback
+      ? (error, response, rawResponse, _) => {
+          this._log.info('partialUpdateInstance response %j', rawResponse);
+          callback!(error, response, rawResponse, _); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('partialUpdateInstance request %j', request);
+    return this.innerApiCalls.partialUpdateInstance(request, options, wrappedCallback)
+    ?.then(([response, rawResponse, _]: [
+      LROperation<protos.google.bigtable.admin.v2.IInstance, protos.google.bigtable.admin.v2.IUpdateInstanceMetadata>,
+      protos.google.longrunning.IOperation|undefined, {}|undefined
+    ]) => {
+      this._log.info('partialUpdateInstance response %j', rawResponse);
+      return [response, rawResponse, _];
+    });
   }
 /**
  * Check the status of the long running operation returned by `partialUpdateInstance()`.
@@ -1963,6 +2307,7 @@ export class BigtableInstanceAdminClient {
  * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_PartialUpdateInstance_async
  */
   async checkPartialUpdateInstanceProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.Instance, protos.google.bigtable.admin.v2.UpdateInstanceMetadata>>{
+    this._log.info('partialUpdateInstance long-running');
     const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.partialUpdateInstance, this._gaxModule.createDefaultBackoffSettings());
@@ -2052,7 +2397,24 @@ export class BigtableInstanceAdminClient {
       'parent': request.parent ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.createCluster(request, options, callback);
+    const wrappedCallback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.ICluster, protos.google.bigtable.admin.v2.ICreateClusterMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>|undefined = callback
+      ? (error, response, rawResponse, _) => {
+          this._log.info('createCluster response %j', rawResponse);
+          callback!(error, response, rawResponse, _); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('createCluster request %j', request);
+    return this.innerApiCalls.createCluster(request, options, wrappedCallback)
+    ?.then(([response, rawResponse, _]: [
+      LROperation<protos.google.bigtable.admin.v2.ICluster, protos.google.bigtable.admin.v2.ICreateClusterMetadata>,
+      protos.google.longrunning.IOperation|undefined, {}|undefined
+    ]) => {
+      this._log.info('createCluster response %j', rawResponse);
+      return [response, rawResponse, _];
+    });
   }
 /**
  * Check the status of the long running operation returned by `createCluster()`.
@@ -2066,6 +2428,7 @@ export class BigtableInstanceAdminClient {
  * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateCluster_async
  */
   async checkCreateClusterProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.Cluster, protos.google.bigtable.admin.v2.CreateClusterMetadata>>{
+    this._log.info('createCluster long-running');
     const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.createCluster, this._gaxModule.createDefaultBackoffSettings());
@@ -2166,7 +2529,24 @@ export class BigtableInstanceAdminClient {
       'name': request.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.updateCluster(request, options, callback);
+    const wrappedCallback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.ICluster, protos.google.bigtable.admin.v2.IUpdateClusterMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>|undefined = callback
+      ? (error, response, rawResponse, _) => {
+          this._log.info('updateCluster response %j', rawResponse);
+          callback!(error, response, rawResponse, _); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('updateCluster request %j', request);
+    return this.innerApiCalls.updateCluster(request, options, wrappedCallback)
+    ?.then(([response, rawResponse, _]: [
+      LROperation<protos.google.bigtable.admin.v2.ICluster, protos.google.bigtable.admin.v2.IUpdateClusterMetadata>,
+      protos.google.longrunning.IOperation|undefined, {}|undefined
+    ]) => {
+      this._log.info('updateCluster response %j', rawResponse);
+      return [response, rawResponse, _];
+    });
   }
 /**
  * Check the status of the long running operation returned by `updateCluster()`.
@@ -2180,6 +2560,7 @@ export class BigtableInstanceAdminClient {
  * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateCluster_async
  */
   async checkUpdateClusterProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.Cluster, protos.google.bigtable.admin.v2.UpdateClusterMetadata>>{
+    this._log.info('updateCluster long-running');
     const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.updateCluster, this._gaxModule.createDefaultBackoffSettings());
@@ -2269,7 +2650,24 @@ export class BigtableInstanceAdminClient {
       'cluster.name': request.cluster!.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.partialUpdateCluster(request, options, callback);
+    const wrappedCallback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.ICluster, protos.google.bigtable.admin.v2.IPartialUpdateClusterMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>|undefined = callback
+      ? (error, response, rawResponse, _) => {
+          this._log.info('partialUpdateCluster response %j', rawResponse);
+          callback!(error, response, rawResponse, _); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('partialUpdateCluster request %j', request);
+    return this.innerApiCalls.partialUpdateCluster(request, options, wrappedCallback)
+    ?.then(([response, rawResponse, _]: [
+      LROperation<protos.google.bigtable.admin.v2.ICluster, protos.google.bigtable.admin.v2.IPartialUpdateClusterMetadata>,
+      protos.google.longrunning.IOperation|undefined, {}|undefined
+    ]) => {
+      this._log.info('partialUpdateCluster response %j', rawResponse);
+      return [response, rawResponse, _];
+    });
   }
 /**
  * Check the status of the long running operation returned by `partialUpdateCluster()`.
@@ -2283,6 +2681,7 @@ export class BigtableInstanceAdminClient {
  * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_PartialUpdateCluster_async
  */
   async checkPartialUpdateClusterProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.Cluster, protos.google.bigtable.admin.v2.PartialUpdateClusterMetadata>>{
+    this._log.info('partialUpdateCluster long-running');
     const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.partialUpdateCluster, this._gaxModule.createDefaultBackoffSettings());
@@ -2363,7 +2762,24 @@ export class BigtableInstanceAdminClient {
       'app_profile.name': request.appProfile!.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.updateAppProfile(request, options, callback);
+    const wrappedCallback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.IAppProfile, protos.google.bigtable.admin.v2.IUpdateAppProfileMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>|undefined = callback
+      ? (error, response, rawResponse, _) => {
+          this._log.info('updateAppProfile response %j', rawResponse);
+          callback!(error, response, rawResponse, _); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('updateAppProfile request %j', request);
+    return this.innerApiCalls.updateAppProfile(request, options, wrappedCallback)
+    ?.then(([response, rawResponse, _]: [
+      LROperation<protos.google.bigtable.admin.v2.IAppProfile, protos.google.bigtable.admin.v2.IUpdateAppProfileMetadata>,
+      protos.google.longrunning.IOperation|undefined, {}|undefined
+    ]) => {
+      this._log.info('updateAppProfile response %j', rawResponse);
+      return [response, rawResponse, _];
+    });
   }
 /**
  * Check the status of the long running operation returned by `updateAppProfile()`.
@@ -2377,6 +2793,7 @@ export class BigtableInstanceAdminClient {
  * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateAppProfile_async
  */
   async checkUpdateAppProfileProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.AppProfile, protos.google.bigtable.admin.v2.UpdateAppProfileMetadata>>{
+    this._log.info('updateAppProfile long-running');
     const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.updateAppProfile, this._gaxModule.createDefaultBackoffSettings());
@@ -2458,7 +2875,24 @@ export class BigtableInstanceAdminClient {
       'parent': request.parent ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.createLogicalView(request, options, callback);
+    const wrappedCallback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.ICreateLogicalViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>|undefined = callback
+      ? (error, response, rawResponse, _) => {
+          this._log.info('createLogicalView response %j', rawResponse);
+          callback!(error, response, rawResponse, _); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('createLogicalView request %j', request);
+    return this.innerApiCalls.createLogicalView(request, options, wrappedCallback)
+    ?.then(([response, rawResponse, _]: [
+      LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.ICreateLogicalViewMetadata>,
+      protos.google.longrunning.IOperation|undefined, {}|undefined
+    ]) => {
+      this._log.info('createLogicalView response %j', rawResponse);
+      return [response, rawResponse, _];
+    });
   }
 /**
  * Check the status of the long running operation returned by `createLogicalView()`.
@@ -2472,6 +2906,7 @@ export class BigtableInstanceAdminClient {
  * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateLogicalView_async
  */
   async checkCreateLogicalViewProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.LogicalView, protos.google.bigtable.admin.v2.CreateLogicalViewMetadata>>{
+    this._log.info('createLogicalView long-running');
     const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.createLogicalView, this._gaxModule.createDefaultBackoffSettings());
@@ -2553,7 +2988,24 @@ export class BigtableInstanceAdminClient {
       'logical_view.name': request.logicalView!.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.updateLogicalView(request, options, callback);
+    const wrappedCallback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.IUpdateLogicalViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>|undefined = callback
+      ? (error, response, rawResponse, _) => {
+          this._log.info('updateLogicalView response %j', rawResponse);
+          callback!(error, response, rawResponse, _); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('updateLogicalView request %j', request);
+    return this.innerApiCalls.updateLogicalView(request, options, wrappedCallback)
+    ?.then(([response, rawResponse, _]: [
+      LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.IUpdateLogicalViewMetadata>,
+      protos.google.longrunning.IOperation|undefined, {}|undefined
+    ]) => {
+      this._log.info('updateLogicalView response %j', rawResponse);
+      return [response, rawResponse, _];
+    });
   }
 /**
  * Check the status of the long running operation returned by `updateLogicalView()`.
@@ -2567,6 +3019,7 @@ export class BigtableInstanceAdminClient {
  * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateLogicalView_async
  */
   async checkUpdateLogicalViewProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.LogicalView, protos.google.bigtable.admin.v2.UpdateLogicalViewMetadata>>{
+    this._log.info('updateLogicalView long-running');
     const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.updateLogicalView, this._gaxModule.createDefaultBackoffSettings());
@@ -2648,7 +3101,24 @@ export class BigtableInstanceAdminClient {
       'parent': request.parent ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.createMaterializedView(request, options, callback);
+    const wrappedCallback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.ICreateMaterializedViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>|undefined = callback
+      ? (error, response, rawResponse, _) => {
+          this._log.info('createMaterializedView response %j', rawResponse);
+          callback!(error, response, rawResponse, _); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('createMaterializedView request %j', request);
+    return this.innerApiCalls.createMaterializedView(request, options, wrappedCallback)
+    ?.then(([response, rawResponse, _]: [
+      LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.ICreateMaterializedViewMetadata>,
+      protos.google.longrunning.IOperation|undefined, {}|undefined
+    ]) => {
+      this._log.info('createMaterializedView response %j', rawResponse);
+      return [response, rawResponse, _];
+    });
   }
 /**
  * Check the status of the long running operation returned by `createMaterializedView()`.
@@ -2662,6 +3132,7 @@ export class BigtableInstanceAdminClient {
  * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateMaterializedView_async
  */
   async checkCreateMaterializedViewProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.MaterializedView, protos.google.bigtable.admin.v2.CreateMaterializedViewMetadata>>{
+    this._log.info('createMaterializedView long-running');
     const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.createMaterializedView, this._gaxModule.createDefaultBackoffSettings());
@@ -2743,7 +3214,24 @@ export class BigtableInstanceAdminClient {
       'materialized_view.name': request.materializedView!.name ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.updateMaterializedView(request, options, callback);
+    const wrappedCallback: Callback<
+          LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.IUpdateMaterializedViewMetadata>,
+          protos.google.longrunning.IOperation|null|undefined,
+          {}|null|undefined>|undefined = callback
+      ? (error, response, rawResponse, _) => {
+          this._log.info('updateMaterializedView response %j', rawResponse);
+          callback!(error, response, rawResponse, _); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('updateMaterializedView request %j', request);
+    return this.innerApiCalls.updateMaterializedView(request, options, wrappedCallback)
+    ?.then(([response, rawResponse, _]: [
+      LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.IUpdateMaterializedViewMetadata>,
+      protos.google.longrunning.IOperation|undefined, {}|undefined
+    ]) => {
+      this._log.info('updateMaterializedView response %j', rawResponse);
+      return [response, rawResponse, _];
+    });
   }
 /**
  * Check the status of the long running operation returned by `updateMaterializedView()`.
@@ -2757,6 +3245,7 @@ export class BigtableInstanceAdminClient {
  * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateMaterializedView_async
  */
   async checkUpdateMaterializedViewProgress(name: string): Promise<LROperation<protos.google.bigtable.admin.v2.MaterializedView, protos.google.bigtable.admin.v2.UpdateMaterializedViewMetadata>>{
+    this._log.info('updateMaterializedView long-running');
     const request = new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest({name});
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(operation, this.descriptors.longrunning.updateMaterializedView, this._gaxModule.createDefaultBackoffSettings());
@@ -2851,7 +3340,26 @@ export class BigtableInstanceAdminClient {
       'parent': request.parent ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.listAppProfiles(request, options, callback);
+    const wrappedCallback: PaginationCallback<
+      protos.google.bigtable.admin.v2.IListAppProfilesRequest,
+      protos.google.bigtable.admin.v2.IListAppProfilesResponse|null|undefined,
+      protos.google.bigtable.admin.v2.IAppProfile>|undefined = callback
+      ? (error, values, nextPageRequest, rawResponse) => {
+          this._log.info('listAppProfiles values %j', values);
+          callback!(error, values, nextPageRequest, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('listAppProfiles request %j', request);
+    return this.innerApiCalls
+      .listAppProfiles(request, options, wrappedCallback)
+      ?.then(([response, input, output]: [
+        protos.google.bigtable.admin.v2.IAppProfile[],
+        protos.google.bigtable.admin.v2.IListAppProfilesRequest|null,
+        protos.google.bigtable.admin.v2.IListAppProfilesResponse
+      ]) => {
+        this._log.info('listAppProfiles values %j', response);
+        return [response, input, output];
+      });
   }
 
 /**
@@ -2903,6 +3411,7 @@ export class BigtableInstanceAdminClient {
     const defaultCallSettings = this._defaults['listAppProfiles'];
     const callSettings = defaultCallSettings.merge(options);
     this.initialize();
+    this._log.info('listAppProfiles stream %j', request);
     return this.descriptors.page.listAppProfiles.createStream(
       this.innerApiCalls.listAppProfiles as GaxCall,
       request,
@@ -2962,6 +3471,7 @@ export class BigtableInstanceAdminClient {
     const defaultCallSettings = this._defaults['listAppProfiles'];
     const callSettings = defaultCallSettings.merge(options);
     this.initialize();
+    this._log.info('listAppProfiles iterate %j', request);
     return this.descriptors.page.listAppProfiles.asyncIterate(
       this.innerApiCalls['listAppProfiles'] as GaxCall,
       request as {},
@@ -3065,7 +3575,26 @@ export class BigtableInstanceAdminClient {
       'parent': request.parent ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.listHotTablets(request, options, callback);
+    const wrappedCallback: PaginationCallback<
+      protos.google.bigtable.admin.v2.IListHotTabletsRequest,
+      protos.google.bigtable.admin.v2.IListHotTabletsResponse|null|undefined,
+      protos.google.bigtable.admin.v2.IHotTablet>|undefined = callback
+      ? (error, values, nextPageRequest, rawResponse) => {
+          this._log.info('listHotTablets values %j', values);
+          callback!(error, values, nextPageRequest, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('listHotTablets request %j', request);
+    return this.innerApiCalls
+      .listHotTablets(request, options, wrappedCallback)
+      ?.then(([response, input, output]: [
+        protos.google.bigtable.admin.v2.IHotTablet[],
+        protos.google.bigtable.admin.v2.IListHotTabletsRequest|null,
+        protos.google.bigtable.admin.v2.IListHotTabletsResponse
+      ]) => {
+        this._log.info('listHotTablets values %j', response);
+        return [response, input, output];
+      });
   }
 
 /**
@@ -3124,6 +3653,7 @@ export class BigtableInstanceAdminClient {
     const defaultCallSettings = this._defaults['listHotTablets'];
     const callSettings = defaultCallSettings.merge(options);
     this.initialize();
+    this._log.info('listHotTablets stream %j', request);
     return this.descriptors.page.listHotTablets.createStream(
       this.innerApiCalls.listHotTablets as GaxCall,
       request,
@@ -3190,6 +3720,7 @@ export class BigtableInstanceAdminClient {
     const defaultCallSettings = this._defaults['listHotTablets'];
     const callSettings = defaultCallSettings.merge(options);
     this.initialize();
+    this._log.info('listHotTablets iterate %j', request);
     return this.descriptors.page.listHotTablets.asyncIterate(
       this.innerApiCalls['listHotTablets'] as GaxCall,
       request as {},
@@ -3280,7 +3811,26 @@ export class BigtableInstanceAdminClient {
       'parent': request.parent ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.listLogicalViews(request, options, callback);
+    const wrappedCallback: PaginationCallback<
+      protos.google.bigtable.admin.v2.IListLogicalViewsRequest,
+      protos.google.bigtable.admin.v2.IListLogicalViewsResponse|null|undefined,
+      protos.google.bigtable.admin.v2.ILogicalView>|undefined = callback
+      ? (error, values, nextPageRequest, rawResponse) => {
+          this._log.info('listLogicalViews values %j', values);
+          callback!(error, values, nextPageRequest, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('listLogicalViews request %j', request);
+    return this.innerApiCalls
+      .listLogicalViews(request, options, wrappedCallback)
+      ?.then(([response, input, output]: [
+        protos.google.bigtable.admin.v2.ILogicalView[],
+        protos.google.bigtable.admin.v2.IListLogicalViewsRequest|null,
+        protos.google.bigtable.admin.v2.IListLogicalViewsResponse
+      ]) => {
+        this._log.info('listLogicalViews values %j', response);
+        return [response, input, output];
+      });
   }
 
 /**
@@ -3327,6 +3877,7 @@ export class BigtableInstanceAdminClient {
     const defaultCallSettings = this._defaults['listLogicalViews'];
     const callSettings = defaultCallSettings.merge(options);
     this.initialize();
+    this._log.info('listLogicalViews stream %j', request);
     return this.descriptors.page.listLogicalViews.createStream(
       this.innerApiCalls.listLogicalViews as GaxCall,
       request,
@@ -3381,6 +3932,7 @@ export class BigtableInstanceAdminClient {
     const defaultCallSettings = this._defaults['listLogicalViews'];
     const callSettings = defaultCallSettings.merge(options);
     this.initialize();
+    this._log.info('listLogicalViews iterate %j', request);
     return this.descriptors.page.listLogicalViews.asyncIterate(
       this.innerApiCalls['listLogicalViews'] as GaxCall,
       request as {},
@@ -3471,7 +4023,26 @@ export class BigtableInstanceAdminClient {
       'parent': request.parent ?? '',
     });
     this.initialize();
-    return this.innerApiCalls.listMaterializedViews(request, options, callback);
+    const wrappedCallback: PaginationCallback<
+      protos.google.bigtable.admin.v2.IListMaterializedViewsRequest,
+      protos.google.bigtable.admin.v2.IListMaterializedViewsResponse|null|undefined,
+      protos.google.bigtable.admin.v2.IMaterializedView>|undefined = callback
+      ? (error, values, nextPageRequest, rawResponse) => {
+          this._log.info('listMaterializedViews values %j', values);
+          callback!(error, values, nextPageRequest, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    this._log.info('listMaterializedViews request %j', request);
+    return this.innerApiCalls
+      .listMaterializedViews(request, options, wrappedCallback)
+      ?.then(([response, input, output]: [
+        protos.google.bigtable.admin.v2.IMaterializedView[],
+        protos.google.bigtable.admin.v2.IListMaterializedViewsRequest|null,
+        protos.google.bigtable.admin.v2.IListMaterializedViewsResponse
+      ]) => {
+        this._log.info('listMaterializedViews values %j', response);
+        return [response, input, output];
+      });
   }
 
 /**
@@ -3518,6 +4089,7 @@ export class BigtableInstanceAdminClient {
     const defaultCallSettings = this._defaults['listMaterializedViews'];
     const callSettings = defaultCallSettings.merge(options);
     this.initialize();
+    this._log.info('listMaterializedViews stream %j', request);
     return this.descriptors.page.listMaterializedViews.createStream(
       this.innerApiCalls.listMaterializedViews as GaxCall,
       request,
@@ -3572,6 +4144,7 @@ export class BigtableInstanceAdminClient {
     const defaultCallSettings = this._defaults['listMaterializedViews'];
     const callSettings = defaultCallSettings.merge(options);
     this.initialize();
+    this._log.info('listMaterializedViews iterate %j', request);
     return this.descriptors.page.listMaterializedViews.asyncIterate(
       this.innerApiCalls['listMaterializedViews'] as GaxCall,
       request as {},
@@ -4143,6 +4716,7 @@ export class BigtableInstanceAdminClient {
   close(): Promise<void> {
     if (this.bigtableInstanceAdminStub && !this._terminated) {
       return this.bigtableInstanceAdminStub.then(stub => {
+        this._log.info('ending gRPC channel');
         this._terminated = true;
         stub.close();
         this.operationsClient.close();
