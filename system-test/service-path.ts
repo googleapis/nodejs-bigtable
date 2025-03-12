@@ -192,3 +192,20 @@ describe('Service Path', () => {
     delete process.env.GOOGLE_CLOUD_UNIVERSE_DOMAIN;
   });
 });
+
+describe.only('Service Path2', () => {
+  it('Experiment with setting the service path', async () => {
+    const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
+    const options = {
+      universeDomain,
+    };
+    const bigtable = new Bigtable({
+      BigtableClient: options,
+      BigtableInstanceAdminClient: options,
+      BigtableTableAdminClient: options,
+    });
+    const instance = bigtable.instance('instanceId');
+    const table = instance.table('tableId');
+    await table.getRows({gaxOptions: {timeout: 1000}});
+  });
+});
