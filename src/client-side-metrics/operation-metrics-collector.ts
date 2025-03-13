@@ -17,6 +17,10 @@ import {IMetricsHandler} from './metrics-handler';
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 import * as gax from 'google-gax';
+const root = gax.protobuf.loadSync(
+  './protos/google/bigtable/v2/response_params.proto'
+);
+const ResponseParams = root.lookupType('ResponseParams');
 
 /**
  * An interface representing a tabular API surface, such as a Bigtable table.
@@ -72,11 +76,6 @@ export class OperationMetricsCollector {
   private serverTime: number | null;
   private connectivityErrorCount: number;
   private streamingOperation: StreamingState;
-  // Define response params only when creating an OperationMetricsCollector
-  // in order to avoid unnecessary loading of modules.
-  private responseParams = gax.protobuf
-    .loadSync('./protos/google/bigtable/v2/response_params.proto')
-    .lookupType('ResponseParams');
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -287,7 +286,7 @@ export class OperationMetricsCollector {
       INSTANCE_INFORMATION_KEY
     ) as Buffer[];
     if (mappedValue && mappedValue[0]) {
-      const decodedValue = this.responseParams.decode(
+      const decodedValue = ResponseParams.decode(
         mappedValue[0],
         mappedValue[0].length
       );
