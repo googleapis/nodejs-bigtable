@@ -73,6 +73,12 @@ describe('Bigtable/MetricsCollector', () => {
       }
     }
 
+    /*
+    Below we mock out the table so that it sends the metrics to a test exporter
+    that will still send the metrics to Google Cloud Monitoring, but then also
+    ensure the export was successful and pass the test with code 0 if it is
+    successful.
+     */
     const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
       './client-side-metrics/gcp-metrics-handler': {
         GCPMetricsHandler: TestGCPMetricsHandler,
