@@ -343,7 +343,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
-    // this.bigtable.getProjectId_((err, projectId) => {
     const metricsCollector = new OperationMetricsCollector(
       this,
       [new GCPMetricsHandler(new CloudMonitoringExporter())],
@@ -533,7 +532,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on(
           'metadata',
           (metadata: {internalRepr: Map<string, string[]>; options: {}}) => {
-            console.log(`event metadata: ${this.bigtable.projectId}`);
             metricsCollector.onMetadataReceived(metadata);
           }
         )
@@ -542,13 +540,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           (status: {
             metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
           }) => {
-            console.log(`event status: ${this.bigtable.projectId}`);
             metricsCollector.onStatusMetadataReceived(status);
           }
         );
       rowStream
         .on('error', (error: ServiceError) => {
-          console.log(`event error: ${this.bigtable.projectId}`);
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
@@ -625,7 +621,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowStreamPipe(rowStream, userStream);
     };
     makeNewRequest();
-    // });
     return userStream;
   }
 
