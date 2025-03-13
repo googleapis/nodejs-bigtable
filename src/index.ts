@@ -910,7 +910,6 @@ export class Bigtable {
         gaxStream
           .on('error', stream.destroy.bind(stream))
           .on('metadata', stream.emit.bind(stream, 'metadata'))
-          // TODO: Uncomment the next line after client-side metrics are well tested.
           .on('status', stream.emit.bind(stream, 'status'))
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
