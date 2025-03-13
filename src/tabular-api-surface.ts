@@ -599,14 +599,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           }
         })
         .on('data', _ => {
-          console.log(`event data: ${this.bigtable.projectId}`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
           metricsCollector.onResponse(this.bigtable.projectId);
         })
         .on('end', () => {
-          console.log(`event end: ${this.bigtable.projectId}`);
           numRequestsMade++;
           activeRequestStream = null;
           metricsCollector.onAttemptComplete(
