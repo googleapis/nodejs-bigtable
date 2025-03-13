@@ -27,7 +27,7 @@ import {
 import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 import * as mocha from 'mocha';
 
-describe('Bigtable/ClientSideMetricsToGCM', () => {
+describe.only('Bigtable/ClientSideMetricsToGCM', () => {
   async function mockBigtable(done: mocha.Done) {
     /*
     We need to create a timeout here because if we don't then mocha shuts down
@@ -136,8 +136,14 @@ describe('Bigtable/ClientSideMetricsToGCM', () => {
   });
 
   after(async () => {
-    const instance = bigtable.instance(instanceId);
-    await instance.delete({});
+    try {
+      // If the instance has been deleted already by another source, we don't
+      // want this after hook to block the continuous integration pipeline.
+      const instance = bigtable.instance(instanceId);
+      await instance.delete({});
+    } catch (e) {
+      console.warn('The instance has been deleted already');
+    }
   });
 
   it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {

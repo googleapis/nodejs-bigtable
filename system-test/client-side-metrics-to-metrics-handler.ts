@@ -131,8 +131,14 @@ describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
   });
 
   after(async () => {
-    const instance = bigtable.instance(instanceId);
-    await instance.delete({});
+    try {
+      // If the instance has been deleted already by another source, we don't
+      // want this after hook to block the continuous integration pipeline.
+      const instance = bigtable.instance(instanceId);
+      await instance.delete({});
+    } catch (e) {
+      console.warn('The instance has been deleted already');
+    }
   });
 
   it('should send the metrics to the metrics handler for a ReadRows call', done => {
