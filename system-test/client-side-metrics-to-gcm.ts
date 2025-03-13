@@ -52,6 +52,8 @@ describe('Bigtable/MetricsCollector', () => {
             exported = true;
             try {
               clearTimeout(timeout);
+              // The test passes when the code is 0 because that means the
+              // result from calling export was successful.
               assert.strictEqual(result.code, 0);
               done();
               resultCallback({code: 0});
