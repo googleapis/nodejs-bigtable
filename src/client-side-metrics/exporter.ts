@@ -393,7 +393,12 @@ export class CloudMonitoringExporter extends MetricExporter {
         await this.monitoringClient.createTimeSeries(
           request as ICreateTimeSeriesRequest
         );
-        // {code: 0} is typically the format the callback expects in the super class.
+        // The resultCallback typically accepts a value equal to {code: x}
+        // for some value x along with other info. When the code is equal to 0
+        // then the operation completed successfully. When the code is not equal
+        // to 0 then the operation failed. Open telemetry logs errors to the
+        // console when the resultCallback passes in non-zero code values and
+        // logs nothing when the code is 0.
         const exportResult = {code: 0};
         resultCallback(exportResult);
       } catch (error) {
