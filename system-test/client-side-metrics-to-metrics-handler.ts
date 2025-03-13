@@ -23,7 +23,7 @@ import * as assert from 'assert';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
 
-describe.only('Bigtable/MetricsCollector', () => {
+describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
   async function mockBigtable(projectId: string, done: mocha.Done) {
     class TestGCPMetricsHandler extends TestMetricsHandler {
       onOperationComplete(data: OnOperationCompleteData) {
