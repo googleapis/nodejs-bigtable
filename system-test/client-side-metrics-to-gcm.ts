@@ -56,7 +56,7 @@ describe('Bigtable/MetricsCollector', () => {
               done();
               resultCallback({code: 0});
             } catch (error) {
-              // Code isn't 0 so report the original error.
+              // The code here isn't 0 so we report the original error to the mocha test runner.
               done(result);
               done(error);
             }
