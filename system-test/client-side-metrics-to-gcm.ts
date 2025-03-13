@@ -27,7 +27,7 @@ import {
 import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 import * as mocha from 'mocha';
 
-describe.only('Bigtable/ClientSideMetricsToGCM', () => {
+describe('Bigtable/ClientSideMetricsToGCM', () => {
   async function mockBigtable(done: mocha.Done) {
     /*
     We need to create a timeout here because if we don't then mocha shuts down
