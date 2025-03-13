@@ -22,8 +22,6 @@ const root = gax.protobuf.loadSync(
 );
 const ResponseParams = root.lookupType('ResponseParams');
 
-// TODO: Add guards in the metrics collector.
-
 /**
  * An interface representing a tabular API surface, such as a Bigtable table.
  */
