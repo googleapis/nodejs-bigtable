@@ -30,7 +30,7 @@ import {expectedOtelExportInput} from '../test-common/expected-otel-export-input
 import {replaceTimestamps} from '../test-common/replace-timestamps';
 
 describe('Bigtable/GCPMetricsHandler', () => {
-  it.only('Should export a value to the GCPMetricsHandler', done => {
+  it('Should export a value to the GCPMetricsHandler', done => {
     (async () => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
