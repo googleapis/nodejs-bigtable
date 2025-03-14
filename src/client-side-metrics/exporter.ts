@@ -104,27 +104,9 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
       const metricName = scopeMetric.descriptor.name;
       for (const dataPoint of scopeMetric.dataPoints) {
         const value = dataPoint.value;
-        const allAttributes = dataPoint.attributes;
-        const streaming = allAttributes.streamingOperation;
-        /*
-        metricLabels are built from the open telemetry attributes that are set
-        when a data point is recorded. This means that for one metric there may
-        be multiple time series' with different attributes, but the resource
-        labels will always be the same for a particular export call.
-         */
-        const metricLabels = Object.assign(
-          {
-            app_profile: allAttributes.appProfileId,
-            client_name: allAttributes.clientName,
-            method: allAttributes.methodName,
-            status: allAttributes.status,
-            client_uid: allAttributes.clientUid,
-          },
-          streaming ? {streaming} : null
-        );
         const metric = {
           type: metricName,
-          labels: metricLabels,
+          labels: dataPoint.attributes,
         };
         const resource = {
           type: resourcesWithSyncAttributes._syncAttributes[

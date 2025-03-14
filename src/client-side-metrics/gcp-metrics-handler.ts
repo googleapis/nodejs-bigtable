@@ -246,13 +246,13 @@ export class GCPMetricsHandler implements IMetricsHandler {
     });
     const commonAttributes = {
       appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
+      method: data.metricsCollectorData.method,
+      client_uid: data.metricsCollectorData.client_uid,
       status: data.status,
-      clientName: data.clientName,
+      client_name: data.client_name,
     };
     otelInstruments.operationLatencies.record(data.operationLatency, {
-      streamingOperation: data.streamingOperation,
+      streaming: data.streaming,
       ...commonAttributes,
     });
     otelInstruments.retryCount.add(data.retryCount, commonAttributes);
@@ -278,13 +278,13 @@ export class GCPMetricsHandler implements IMetricsHandler {
     });
     const commonAttributes = {
       appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
+      method: data.metricsCollectorData.method,
+      client_uid: data.metricsCollectorData.client_uid,
       status: data.status,
-      clientName: data.clientName,
+      client_name: data.client_name,
     };
     otelInstruments.attemptLatencies.record(data.attemptLatency, {
-      streamingOperation: data.streamingOperation,
+      streaming: data.streaming,
       ...commonAttributes,
     });
     otelInstruments.connectivityErrorCount.add(
@@ -292,7 +292,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
       commonAttributes
     );
     otelInstruments.serverLatencies.record(data.serverLatency, {
-      streamingOperation: data.streamingOperation,
+      streaming: data.streaming,
       ...commonAttributes,
     });
   }

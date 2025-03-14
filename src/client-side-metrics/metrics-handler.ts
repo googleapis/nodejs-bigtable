@@ -27,15 +27,15 @@ type IMetricsCollectorData = {
   cluster?: string;
   zone?: string;
   appProfileId?: string;
-  methodName: MethodName;
-  clientUid: string;
+  method: MethodName;
+  client_uid: string;
 };
 
 interface StandardData {
   projectId: string;
   metricsCollectorData: IMetricsCollectorData;
-  clientName: string;
-  streamingOperation: StreamingState;
+  client_name: string;
+  streaming: StreamingState;
   status: string;
 }
 

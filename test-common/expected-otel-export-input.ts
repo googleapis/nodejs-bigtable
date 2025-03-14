@@ -35,7 +35,6 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/operation_latencies',
         labels: {
-          app_profile: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '0',
@@ -132,7 +131,7 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/attempt_latencies',
         labels: {
-          app_profile: undefined,
+          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '4',
@@ -229,7 +228,7 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/attempt_latencies',
         labels: {
-          app_profile: undefined,
+          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '0',
@@ -326,7 +325,7 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/retry_count',
         labels: {
-          app_profile: undefined,
+          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '0',
@@ -364,7 +363,7 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/first_response_latencies',
         labels: {
-          app_profile: undefined,
+          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '0',
@@ -460,7 +459,7 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/server_latencies',
         labels: {
-          app_profile: undefined,
+          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '4',
@@ -557,7 +556,7 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/server_latencies',
         labels: {
-          app_profile: undefined,
+          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '0',
@@ -654,7 +653,7 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/connectivity_error_count',
         labels: {
-          app_profile: undefined,
+          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '4',
@@ -692,7 +691,7 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/connectivity_error_count',
         labels: {
-          app_profile: undefined,
+          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '0',
@@ -803,11 +802,11 @@ export const expectedOtelExportInput = {
           dataPoints: [
             {
               attributes: {
-                streamingOperation: 'true',
-                methodName: 'Bigtable.ReadRows',
-                clientUid: 'fake-uuid',
+                streaming: 'true',
+                method: 'Bigtable.ReadRows',
+                client_uid: 'fake-uuid',
                 status: '0',
-                clientName: 'nodejs-bigtable',
+                client_name: 'nodejs-bigtable',
               },
               startTime: [123, 789],
               endTime: [456, 789],
@@ -855,11 +854,11 @@ export const expectedOtelExportInput = {
           dataPoints: [
             {
               attributes: {
-                streamingOperation: 'true',
-                methodName: 'Bigtable.ReadRows',
-                clientUid: 'fake-uuid',
+                streaming: 'true',
+                method: 'Bigtable.ReadRows',
+                client_uid: 'fake-uuid',
                 status: '4',
-                clientName: 'nodejs-bigtable',
+                client_name: 'nodejs-bigtable',
               },
               startTime: [123, 789],
               endTime: [456, 789],
@@ -885,11 +884,11 @@ export const expectedOtelExportInput = {
             },
             {
               attributes: {
-                streamingOperation: 'true',
-                methodName: 'Bigtable.ReadRows',
-                clientUid: 'fake-uuid',
+                streaming: 'true',
+                method: 'Bigtable.ReadRows',
+                client_uid: 'fake-uuid',
                 status: '0',
-                clientName: 'nodejs-bigtable',
+                client_name: 'nodejs-bigtable',
               },
               startTime: [123, 789],
               endTime: [456, 789],
@@ -930,10 +929,10 @@ export const expectedOtelExportInput = {
           dataPoints: [
             {
               attributes: {
-                methodName: 'Bigtable.ReadRows',
-                clientUid: 'fake-uuid',
+                method: 'Bigtable.ReadRows',
+                client_uid: 'fake-uuid',
                 status: '0',
-                clientName: 'nodejs-bigtable',
+                client_name: 'nodejs-bigtable',
               },
               startTime: [123, 789],
               endTime: [456, 789],
@@ -964,10 +963,10 @@ export const expectedOtelExportInput = {
           dataPoints: [
             {
               attributes: {
-                methodName: 'Bigtable.ReadRows',
-                clientUid: 'fake-uuid',
+                method: 'Bigtable.ReadRows',
+                client_uid: 'fake-uuid',
                 status: '0',
-                clientName: 'nodejs-bigtable',
+                client_name: 'nodejs-bigtable',
               },
               startTime: [123, 789],
               endTime: [456, 789],
@@ -1015,11 +1014,11 @@ export const expectedOtelExportInput = {
           dataPoints: [
             {
               attributes: {
-                streamingOperation: 'true',
-                methodName: 'Bigtable.ReadRows',
-                clientUid: 'fake-uuid',
+                streaming: 'true',
+                method: 'Bigtable.ReadRows',
+                client_uid: 'fake-uuid',
                 status: '4',
-                clientName: 'nodejs-bigtable',
+                client_name: 'nodejs-bigtable',
               },
               startTime: [123, 789],
               endTime: [456, 789],
@@ -1045,11 +1044,11 @@ export const expectedOtelExportInput = {
             },
             {
               attributes: {
-                streamingOperation: 'true',
-                methodName: 'Bigtable.ReadRows',
-                clientUid: 'fake-uuid',
+                streaming: 'true',
+                method: 'Bigtable.ReadRows',
+                client_uid: 'fake-uuid',
                 status: '0',
-                clientName: 'nodejs-bigtable',
+                client_name: 'nodejs-bigtable',
               },
               startTime: [123, 789],
               endTime: [456, 789],
@@ -1090,10 +1089,10 @@ export const expectedOtelExportInput = {
           dataPoints: [
             {
               attributes: {
-                methodName: 'Bigtable.ReadRows',
-                clientUid: 'fake-uuid',
+                method: 'Bigtable.ReadRows',
+                client_uid: 'fake-uuid',
                 status: '4',
-                clientName: 'nodejs-bigtable',
+                client_name: 'nodejs-bigtable',
               },
               startTime: [123, 789],
               endTime: [456, 789],
@@ -1101,10 +1100,10 @@ export const expectedOtelExportInput = {
             },
             {
               attributes: {
-                methodName: 'Bigtable.ReadRows',
-                clientUid: 'fake-uuid',
+                method: 'Bigtable.ReadRows',
+                client_uid: 'fake-uuid',
                 status: '0',
-                clientName: 'nodejs-bigtable',
+                client_name: 'nodejs-bigtable',
               },
               startTime: [123, 789],
               endTime: [456, 789],

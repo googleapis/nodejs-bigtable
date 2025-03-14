@@ -105,15 +105,18 @@ export class OperationMetricsCollector {
   }
 
   private getMetricsCollectorData() {
-    return {
-      instanceId: this.tabularApiSurface.instance.id,
-      table: this.tabularApiSurface.id,
-      cluster: this.cluster,
-      zone: this.zone,
-      appProfileId: this.tabularApiSurface.bigtable.appProfileId,
-      methodName: this.methodName,
-      clientUid: this.tabularApiSurface.bigtable.clientUid,
-    };
+    const appProfileId = this.tabularApiSurface.bigtable.appProfileId;
+    return Object.assign(
+      {
+        instanceId: this.tabularApiSurface.instance.id,
+        table: this.tabularApiSurface.id,
+        cluster: this.cluster,
+        zone: this.zone,
+        method: this.methodName,
+        client_uid: this.tabularApiSurface.bigtable.clientUid,
+      },
+      appProfileId ? {app_profile_id: appProfileId} : {}
+    );
   }
 
   /**
@@ -154,9 +157,9 @@ export class OperationMetricsCollector {
               attemptLatency: totalTime,
               serverLatency: this.serverTime ?? undefined,
               connectivityErrorCount: this.connectivityErrorCount,
-              streamingOperation: this.streamingOperation,
+              streaming: this.streamingOperation,
               status: attemptStatus.toString(),
-              clientName: `nodejs-bigtable/${version}`,
+              client_name: `nodejs-bigtable/${version}`,
               metricsCollectorData: this.getMetricsCollectorData(),
               projectId,
             });
@@ -225,9 +228,9 @@ export class OperationMetricsCollector {
             if (metricsHandler.onOperationComplete) {
               metricsHandler.onOperationComplete({
                 status: finalOperationStatus.toString(),
-                streamingOperation: this.streamingOperation,
+                streaming: this.streamingOperation,
                 metricsCollectorData: this.getMetricsCollectorData(),
-                clientName: `nodejs-bigtable/${version}`,
+                client_name: `nodejs-bigtable/${version}`,
                 projectId,
                 operationLatency: totalTime,
                 retryCount: this.attemptCount - 1,
