@@ -155,7 +155,7 @@ export class OperationMetricsCollector {
               serverLatency: this.serverTime ?? undefined,
               connectivityErrorCount: this.connectivityErrorCount,
               streamingOperation: this.streamingOperation,
-              attemptStatus,
+              status: attemptStatus.toString(),
               clientName: `nodejs-bigtable/${version}`,
               metricsCollectorData: this.getMetricsCollectorData(),
               projectId,
@@ -224,7 +224,7 @@ export class OperationMetricsCollector {
           this.metricsHandlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
               metricsHandler.onOperationComplete({
-                finalOperationStatus: finalOperationStatus,
+                status: finalOperationStatus.toString(),
                 streamingOperation: this.streamingOperation,
                 metricsCollectorData: this.getMetricsCollectorData(),
                 clientName: `nodejs-bigtable/${version}`,

@@ -36,20 +36,19 @@ interface StandardData {
   metricsCollectorData: IMetricsCollectorData;
   clientName: string;
   streamingOperation: StreamingState;
+  status: string;
 }
 
 export interface OnOperationCompleteData extends StandardData {
   firstResponseLatency?: number;
   operationLatency: number;
   retryCount?: number;
-  finalOperationStatus: grpc.status;
 }
 
 export interface OnAttemptCompleteData extends StandardData {
   attemptLatency: number;
   serverLatency?: number;
   connectivityErrorCount: number;
-  attemptStatus: grpc.status;
 }
 
 /**

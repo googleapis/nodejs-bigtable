@@ -18,7 +18,7 @@ export const expectedRequestsHandled = [
     serverLatency: 101,
     connectivityErrorCount: 0,
     streamingOperation: 'true',
-    attemptStatus: 4,
+    status: '4',
     clientName: 'nodejs-bigtable',
     metricsCollectorData: {
       appProfileId: undefined,
@@ -36,7 +36,7 @@ export const expectedRequestsHandled = [
     serverLatency: 103,
     connectivityErrorCount: 0,
     streamingOperation: 'true',
-    attemptStatus: 0,
+    status: '0',
     clientName: 'nodejs-bigtable',
     metricsCollectorData: {
       appProfileId: undefined,
@@ -50,7 +50,7 @@ export const expectedRequestsHandled = [
     projectId: 'my-project',
   },
   {
-    finalOperationStatus: 0,
+    status: '0',
     streamingOperation: 'true',
     metricsCollectorData: {
       appProfileId: undefined,

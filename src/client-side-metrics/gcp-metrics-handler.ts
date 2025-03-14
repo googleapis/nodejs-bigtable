@@ -248,7 +248,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
       appProfileId: data.metricsCollectorData.appProfileId,
       methodName: data.metricsCollectorData.methodName,
       clientUid: data.metricsCollectorData.clientUid,
-      finalOperationStatus: data.finalOperationStatus,
+      status: data.status,
       clientName: data.clientName,
     };
     otelInstruments.operationLatencies.record(data.operationLatency, {
@@ -280,7 +280,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
       appProfileId: data.metricsCollectorData.appProfileId,
       methodName: data.metricsCollectorData.methodName,
       clientUid: data.metricsCollectorData.clientUid,
-      attemptStatus: data.attemptStatus,
+      status: data.status,
       clientName: data.clientName,
     };
     otelInstruments.attemptLatencies.record(data.attemptLatency, {

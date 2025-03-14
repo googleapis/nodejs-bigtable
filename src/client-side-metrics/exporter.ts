@@ -117,13 +117,7 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
             app_profile: allAttributes.appProfileId,
             client_name: allAttributes.clientName,
             method: allAttributes.methodName,
-            status:
-              (
-                allAttributes as {attemptStatus: number}
-              ).attemptStatus?.toString() ??
-              (
-                allAttributes as {finalOperationStatus: number}
-              ).finalOperationStatus?.toString(),
+            status: allAttributes.status,
             client_uid: allAttributes.clientUid,
           },
           streaming ? {streaming} : null
@@ -146,48 +140,49 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
             seconds: dataPoint.startTime[0],
           },
         };
-        const timeSeries = isCounterValue(value)
-          ? {
-              metric,
-              resource,
-              valueType: 'INT64',
-              points: [
-                {
-                  interval,
-                  value: {
-                    int64Value: dataPoint.value,
-                  },
+        if (isCounterValue(value)) {
+          timeSeriesArray.push({
+            metric,
+            resource,
+            valueType: 'INT64',
+            points: [
+              {
+                interval,
+                value: {
+                  int64Value: dataPoint.value,
                 },
-              ],
-            }
-          : {
-              metric,
-              resource,
-              metricKind: 'CUMULATIVE',
-              valueType: 'DISTRIBUTION',
-              points: [
-                {
-                  interval,
-                  value: {
-                    distributionValue: {
-                      count: String(value.count),
-                      mean:
-                        value.count && value.sum ? value.sum / value.count : 0,
-                      bucketOptions: {
-                        explicitBuckets: {
-                          bounds: (value as Histogram).buckets.boundaries,
-                        },
+              },
+            ],
+          });
+        } else {
+          timeSeriesArray.push({
+            metric,
+            resource,
+            metricKind: 'CUMULATIVE',
+            valueType: 'DISTRIBUTION',
+            points: [
+              {
+                interval,
+                value: {
+                  distributionValue: {
+                    count: String(value.count),
+                    mean:
+                      value.count && value.sum ? value.sum / value.count : 0,
+                    bucketOptions: {
+                      explicitBuckets: {
+                        bounds: (value as Histogram).buckets.boundaries,
                       },
-                      bucketCounts: (value as Histogram).buckets.counts.map(
-                        String
-                      ),
                     },
+                    bucketCounts: (value as Histogram).buckets.counts.map(
+                      String
+                    ),
                   },
                 },
-              ],
-              unit: scopeMetric.descriptor.unit || 'ms', // Default to 'ms' if no unit is specified
-            };
-        timeSeriesArray.push(timeSeries);
+              },
+            ],
+            unit: scopeMetric.descriptor.unit || 'ms', // Default to 'ms' if no unit is specified
+          });
+        }
       }
     }
   }
