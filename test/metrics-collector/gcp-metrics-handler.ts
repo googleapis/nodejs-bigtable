@@ -15,7 +15,6 @@
 import {describe} from 'mocha';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import {
-  ExportInput,
   ExportResult,
   metricsToRequest,
 } from '../../src/client-side-metrics/exporter';
@@ -63,24 +62,21 @@ describe('Bigtable/GCPMetricsHandler', () => {
                 [123, 789],
                 [456, 789]
               );
-              const parsedExportInput = JSON.parse(JSON.stringify(metrics));
+              const parsedExportInput: ResourceMetrics = JSON.parse(
+                JSON.stringify(metrics)
+              );
               assert.deepStrictEqual(
-                (parsedExportInput as ExportInput).scopeMetrics[0].metrics
-                  .length,
+                parsedExportInput.scopeMetrics[0].metrics.length,
                 expectedOtelExportInput.scopeMetrics[0].metrics.length
               );
               for (
                 let index = 0;
-                index <
-                (parsedExportInput as ExportInput).scopeMetrics[0].metrics
-                  .length;
+                index < parsedExportInput.scopeMetrics[0].metrics.length;
                 index++
               ) {
                 // We need to compare pointwise because mocha truncates to an 8192 character limit.
                 assert.deepStrictEqual(
-                  (parsedExportInput as ExportInput).scopeMetrics[0].metrics[
-                    index
-                  ],
+                  parsedExportInput.scopeMetrics[0].metrics[index],
                   expectedOtelExportInput.scopeMetrics[0].metrics[index]
                 );
               }
@@ -88,9 +84,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
                 JSON.parse(JSON.stringify(metrics)),
                 expectedOtelExportInput
               );
-              const convertedRequest = metricsToRequest(
-                expectedOtelExportInput as unknown as ExportInput
-              );
+              const convertedRequest = metricsToRequest(metrics);
               assert.deepStrictEqual(
                 convertedRequest.timeSeries.length,
                 expectedOtelExportConvertedValue.timeSeries.length

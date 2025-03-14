@@ -21,7 +21,6 @@ import {
 } from '../src/client-side-metrics/metrics-handler';
 import {
   CloudMonitoringExporter,
-  ExportInput,
   ExportResult,
 } from '../src/client-side-metrics/exporter';
 import {Bigtable} from '../src';
@@ -164,27 +163,26 @@ describe('Bigtable/GCPMetricsHandler', () => {
             // to have artificial times because then sending the data to the
             // metric service client will fail. Therefore, we must make a copy
             // of the metrics and use that.
-            const parsedExportInput = JSON.parse(JSON.stringify(metrics));
+            const parsedExportInput: ResourceMetrics = JSON.parse(
+              JSON.stringify(metrics)
+            );
             replaceTimestamps(
               parsedExportInput as unknown as typeof expectedOtelExportInput,
               [123, 789],
               [456, 789]
             );
             assert.deepStrictEqual(
-              (parsedExportInput as ExportInput).scopeMetrics[0].metrics.length,
+              parsedExportInput.scopeMetrics[0].metrics.length,
               expectedOtelExportInput.scopeMetrics[0].metrics.length
             );
             for (
               let index = 0;
-              index <
-              (parsedExportInput as ExportInput).scopeMetrics[0].metrics.length;
+              index < parsedExportInput.scopeMetrics[0].metrics.length;
               index++
             ) {
               // We need to compare pointwise because mocha truncates to an 8192 character limit.
               assert.deepStrictEqual(
-                (parsedExportInput as ExportInput).scopeMetrics[0].metrics[
-                  index
-                ],
+                parsedExportInput.scopeMetrics[0].metrics[index],
                 expectedOtelExportInput.scopeMetrics[0].metrics[index]
               );
             }

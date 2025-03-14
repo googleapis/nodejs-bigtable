@@ -13,7 +13,11 @@
 // limitations under the License.
 
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
-import {ExponentialHistogram, Histogram, ResourceMetrics} from '@opentelemetry/sdk-metrics';
+import {
+  ExponentialHistogram,
+  Histogram,
+  ResourceMetrics,
+} from '@opentelemetry/sdk-metrics';
 import {ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
@@ -194,7 +198,9 @@ export interface ExportInput {
  * (which have more complex, object-based values).
  *
  */
-function isCounterValue(value: DistributionValue | number): value is number {
+function isCounterValue(
+  value: number | Histogram | ExponentialHistogram
+): value is number {
   return typeof value === 'number';
 }
 
@@ -206,7 +212,7 @@ function isCounterValue(value: DistributionValue | number): value is number {
  * metric attributes, data points, and aggregation information, into an object
  * that conforms to the expected request format of the Cloud Monitoring API.
  *
- * @param {ExportInput} exportArgs - The OpenTelemetry metrics data to be converted. This
+ * @param {ResourceMetrics} exportArgs - The OpenTelemetry metrics data to be converted. This
  *   object contains resource attributes, scope information, and a list of
  *   metrics with their associated data points.
  *
@@ -233,16 +239,27 @@ function isCounterValue(value: DistributionValue | number): value is number {
  *
  *
  */
-export function metricsToRequest(exportArgs: ExportInput) {
+export function metricsToRequest(exportArgs: ResourceMetrics) {
+  type WithSyncAttributes = {_syncAttributes: {[index: string]: string}};
+  const resourcesWithSyncAttributes =
+    exportArgs.resource as unknown as WithSyncAttributes;
   const timeSeriesArray = [];
   const resourceLabels = {
-    cluster: exportArgs.resource._syncAttributes['monitored_resource.cluster'],
+    cluster:
+      resourcesWithSyncAttributes._syncAttributes['monitored_resource.cluster'],
     instance:
-      exportArgs.resource._syncAttributes['monitored_resource.instance_id'],
+      resourcesWithSyncAttributes._syncAttributes[
+        'monitored_resource.instance_id'
+      ],
     project_id:
-      exportArgs.resource._syncAttributes['monitored_resource.project_id'],
-    table: exportArgs.resource._syncAttributes['monitored_resource.table'],
-    zone: exportArgs.resource._syncAttributes['monitored_resource.zone'],
+      resourcesWithSyncAttributes._syncAttributes[
+        'monitored_resource.project_id'
+      ],
+    table:
+      resourcesWithSyncAttributes._syncAttributes['monitored_resource.table'],
+    zone: resourcesWithSyncAttributes._syncAttributes[
+      'monitored_resource.zone'
+    ],
   };
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
@@ -263,9 +280,11 @@ export function metricsToRequest(exportArgs: ExportInput) {
             client_name: allAttributes.clientName,
             method: allAttributes.methodName,
             status:
-              (allAttributes as OnAttemptAttribute).attemptStatus?.toString() ??
               (
-                allAttributes as OnOperationAttribute
+                allAttributes as {attemptStatus: number}
+              ).attemptStatus?.toString() ??
+              (
+                allAttributes as {finalOperationStatus: number}
               ).finalOperationStatus?.toString(),
             client_uid: allAttributes.clientUid,
           },
@@ -276,7 +295,9 @@ export function metricsToRequest(exportArgs: ExportInput) {
           labels: metricLabels,
         };
         const resource = {
-          type: exportArgs.resource._syncAttributes['monitored_resource.type'],
+          type: resourcesWithSyncAttributes._syncAttributes[
+            'monitored_resource.type'
+          ],
           labels: resourceLabels,
         };
         const interval = {
@@ -333,7 +354,7 @@ export function metricsToRequest(exportArgs: ExportInput) {
     }
   }
   return {
-    name: `projects/${exportArgs.resource._syncAttributes['monitored_resource.project_id']}`,
+    name: `projects/${resourcesWithSyncAttributes._syncAttributes['monitored_resource.project_id']}`,
     timeSeries: timeSeriesArray,
   };
 }
@@ -392,7 +413,7 @@ export class CloudMonitoringExporter extends MetricExporter {
   ): void {
     (async () => {
       try {
-        const request = metricsToRequest(metrics as unknown as ExportInput);
+        const request = metricsToRequest(metrics);
         await this.monitoringClient.createTimeSeries(
           request as ICreateTimeSeriesRequest
         );
