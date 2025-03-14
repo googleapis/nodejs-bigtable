@@ -131,7 +131,6 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/attempt_latencies',
         labels: {
-          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '4',
@@ -228,7 +227,6 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/attempt_latencies',
         labels: {
-          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '0',
@@ -325,7 +323,6 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/retry_count',
         labels: {
-          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '0',
@@ -363,7 +360,6 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/first_response_latencies',
         labels: {
-          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '0',
@@ -459,7 +455,6 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/server_latencies',
         labels: {
-          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '4',
@@ -556,7 +551,6 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/server_latencies',
         labels: {
-          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '0',
@@ -653,7 +647,6 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/connectivity_error_count',
         labels: {
-          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '4',
@@ -691,7 +684,6 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/connectivity_error_count',
         labels: {
-          app_profile_id: undefined,
           client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
           status: '0',

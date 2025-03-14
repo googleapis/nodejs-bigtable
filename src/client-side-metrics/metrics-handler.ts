@@ -26,7 +26,7 @@ type IMetricsCollectorData = {
   table: string;
   cluster?: string;
   zone?: string;
-  appProfileId?: string;
+  app_profile_id?: string;
   method: MethodName;
   client_uid: string;
 };
