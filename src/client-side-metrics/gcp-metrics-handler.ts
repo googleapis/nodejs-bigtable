@@ -245,7 +245,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
       zone: data.metricsCollectorData.zone,
     });
     const commonAttributes = {
-      app_profile_id: data.metricsCollectorData.app_profile_id,
+      app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
       client_uid: data.metricsCollectorData.client_uid,
       status: data.status,
@@ -277,7 +277,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
       zone: data.metricsCollectorData.zone,
     });
     const commonAttributes = {
-      app_profile_id: data.metricsCollectorData.app_profile_id,
+      app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
       client_uid: data.metricsCollectorData.client_uid,
       status: data.status,

@@ -115,7 +115,7 @@ export class OperationMetricsCollector {
         method: this.methodName,
         client_uid: this.tabularApiSurface.bigtable.clientUid,
       },
-      appProfileId ? {app_profile_id: appProfileId} : {}
+      appProfileId ? {app_profile: appProfileId} : {}
     );
   }
 
