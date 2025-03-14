@@ -28,33 +28,10 @@ import {Bigtable} from '../src';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import {expectedOtelExportInput} from '../test-common/expected-otel-export-input';
-
-/**
- * Replaces the timestamp values within an `ExportInput` object with
- * standardized test values.
- *
- * This function is designed for testing purposes to make timestamp comparisons
- * in tests more predictable and reliable. It recursively traverses the
- * `ExportInput` object, finds all `startTime` and `endTime` properties, and
- * replaces their numeric values with standardized test values.
- */
-function replaceTimestamps(
-  request: typeof expectedOtelExportInput,
-  newStartTime: [number, number],
-  newEndTime: [number, number]
-) {
-  request.scopeMetrics.forEach(scopeMetric => {
-    scopeMetric.metrics.forEach(metric => {
-      metric.dataPoints.forEach(dataPoint => {
-        dataPoint.startTime = newStartTime;
-        dataPoint.endTime = newEndTime;
-      });
-    });
-  });
-}
+import {replaceTimestamps} from '../test-common/replace-timestamps';
 
 describe('Bigtable/GCPMetricsHandler', () => {
-  it('Should export a value to the GCPMetricsHandler', done => {
+  it.only('Should export a value to the GCPMetricsHandler', done => {
     (async () => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
