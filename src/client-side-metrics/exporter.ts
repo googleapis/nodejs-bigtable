@@ -261,8 +261,7 @@ export class CloudMonitoringExporter extends MetricExporter {
         // to 0 then the operation failed. Open telemetry logs errors to the
         // console when the resultCallback passes in non-zero code values and
         // logs nothing when the code is 0.
-        const exportResult = {code: 0};
-        resultCallback(exportResult);
+        resultCallback({code: 0});
       } catch (error) {
         resultCallback(error as ServiceError);
       }
