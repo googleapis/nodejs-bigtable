@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
-import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
+import {ExponentialHistogram, Histogram, ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import {ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
@@ -312,13 +312,16 @@ export function metricsToRequest(exportArgs: ExportInput) {
                   value: {
                     distributionValue: {
                       count: String(value.count),
-                      mean: value.count ? value.sum / value.count : 0,
+                      mean:
+                        value.count && value.sum ? value.sum / value.count : 0,
                       bucketOptions: {
                         explicitBuckets: {
-                          bounds: value.buckets.boundaries,
+                          bounds: (value as Histogram).buckets.boundaries,
                         },
                       },
-                      bucketCounts: value.buckets.counts.map(String),
+                      bucketCounts: (value as Histogram).buckets.counts.map(
+                        String
+                      ),
                     },
                   },
                 },
