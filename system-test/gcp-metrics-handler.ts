@@ -28,7 +28,7 @@ import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 
 describe('Bigtable/GCPMetricsHandler', () => {
-  it('Should export a value to the CloudMonitoringExporter', done => {
+  it('Should export a value to the GCPMetricsHandler', done => {
     (async () => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
