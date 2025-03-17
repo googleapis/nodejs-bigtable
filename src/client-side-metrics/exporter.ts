@@ -81,37 +81,40 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
   type WithSyncAttributes = {_syncAttributes: {[index: string]: string}};
   const resourcesWithSyncAttributes =
     exportArgs.resource as unknown as WithSyncAttributes;
+  const projectId =
+    resourcesWithSyncAttributes._syncAttributes[
+      'monitored_resource.project_id'
+    ];
   const timeSeriesArray = [];
-  const resourceLabels = {
-    cluster:
-      resourcesWithSyncAttributes._syncAttributes['monitored_resource.cluster'],
-    instance:
-      resourcesWithSyncAttributes._syncAttributes[
-        'monitored_resource.instance_id'
-      ],
-    project_id:
-      resourcesWithSyncAttributes._syncAttributes[
-        'monitored_resource.project_id'
-      ],
-    table:
-      resourcesWithSyncAttributes._syncAttributes['monitored_resource.table'],
-    zone: resourcesWithSyncAttributes._syncAttributes[
-      'monitored_resource.zone'
-    ],
-  };
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
       const metricName = scopeMetric.descriptor.name;
       for (const dataPoint of scopeMetric.dataPoints) {
         const value = dataPoint.value;
+        const resourceLabels = {
+          cluster: dataPoint.attributes.cluster,
+          instance: dataPoint.attributes.instanceId,
+          project_id: projectId,
+          table: dataPoint.attributes.table,
+          zone: dataPoint.attributes.zone,
+        };
+        const streaming = dataPoint.attributes.streaming;
+        const app_profile = dataPoint.attributes.app_profile;
         const metric = {
           type: metricName,
-          labels: dataPoint.attributes,
+          labels: Object.assign(
+            {
+              method: dataPoint.attributes.method,
+              client_uid: dataPoint.attributes.client_uid,
+              status: dataPoint.attributes.status,
+              client_name: dataPoint.attributes.client_name,
+            },
+            streaming ? {streaming} : null,
+            app_profile ? {app_profile} : null
+          ),
         };
         const resource = {
-          type: resourcesWithSyncAttributes._syncAttributes[
-            'monitored_resource.type'
-          ],
+          type: 'bigtable_client_raw',
           labels: resourceLabels,
         };
         const interval = {
@@ -169,7 +172,7 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
     }
   }
   return {
-    name: `projects/${resourcesWithSyncAttributes._syncAttributes['monitored_resource.project_id']}`,
+    name: `projects/${projectId}`,
     timeSeries: timeSeriesArray,
   };
 }

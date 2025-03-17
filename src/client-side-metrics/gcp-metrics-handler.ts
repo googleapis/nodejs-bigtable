@@ -92,11 +92,13 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * Creates and registers metric instruments (histograms and counters) for various Bigtable client metrics.
    * Sets up a MeterProvider and configures a PeriodicExportingMetricReader for exporting metrics to Cloud Monitoring.
    *
-   * @param {MonitoredResourceData} data The data that will be used to set up the monitored resource
    * which will be provided to the exporter in every export call.
    *
    */
-  private getMetrics(data: MonitoredResourceData): Metrics {
+  private getMetrics(projectId: string): Metrics {
+    // The projectId is needed per metrics handler because when the exporter is
+    // used it provides the project id for the name of the time series exported.
+    // ie. name: `projects/${....['monitored_resource.project_id']}`,
     if (!this.otelInstruments) {
       const latencyBuckets = [
         0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0, 16.0, 20.0, 25.0,
@@ -127,12 +129,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
         views: viewList,
         resource: new Resources.Resource({
           'service.name': 'Cloud Bigtable Table',
-          'monitored_resource.type': 'bigtable_client_raw',
-          'monitored_resource.project_id': data.projectId,
-          'monitored_resource.instance_id': data.instanceId,
-          'monitored_resource.table': data.table,
-          'monitored_resource.cluster': data.cluster,
-          'monitored_resource.zone': data.zone,
+          'monitored_resource.project_id': projectId,
         }).merge(new ResourceUtil.GcpDetectorSync().detect()),
         readers: [
           // Register the exporter
@@ -237,19 +234,17 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    const otelInstruments = this.getMetrics({
-      projectId: data.projectId,
-      instanceId: data.metricsCollectorData.instanceId,
-      table: data.metricsCollectorData.table,
-      cluster: data.metricsCollectorData.cluster,
-      zone: data.metricsCollectorData.zone,
-    });
+    const otelInstruments = this.getMetrics(data.projectId);
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
       client_uid: data.metricsCollectorData.client_uid,
       status: data.status,
       client_name: data.client_name,
+      instanceId: data.metricsCollectorData.instanceId,
+      table: data.metricsCollectorData.table,
+      cluster: data.metricsCollectorData.cluster,
+      zone: data.metricsCollectorData.zone,
     };
     otelInstruments.operationLatencies.record(data.operationLatency, {
       streaming: data.streaming,
@@ -269,19 +264,17 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    const otelInstruments = this.getMetrics({
-      projectId: data.projectId,
-      instanceId: data.metricsCollectorData.instanceId,
-      table: data.metricsCollectorData.table,
-      cluster: data.metricsCollectorData.cluster,
-      zone: data.metricsCollectorData.zone,
-    });
+    const otelInstruments = this.getMetrics(data.projectId);
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
       client_uid: data.metricsCollectorData.client_uid,
       status: data.status,
       client_name: data.client_name,
+      instanceId: data.metricsCollectorData.instanceId,
+      table: data.metricsCollectorData.table,
+      cluster: data.metricsCollectorData.cluster,
+      zone: data.metricsCollectorData.zone,
     };
     otelInstruments.attemptLatencies.record(data.attemptLatency, {
       streaming: data.streaming,
