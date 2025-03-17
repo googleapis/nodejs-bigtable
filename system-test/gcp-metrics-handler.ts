@@ -29,7 +29,7 @@ import * as assert from 'assert';
 import {expectedOtelExportInput} from '../test-common/expected-otel-export-input';
 import {replaceTimestamps} from '../test-common/replace-timestamps';
 
-describe.only('Bigtable/GCPMetricsHandler', () => {
+describe('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value to the GCPMetricsHandler', done => {
     (async () => {
       /*
