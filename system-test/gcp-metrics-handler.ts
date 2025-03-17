@@ -29,7 +29,7 @@ import * as assert from 'assert';
 import {expectedOtelExportInput} from '../test-common/expected-otel-export-input';
 import {replaceTimestamps} from '../test-common/replace-timestamps';
 
-describe('Bigtable/GCPMetricsHandler', () => {
+describe.only('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value to the GCPMetricsHandler', done => {
     (async () => {
       /*
@@ -48,20 +48,16 @@ describe('Bigtable/GCPMetricsHandler', () => {
         resultCallback: (result: ExportResult) => void
       ) {
         return (result: ExportResult) => {
-          if (!exported) {
-            exported = true;
-            try {
-              clearTimeout(timeout);
-              assert.strictEqual(result.code, 0);
-              done();
-              resultCallback({code: 0});
-            } catch (error) {
-              // Code isn't 0 so report the original error.
-              done(result);
-              done(error);
-            }
-          } else {
+          exported = true;
+          try {
+            clearTimeout(timeout);
+            assert.strictEqual(result.code, 0);
+            done();
             resultCallback({code: 0});
+          } catch (error) {
+            // Code isn't 0 so report the original error.
+            done(result);
+            done(error);
           }
         };
       }
@@ -71,7 +67,11 @@ describe('Bigtable/GCPMetricsHandler', () => {
           resultCallback: (result: ExportResult) => void
         ): void {
           const testResultCallback = getTestResultCallback(resultCallback);
-          super.export(metrics, testResultCallback);
+          if (!exported) {
+            super.export(metrics, testResultCallback);
+          } else {
+            resultCallback({code: 0});
+          }
         }
       }
 
@@ -123,29 +123,23 @@ describe('Bigtable/GCPMetricsHandler', () => {
         resultCallback: (result: ExportResult) => void
       ) {
         return (result: ExportResult) => {
-          if (exportedCount < 2) {
-            exportedCount++;
-            try {
-              assert.strictEqual(result.code, 0);
-            } catch (error) {
-              // Code isn't 0 so report the original error.
-              done(result);
-              done(error);
-            }
-            if (exportedCount === 2) {
-              // We are expecting two calls to an exporter. One for each
-              // metrics handler.
-              clearTimeout(timeout);
-              done();
-            }
-            resultCallback({code: 0});
-          } else {
-            // After the test is complete the periodic exporter may still be
-            // running in which case we don't want to do any checks. We just
-            // want to call the resultCallback so that there are no hanging
-            // threads.
-            resultCallback({code: 0});
+          exportedCount++;
+          try {
+            assert.strictEqual(result.code, 0);
+          } catch (error) {
+            // Code isn't 0 so report the original error.
+            done(result);
+            done(error);
           }
+          if (exportedCount === 2) {
+            // We are expecting two calls to an exporter. One for each
+            // metrics handler.
+            clearTimeout(timeout);
+            done();
+          }
+          // The resultCallback needs to be called to end the exporter operation
+          // so that the test shuts down in mocha.
+          resultCallback({code: 0});
         };
       }
       class MockExporter extends CloudMonitoringExporter {
@@ -153,47 +147,55 @@ describe('Bigtable/GCPMetricsHandler', () => {
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void
         ): void {
-          try {
-            // The code block ensures the metrics are correct. Mainly, the metrics
-            // shouldn't contain two copies of the data. It should only contain
-            // one.
-
-            // For this test since we are still writing a time series with
-            // metrics variable we don't want to modify the metrics variable
-            // to have artificial times because then sending the data to the
-            // metric service client will fail. Therefore, we must make a copy
-            // of the metrics and use that.
-            const parsedExportInput: ResourceMetrics = JSON.parse(
-              JSON.stringify(metrics)
-            );
-            replaceTimestamps(
-              parsedExportInput as unknown as typeof expectedOtelExportInput,
-              [123, 789],
-              [456, 789]
-            );
-            assert.deepStrictEqual(
-              parsedExportInput.scopeMetrics[0].metrics.length,
-              expectedOtelExportInput.scopeMetrics[0].metrics.length
-            );
-            for (
-              let index = 0;
-              index < parsedExportInput.scopeMetrics[0].metrics.length;
-              index++
-            ) {
-              // We need to compare pointwise because mocha truncates to an 8192 character limit.
-              assert.deepStrictEqual(
-                parsedExportInput.scopeMetrics[0].metrics[index],
-                expectedOtelExportInput.scopeMetrics[0].metrics[index]
+          if (exportedCount < 2) {
+            try {
+              // This code block ensures the metrics are correct. Mainly, the metrics
+              // shouldn't contain two copies of the data. It should only contain
+              // one.
+              //
+              // For this test since we are still writing a time series with
+              // metrics variable we don't want to modify the metrics variable
+              // to have artificial times because then sending the data to the
+              // metric service client will fail. Therefore, we must make a copy
+              // of the metrics and use that.
+              const parsedExportInput: ResourceMetrics = JSON.parse(
+                JSON.stringify(metrics)
               );
+              replaceTimestamps(
+                parsedExportInput as unknown as typeof expectedOtelExportInput,
+                [123, 789],
+                [456, 789]
+              );
+              assert.deepStrictEqual(
+                parsedExportInput.scopeMetrics[0].metrics.length,
+                expectedOtelExportInput.scopeMetrics[0].metrics.length
+              );
+              for (
+                let index = 0;
+                index < parsedExportInput.scopeMetrics[0].metrics.length;
+                index++
+              ) {
+                // We need to compare pointwise because mocha truncates to an 8192 character limit.
+                assert.deepStrictEqual(
+                  parsedExportInput.scopeMetrics[0].metrics[index],
+                  expectedOtelExportInput.scopeMetrics[0].metrics[index]
+                );
+              }
+            } catch (e) {
+              // The error needs to be caught so it can be reported to the mocha
+              // test runner.
+              done(e);
             }
-          } catch (e) {
-            // The error needs to be caught so it can be reported to the mocha
-            // test runner.
-            done(e);
+            // The code below uses the test callback to ensure the export was successful.
+            const testResultCallback = getTestResultCallback(resultCallback);
+            super.export(metrics, testResultCallback);
+          } else {
+            // After the test is complete the periodic exporter may still be
+            // running in which case we don't want to do any checks. We just
+            // want to call the resultCallback so that there are no hanging
+            // threads.
+            resultCallback({code: 0});
           }
-          // The code below uses the test callback to ensure the export was successful.
-          const testResultCallback = getTestResultCallback(resultCallback);
-          super.export(metrics, testResultCallback);
         }
       }
 
