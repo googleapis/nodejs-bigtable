@@ -282,6 +282,15 @@ export class OperationMetricsCollector {
     }
   }
 
+  /**
+   * Called when a row from the Bigtable stream reaches the application user.
+   *
+   * This method is used to calculate the latency experienced by the application
+   * when reading rows from a Bigtable stream. It records the time between the
+   * previous row being received and the current row reaching the user. These
+   * latencies are then collected and reported as `applicationBlockingLatencies`
+   * when the operation completes.
+   */
   onRowReachesUser() {
     const currentTime = new Date();
     if (this.lastRowReceivedTime) {
