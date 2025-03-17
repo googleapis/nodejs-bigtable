@@ -233,7 +233,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       }
     })();
   });
-  it.only('Should export a value to ten GCPMetricsHandlers', done => {
+  it('Should export a value to ten GCPMetricsHandlers', done => {
     // This test ensures that when we create two GCPMetricsHandlers much like
     // what we would be doing when calling readRows on two separate tables that
     // the data doesn't store duplicates in the same place and export twice as
