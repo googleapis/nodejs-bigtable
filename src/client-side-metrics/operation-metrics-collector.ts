@@ -118,15 +118,18 @@ export class OperationMetricsCollector {
   }
 
   private getMetricsCollectorData() {
-    return {
-      instanceId: this.tabularApiSurface.instance.id,
-      table: this.tabularApiSurface.id,
-      cluster: this.cluster,
-      zone: this.zone,
-      appProfileId: this.tabularApiSurface.bigtable.appProfileId,
-      methodName: this.methodName,
-      clientUid: this.tabularApiSurface.bigtable.clientUid,
-    };
+    const appProfileId = this.tabularApiSurface.bigtable.appProfileId;
+    return Object.assign(
+      {
+        instanceId: this.tabularApiSurface.instance.id,
+        table: this.tabularApiSurface.id,
+        cluster: this.cluster,
+        zone: this.zone,
+        method: this.methodName,
+        client_uid: this.tabularApiSurface.bigtable.clientUid,
+      },
+      appProfileId ? {app_profile: appProfileId} : {}
+    );
   }
 
   /**
@@ -167,9 +170,9 @@ export class OperationMetricsCollector {
               attemptLatency: totalTime,
               serverLatency: this.serverTime ?? undefined,
               connectivityErrorCount: this.connectivityErrorCount,
-              streamingOperation: this.streamingOperation,
-              attemptStatus,
-              clientName: `nodejs-bigtable/${version}`,
+              streaming: this.streamingOperation,
+              status: attemptStatus.toString(),
+              client_name: `nodejs-bigtable/${version}`,
               metricsCollectorData: this.getMetricsCollectorData(),
               projectId,
             });
@@ -237,10 +240,10 @@ export class OperationMetricsCollector {
           this.metricsHandlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
               metricsHandler.onOperationComplete({
-                finalOperationStatus: finalOperationStatus,
-                streamingOperation: this.streamingOperation,
+                status: finalOperationStatus.toString(),
+                streaming: this.streamingOperation,
                 metricsCollectorData: this.getMetricsCollectorData(),
-                clientName: `nodejs-bigtable/${version}`,
+                client_name: `nodejs-bigtable/${version}`,
                 projectId,
                 operationLatency: totalTime,
                 retryCount: this.attemptCount - 1,
@@ -282,7 +285,7 @@ export class OperationMetricsCollector {
             : parseInt(matchedDuration[1]);
         }
       } else {
-        this.connectivityErrorCount++;
+        this.connectivityErrorCount = 1;
       }
     }
   }

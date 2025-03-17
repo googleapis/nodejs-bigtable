@@ -44,33 +44,12 @@ interface Metrics {
 }
 
 /**
- * Represents the data associated with a monitored resource in Google Cloud Monitoring.
- *
- * This interface defines the structure of data that is used to identify and
- * describe a specific resource being monitored, such as a Bigtable instance,
- * cluster, or table. It is used to construct the `resource` part of a
- * `TimeSeries` object in the Cloud Monitoring API.
- *
- * When an open telemetry instrument is created in the GCPMetricsHandler, all
- * recordings to that instrument are expected to have the same
- * MonitoredResourceData properties.
- */
-interface MonitoredResourceData {
-  projectId: string;
-  instanceId: string;
-  table: string;
-  cluster?: string;
-  zone?: string;
-}
-
-/**
  * A metrics handler implementation that uses OpenTelemetry to export metrics to Google Cloud Monitoring.
  * This handler records metrics such as operation latency, attempt latency, retry count, and more,
  * associating them with relevant attributes for detailed analysis in Cloud Monitoring.
  */
 export class GCPMetricsHandler implements IMetricsHandler {
-  private initialized = false;
-  private otelMetrics?: Metrics;
+  private otelInstruments?: Metrics;
   private exporter: PushMetricExporter;
 
   /**
@@ -93,17 +72,19 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * Creates and registers metric instruments (histograms and counters) for various Bigtable client metrics.
    * Sets up a MeterProvider and configures a PeriodicExportingMetricReader for exporting metrics to Cloud Monitoring.
    *
-   * @param {MonitoredResourceData} data The data that will be used to set up the monitored resource
    * which will be provided to the exporter in every export call.
    *
    */
-  private initialize(data: MonitoredResourceData) {
-    if (!this.initialized) {
-      this.initialized = true;
+  private getMetrics(projectId: string): Metrics {
+    // The projectId is needed per metrics handler because when the exporter is
+    // used it provides the project id for the name of the time series exported.
+    // ie. name: `projects/${....['monitored_resource.project_id']}`,
+    if (!this.otelInstruments) {
       const latencyBuckets = [
-        0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20,
-        25, 30, 40, 50, 65, 80, 100, 130, 160, 200, 250, 300, 400, 500, 650,
-        800, 1000, 2000, 5000, 10000, 20000, 50000, 100000,
+        0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0, 16.0, 20.0, 25.0,
+        30.0, 40.0, 50.0, 65.0, 80.0, 100.0, 130.0, 160.0, 200.0, 250.0, 300.0,
+        400.0, 500.0, 650.0, 800.0, 1000.0, 2000.0, 5000.0, 10000.0, 20000.0,
+        50000.0, 100000.0, 200000.0, 400000.0, 800000.0, 1600000.0, 3200000.0,
       ];
       const viewList = [
         'operation_latencies',
@@ -128,15 +109,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
         views: viewList,
         resource: new Resources.Resource({
           'service.name': 'Cloud Bigtable Table',
-          'cloud.provider': 'gcp',
-          'cloud.platform': 'gce_instance',
-          'cloud.resource_manager.project_id': data.projectId,
-          'monitored_resource.type': 'bigtable_client_raw',
-          'monitored_resource.project_id': data.projectId,
-          'monitored_resource.instance_id': data.instanceId,
-          'monitored_resource.table': data.table,
-          'monitored_resource.cluster': data.cluster,
-          'monitored_resource.zone': data.zone,
+          'monitored_resource.project_id': projectId,
         }).merge(new ResourceUtil.GcpDetectorSync().detect()),
         readers: [
           // Register the exporter
@@ -148,7 +121,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
         ],
       });
       const meter = meterProvider.getMeter('bigtable.googleapis.com');
-      this.otelMetrics = {
+      this.otelInstruments = {
         operationLatencies: meter.createHistogram(
           'bigtable.googleapis.com/internal/client/operation_latencies',
           {
@@ -179,7 +152,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
           }
         ),
         applicationBlockingLatencies: meter.createHistogram(
-          'bigtable.googleapis.com/internal/client/application_blocking_latencies',
+          'bigtable.googleapis.com/internal/client/application_latencies',
           {
             description:
               'The time from when the client receives the response to a request until the application reads the response. This metric is most relevant for ReadRows requests. The start and stop times for this metric depend on the way that you send the read request; see Application blocking latencies timer examples for details.',
@@ -220,7 +193,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
           }
         ),
         clientBlockingLatencies: meter.createHistogram(
-          'bigtable.googleapis.com/internal/client/client_blocking_latencies',
+          'bigtable.googleapis.com/internal/client/throttling_latencies',
           {
             description:
               'Latencies introduced when the client blocks the sending of more requests to the server because of too many pending requests in a bulk operation.',
@@ -232,6 +205,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
         ),
       };
     }
+    return this.otelInstruments;
   }
 
   /**
@@ -240,35 +214,27 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    this.initialize({
-      projectId: data.projectId,
+    const otelInstruments = this.getMetrics(data.projectId);
+    const commonAttributes = {
+      app_profile: data.metricsCollectorData.app_profile,
+      method: data.metricsCollectorData.method,
+      client_uid: data.metricsCollectorData.client_uid,
+      status: data.status,
+      client_name: data.client_name,
       instanceId: data.metricsCollectorData.instanceId,
       table: data.metricsCollectorData.table,
       cluster: data.metricsCollectorData.cluster,
       zone: data.metricsCollectorData.zone,
+    };
+    otelInstruments.operationLatencies.record(data.operationLatency, {
+      streaming: data.streaming,
+      ...commonAttributes,
     });
-    this.otelMetrics?.operationLatencies.record(data.operationLatency, {
-      appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
-      finalOperationStatus: data.finalOperationStatus,
-      streamingOperation: data.streamingOperation,
-      clientName: data.clientName,
-    });
-    this.otelMetrics?.retryCount.add(data.retryCount, {
-      appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
-      finalOperationStatus: data.finalOperationStatus,
-      clientName: data.clientName,
-    });
-    this.otelMetrics?.firstResponseLatencies.record(data.firstResponseLatency, {
-      appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
-      finalOperationStatus: data.finalOperationStatus,
-      clientName: data.clientName,
-    });
+    otelInstruments.retryCount.add(data.retryCount, commonAttributes);
+    otelInstruments?.firstResponseLatencies.record(
+      data.firstResponseLatency,
+      commonAttributes
+    );
   }
 
   /**
@@ -278,35 +244,29 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    this.initialize({
-      projectId: data.projectId,
+    const otelInstruments = this.getMetrics(data.projectId);
+    const commonAttributes = {
+      app_profile: data.metricsCollectorData.app_profile,
+      method: data.metricsCollectorData.method,
+      client_uid: data.metricsCollectorData.client_uid,
+      status: data.status,
+      client_name: data.client_name,
       instanceId: data.metricsCollectorData.instanceId,
       table: data.metricsCollectorData.table,
       cluster: data.metricsCollectorData.cluster,
       zone: data.metricsCollectorData.zone,
+    };
+    otelInstruments.attemptLatencies.record(data.attemptLatency, {
+      streaming: data.streaming,
+      ...commonAttributes,
     });
-    this.otelMetrics?.attemptLatencies.record(data.attemptLatency, {
-      appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
-      attemptStatus: data.attemptStatus,
-      streamingOperation: data.streamingOperation,
-      clientName: data.clientName,
-    });
-    this.otelMetrics?.connectivityErrorCount.add(data.connectivityErrorCount, {
-      appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
-      attemptStatus: data.attemptStatus,
-      clientName: data.clientName,
-    });
-    this.otelMetrics?.serverLatencies.record(data.serverLatency, {
-      appProfileId: data.metricsCollectorData.appProfileId,
-      methodName: data.metricsCollectorData.methodName,
-      clientUid: data.metricsCollectorData.clientUid,
-      attemptStatus: data.attemptStatus,
-      streamingOperation: data.streamingOperation,
-      clientName: data.clientName,
+    otelInstruments.connectivityErrorCount.add(
+      data.connectivityErrorCount,
+      commonAttributes
+    );
+    otelInstruments.serverLatencies.record(data.serverLatency, {
+      streaming: data.streaming,
+      ...commonAttributes,
     });
   }
 }
