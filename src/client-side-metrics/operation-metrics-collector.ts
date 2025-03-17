@@ -130,6 +130,7 @@ export class OperationMetricsCollector {
     if (this.state === MetricsCollectorState.OPERATION_NOT_STARTED) {
       this.operationStartTime = new Date();
       this.firstResponseLatency = null;
+      this.applicationLatencies = [];
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
     } else {
@@ -189,7 +190,6 @@ export class OperationMetricsCollector {
       this.serverTime = null;
       this.serverTimeRead = false;
       this.connectivityErrorCount = 0;
-      this.applicationLatencies = [];
       this.lastRowReceivedTime = null;
     } else {
       console.warn('Invalid state transition attempted');
