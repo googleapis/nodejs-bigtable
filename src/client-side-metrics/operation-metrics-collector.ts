@@ -76,6 +76,8 @@ export class OperationMetricsCollector {
   private serverTime: number | null;
   private connectivityErrorCount: number;
   private streamingOperation: StreamingState;
+  private applicationLatencies: number[];
+  private lastRowReceivedTime: Date | null;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -102,6 +104,8 @@ export class OperationMetricsCollector {
     this.serverTime = null;
     this.connectivityErrorCount = 0;
     this.streamingOperation = streamingOperation;
+    this.lastRowReceivedTime = null;
+    this.applicationLatencies = [];
   }
 
   private getMetricsCollectorData() {
@@ -185,6 +189,8 @@ export class OperationMetricsCollector {
       this.serverTime = null;
       this.serverTimeRead = false;
       this.connectivityErrorCount = 0;
+      this.applicationLatencies = [];
+      this.lastRowReceivedTime = null;
     } else {
       console.warn('Invalid state transition attempted');
     }
@@ -235,6 +241,7 @@ export class OperationMetricsCollector {
                 operationLatency: totalTime,
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? undefined,
+                applicationLatencies: this.applicationLatencies,
               });
             }
           });
@@ -273,6 +280,16 @@ export class OperationMetricsCollector {
     } else {
       this.connectivityErrorCount = 1;
     }
+  }
+
+  onRowReachesUser() {
+    const currentTime = new Date();
+    if (this.lastRowReceivedTime) {
+      this.applicationLatencies.push(
+        currentTime.getTime() - this.lastRowReceivedTime.getTime()
+      );
+    }
+    this.lastRowReceivedTime = currentTime;
   }
 
   /**

@@ -231,6 +231,12 @@ export class GCPMetricsHandler implements IMetricsHandler {
       ...commonAttributes,
     });
     otelInstruments.retryCount.add(data.retryCount, commonAttributes);
+    data.applicationLatencies.forEach(latency => {
+      otelInstruments.applicationBlockingLatencies.record(
+        latency,
+        commonAttributes
+      );
+    });
     otelInstruments?.firstResponseLatencies.record(
       data.firstResponseLatency,
       commonAttributes
