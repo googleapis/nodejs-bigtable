@@ -271,7 +271,7 @@ export class OperationMetricsCollector {
           : parseInt(matchedDuration[1]);
       }
     } else {
-      this.connectivityErrorCount++;
+      this.connectivityErrorCount = 1;
     }
   }
 
