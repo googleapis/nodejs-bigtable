@@ -34,37 +34,37 @@ describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
         // them from the comparison.
         delete firstRequest.attemptLatency;
         delete firstRequest.serverLatency;
-        delete firstRequest.metricsCollectorData.clientUid;
+        delete firstRequest.metricsCollectorData.client_uid;
         delete firstRequest.metricsCollectorData.appProfileId;
         assert.deepStrictEqual(firstRequest, {
           connectivityErrorCount: 0,
-          streamingOperation: 'true',
-          attemptStatus: 0,
-          clientName: 'nodejs-bigtable',
+          streaming: 'true',
+          status: '0',
+          client_name: 'nodejs-bigtable',
           metricsCollectorData: {
             instanceId: 'emulator-test-instance',
             table: 'my-table',
             cluster: 'fake-cluster3',
             zone: 'us-west1-c',
-            methodName: 'Bigtable.ReadRows',
+            method: 'Bigtable.ReadRows',
           },
           projectId,
         });
         const secondRequest = this.requestsHandled[1] as any;
         delete secondRequest.operationLatency;
         delete secondRequest.firstResponseLatency;
-        delete secondRequest.metricsCollectorData.clientUid;
+        delete secondRequest.metricsCollectorData.client_uid;
         delete secondRequest.metricsCollectorData.appProfileId;
         assert.deepStrictEqual(secondRequest, {
-          finalOperationStatus: 0,
-          streamingOperation: 'true',
-          clientName: 'nodejs-bigtable',
+          status: '0',
+          streaming: 'true',
+          client_name: 'nodejs-bigtable',
           metricsCollectorData: {
             instanceId: 'emulator-test-instance',
             table: 'my-table',
             cluster: 'fake-cluster3',
             zone: 'us-west1-c',
-            methodName: 'Bigtable.ReadRows',
+            method: 'Bigtable.ReadRows',
           },
           projectId,
           retryCount: 0,
