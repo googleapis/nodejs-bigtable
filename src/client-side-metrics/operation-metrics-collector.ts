@@ -76,6 +76,8 @@ export class OperationMetricsCollector {
   private serverTime: number | null;
   private connectivityErrorCount: number;
   private streamingOperation: StreamingState;
+  private applicationLatencies: number[];
+  private lastRowReceivedTime: Date | null;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -102,18 +104,23 @@ export class OperationMetricsCollector {
     this.serverTime = null;
     this.connectivityErrorCount = 0;
     this.streamingOperation = streamingOperation;
+    this.lastRowReceivedTime = null;
+    this.applicationLatencies = [];
   }
 
   private getMetricsCollectorData() {
-    return {
-      instanceId: this.tabularApiSurface.instance.id,
-      table: this.tabularApiSurface.id,
-      cluster: this.cluster,
-      zone: this.zone,
-      appProfileId: this.tabularApiSurface.bigtable.appProfileId,
-      methodName: this.methodName,
-      clientUid: this.tabularApiSurface.bigtable.clientUid,
-    };
+    const appProfileId = this.tabularApiSurface.bigtable.appProfileId;
+    return Object.assign(
+      {
+        instanceId: this.tabularApiSurface.instance.id,
+        table: this.tabularApiSurface.id,
+        cluster: this.cluster,
+        zone: this.zone,
+        method: this.methodName,
+        client_uid: this.tabularApiSurface.bigtable.clientUid,
+      },
+      appProfileId ? {app_profile: appProfileId} : {}
+    );
   }
 
   /**
@@ -123,6 +130,7 @@ export class OperationMetricsCollector {
     if (this.state === MetricsCollectorState.OPERATION_NOT_STARTED) {
       this.operationStartTime = new Date();
       this.firstResponseLatency = null;
+      this.applicationLatencies = [];
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
     } else {
@@ -154,9 +162,9 @@ export class OperationMetricsCollector {
               attemptLatency: totalTime,
               serverLatency: this.serverTime ?? undefined,
               connectivityErrorCount: this.connectivityErrorCount,
-              streamingOperation: this.streamingOperation,
-              attemptStatus,
-              clientName: `nodejs-bigtable/${version}`,
+              streaming: this.streamingOperation,
+              status: attemptStatus.toString(),
+              client_name: `nodejs-bigtable/${version}`,
               metricsCollectorData: this.getMetricsCollectorData(),
               projectId,
             });
@@ -182,6 +190,7 @@ export class OperationMetricsCollector {
       this.serverTime = null;
       this.serverTimeRead = false;
       this.connectivityErrorCount = 0;
+      this.lastRowReceivedTime = null;
     } else {
       console.warn('Invalid state transition attempted');
     }
@@ -224,14 +233,15 @@ export class OperationMetricsCollector {
           this.metricsHandlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
               metricsHandler.onOperationComplete({
-                finalOperationStatus: finalOperationStatus,
-                streamingOperation: this.streamingOperation,
+                status: finalOperationStatus.toString(),
+                streaming: this.streamingOperation,
                 metricsCollectorData: this.getMetricsCollectorData(),
-                clientName: `nodejs-bigtable/${version}`,
+                client_name: `nodejs-bigtable/${version}`,
                 projectId,
                 operationLatency: totalTime,
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? undefined,
+                applicationLatencies: this.applicationLatencies,
               });
             }
           });
@@ -268,8 +278,27 @@ export class OperationMetricsCollector {
           : parseInt(matchedDuration[1]);
       }
     } else {
-      this.connectivityErrorCount++;
+      this.connectivityErrorCount = 1;
     }
+  }
+
+  /**
+   * Called when a row from the Bigtable stream reaches the application user.
+   *
+   * This method is used to calculate the latency experienced by the application
+   * when reading rows from a Bigtable stream. It records the time between the
+   * previous row being received and the current row reaching the user. These
+   * latencies are then collected and reported as `applicationBlockingLatencies`
+   * when the operation completes.
+   */
+  onRowReachesUser() {
+    const currentTime = new Date();
+    if (this.lastRowReceivedTime) {
+      this.applicationLatencies.push(
+        currentTime.getTime() - this.lastRowReceivedTime.getTime()
+      );
+    }
+    this.lastRowReceivedTime = currentTime;
   }
 
   /**
