@@ -360,4 +360,77 @@ describe('Bigtable/GCPMetricsHandler', () => {
       }
     })();
   });
+  it('Should write two duplicate points inserted into the metrics handler', done => {
+    (async () => {
+      /*
+      We need to create a timeout here because if we don't then mocha shuts down
+      the test as it is sleeping before the GCPMetricsHandler has a chance to
+      export the data.
+       */
+      const timeout = setTimeout(() => {}, 120000);
+      /*
+      The exporter is called every x seconds, but we only want to test the value
+      it receives once. Since done cannot be called multiple times in mocha,
+      exported variable ensures we only test the value export receives one time.
+      */
+      let exported = false;
+      function getTestResultCallback(
+        resultCallback: (result: ExportResult) => void
+      ) {
+        return (result: ExportResult) => {
+          exported = true;
+          try {
+            clearTimeout(timeout);
+            assert.strictEqual(result.code, 0);
+            done();
+            resultCallback({code: 0});
+          } catch (error) {
+            // Code isn't 0 so report the original error.
+            done(result);
+            done(error);
+          }
+        };
+      }
+      class MockExporter extends CloudMonitoringExporter {
+        export(
+          metrics: ResourceMetrics,
+          resultCallback: (result: ExportResult) => void
+        ): void {
+          const testResultCallback = getTestResultCallback(resultCallback);
+          if (!exported) {
+            super.export(metrics, testResultCallback);
+          } else {
+            resultCallback({code: 0});
+          }
+        }
+      }
+
+      const bigtable = new Bigtable();
+      const projectId: string = await new Promise((resolve, reject) => {
+        bigtable.getProjectId_((err, projectId) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(projectId as string);
+          }
+        });
+      });
+      const handler = new GCPMetricsHandler(new MockExporter({projectId}));
+      const transformedRequestsHandled = JSON.parse(
+        JSON.stringify(expectedRequestsHandled).replace(
+          /my-project/g,
+          projectId
+        )
+      );
+      for (let i = 0; i < 2; i++) {
+        for (const request of transformedRequestsHandled) {
+          if (request.attemptLatency) {
+            handler.onAttemptComplete(request as OnAttemptCompleteData);
+          } else {
+            handler.onOperationComplete(request as OnOperationCompleteData);
+          }
+        }
+      }
+    })();
+  });
 });
