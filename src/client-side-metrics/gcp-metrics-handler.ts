@@ -44,26 +44,6 @@ interface Metrics {
 }
 
 /**
- * Represents the data associated with a monitored resource in Google Cloud Monitoring.
- *
- * This interface defines the structure of data that is used to identify and
- * describe a specific resource being monitored, such as a Bigtable instance,
- * cluster, or table. It is used to construct the `resource` part of a
- * `TimeSeries` object in the Cloud Monitoring API.
- *
- * When an open telemetry instrument is created in the GCPMetricsHandler, all
- * recordings to that instrument are expected to have the same
- * MonitoredResourceData properties.
- */
-interface MonitoredResourceData {
-  projectId: string;
-  instanceId: string;
-  table: string;
-  cluster?: string;
-  zone?: string;
-}
-
-/**
  * A metrics handler implementation that uses OpenTelemetry to export metrics to Google Cloud Monitoring.
  * This handler records metrics such as operation latency, attempt latency, retry count, and more,
  * associating them with relevant attributes for detailed analysis in Cloud Monitoring.
