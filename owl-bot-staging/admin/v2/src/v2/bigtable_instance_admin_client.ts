@@ -547,7 +547,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'name': request.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('getInstance request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.admin.v2.IInstance,
@@ -638,7 +638,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'parent': request.parent ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('listInstances request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.admin.v2.IListInstancesResponse,
@@ -757,7 +757,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'name': request.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('updateInstance request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.admin.v2.IInstance,
@@ -846,7 +846,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'name': request.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('deleteInstance request %j', request);
     const wrappedCallback: Callback<
         protos.google.protobuf.IEmpty,
@@ -935,7 +935,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'name': request.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('getCluster request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.admin.v2.ICluster,
@@ -1029,7 +1029,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'parent': request.parent ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('listClusters request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.admin.v2.IListClustersResponse,
@@ -1118,7 +1118,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'name': request.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('deleteCluster request %j', request);
     const wrappedCallback: Callback<
         protos.google.protobuf.IEmpty,
@@ -1216,7 +1216,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'parent': request.parent ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('createAppProfile request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.admin.v2.IAppProfile,
@@ -1305,7 +1305,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'name': request.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('getAppProfile request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.admin.v2.IAppProfile,
@@ -1397,7 +1397,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'name': request.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('deleteAppProfile request %j', request);
     const wrappedCallback: Callback<
         protos.google.protobuf.IEmpty,
@@ -1490,7 +1490,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'resource': request.resource ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('getIamPolicy request %j', request);
     const wrappedCallback: Callback<
         protos.google.iam.v1.IPolicy,
@@ -1591,7 +1591,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'resource': request.resource ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('setIamPolicy request %j', request);
     const wrappedCallback: Callback<
         protos.google.iam.v1.IPolicy,
@@ -1685,7 +1685,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'resource': request.resource ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('testIamPermissions request %j', request);
     const wrappedCallback: Callback<
         protos.google.iam.v1.ITestIamPermissionsResponse,
@@ -1774,7 +1774,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'name': request.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('getLogicalView request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.admin.v2.ILogicalView,
@@ -1869,7 +1869,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'name': request.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('deleteLogicalView request %j', request);
     const wrappedCallback: Callback<
         protos.google.protobuf.IEmpty,
@@ -1959,7 +1959,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'name': request.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('getMaterializedView request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.admin.v2.IMaterializedView,
@@ -2054,7 +2054,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'name': request.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('deleteMaterializedView request %j', request);
     const wrappedCallback: Callback<
         protos.google.protobuf.IEmpty,
@@ -2164,7 +2164,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'parent': request.parent ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: Callback<
           LROperation<protos.google.bigtable.admin.v2.IInstance, protos.google.bigtable.admin.v2.ICreateInstanceMetadata>,
           protos.google.longrunning.IOperation|null|undefined,
@@ -2275,7 +2275,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'instance.name': request.instance!.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: Callback<
           LROperation<protos.google.bigtable.admin.v2.IInstance, protos.google.bigtable.admin.v2.IUpdateInstanceMetadata>,
           protos.google.longrunning.IOperation|null|undefined,
@@ -2396,7 +2396,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'parent': request.parent ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: Callback<
           LROperation<protos.google.bigtable.admin.v2.ICluster, protos.google.bigtable.admin.v2.ICreateClusterMetadata>,
           protos.google.longrunning.IOperation|null|undefined,
@@ -2528,7 +2528,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'name': request.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: Callback<
           LROperation<protos.google.bigtable.admin.v2.ICluster, protos.google.bigtable.admin.v2.IUpdateClusterMetadata>,
           protos.google.longrunning.IOperation|null|undefined,
@@ -2649,7 +2649,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'cluster.name': request.cluster!.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: Callback<
           LROperation<protos.google.bigtable.admin.v2.ICluster, protos.google.bigtable.admin.v2.IPartialUpdateClusterMetadata>,
           protos.google.longrunning.IOperation|null|undefined,
@@ -2761,7 +2761,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'app_profile.name': request.appProfile!.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: Callback<
           LROperation<protos.google.bigtable.admin.v2.IAppProfile, protos.google.bigtable.admin.v2.IUpdateAppProfileMetadata>,
           protos.google.longrunning.IOperation|null|undefined,
@@ -2874,7 +2874,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'parent': request.parent ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: Callback<
           LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.ICreateLogicalViewMetadata>,
           protos.google.longrunning.IOperation|null|undefined,
@@ -2987,7 +2987,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'logical_view.name': request.logicalView!.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: Callback<
           LROperation<protos.google.bigtable.admin.v2.ILogicalView, protos.google.bigtable.admin.v2.IUpdateLogicalViewMetadata>,
           protos.google.longrunning.IOperation|null|undefined,
@@ -3100,7 +3100,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'parent': request.parent ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: Callback<
           LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.ICreateMaterializedViewMetadata>,
           protos.google.longrunning.IOperation|null|undefined,
@@ -3213,7 +3213,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'materialized_view.name': request.materializedView!.name ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: Callback<
           LROperation<protos.google.bigtable.admin.v2.IMaterializedView, protos.google.bigtable.admin.v2.IUpdateMaterializedViewMetadata>,
           protos.google.longrunning.IOperation|null|undefined,
@@ -3339,7 +3339,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'parent': request.parent ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: PaginationCallback<
       protos.google.bigtable.admin.v2.IListAppProfilesRequest,
       protos.google.bigtable.admin.v2.IListAppProfilesResponse|null|undefined,
@@ -3410,7 +3410,7 @@ export class BigtableInstanceAdminClient {
     });
     const defaultCallSettings = this._defaults['listAppProfiles'];
     const callSettings = defaultCallSettings.merge(options);
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('listAppProfiles stream %j', request);
     return this.descriptors.page.listAppProfiles.createStream(
       this.innerApiCalls.listAppProfiles as GaxCall,
@@ -3470,7 +3470,7 @@ export class BigtableInstanceAdminClient {
     });
     const defaultCallSettings = this._defaults['listAppProfiles'];
     const callSettings = defaultCallSettings.merge(options);
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('listAppProfiles iterate %j', request);
     return this.descriptors.page.listAppProfiles.asyncIterate(
       this.innerApiCalls['listAppProfiles'] as GaxCall,
@@ -3574,7 +3574,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'parent': request.parent ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: PaginationCallback<
       protos.google.bigtable.admin.v2.IListHotTabletsRequest,
       protos.google.bigtable.admin.v2.IListHotTabletsResponse|null|undefined,
@@ -3652,7 +3652,7 @@ export class BigtableInstanceAdminClient {
     });
     const defaultCallSettings = this._defaults['listHotTablets'];
     const callSettings = defaultCallSettings.merge(options);
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('listHotTablets stream %j', request);
     return this.descriptors.page.listHotTablets.createStream(
       this.innerApiCalls.listHotTablets as GaxCall,
@@ -3719,7 +3719,7 @@ export class BigtableInstanceAdminClient {
     });
     const defaultCallSettings = this._defaults['listHotTablets'];
     const callSettings = defaultCallSettings.merge(options);
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('listHotTablets iterate %j', request);
     return this.descriptors.page.listHotTablets.asyncIterate(
       this.innerApiCalls['listHotTablets'] as GaxCall,
@@ -3810,7 +3810,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'parent': request.parent ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: PaginationCallback<
       protos.google.bigtable.admin.v2.IListLogicalViewsRequest,
       protos.google.bigtable.admin.v2.IListLogicalViewsResponse|null|undefined,
@@ -3876,7 +3876,7 @@ export class BigtableInstanceAdminClient {
     });
     const defaultCallSettings = this._defaults['listLogicalViews'];
     const callSettings = defaultCallSettings.merge(options);
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('listLogicalViews stream %j', request);
     return this.descriptors.page.listLogicalViews.createStream(
       this.innerApiCalls.listLogicalViews as GaxCall,
@@ -3931,7 +3931,7 @@ export class BigtableInstanceAdminClient {
     });
     const defaultCallSettings = this._defaults['listLogicalViews'];
     const callSettings = defaultCallSettings.merge(options);
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('listLogicalViews iterate %j', request);
     return this.descriptors.page.listLogicalViews.asyncIterate(
       this.innerApiCalls['listLogicalViews'] as GaxCall,
@@ -4022,7 +4022,7 @@ export class BigtableInstanceAdminClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'parent': request.parent ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     const wrappedCallback: PaginationCallback<
       protos.google.bigtable.admin.v2.IListMaterializedViewsRequest,
       protos.google.bigtable.admin.v2.IListMaterializedViewsResponse|null|undefined,
@@ -4088,7 +4088,7 @@ export class BigtableInstanceAdminClient {
     });
     const defaultCallSettings = this._defaults['listMaterializedViews'];
     const callSettings = defaultCallSettings.merge(options);
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('listMaterializedViews stream %j', request);
     return this.descriptors.page.listMaterializedViews.createStream(
       this.innerApiCalls.listMaterializedViews as GaxCall,
@@ -4143,7 +4143,7 @@ export class BigtableInstanceAdminClient {
     });
     const defaultCallSettings = this._defaults['listMaterializedViews'];
     const callSettings = defaultCallSettings.merge(options);
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('listMaterializedViews iterate %j', request);
     return this.descriptors.page.listMaterializedViews.asyncIterate(
       this.innerApiCalls['listMaterializedViews'] as GaxCall,

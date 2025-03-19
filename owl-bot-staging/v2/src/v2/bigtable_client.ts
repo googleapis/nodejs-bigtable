@@ -476,7 +476,7 @@ export class BigtableClient {
     ] = this._gaxModule.routingHeader.fromParams(
       routingParameter
     );
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('mutateRow request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.v2.IMutateRowResponse,
@@ -626,7 +626,7 @@ export class BigtableClient {
     ] = this._gaxModule.routingHeader.fromParams(
       routingParameter
     );
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('checkAndMutateRow request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.v2.ICheckAndMutateRowResponse,
@@ -739,7 +739,7 @@ export class BigtableClient {
     ] = this._gaxModule.routingHeader.fromParams(
       routingParameter
     );
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('pingAndWarm request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.v2.IPingAndWarmResponse,
@@ -880,7 +880,7 @@ export class BigtableClient {
     ] = this._gaxModule.routingHeader.fromParams(
       routingParameter
     );
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('readModifyWriteRow request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.v2.IReadModifyWriteRowResponse,
@@ -1011,7 +1011,7 @@ export class BigtableClient {
     ] = this._gaxModule.routingHeader.fromParams(
       routingParameter
     );
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('prepareQuery request %j', request);
     const wrappedCallback: Callback<
         protos.google.bigtable.v2.IPrepareQueryResponse,
@@ -1135,7 +1135,7 @@ export class BigtableClient {
     ] = this._gaxModule.routingHeader.fromParams(
       routingParameter
     );
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('readRows stream %j', options);
     return this.innerApiCalls.readRows(request, options);
   }
@@ -1218,7 +1218,7 @@ export class BigtableClient {
     ] = this._gaxModule.routingHeader.fromParams(
       routingParameter
     );
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('sampleRowKeys stream %j', options);
     return this.innerApiCalls.sampleRowKeys(request, options);
   }
@@ -1302,7 +1302,7 @@ export class BigtableClient {
     ] = this._gaxModule.routingHeader.fromParams(
       routingParameter
     );
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('mutateRows stream %j', options);
     return this.innerApiCalls.mutateRows(request, options);
   }
@@ -1344,7 +1344,7 @@ export class BigtableClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'table_name': request.tableName ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('generateInitialChangeStreamPartitions stream %j', options);
     return this.innerApiCalls.generateInitialChangeStreamPartitions(request, options);
   }
@@ -1411,7 +1411,7 @@ export class BigtableClient {
     ] = this._gaxModule.routingHeader.fromParams({
       'table_name': request.tableName ?? '',
     });
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('readChangeStream stream %j', options);
     return this.innerApiCalls.readChangeStream(request, options);
   }
@@ -1519,7 +1519,7 @@ export class BigtableClient {
     ] = this._gaxModule.routingHeader.fromParams(
       routingParameter
     );
-    this.initialize();
+    this.initialize().catch(err => {throw err});
     this._log.info('executeQuery stream %j', options);
     return this.innerApiCalls.executeQuery(request, options);
   }

@@ -175,7 +175,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            client.initialize().catch(err => {throw err});
             assert(client.bigtableStub);
             client.close().then(() => {
                 done();
@@ -232,7 +232,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.MutateRowRequest()
             );
@@ -258,7 +258,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.MutateRowRequest()
             );
@@ -295,7 +295,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.MutateRowRequest()
             );
@@ -318,7 +318,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.MutateRowRequest()
             );
@@ -336,7 +336,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.CheckAndMutateRowRequest()
             );
@@ -362,7 +362,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.CheckAndMutateRowRequest()
             );
@@ -399,7 +399,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.CheckAndMutateRowRequest()
             );
@@ -422,7 +422,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.CheckAndMutateRowRequest()
             );
@@ -440,7 +440,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.PingAndWarmRequest()
             );
@@ -466,7 +466,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.PingAndWarmRequest()
             );
@@ -503,7 +503,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.PingAndWarmRequest()
             );
@@ -526,7 +526,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.PingAndWarmRequest()
             );
@@ -544,7 +544,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
             );
@@ -570,7 +570,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
             );
@@ -607,7 +607,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
             );
@@ -630,7 +630,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
             );
@@ -648,7 +648,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.PrepareQueryRequest()
             );
@@ -674,7 +674,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.PrepareQueryRequest()
             );
@@ -711,7 +711,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.PrepareQueryRequest()
             );
@@ -734,7 +734,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.PrepareQueryRequest()
             );
@@ -752,7 +752,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadRowsRequest()
             );
@@ -783,8 +783,12 @@ describe('v2.BigtableClient', () => {
         });
 
         it('invokes readRows without error and gaxServerStreamingRetries enabled', async () => {
-            const client = new bigtableModule.v2.BigtableClient({gaxServerStreamingRetries: true});
-            client.initialize();
+            const client = new bigtableModule.v2.BigtableClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+              gaxServerStreamingRetries: true
+            });
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadRowsRequest()
             );
@@ -819,7 +823,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadRowsRequest()
             );
@@ -851,7 +855,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadRowsRequest()
             );
@@ -884,7 +888,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.SampleRowKeysRequest()
             );
@@ -915,8 +919,12 @@ describe('v2.BigtableClient', () => {
         });
 
         it('invokes sampleRowKeys without error and gaxServerStreamingRetries enabled', async () => {
-            const client = new bigtableModule.v2.BigtableClient({gaxServerStreamingRetries: true});
-            client.initialize();
+            const client = new bigtableModule.v2.BigtableClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+              gaxServerStreamingRetries: true
+            });
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.SampleRowKeysRequest()
             );
@@ -951,7 +959,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.SampleRowKeysRequest()
             );
@@ -983,7 +991,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.SampleRowKeysRequest()
             );
@@ -1016,7 +1024,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.MutateRowsRequest()
             );
@@ -1047,8 +1055,12 @@ describe('v2.BigtableClient', () => {
         });
 
         it('invokes mutateRows without error and gaxServerStreamingRetries enabled', async () => {
-            const client = new bigtableModule.v2.BigtableClient({gaxServerStreamingRetries: true});
-            client.initialize();
+            const client = new bigtableModule.v2.BigtableClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+              gaxServerStreamingRetries: true
+            });
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.MutateRowsRequest()
             );
@@ -1083,7 +1095,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.MutateRowsRequest()
             );
@@ -1115,7 +1127,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.MutateRowsRequest()
             );
@@ -1148,7 +1160,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest()
             );
@@ -1180,8 +1192,12 @@ describe('v2.BigtableClient', () => {
         });
 
         it('invokes generateInitialChangeStreamPartitions without error and gaxServerStreamingRetries enabled', async () => {
-            const client = new bigtableModule.v2.BigtableClient({gaxServerStreamingRetries: true});
-            client.initialize();
+            const client = new bigtableModule.v2.BigtableClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+              gaxServerStreamingRetries: true
+            });
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest()
             );
@@ -1217,7 +1233,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest()
             );
@@ -1250,7 +1266,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest()
             );
@@ -1284,7 +1300,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadChangeStreamRequest()
             );
@@ -1316,8 +1332,12 @@ describe('v2.BigtableClient', () => {
         });
 
         it('invokes readChangeStream without error and gaxServerStreamingRetries enabled', async () => {
-            const client = new bigtableModule.v2.BigtableClient({gaxServerStreamingRetries: true});
-            client.initialize();
+            const client = new bigtableModule.v2.BigtableClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+              gaxServerStreamingRetries: true
+            });
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadChangeStreamRequest()
             );
@@ -1353,7 +1373,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadChangeStreamRequest()
             );
@@ -1386,7 +1406,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadChangeStreamRequest()
             );
@@ -1420,7 +1440,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ExecuteQueryRequest()
             );
@@ -1451,8 +1471,12 @@ describe('v2.BigtableClient', () => {
         });
 
         it('invokes executeQuery without error and gaxServerStreamingRetries enabled', async () => {
-            const client = new bigtableModule.v2.BigtableClient({gaxServerStreamingRetries: true});
-            client.initialize();
+            const client = new bigtableModule.v2.BigtableClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+              gaxServerStreamingRetries: true
+            });
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ExecuteQueryRequest()
             );
@@ -1487,7 +1511,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ExecuteQueryRequest()
             );
@@ -1519,7 +1543,7 @@ describe('v2.BigtableClient', () => {
               credentials: {client_email: 'bogus', private_key: 'bogus'},
               projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ExecuteQueryRequest()
             );
@@ -1548,7 +1572,7 @@ describe('v2.BigtableClient', () => {
 
     describe('Path templates', () => {
 
-        describe('authorizedView', () => {
+        describe('authorizedView', async () => {
             const fakePath = "/rendered/path/authorizedView";
             const expectedParameters = {
                 project: "projectValue",
@@ -1560,7 +1584,7 @@ describe('v2.BigtableClient', () => {
                 credentials: {client_email: 'bogus', private_key: 'bogus'},
                 projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             client.pathTemplates.authorizedViewPathTemplate.render =
                 sinon.stub().returns(fakePath);
             client.pathTemplates.authorizedViewPathTemplate.match =
@@ -1602,7 +1626,7 @@ describe('v2.BigtableClient', () => {
             });
         });
 
-        describe('instance', () => {
+        describe('instance', async () => {
             const fakePath = "/rendered/path/instance";
             const expectedParameters = {
                 project: "projectValue",
@@ -1612,7 +1636,7 @@ describe('v2.BigtableClient', () => {
                 credentials: {client_email: 'bogus', private_key: 'bogus'},
                 projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             client.pathTemplates.instancePathTemplate.render =
                 sinon.stub().returns(fakePath);
             client.pathTemplates.instancePathTemplate.match =
@@ -1640,7 +1664,7 @@ describe('v2.BigtableClient', () => {
             });
         });
 
-        describe('materializedView', () => {
+        describe('materializedView', async () => {
             const fakePath = "/rendered/path/materializedView";
             const expectedParameters = {
                 project: "projectValue",
@@ -1651,7 +1675,7 @@ describe('v2.BigtableClient', () => {
                 credentials: {client_email: 'bogus', private_key: 'bogus'},
                 projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             client.pathTemplates.materializedViewPathTemplate.render =
                 sinon.stub().returns(fakePath);
             client.pathTemplates.materializedViewPathTemplate.match =
@@ -1686,7 +1710,7 @@ describe('v2.BigtableClient', () => {
             });
         });
 
-        describe('table', () => {
+        describe('table', async () => {
             const fakePath = "/rendered/path/table";
             const expectedParameters = {
                 project: "projectValue",
@@ -1697,7 +1721,7 @@ describe('v2.BigtableClient', () => {
                 credentials: {client_email: 'bogus', private_key: 'bogus'},
                 projectId: 'bogus',
             });
-            client.initialize();
+            await client.initialize();
             client.pathTemplates.tablePathTemplate.render =
                 sinon.stub().returns(fakePath);
             client.pathTemplates.tablePathTemplate.match =
