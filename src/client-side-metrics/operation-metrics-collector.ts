@@ -253,25 +253,28 @@ export class OperationMetricsCollector {
     internalRepr: Map<string, string[]>;
     options: {};
   }) {
-    const mappedEntries = new Map(
-      Array.from(metadata.internalRepr.entries(), ([key, value]) => [
-        key,
-        value.toString(),
-      ])
-    );
-    const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
-    const SERVER_TIMING_KEY = 'server-timing';
-    const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
-    const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
-    if (matchedDuration && matchedDuration[1]) {
-      if (!this.serverTimeRead) {
-        this.serverTimeRead = true;
-        this.serverTime = isNaN(parseInt(matchedDuration[1]))
-          ? null
-          : parseInt(matchedDuration[1]);
+    if (!this.serverTimeRead && this.connectivityErrorCount < 1) {
+      // Check serverTimeRead, connectivityErrorCount here to reduce latency.
+      const mappedEntries = new Map(
+        Array.from(metadata.internalRepr.entries(), ([key, value]) => [
+          key,
+          value.toString(),
+        ])
+      );
+      const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
+      const SERVER_TIMING_KEY = 'server-timing';
+      const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
+      const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
+      if (matchedDuration && matchedDuration[1]) {
+        if (!this.serverTimeRead) {
+          this.serverTimeRead = true;
+          this.serverTime = isNaN(parseInt(matchedDuration[1]))
+            ? null
+            : parseInt(matchedDuration[1]);
+        }
+      } else {
+        this.connectivityErrorCount = 1;
       }
-    } else {
-      this.connectivityErrorCount = 1;
     }
   }
 
