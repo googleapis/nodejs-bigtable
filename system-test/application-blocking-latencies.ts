@@ -113,44 +113,6 @@ describe.only('Bigtable/IterativeTest', () => {
     const table = instance.table(tableId);
 
     const timestamp = new Date();
-    const rowToInsert = {
-      key: 'phone#4c410523#20190501',
-      data: {
-        stats_summary: {
-          connected_cell: {
-            value: 1,
-            timestamp,
-          },
-          connected_wifi: {
-            value: 1,
-            timestamp,
-          },
-          os_build: {
-            value: 'PQ2A.190405.003',
-            timestamp,
-          },
-        },
-      },
-    };
-    const rowToInsert2 = {
-      key: 'phone#4c410523#20190502',
-      data: {
-        stats_summary: {
-          connected_cell: {
-            value: 1,
-            timestamp,
-          },
-          connected_wifi: {
-            value: 1,
-            timestamp,
-          },
-          os_build: {
-            value: 'PQ2A.190405.003',
-            timestamp,
-          },
-        },
-      },
-    };
     const projectId: string = await new Promise((resolve, reject) => {
       bigtable.getProjectId_((err, projectId) => {
         if (err) {
@@ -166,7 +128,28 @@ describe.only('Bigtable/IterativeTest', () => {
       tableId,
       'stats_summary' // columnFamilyId
     );
-    await table.insert([rowToInsert, rowToInsert2]);
+    for (let i = 0; i < 100; i++) {
+      const rowToInsert = {
+        key: `key-${i}`,
+        data: {
+          stats_summary: {
+            connected_cell: {
+              value: 1,
+              timestamp,
+            },
+            connected_wifi: {
+              value: 1,
+              timestamp,
+            },
+            os_build: {
+              value: 'PQ2A.190405.003',
+              timestamp,
+            },
+          },
+        },
+      };
+      await table.insert([rowToInsert]);
+    }
     const stream = table.createReadStream();
     for await (const row of stream) {
       console.log('printing row id');
