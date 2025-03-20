@@ -159,7 +159,7 @@ export class OperationMetricsCollector {
               serverLatency: this.serverTime ?? undefined,
               connectivityErrorCount: this.connectivityErrorCount,
               streaming: this.streamingOperation,
-              status: attemptStatus?.toString(),
+              status: attemptStatus?.toString(), // undefined in conformance tests.
               client_name: `nodejs-bigtable/${version}`,
               metricsCollectorData: this.getMetricsCollectorData(),
               projectId,
