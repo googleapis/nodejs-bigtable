@@ -129,7 +129,7 @@ describe.only('Bigtable/IterativeTest', () => {
       'stats_summary' // columnFamilyId
     );
     for (let i = 0; i < 100; i++) {
-      const keyName = i % 10 === 0 ? `key-${i}` : `key-0${i}`;
+      const keyName = i < 10 ? `key-0${i}` : `key-${i}`;
       const rowToInsert = {
         key: keyName,
         data: {
@@ -149,7 +149,7 @@ describe.only('Bigtable/IterativeTest', () => {
           },
         },
       };
-      console.log(`Inserting row id ${i}`);
+      console.log(`Inserting row id ${keyName}`);
       await table.insert([rowToInsert]);
     }
     const stream = table.createReadStream();
