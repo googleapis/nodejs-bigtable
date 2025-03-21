@@ -62,6 +62,14 @@ function getInterval(
   };
 }
 
+/**
+ * This function gets the timeseries data points for metrics that are
+ * represented as distributions on the backend. These data points are part of a
+ * timeseries object that is recorded to Google Cloud Monitoring.
+ *
+ * @param {DataPoint} dataPoint The datapoint containing the data we wish to
+ * send to the Google Cloud Monitoring dashboard
+ */
 function getDistributionPoints(
   dataPoint: DataPoint<Histogram> | DataPoint<ExponentialHistogram>
 ) {
@@ -85,6 +93,14 @@ function getDistributionPoints(
   ];
 }
 
+/**
+ * This function gets the timeseries data points for metrics that are
+ * represented as integers on the backend. These data points are part of a
+ * timeseries object that is recorded to Google Cloud Monitoring.
+ *
+ * @param {DataPoint} dataPoint The datapoint containing the data we wish to
+ * send to the Google Cloud Monitoring dashboard
+ */
 function getIntegerPoints(dataPoint: DataPoint<number>) {
   return [
     {
@@ -96,6 +112,14 @@ function getIntegerPoints(dataPoint: DataPoint<number>) {
   ];
 }
 
+/**
+ * getResource gets the resource object which is used for building the timeseries
+ * object that will be sent to Google Cloud Monitoring dashboard
+ *
+ * @param {string} metricName The backend name of the metric that we want to record
+ * @param {DataPoint} dataPoint The datapoint containing the data we wish to
+ * send to the Google Cloud Monitoring dashboard
+ */
 function getResource(
   projectId: string,
   dataPoint:
@@ -113,6 +137,38 @@ function getResource(
   return {
     type: 'bigtable_client_raw',
     labels: resourceLabels,
+  };
+}
+
+/**
+ * getMetric gets the metric object which is used for building the timeseries
+ * object that will be sent to Google Cloud Monitoring dashboard
+ *
+ * @param {string} metricName The backend name of the metric that we want to record
+ * @param {DataPoint} dataPoint The datapoint containing the data we wish to
+ * send to the Google Cloud Monitoring dashboard
+ */
+function getMetric(
+  metricName: string,
+  dataPoint:
+    | DataPoint<number>
+    | DataPoint<Histogram>
+    | DataPoint<ExponentialHistogram>
+) {
+  const streaming = dataPoint.attributes.streaming;
+  const app_profile = dataPoint.attributes.app_profile;
+  return {
+    type: metricName,
+    labels: Object.assign(
+      {
+        method: dataPoint.attributes.method,
+        client_uid: dataPoint.attributes.client_uid,
+        status: dataPoint.attributes.status,
+        client_name: dataPoint.attributes.client_name,
+      },
+      streaming ? {streaming} : null,
+      app_profile ? {app_profile} : null
+    ),
   };
 }
 
@@ -162,23 +218,8 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
   const timeSeriesArray = [];
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
-      const metricName = scopeMetric.descriptor.name;
       for (const dataPoint of scopeMetric.dataPoints) {
-        const streaming = dataPoint.attributes.streaming;
-        const app_profile = dataPoint.attributes.app_profile;
-        const metric = {
-          type: metricName,
-          labels: Object.assign(
-            {
-              method: dataPoint.attributes.method,
-              client_uid: dataPoint.attributes.client_uid,
-              status: dataPoint.attributes.status,
-              client_name: dataPoint.attributes.client_name,
-            },
-            streaming ? {streaming} : null,
-            app_profile ? {app_profile} : null
-          ),
-        };
+        const metric = getMetric(scopeMetric.descriptor.name, dataPoint);
         const resource = getResource(projectId, dataPoint);
         if (isCounterValue(dataPoint)) {
           timeSeriesArray.push({
