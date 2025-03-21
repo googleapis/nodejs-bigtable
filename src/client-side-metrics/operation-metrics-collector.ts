@@ -196,7 +196,8 @@ export class OperationMetricsCollector {
   onResponse(projectId: string) {
     if (
       this.state ===
-      MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET &&
+      !this.firstResponseLatency
     ) {
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
@@ -285,22 +286,29 @@ export class OperationMetricsCollector {
   onStatusMetadataReceived(status: {
     metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
   }) {
-    const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
-    const mappedValue = status.metadata.internalRepr.get(
-      INSTANCE_INFORMATION_KEY
-    ) as Buffer[];
-    const decodedValue = ResponseParams.decode(
-      mappedValue[0],
-      mappedValue[0].length
-    );
-    if (decodedValue && (decodedValue as unknown as {zoneId: string}).zoneId) {
-      this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
-    }
-    if (
-      decodedValue &&
-      (decodedValue as unknown as {clusterId: string}).clusterId
-    ) {
-      this.cluster = (decodedValue as unknown as {clusterId: string}).clusterId;
+    if (!this.zone || !this.cluster) {
+      const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
+      const mappedValue = status.metadata.internalRepr.get(
+        INSTANCE_INFORMATION_KEY
+      ) as Buffer[];
+      const decodedValue = ResponseParams.decode(
+        mappedValue[0],
+        mappedValue[0].length
+      );
+      if (
+        decodedValue &&
+        (decodedValue as unknown as {zoneId: string}).zoneId
+      ) {
+        this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
+      }
+      if (
+        decodedValue &&
+        (decodedValue as unknown as {clusterId: string}).clusterId
+      ) {
+        this.cluster = (
+          decodedValue as unknown as {clusterId: string}
+        ).clusterId;
+      }
     }
   }
 }
