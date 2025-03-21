@@ -23,54 +23,57 @@ import * as assert from 'assert';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
 
-describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
   async function mockBigtable(projectId: string, done: mocha.Done) {
     class TestGCPMetricsHandler extends TestMetricsHandler {
       onOperationComplete(data: OnOperationCompleteData) {
-        super.onOperationComplete(data);
-        assert.strictEqual(this.requestsHandled.length, 2);
-        const firstRequest = this.requestsHandled[0] as any;
-        // We would expect these parameters to be different every time so delete
-        // them from the comparison.
-        delete firstRequest.attemptLatency;
-        delete firstRequest.serverLatency;
-        delete firstRequest.metricsCollectorData.client_uid;
-        delete firstRequest.metricsCollectorData.appProfileId;
-        assert.deepStrictEqual(firstRequest, {
-          connectivityErrorCount: 0,
-          streaming: 'true',
-          status: '0',
-          client_name: 'nodejs-bigtable',
-          metricsCollectorData: {
-            instanceId: 'emulator-test-instance',
-            table: 'my-table',
-            cluster: 'fake-cluster3',
-            zone: 'us-west1-c',
-            method: 'Bigtable.ReadRows',
-          },
-          projectId,
-        });
-        const secondRequest = this.requestsHandled[1] as any;
-        delete secondRequest.operationLatency;
-        delete secondRequest.firstResponseLatency;
-        delete secondRequest.metricsCollectorData.client_uid;
-        delete secondRequest.metricsCollectorData.appProfileId;
-        assert.deepStrictEqual(secondRequest, {
-          status: '0',
-          streaming: 'true',
-          client_name: 'nodejs-bigtable',
-          metricsCollectorData: {
-            instanceId: 'emulator-test-instance',
-            table: 'my-table',
-            cluster: 'fake-cluster3',
-            zone: 'us-west1-c',
-            method: 'Bigtable.ReadRows',
-          },
-          projectId,
-          retryCount: 0,
-        });
-        // Do assertion checks here to
-        done();
+        try {
+          super.onOperationComplete(data);
+          assert.strictEqual(this.requestsHandled.length, 2);
+          const firstRequest = this.requestsHandled[0] as any;
+          // We would expect these parameters to be different every time so delete
+          // them from the comparison.
+          delete firstRequest.attemptLatency;
+          delete firstRequest.serverLatency;
+          delete firstRequest.metricsCollectorData.client_uid;
+          delete firstRequest.metricsCollectorData.appProfileId;
+          assert.deepStrictEqual(firstRequest, {
+            connectivityErrorCount: 0,
+            streaming: 'true',
+            status: '0',
+            client_name: 'nodejs-bigtable',
+            metricsCollectorData: {
+              instanceId: 'emulator-test-instance',
+              table: 'my-table',
+              cluster: 'fake-cluster3',
+              zone: 'us-west1-c',
+              method: 'Bigtable.ReadRows',
+            },
+            projectId,
+          });
+          const secondRequest = this.requestsHandled[1] as any;
+          delete secondRequest.operationLatency;
+          delete secondRequest.firstResponseLatency;
+          delete secondRequest.metricsCollectorData.client_uid;
+          delete secondRequest.metricsCollectorData.appProfileId;
+          assert.deepStrictEqual(secondRequest, {
+            status: '0',
+            streaming: 'true',
+            client_name: 'nodejs-bigtable',
+            metricsCollectorData: {
+              instanceId: 'emulator-test-instance',
+              table: 'my-table',
+              cluster: 'fake-cluster3',
+              zone: 'us-west1-c',
+              method: 'Bigtable.ReadRows',
+            },
+            projectId,
+            retryCount: 0,
+          });
+          done();
+        } catch (e) {
+          done(e);
+        }
       }
     }
 
