@@ -79,19 +79,10 @@ describe('Bigtable/ClientSideMetricsToGCM', () => {
     ensure the export was successful and pass the test with code 0 if it is
     successful.
      */
-    const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
+    const FakeBigtable = proxyquire('../src/index.js', {
       './client-side-metrics/gcp-metrics-handler': {
         GCPMetricsHandler: TestGCPMetricsHandler,
       },
-    }).TabularApiSurface;
-    const FakeTable: TabularApiSurface = proxyquire('../src/table.js', {
-      './tabular-api-surface.js': {TabularApiSurface: FakeTabularApiSurface},
-    }).Table;
-    const FakeInstance = proxyquire('../src/instance.js', {
-      './table.js': {Table: FakeTable},
-    }).Instance;
-    const FakeBigtable = proxyquire('../src/index.js', {
-      './instance.js': {Instance: FakeInstance},
     }).Bigtable;
     bigtable = new FakeBigtable();
 

@@ -17,13 +17,12 @@
 import {describe, it, before, after} from 'mocha';
 import {Bigtable} from '../src';
 import * as proxyquire from 'proxyquire';
-import {TabularApiSurface} from '../src/tabular-api-surface';
 import * as mocha from 'mocha';
 import * as assert from 'assert';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
 
-describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
   async function mockBigtable(projectId: string, done: mocha.Done) {
     class TestGCPMetricsHandler extends TestMetricsHandler {
       onOperationComplete(data: OnOperationCompleteData) {
@@ -76,20 +75,10 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
         }
       }
     }
-
-    const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
+    const FakeBigtable = proxyquire('../src/index.js', {
       './client-side-metrics/gcp-metrics-handler': {
         GCPMetricsHandler: TestGCPMetricsHandler,
       },
-    }).TabularApiSurface;
-    const FakeTable: TabularApiSurface = proxyquire('../src/table.js', {
-      './tabular-api-surface.js': {TabularApiSurface: FakeTabularApiSurface},
-    }).Table;
-    const FakeInstance = proxyquire('../src/instance.js', {
-      './table.js': {Table: FakeTable},
-    }).Instance;
-    const FakeBigtable = proxyquire('../src/index.js', {
-      './instance.js': {Instance: FakeInstance},
     }).Bigtable;
     bigtable = new FakeBigtable();
 
