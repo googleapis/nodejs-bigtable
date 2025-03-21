@@ -36,6 +36,8 @@ import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
 import {IMetricsHandler} from './client-side-metrics/metrics-handler';
+import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
+import {CloudMonitoringExporter} from './client-side-metrics/exporter';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -104,7 +106,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
    */
   BigtableTableAdminClient?: gax.ClientOptions;
 
-  metricsHandlers?: IMetricsHandler[];
+  collectMetrics?: boolean;
 }
 
 /**
@@ -426,6 +428,7 @@ export class Bigtable {
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
+  metricsHandlers: IMetricsHandler[];
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -523,6 +526,12 @@ export class Bigtable {
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
+
+    if (options.collectMetrics === false) {
+      this.metricsHandlers = [];
+    } else {
+      this.metricsHandlers = [new GCPMetricsHandler(new CloudMonitoringExporter())];
+    }
   }
 
   createInstance(

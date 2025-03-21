@@ -345,7 +345,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
     const metricsCollector = new OperationMetricsCollector(
       this,
-      [new GCPMetricsHandler(new CloudMonitoringExporter())],
+      this.bigtable.metricsHandlers,
       MethodName.READ_ROWS,
       StreamingState.STREAMING
     );
