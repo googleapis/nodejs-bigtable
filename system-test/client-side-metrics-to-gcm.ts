@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO: Must be put in root folder or will not run
-
 import {describe, it, before, after} from 'mocha';
 import * as assert from 'assert';
 import {Bigtable} from '../src';
