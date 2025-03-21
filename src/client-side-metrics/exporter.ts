@@ -14,6 +14,7 @@
 
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import {
+  DataPoint,
   ExponentialHistogram,
   Histogram,
   ResourceMetrics,
@@ -37,9 +38,82 @@ export interface ExportResult {
  *
  */
 function isCounterValue(
-  value: number | Histogram | ExponentialHistogram
-): value is number {
-  return typeof value === 'number';
+  dataPoint:
+    | DataPoint<number>
+    | DataPoint<Histogram>
+    | DataPoint<ExponentialHistogram>
+): dataPoint is DataPoint<number> {
+  return typeof dataPoint.value === 'number';
+}
+
+function getInterval(
+  dataPoint:
+    | DataPoint<number>
+    | DataPoint<Histogram>
+    | DataPoint<ExponentialHistogram>
+) {
+  return {
+    endTime: {
+      seconds: dataPoint.endTime[0],
+    },
+    startTime: {
+      seconds: dataPoint.startTime[0],
+    },
+  };
+}
+
+function getDistributionPoints(
+  dataPoint: DataPoint<Histogram> | DataPoint<ExponentialHistogram>
+) {
+  const value = dataPoint.value;
+  return [
+    {
+      interval: getInterval(dataPoint),
+      value: {
+        distributionValue: {
+          count: String(value.count),
+          mean: value.count && value.sum ? value.sum / value.count : 0,
+          bucketOptions: {
+            explicitBuckets: {
+              bounds: (value as Histogram).buckets.boundaries,
+            },
+          },
+          bucketCounts: (value as Histogram).buckets.counts.map(String),
+        },
+      },
+    },
+  ];
+}
+
+function getIntegerPoints(dataPoint: DataPoint<number>) {
+  return [
+    {
+      interval: getInterval(dataPoint),
+      value: {
+        int64Value: dataPoint.value,
+      },
+    },
+  ];
+}
+
+function getResource(
+  projectId: string,
+  dataPoint:
+    | DataPoint<number>
+    | DataPoint<Histogram>
+    | DataPoint<ExponentialHistogram>
+) {
+  const resourceLabels = {
+    cluster: dataPoint.attributes.cluster,
+    instance: dataPoint.attributes.instanceId,
+    project_id: projectId,
+    table: dataPoint.attributes.table,
+    zone: dataPoint.attributes.zone,
+  };
+  return {
+    type: 'bigtable_client_raw',
+    labels: resourceLabels,
+  };
 }
 
 /**
@@ -90,14 +164,6 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
       const metricName = scopeMetric.descriptor.name;
       for (const dataPoint of scopeMetric.dataPoints) {
-        const value = dataPoint.value;
-        const resourceLabels = {
-          cluster: dataPoint.attributes.cluster,
-          instance: dataPoint.attributes.instanceId,
-          project_id: projectId,
-          table: dataPoint.attributes.table,
-          zone: dataPoint.attributes.zone,
-        };
         const streaming = dataPoint.attributes.streaming;
         const app_profile = dataPoint.attributes.app_profile;
         const metric = {
@@ -113,31 +179,13 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
             app_profile ? {app_profile} : null
           ),
         };
-        const resource = {
-          type: 'bigtable_client_raw',
-          labels: resourceLabels,
-        };
-        const interval = {
-          endTime: {
-            seconds: dataPoint.endTime[0],
-          },
-          startTime: {
-            seconds: dataPoint.startTime[0],
-          },
-        };
-        if (isCounterValue(value)) {
+        const resource = getResource(projectId, dataPoint);
+        if (isCounterValue(dataPoint)) {
           timeSeriesArray.push({
             metric,
             resource,
             valueType: 'INT64',
-            points: [
-              {
-                interval,
-                value: {
-                  int64Value: dataPoint.value,
-                },
-              },
-            ],
+            points: getIntegerPoints(dataPoint),
           });
         } else {
           timeSeriesArray.push({
@@ -145,26 +193,7 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
             resource,
             metricKind: 'CUMULATIVE',
             valueType: 'DISTRIBUTION',
-            points: [
-              {
-                interval,
-                value: {
-                  distributionValue: {
-                    count: String(value.count),
-                    mean:
-                      value.count && value.sum ? value.sum / value.count : 0,
-                    bucketOptions: {
-                      explicitBuckets: {
-                        bounds: (value as Histogram).buckets.boundaries,
-                      },
-                    },
-                    bucketCounts: (value as Histogram).buckets.counts.map(
-                      String
-                    ),
-                  },
-                },
-              },
-            ],
+            points: getDistributionPoints(dataPoint),
             unit: scopeMetric.descriptor.unit || 'ms', // Default to 'ms' if no unit is specified
           });
         }
