@@ -428,6 +428,9 @@ export class Bigtable {
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
+  // Each time a metrics handler is created it introduces significant latency.
+  // Therefore, metrics handlers should be created at the client level and
+  // reused throughout the library to reduce latency:
   metricsHandlers: IMetricsHandler[];
 
   constructor(options: BigtableOptions = {}) {
