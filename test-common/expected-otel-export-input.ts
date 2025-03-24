@@ -35,10 +35,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/operation_latencies',
         labels: {
-          client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
-          status: '0',
           client_uid: 'fake-uuid',
+          status: '0',
+          client_name: 'nodejs-bigtable',
           streaming: 'true',
         },
       },
@@ -67,7 +67,7 @@ export const expectedOtelExportConvertedValue = {
           value: {
             distributionValue: {
               count: '1',
-              mean: 7000,
+              mean: 6000,
               bucketOptions: {
                 explicitBuckets: {
                   bounds: [
@@ -131,10 +131,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/attempt_latencies',
         labels: {
-          client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
+          client_uid: 'fake-uuid',
           status: '4',
-          client_uid: 'fake-uuid',
+          client_name: 'nodejs-bigtable',
           streaming: 'true',
         },
       },
@@ -227,10 +227,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/attempt_latencies',
         labels: {
-          client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
-          status: '0',
           client_uid: 'fake-uuid',
+          status: '0',
+          client_name: 'nodejs-bigtable',
           streaming: 'true',
         },
       },
@@ -259,7 +259,7 @@ export const expectedOtelExportConvertedValue = {
           value: {
             distributionValue: {
               count: '1',
-              mean: 2000,
+              mean: 1000,
               bucketOptions: {
                 explicitBuckets: {
                   bounds: [
@@ -299,8 +299,8 @@ export const expectedOtelExportConvertedValue = {
                 '0',
                 '0',
                 '0',
-                '0',
                 '1',
+                '0',
                 '0',
                 '0',
                 '0',
@@ -323,10 +323,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/retry_count',
         labels: {
-          client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
-          status: '0',
           client_uid: 'fake-uuid',
+          status: '0',
+          client_name: 'nodejs-bigtable',
         },
       },
       resource: {
@@ -360,10 +360,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/first_response_latencies',
         labels: {
-          client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
-          status: '0',
           client_uid: 'fake-uuid',
+          status: '0',
+          client_name: 'nodejs-bigtable',
         },
       },
       resource: {
@@ -391,7 +391,7 @@ export const expectedOtelExportConvertedValue = {
           value: {
             distributionValue: {
               count: '1',
-              mean: 5000,
+              mean: 2000,
               bucketOptions: {
                 explicitBuckets: {
                   bounds: [
@@ -432,8 +432,8 @@ export const expectedOtelExportConvertedValue = {
                 '0',
                 '0',
                 '0',
-                '0',
                 '1',
+                '0',
                 '0',
                 '0',
                 '0',
@@ -455,10 +455,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/server_latencies',
         labels: {
-          client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
-          status: '4',
           client_uid: 'fake-uuid',
+          status: '4',
+          client_name: 'nodejs-bigtable',
           streaming: 'true',
         },
       },
@@ -551,10 +551,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/server_latencies',
         labels: {
-          client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
-          status: '0',
           client_uid: 'fake-uuid',
+          status: '0',
+          client_name: 'nodejs-bigtable',
           streaming: 'true',
         },
       },
@@ -647,10 +647,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/connectivity_error_count',
         labels: {
-          client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
-          status: '4',
           client_uid: 'fake-uuid',
+          status: '4',
+          client_name: 'nodejs-bigtable',
         },
       },
       resource: {
@@ -684,10 +684,10 @@ export const expectedOtelExportConvertedValue = {
       metric: {
         type: 'bigtable.googleapis.com/internal/client/connectivity_error_count',
         labels: {
-          client_name: 'nodejs-bigtable',
           method: 'Bigtable.ReadRows',
-          status: '0',
           client_uid: 'fake-uuid',
+          status: '0',
+          client_name: 'nodejs-bigtable',
         },
       },
       resource: {
@@ -797,9 +797,9 @@ export const expectedOtelExportInput = {
               startTime: [123, 789],
               endTime: [456, 789],
               value: {
-                min: 7000,
-                max: 7000,
-                sum: 7000,
+                min: 6000,
+                max: 6000,
+                sum: 6000,
                 buckets: {
                   boundaries: [
                     0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65,
@@ -887,9 +887,9 @@ export const expectedOtelExportInput = {
               startTime: [123, 789],
               endTime: [456, 789],
               value: {
-                min: 2000,
-                max: 2000,
-                sum: 2000,
+                min: 1000,
+                max: 1000,
+                sum: 1000,
                 buckets: {
                   boundaries: [
                     0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65,
@@ -899,7 +899,7 @@ export const expectedOtelExportInput = {
                   ],
                   counts: [
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0,
                   ],
                 },
@@ -973,9 +973,9 @@ export const expectedOtelExportInput = {
               startTime: [123, 789],
               endTime: [456, 789],
               value: {
-                min: 5000,
-                max: 5000,
-                sum: 5000,
+                min: 2000,
+                max: 2000,
+                sum: 2000,
                 buckets: {
                   boundaries: [
                     0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65,
@@ -985,7 +985,7 @@ export const expectedOtelExportInput = {
                   ],
                   counts: [
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0,
                   ],
                 },

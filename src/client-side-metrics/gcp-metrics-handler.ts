@@ -32,7 +32,7 @@ const {
  * A collection of OpenTelemetry metric instruments used to record
  * Bigtable client-side metrics.
  */
-interface Metrics {
+interface MetricsInstruments {
   operationLatencies: typeof Histogram;
   attemptLatencies: typeof Histogram;
   retryCount: typeof Histogram;
@@ -49,7 +49,7 @@ interface Metrics {
  * associating them with relevant attributes for detailed analysis in Cloud Monitoring.
  */
 export class GCPMetricsHandler implements IMetricsHandler {
-  private otelInstruments?: Metrics;
+  private otelInstruments?: MetricsInstruments;
   private exporter: PushMetricExporter;
 
   /**
@@ -75,7 +75,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * which will be provided to the exporter in every export call.
    *
    */
-  private getMetrics(projectId: string): Metrics {
+  private getInstruments(projectId: string): MetricsInstruments {
     // The projectId is needed per metrics handler because when the exporter is
     // used it provides the project id for the name of the time series exported.
     // ie. name: `projects/${....['monitored_resource.project_id']}`,
@@ -214,7 +214,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    const otelInstruments = this.getMetrics(data.projectId);
+    const otelInstruments = this.getInstruments(data.projectId);
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
@@ -244,7 +244,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    const otelInstruments = this.getMetrics(data.projectId);
+    const otelInstruments = this.getInstruments(data.projectId);
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,

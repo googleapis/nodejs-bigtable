@@ -17,7 +17,6 @@ import {IMetricsHandler} from './metrics-handler';
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 import * as gax from 'google-gax';
-
 const root = gax.protobuf.loadSync(
   './protos/google/bigtable/v2/response_params.proto'
 );
@@ -159,7 +158,7 @@ export class OperationMetricsCollector {
               serverLatency: this.serverTime ?? undefined,
               connectivityErrorCount: this.connectivityErrorCount,
               streaming: this.streamingOperation,
-              status: attemptStatus?.toString(), // undefined in conformance tests.
+              status: attemptStatus.toString(),
               client_name: `nodejs-bigtable/${version}`,
               metricsCollectorData: this.getMetricsCollectorData(),
               projectId,
@@ -195,16 +194,19 @@ export class OperationMetricsCollector {
    * Called when the first response is received. Records first response latencies.
    */
   onResponse(projectId: string) {
-    if (
-      this.state ===
-      MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET
-    ) {
-      this.state =
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
-      const endTime = new Date();
-      if (projectId && this.operationStartTime) {
-        this.firstResponseLatency =
-          endTime.getTime() - this.operationStartTime.getTime();
+    if (!this.firstResponseLatency) {
+      // Check firstResponseLatency first to improve latency for calls with many rows
+      if (
+        this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET
+      ) {
+        this.state =
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
+        const endTime = new Date();
+        if (projectId && this.operationStartTime) {
+          this.firstResponseLatency =
+            endTime.getTime() - this.operationStartTime.getTime();
+        }
       }
     }
   }
@@ -254,16 +256,17 @@ export class OperationMetricsCollector {
     internalRepr: Map<string, string[]>;
     options: {};
   }) {
-    const mappedEntries = new Map(
-      Array.from(metadata.internalRepr.entries(), ([key, value]) => [
-        key,
-        value.toString(),
-      ])
-    );
-    const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
-    const SERVER_TIMING_KEY = 'server-timing';
-    const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
-    if (durationValues) {
+    if (!this.serverTimeRead && this.connectivityErrorCount < 1) {
+      // Check serverTimeRead, connectivityErrorCount here to reduce latency.
+      const mappedEntries = new Map(
+        Array.from(metadata.internalRepr.entries(), ([key, value]) => [
+          key,
+          value.toString(),
+        ])
+      );
+      const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
+      const SERVER_TIMING_KEY = 'server-timing';
+      const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
       const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
       if (matchedDuration && matchedDuration[1]) {
         if (!this.serverTimeRead) {
@@ -285,11 +288,11 @@ export class OperationMetricsCollector {
   onStatusMetadataReceived(status: {
     metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
   }) {
-    const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
-    const mappedValue = status.metadata.internalRepr.get(
-      INSTANCE_INFORMATION_KEY
-    ) as Buffer[];
-    if (mappedValue && mappedValue[0] && ResponseParams) {
+    if (!this.zone || !this.cluster) {
+      const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
+      const mappedValue = status.metadata.internalRepr.get(
+        INSTANCE_INFORMATION_KEY
+      ) as Buffer[];
       const decodedValue = ResponseParams.decode(
         mappedValue[0],
         mappedValue[0].length
