@@ -203,11 +203,13 @@ describe.only('Service Path2', () => {
       const [instanceInfo] = await instance.exists();
       if (!instanceInfo) {
         const [, operation] = await instance.create({
-          clusters: {
-            id: 'fake-cluster3',
-            location: 'us-west1-c',
-            nodes: 1,
-          },
+          clusters: [
+            {
+              id: 'fake-cluster3',
+              location: 'us-west1-c',
+              nodes: 1,
+            },
+          ],
         });
         await operation.promise();
       }
@@ -226,19 +228,18 @@ describe.only('Service Path2', () => {
         }
       }
     }
-    mockBigtable();
     // Do the universe domain test
     const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
+    /*
     const options = {
       universeDomain,
     };
-    const bigtable = new Bigtable({
-      BigtableClient: options,
-      BigtableInstanceAdminClient: options,
-      BigtableTableAdminClient: options,
-    });
+     */
+    const options = {};
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
-    await table.getRows({gaxOptions: {timeout: 1000}});
+    await mockBigtable();
+    await table.getRows();
   });
 });
