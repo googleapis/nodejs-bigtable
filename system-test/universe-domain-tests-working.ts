@@ -18,7 +18,7 @@ import * as proxyquire from 'proxyquire';
 import * as mocha from 'mocha';
 
 describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
-  async function mockBigtable(projectId: string, done: mocha.Done) {
+  async function mockBigtable() {
     const FakeBigtable = proxyquire('../src/index.js', {}).Bigtable;
     bigtable = new FakeBigtable();
 
@@ -84,7 +84,7 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
           }
         });
       });
-      await mockBigtable(projectId, done);
+      await mockBigtable();
       const instance = bigtable.instance(instanceId);
       const table = instance.table(tableId);
       await table.getRows();
