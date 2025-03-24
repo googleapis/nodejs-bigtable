@@ -68,6 +68,7 @@ import {Bigtable} from '.';
 import {google} from '../protos/protos';
 import {Backup, RestoreTableCallback, RestoreTableResponse} from './backup';
 import {ClusterUtils} from './utils/cluster';
+import {AuthorizedView} from './authorized-view';
 
 export interface ClusterInfo extends BasicClusterConfig {
   id: string;
@@ -1309,7 +1310,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         : callback!;
 
     if (policy.etag !== null && policy.etag !== undefined) {
-      (policy.etag as {} as Buffer) = Buffer.from(policy.etag);
+      (policy.etag as {} as Buffer) = Buffer.from(policy.etag as string);
     }
     const reqOpts = {
       resource: this.name,
@@ -1475,6 +1476,16 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       }
     );
   }
+
+  /**
+   * Gets an Authorized View object for making authorized view grpc calls.
+   *
+   * @param {string} tableName The name for the Table
+   * @param {string} viewName The name for the Authorized view
+   */
+  view(tableName: string, viewName: string): AuthorizedView {
+    return new AuthorizedView(this, tableName, viewName);
+  }
 }
 
 /*! Developer Documentation
@@ -1490,6 +1501,7 @@ promisifyAll(Instance, {
     'getBackupsStream',
     'getTablesStream',
     'getAppProfilesStream',
+    'view',
   ],
 });
 

@@ -13,7 +13,6 @@ branchProtectionRules:
       - test (18)
       - cla/google
       - windows
-      - OwlBot Post Processor
 permissionRules:
   - team: yoshi-admins
     permission: admin

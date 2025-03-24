@@ -110,7 +110,7 @@ describe('Bigtable/Table', () => {
   let table: any;
 
   before(() => {
-    Table = proxyquire('../src/table.js', {
+    const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
       '@google-cloud/promisify': fakePromisify,
       './family.js': {Family: FakeFamily},
       './mutation.js': {Mutation: FakeMutation},
@@ -118,6 +118,13 @@ describe('Bigtable/Table', () => {
       pumpify,
       './row.js': {Row: FakeRow},
       './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+    }).TabularApiSurface;
+    Table = proxyquire('../src/table.js', {
+      '@google-cloud/promisify': fakePromisify,
+      './family.js': {Family: FakeFamily},
+      './mutation.js': {Mutation: FakeMutation},
+      './row.js': {Row: FakeRow},
+      './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
     }).Table;
   });
 
@@ -1113,7 +1120,52 @@ describe('Bigtable/Table', () => {
           .on('data', done);
       });
     });
-
+    it('Should respect the timeout parameter passed in for UNAVAILABLE error', done => {
+      // The timeout is 2 seconds, but the error is received after 3 seconds
+      // so the client doesn't retry because more than 2 seconds have elapsed.
+      const requestSpy = (table.bigtable.request = sinon.spy(() => {
+        const stream = new PassThrough({
+          objectMode: true,
+        });
+        (stream as any).abort = () => {};
+        setTimeout(() => {
+          const error = new Error('retry me!') as ServiceError;
+          error.code = 14;
+          stream.emit('error', error);
+        }, 3000);
+        return stream;
+      }));
+      const stream = table.createReadStream({gaxOptions: {timeout: 2000}});
+      stream.on('error', (error: ServiceError) => {
+        assert.strictEqual(error.code, 14);
+        assert.strictEqual(error.message, 'retry me!');
+        assert.strictEqual(requestSpy.callCount, 1); // Ensures the client has not retried.
+        done();
+      });
+    });
+    it('Should respect the timeout parameter passed in for DEADLINE_EXCEEDED error', done => {
+      // The timeout is 2 seconds, but the error is received after 3 seconds
+      // so the client doesn't retry because more than 2 seconds have elapsed.
+      const requestSpy = (table.bigtable.request = sinon.spy(() => {
+        const stream = new PassThrough({
+          objectMode: true,
+        });
+        (stream as any).abort = () => {};
+        setTimeout(() => {
+          const error = new Error('retry me!') as ServiceError;
+          error.code = 4;
+          stream.emit('error', error);
+        }, 3000);
+        return stream;
+      }));
+      const stream = table.createReadStream({gaxOptions: {timeout: 2000}});
+      stream.on('error', (error: ServiceError) => {
+        assert.strictEqual(error.code, 4);
+        assert.strictEqual(error.message, 'retry me!');
+        assert.strictEqual(requestSpy.callCount, 1); // Ensures the client has not retried.
+        done();
+      });
+    });
     describe('retries', () => {
       let callCreateReadStream: Function;
       let emitters: EventEmitter[] | null; // = [((stream: Writable) => { stream.push([{ key: 'a' }]);
@@ -2700,6 +2752,56 @@ describe('Bigtable/Table', () => {
         };
       });
 
+      it('should send back errors for each pending entry', done => {
+        const mutateEntries = [
+          {
+            key: 'a',
+            method: 'insert',
+            data: {},
+          },
+          {
+            key: 'b',
+            method: 'insert',
+            data: {},
+          },
+        ];
+        const unretriableError = new Error('not retryable') as ServiceError;
+        unretriableError.code = 3; // INVALID_ARGUMENT
+        emitters = [
+          ((stream: Writable) => {
+            stream.emit('data', {
+              entries: [
+                {
+                  index: 0,
+                  status: {
+                    details: [],
+                    code: 0,
+                    message: 'Received data',
+                  },
+                },
+              ],
+            });
+            stream.emit('error', unretriableError);
+          }) as {} as EventEmitter,
+        ];
+        table.maxRetries = 3;
+        table.mutate(
+          mutateEntries,
+          (err: ServiceError & {errors?: ServiceError[]}) => {
+            try {
+              assert.strictEqual(err.code, 3);
+              assert.strictEqual(err.message, 'not retryable');
+              assert(err.errors);
+              assert.strictEqual(err.errors.length, 1);
+              assert.strictEqual(err.errors[0].code, 3);
+              assert.strictEqual(err.errors[0].message, 'not retryable');
+              done();
+            } catch (e) {
+              done(e);
+            }
+          }
+        );
+      });
       it('should not retry unretriable errors', done => {
         const unretriableError = new Error('not retryable') as ServiceError;
         unretriableError.code = 3; // INVALID_ARGUMENT
