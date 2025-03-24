@@ -75,15 +75,6 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
 
   it('should send the metrics to the metrics handler for a ReadRows call', done => {
     (async () => {
-      const projectId: string = await new Promise((resolve, reject) => {
-        bigtable.getProjectId_((err, projectId) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(projectId as string);
-          }
-        });
-      });
       const instance = bigtable.instance(instanceId);
       const table = instance.table(tableId);
       await mockBigtable();
