@@ -16,9 +16,6 @@ import {describe, it, before, after} from 'mocha';
 import {Bigtable} from '../src';
 import * as proxyquire from 'proxyquire';
 import * as mocha from 'mocha';
-import * as assert from 'assert';
-import {TestMetricsHandler} from '../test-common/test-metrics-handler';
-import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
 
 describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
   async function mockBigtable(projectId: string, done: mocha.Done) {
@@ -47,7 +44,7 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
       const [families] = await table.getFamilies();
 
       if (
-          !families.some((family: {id: string}) => family.id === columnFamilyId)
+        !families.some((family: {id: string}) => family.id === columnFamilyId)
       ) {
         await table.createFamily(columnFamilyId);
       }
