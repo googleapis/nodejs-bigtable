@@ -193,15 +193,18 @@ describe('Service Path', () => {
   });
 });
 
-describe.only('Service Path2', () => {
+describe('Service Path2', () => {
   it('Experiment with setting the service path', async () => {
     const instanceId = 'instanceId';
     const tableId = 'tableId';
     const columnFamilyId = 'cf1';
     async function mockBigtable() {
       const instance = bigtable.instance(instanceId);
+      console.log('get instance info');
       const [instanceInfo] = await instance.exists();
+      console.log('after instance info');
       if (!instanceInfo) {
+        console.log('create instance');
         const [, operation] = await instance.create({
           clusters: [
             {
@@ -211,6 +214,7 @@ describe.only('Service Path2', () => {
             },
           ],
         });
+        console.log('create instance done');
         await operation.promise();
       }
 
