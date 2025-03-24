@@ -41,13 +41,6 @@ describe.only('Service Path2', () => {
       }
     }
     // Do the universe domain test
-    const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
-    /*
-    const options = {
-      universeDomain,
-    };
-     */
-    const options = {};
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
