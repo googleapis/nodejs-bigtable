@@ -84,9 +84,9 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
           }
         });
       });
-      await mockBigtable();
       const instance = bigtable.instance(instanceId);
       const table = instance.table(tableId);
+      await mockBigtable();
       await table.getRows();
       done();
     })();
