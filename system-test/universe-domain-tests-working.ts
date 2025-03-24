@@ -59,7 +59,15 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
   before(async () => {
     // This line is added just to make sure the bigtable variable is assigned.
     // It is needed to solve a compile time error in the after hook.
-    bigtable = new Bigtable();
+    const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
+    const options = {
+      universeDomain,
+    };
+    bigtable = new Bigtable({
+      BigtableClient: options,
+      BigtableInstanceAdminClient: options,
+      BigtableTableAdminClient: options,
+    });
   });
 
   after(async () => {
@@ -75,11 +83,15 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
 
   it('should send the metrics to the metrics handler for a ReadRows call', done => {
     (async () => {
-      const instance = bigtable.instance(instanceId);
-      const table = instance.table(tableId);
-      await mockBigtable();
-      await table.getRows();
-      done();
+      try {
+        const instance = bigtable.instance(instanceId);
+        const table = instance.table(tableId);
+        await mockBigtable();
+        await table.getRows();
+        done();
+      } catch (e) {
+        done(e);
+      }
     })();
   });
 });
