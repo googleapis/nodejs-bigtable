@@ -1,7 +1,7 @@
 import {describe, it} from 'mocha';
 import {Bigtable} from '../src';
 
-describe.only('Service Path2', () => {
+describe('Service Path2', () => {
   it('Experiment with setting the service path', async () => {
     const instanceId = 'instanceId';
     const tableId = 'tableId';
