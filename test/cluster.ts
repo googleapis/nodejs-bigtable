@@ -128,7 +128,7 @@ describe('Bigtable/Cluster', () => {
     it('should format the location name for project name with /', () => {
       const PROJECT_NAME = 'projects/grape-spaceship-123';
       const expected = `projects/${PROJECT_NAME.split(
-        '/'
+        '/',
       ).pop()}/locations/${LOCATION}`;
       const formatted = Cluster.getLocation_(PROJECT_NAME, LOCATION);
       assert.strictEqual(formatted, expected);
@@ -183,7 +183,7 @@ describe('Bigtable/Cluster', () => {
       cluster.instance.createCluster = (
         id: string,
         options_: {},
-        callback: Function
+        callback: Function,
       ) => {
         assert.strictEqual(id, cluster.id);
         assert.strictEqual(options_, options);
@@ -197,7 +197,7 @@ describe('Bigtable/Cluster', () => {
       cluster.instance.createCluster = (
         id: string,
         options: {},
-        callback: Function
+        callback: Function,
       ) => {
         assert.deepStrictEqual(options, {});
         callback(); // done()
@@ -240,7 +240,7 @@ describe('Bigtable/Cluster', () => {
         {
           table,
         },
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -260,7 +260,7 @@ describe('Bigtable/Cluster', () => {
         {
           table,
         },
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -278,7 +278,7 @@ describe('Bigtable/Cluster', () => {
         {
           table,
         },
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -289,7 +289,7 @@ describe('Bigtable/Cluster', () => {
       cluster.bigtable.request = (config: any) => {
         assert.deepStrictEqual(
           config.reqOpts.backup.expireTime,
-          new PreciseDate(expireTime).toStruct()
+          new PreciseDate(expireTime).toStruct(),
         );
         done();
       };
@@ -300,7 +300,7 @@ describe('Bigtable/Cluster', () => {
           table: 'table-id',
           expireTime,
         },
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -330,7 +330,7 @@ describe('Bigtable/Cluster', () => {
           table,
           configProperty: true,
         },
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -350,7 +350,7 @@ describe('Bigtable/Cluster', () => {
           table,
           gaxOptions,
         },
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -370,7 +370,7 @@ describe('Bigtable/Cluster', () => {
           table,
           gaxOptions,
         },
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -393,7 +393,7 @@ describe('Bigtable/Cluster', () => {
           assert.strictEqual(backup, undefined);
           assert.deepStrictEqual(Array.from(_args), args);
           done();
-        }
+        },
       );
     });
 
@@ -422,7 +422,7 @@ describe('Bigtable/Cluster', () => {
           assert.strictEqual(backup, backupInstance);
           assert.deepStrictEqual(Array.from(_args), args);
           done();
-        }
+        },
       );
     });
   });
@@ -603,11 +603,11 @@ describe('Bigtable/Cluster', () => {
       cluster.bigtable.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.pageSize,
-          options.gaxOptions.pageSize
+          options.gaxOptions.pageSize,
         );
         assert.strictEqual(
           config.reqOpts.pageToken,
-          options.gaxOptions.pageToken
+          options.gaxOptions.pageToken,
         );
         done();
       };
@@ -731,7 +731,7 @@ describe('Bigtable/Cluster', () => {
           assert.strictEqual(nextQuery, null);
           assert.strictEqual(apiResp, apiResponse);
           done();
-        }
+        },
       );
     });
 
@@ -1026,7 +1026,7 @@ describe('Bigtable/Cluster', () => {
 
       const expectedReqOpts = ClusterUtils.getRequestFromMetadata(
         options,
-        CLUSTER_NAME
+        CLUSTER_NAME,
       );
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

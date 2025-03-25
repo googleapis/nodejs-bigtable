@@ -46,19 +46,19 @@ export function getRMWRRequest(request: RMWRRequestData): RMRWRequest {
   }
 
   const requestRules = arrify(rules).map(rule => {
-    const column = Mutation.parseColumnName(rule.column);
+    const column = Mutation.parseColumnName((rule as Rule).column);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ruleData: any = {
       familyName: column.family,
       columnQualifier: Mutation.convertToBytes(column.qualifier!),
     };
 
-    if (rule.append) {
-      ruleData.appendValue = Mutation.convertToBytes(rule.append);
+    if ((rule as Rule).append) {
+      ruleData.appendValue = Mutation.convertToBytes((rule as Rule).append);
     }
 
-    if (rule.increment) {
-      ruleData.incrementAmount = rule.increment;
+    if ((rule as Rule).increment) {
+      ruleData.incrementAmount = (rule as Rule).increment;
     }
 
     return ruleData;
@@ -70,7 +70,7 @@ export function getRMWRRequest(request: RMWRRequestData): RMRWRequest {
       rules: requestRules,
     },
     reqOpts,
-    appProfileId ? {appProfileId} : null
+    appProfileId ? {appProfileId} : null,
   );
 }
 
@@ -94,7 +94,7 @@ export function getRMWRRequestInverse(request: RMRWRequest): RMWRRequestData {
 
       if (rule.appendValue) {
         ruleData.append = Mutation.convertFromBytes(
-          rule.appendValue as Bytes
+          rule.appendValue as Bytes,
         ) as string;
       }
 
@@ -114,11 +114,11 @@ export function getRMWRRequestInverse(request: RMRWRequest): RMWRRequestData {
       reqOpts: Object.assign(
         {},
         tableName ? {tableName} : null,
-        authorizedViewName ? {authorizedViewName} : null
+        authorizedViewName ? {authorizedViewName} : null,
       ),
       id: Mutation.convertFromBytes(request.rowKey as Bytes) as string,
       rules: rules,
     },
-    appProfileId ? {appProfileId} : null
+    appProfileId ? {appProfileId} : null,
   );
 }

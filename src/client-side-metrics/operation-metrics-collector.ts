@@ -18,7 +18,7 @@ import {MethodName, StreamingState} from './client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 import * as gax from 'google-gax';
 const root = gax.protobuf.loadSync(
-  './protos/google/bigtable/v2/response_params.proto'
+  './protos/google/bigtable/v2/response_params.proto',
 );
 const ResponseParams = root.lookupType('ResponseParams');
 
@@ -87,7 +87,7 @@ export class OperationMetricsCollector {
     tabularApiSurface: ITabularApiSurface,
     metricsHandlers: IMetricsHandler[],
     methodName: MethodName,
-    streamingOperation: StreamingState
+    streamingOperation: StreamingState,
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;

@@ -33,7 +33,7 @@ const normalizeCallback = fn =>
           code: grpc.status.UNKNOWN,
           details: [e.message],
         },
-        e
+        e,
       );
     }
     return res;

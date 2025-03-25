@@ -32,7 +32,7 @@ const createClient = ({clientMap}) =>
     // TODO: Handle refresh periods
     const {request} = rawRequest;
     const clientConfig = JSON.parse(
-      JSON.stringify(require('../../src/v2/bigtable_client_config.json'))
+      JSON.stringify(require('../../src/v2/bigtable_client_config.json')),
     );
     const {
       callCredential,
@@ -46,9 +46,9 @@ const createClient = ({clientMap}) =>
     if (!(clientId && projectId && instanceId && apiEndpoint)) {
       throw Object.assign(
         new Error(
-          'clientId, projectId, instanceId, and apiEndpoint must be provided.'
+          'clientId, projectId, instanceId, and apiEndpoint must be provided.',
         ),
-        {code: grpc.status.INVALID_ARGUMENT}
+        {code: grpc.status.INVALID_ARGUMENT},
       );
     }
 
@@ -69,7 +69,7 @@ const createClient = ({clientMap}) =>
        * after the amount of time specified in request.perOperationTimeout.
        */
       Object.entries(
-        clientConfig.interfaces['google.bigtable.v2.Bigtable'].methods
+        clientConfig.interfaces['google.bigtable.v2.Bigtable'].methods,
       ).forEach(([, v]) => {
         v.timeout_millis = durationToMilliseconds(request.perOperationTimeout);
       });

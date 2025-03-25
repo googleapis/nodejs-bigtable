@@ -80,12 +80,12 @@ export interface GetRowOptions {
 }
 export type RowExistsCallback = (
   err: ServiceError | null,
-  exists?: boolean
+  exists?: boolean,
 ) => void;
 export type RowExistsResponse = [boolean];
 export type CreateRulesCallback = (
   err: ServiceError | null,
-  apiResponse?: google.bigtable.v2.IReadModifyWriteRowResponse
+  apiResponse?: google.bigtable.v2.IReadModifyWriteRowResponse,
 ) => void;
 export type CreateRulesResponse = [
   google.bigtable.v2.IReadModifyWriteRowResponse,
@@ -93,24 +93,24 @@ export type CreateRulesResponse = [
 export type CreateRowCallback = (
   err: ServiceError | PartialFailureError | null,
   row?: Row | null,
-  apiResponse?: google.protobuf.Empty
+  apiResponse?: google.protobuf.Empty,
 ) => void;
 export type CreateRowResponse = [Row, google.protobuf.Empty];
 export type GetRowMetadataCallback = (
   err: RowError | null,
-  apiResponse?: google.bigtable.v2.ReadRowsResponse
+  apiResponse?: google.bigtable.v2.ReadRowsResponse,
 ) => void;
 export type GetRowMetadataResponse = [google.bigtable.v2.ReadRowsResponse];
 export type GetRowCallback<T = Row> = (
   err: RowError | null,
   row?: T,
-  apiResponse?: {}
+  apiResponse?: {},
 ) => void;
 export type GetRowResponse<T = Row> = [T, {}];
 export type FilterCallback = (
   err: ServiceError | null,
   matched?: boolean | null,
-  apiResponse?: google.bigtable.v2.ICheckAndMutateRowResponse
+  apiResponse?: google.bigtable.v2.ICheckAndMutateRowResponse,
 ) => void;
 export type FilterResponse = [
   boolean | null,
@@ -119,7 +119,7 @@ export type FilterResponse = [
 export type IncrementCallback = (
   err: ServiceError | null,
   value?: number | null,
-  apiResponse?: google.bigtable.v2.IReadModifyWriteRowResponse
+  apiResponse?: google.bigtable.v2.IReadModifyWriteRowResponse,
 ) => void;
 export type IncrementResponse = [
   number | null,
@@ -245,7 +245,7 @@ export class Row {
           chunk.qualifier.value as string,
           {
             userOptions: options,
-          }
+          },
         ) as string;
       }
 
@@ -318,7 +318,7 @@ export class Row {
    */
   static formatFamilies_(
     families: google.bigtable.v2.IFamily[],
-    options?: FormatFamiliesOptions
+    options?: FormatFamiliesOptions,
   ) {
     return RowDataUtils.formatFamilies_Util(families, options);
   }
@@ -344,7 +344,7 @@ export class Row {
    */
   create(
     optionsOrCallback?: CreateRowOptions | CreateRowCallback,
-    cb?: CreateRowCallback
+    cb?: CreateRowCallback,
   ): void | Promise<CreateRowResponse> {
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -365,18 +365,18 @@ export class Row {
           return;
         }
         callback(null, this, apiResponse);
-      }
+      },
     );
   }
 
   createRules(
     rules: Rule | Rule[],
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<CreateRulesResponse>;
   createRules(
     rules: Rule | Rule[],
     options: CallOptions,
-    callback: CreateRulesCallback
+    callback: CreateRulesCallback,
   ): void;
   createRules(rules: Rule | Rule[], callback: CreateRulesCallback): void;
   /**
@@ -400,13 +400,13 @@ export class Row {
   createRules(
     rules: Rule | Rule[],
     optionsOrCallback?: CallOptions | CreateRulesCallback,
-    cb?: CreateRulesCallback
+    cb?: CreateRulesCallback,
   ): void | Promise<CreateRulesResponse> {
     RowDataUtils.createRulesUtil(
       rules,
       getProperties(this),
       optionsOrCallback,
-      cb
+      cb,
     );
   }
 
@@ -428,7 +428,7 @@ export class Row {
    */
   delete(
     optionsOrCallback?: CallOptions | MutateCallback,
-    cb?: MutateCallback
+    cb?: MutateCallback,
   ): void | Promise<MutateResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -444,12 +444,12 @@ export class Row {
 
   deleteCells(
     columns: string[],
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<MutateResponse>;
   deleteCells(
     columns: string[],
     options: CallOptions,
-    callback: MutateCallback
+    callback: MutateCallback,
   ): void;
   deleteCells(columns: string[], callback: MutateCallback): void;
   /**
@@ -469,7 +469,7 @@ export class Row {
   deleteCells(
     columns: string[],
     optionsOrCallback?: CallOptions | MutateCallback,
-    cb?: MutateCallback
+    cb?: MutateCallback,
   ): void | Promise<MutateResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -502,7 +502,7 @@ export class Row {
    */
   exists(
     optionsOrCallback?: CallOptions | RowExistsCallback,
-    cb?: RowExistsCallback
+    cb?: RowExistsCallback,
   ): void | Promise<RowExistsResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -523,7 +523,7 @@ export class Row {
           },
         ],
       },
-      gaxOptions
+      gaxOptions,
     );
     this.getMetadata(options as GetRowOptions, err => {
       if (err) {
@@ -542,7 +542,7 @@ export class Row {
   filter(
     filter: RawFilter,
     config: FilterConfig,
-    callback: FilterCallback
+    callback: FilterCallback,
   ): void;
   filter(filter: RawFilter, callback: FilterCallback): void;
   /**
@@ -569,7 +569,7 @@ export class Row {
   filter(
     filter: RawFilter,
     configOrCallback?: FilterConfig | FilterCallback,
-    cb?: FilterCallback
+    cb?: FilterCallback,
   ): void | Promise<FilterResponse> {
     RowDataUtils.filterUtil(filter, getProperties(this), configOrCallback, cb);
   }
@@ -578,13 +578,13 @@ export class Row {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get<T = any>(
     columns: string[],
-    options?: GetRowOptions
+    options?: GetRowOptions,
   ): Promise<GetRowResponse<T>>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get<T = any>(
     columns: string[],
     options: GetRowOptions,
-    callback: GetRowCallback<T>
+    callback: GetRowCallback<T>,
   ): void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get<T = any>(columns: string[], callback: GetRowCallback<T>): void;
@@ -611,7 +611,7 @@ export class Row {
   get<T = any | Row>(
     columnsOrOptionsOrCallback?: string[] | GetRowOptions | GetRowCallback<T>,
     optionsOrCallback?: GetRowOptions | GetRowCallback<T>,
-    cb?: GetRowCallback<T>
+    cb?: GetRowCallback<T>,
   ): void | Promise<GetRowResponse> {
     let columns = Array.isArray(columnsOrOptionsOrCallback)
       ? columnsOrOptionsOrCallback
@@ -714,7 +714,7 @@ export class Row {
    */
   getMetadata(
     optionsOrCallback?: GetRowOptions | GetRowMetadataCallback,
-    cb?: GetRowMetadataCallback
+    cb?: GetRowMetadataCallback,
   ): void | Promise<GetRowMetadataResponse> {
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -733,20 +733,20 @@ export class Row {
   increment(
     column: string,
     value: number,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<IncrementResponse>;
   increment(column: string, options?: CallOptions): Promise<IncrementResponse>;
   increment(
     column: string,
     value: number,
     options: CallOptions,
-    callback: IncrementCallback
+    callback: IncrementCallback,
   ): void;
   increment(column: string, value: number, callback: IncrementCallback): void;
   increment(
     column: string,
     options: CallOptions,
-    callback: IncrementCallback
+    callback: IncrementCallback,
   ): void;
   increment(column: string, callback: IncrementCallback): void;
   /**
@@ -770,14 +770,14 @@ export class Row {
     column: string,
     valueOrOptionsOrCallback?: number | CallOptions | IncrementCallback,
     optionsOrCallback?: CallOptions | IncrementCallback,
-    cb?: IncrementCallback
+    cb?: IncrementCallback,
   ): void | Promise<IncrementResponse> {
     RowDataUtils.incrementUtils(
       column,
       getProperties(this),
       valueOrOptionsOrCallback,
       optionsOrCallback,
-      cb
+      cb,
     );
   }
 
@@ -802,7 +802,7 @@ export class Row {
   save(
     entry: Entry,
     optionsOrCallback?: CallOptions | MutateCallback,
-    cb?: MutateCallback
+    cb?: MutateCallback,
   ): void | Promise<MutateResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};

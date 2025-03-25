@@ -28,7 +28,7 @@ describe('Bigtable/Mock-Server', () => {
   async function checkPort(port: string, inUse: boolean, callback: () => void) {
     const isInUse: boolean = await tcpPortUsed.check(
       parseInt(port),
-      'localhost'
+      'localhost',
     );
     assert.strictEqual(isInUse, inUse);
     callback();

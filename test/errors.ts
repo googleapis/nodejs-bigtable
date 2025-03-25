@@ -60,7 +60,7 @@ describe('Bigtable/Errors', () => {
         const metadata = new grpc.Metadata();
         metadata.set(
           'grpc-server-stats-bin',
-          Buffer.from([0, 0, 116, 73, 159, 3, 0, 0, 0, 0])
+          Buffer.from([0, 0, 116, 73, 159, 3, 0, 0, 0, 0]),
         );
         stream.emit('error', {
           code: 5,
@@ -76,7 +76,7 @@ describe('Bigtable/Errors', () => {
           assert.strictEqual(message, `5 NOT_FOUND: ${errorDetails}`);
         } else {
           assert.fail(
-            'Errors checked using this function should all be GoogleErrors'
+            'Errors checked using this function should all be GoogleErrors',
           );
         }
       }

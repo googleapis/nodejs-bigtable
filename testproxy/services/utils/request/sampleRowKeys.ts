@@ -30,7 +30,7 @@ type SRKResponse = protos.google.bigtable.v2.ISampleRowKeysResponse;
 export function getSRKRequest(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   client: any,
-  request: SRKRequest
+  request: SRKRequest,
 ): Promise<SRKResponse> {
   const {tableName} = request;
 

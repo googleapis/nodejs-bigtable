@@ -161,7 +161,7 @@ describe('Bigtable/Instance', () => {
       assert.strictEqual(Instance.getTypeType_(), types.unspecified);
       assert.strictEqual(
         Instance.getTypeType_('not-real-type'),
-        types.unspecified
+        types.unspecified,
       );
     });
 
@@ -182,7 +182,7 @@ describe('Bigtable/Instance', () => {
       (instance.bigtable.createInstance as Function) = (
         id: string,
         options_: {},
-        callback: Function
+        callback: Function,
       ) => {
         assert.strictEqual(id, instance.id);
         assert.strictEqual(options_, options);
@@ -206,14 +206,14 @@ describe('Bigtable/Instance', () => {
       instance.createAppProfile(
         APP_PROFILE_ID,
         {routing: 'any'},
-        assert.ifError
+        assert.ifError,
       );
     });
 
     it('should throw if the routing option is not provided', () => {
       assert.throws(
         instance.createAppProfile.bind(null, APP_PROFILE_ID, assert.ifError),
-        /An app profile must contain a routing policy\./
+        /An app profile must contain a routing policy\./,
       );
     });
 
@@ -241,7 +241,7 @@ describe('Bigtable/Instance', () => {
         (instance.bigtable.request as Function) = (config: any) => {
           assert.deepStrictEqual(
             config.reqOpts.appProfile.multiClusterRoutingUseAny,
-            {}
+            {},
           );
           done();
         };
@@ -254,7 +254,7 @@ describe('Bigtable/Instance', () => {
         (instance.bigtable.request as Function) = (config: any) => {
           assert.deepStrictEqual(
             config.reqOpts.appProfile.singleClusterRouting,
-            {clusterId: CLUSTER_ID}
+            {clusterId: CLUSTER_ID},
           );
           done();
         };
@@ -264,14 +264,14 @@ describe('Bigtable/Instance', () => {
       it('a set of cluster objects', done => {
         const clusterIds = ['my-cluster1', 'my-cluster2'];
         const clusters = clusterIds.map(
-          cluster => new FakeCluster(instance, cluster)
+          cluster => new FakeCluster(instance, cluster),
         );
         const options = {routing: new Set(clusters)};
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (instance.bigtable.request as Function) = (config: any) => {
           assert.deepStrictEqual(
             config.reqOpts.appProfile.multiClusterRoutingUseAny,
-            {clusterIds: clusterIds}
+            {clusterIds: clusterIds},
           );
           done();
         };
@@ -290,7 +290,7 @@ describe('Bigtable/Instance', () => {
         assert.deepStrictEqual(
           config.reqOpts.appProfile.singleClusterRouting
             .allowTransactionalWrites,
-          true
+          true,
         );
         done();
       };
@@ -306,7 +306,7 @@ describe('Bigtable/Instance', () => {
       (instance.bigtable.request as Function) = (config: any) => {
         assert.deepStrictEqual(
           config.reqOpts.appProfile.description,
-          options.description
+          options.description,
         );
         done();
       };
@@ -344,7 +344,7 @@ describe('Bigtable/Instance', () => {
           assert.strictEqual(appProfile, fakeAppProfile);
           assert.strictEqual(apiResponse, response);
           done();
-        }
+        },
       );
     });
   });
@@ -359,7 +359,7 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual(config.reqOpts.clusterId, CLUSTER_ID);
         assert.strictEqual(
           config.reqOpts.cluster.location,
-          'projects/my-project/locations/us-central1-b'
+          'projects/my-project/locations/us-central1-b',
         );
         assert.strictEqual(config.gaxOpts, undefined);
         done();
@@ -367,7 +367,7 @@ describe('Bigtable/Instance', () => {
       instance.createCluster(
         CLUSTER_ID,
         {nodes: 2, location: 'us-central1-b'},
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -411,7 +411,7 @@ describe('Bigtable/Instance', () => {
       } as CreateClusterOptions;
       const fakeLocation = Cluster.getLocation_(
         BIGTABLE.projectId,
-        options.location
+        options.location,
       );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
@@ -448,7 +448,7 @@ describe('Bigtable/Instance', () => {
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(
           config.reqOpts.cluster.defaultStorageType,
-          fakeStorageType
+          fakeStorageType,
         );
         done();
       };
@@ -469,7 +469,7 @@ describe('Bigtable/Instance', () => {
       instance.createCluster(
         CLUSTER_ID,
         {key, nodes: 2} as CreateClusterOptions,
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -487,7 +487,7 @@ describe('Bigtable/Instance', () => {
       instance.createCluster(
         CLUSTER_ID,
         {encryption: {kmsKeyName: key}, nodes: 2} as CreateClusterOptions,
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -502,7 +502,7 @@ describe('Bigtable/Instance', () => {
             key,
             nodes: 2,
           } as CreateClusterOptions,
-          assert.ifError
+          assert.ifError,
         );
       }, /The cluster cannot have both `encryption` and `key` defined\./);
     });
@@ -525,7 +525,7 @@ describe('Bigtable/Instance', () => {
           assert.strictEqual(cluster, fakeCluster);
           assert.strictEqual(apiResponse, response);
           done();
-        }
+        },
       );
     });
   });
@@ -669,7 +669,7 @@ describe('Bigtable/Instance', () => {
           table,
           backup,
         },
-        done
+        done,
       );
     });
 
@@ -701,7 +701,7 @@ describe('Bigtable/Instance', () => {
           table,
           backup,
         },
-        done
+        done,
       );
     });
 
@@ -723,7 +723,7 @@ describe('Bigtable/Instance', () => {
                 return {
                   restoreTo: (
                     config: RestoreTableConfig,
-                    callback: Function
+                    callback: Function,
                   ) => {
                     assert.strictEqual(config.tableId, table);
                     assert.strictEqual(config.instance, instance);
@@ -742,7 +742,7 @@ describe('Bigtable/Instance', () => {
           table,
           backup,
         },
-        done
+        done,
       );
     });
 
@@ -756,7 +756,7 @@ describe('Bigtable/Instance', () => {
             table,
             backup,
           },
-          assert.ifError
+          assert.ifError,
         );
       }, /A complete backup name \(path\) is required or a Backup object\./);
     });
@@ -778,7 +778,7 @@ describe('Bigtable/Instance', () => {
           backup,
           gaxOptions,
         },
-        assert.ifError
+        assert.ifError,
       );
     });
   });
@@ -799,7 +799,7 @@ describe('Bigtable/Instance', () => {
       (instance.bigtable.request as Function) = (
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         config: any,
-        callback: Function
+        callback: Function,
       ) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'deleteInstance');
@@ -944,7 +944,7 @@ describe('Bigtable/Instance', () => {
         {},
         {gaxOptions},
         {parent: instance.name},
-        {pageToken: gaxOptions.pageToken}
+        {pageToken: gaxOptions.pageToken},
       );
       delete expectedReqOpts.gaxOptions;
 
@@ -966,7 +966,7 @@ describe('Bigtable/Instance', () => {
         {},
         {gaxOptions},
         {parent: instance.name},
-        {pageSize: gaxOptions.pageSize}
+        {pageSize: gaxOptions.pageSize},
       );
       delete expectedReqOpts.gaxOptions;
 
@@ -1050,7 +1050,7 @@ describe('Bigtable/Instance', () => {
         {},
         {gaxOptions},
         {parent: instance.name},
-        {pageToken: gaxOptions.pageToken}
+        {pageToken: gaxOptions.pageToken},
       );
       delete expectedReqOpts.gaxOptions;
 
@@ -1073,7 +1073,7 @@ describe('Bigtable/Instance', () => {
         {},
         {gaxOptions},
         {parent: instance.name},
-        {pageSize: gaxOptions.pageSize}
+        {pageSize: gaxOptions.pageSize},
       );
       delete expectedReqOpts.gaxOptions;
 
@@ -1170,9 +1170,9 @@ describe('Bigtable/Instance', () => {
             err,
             new Error(
               `Resources from the following locations are currently not available\n${JSON.stringify(
-                failedLocations
-              )}`
-            )
+                failedLocations,
+              )}`,
+            ),
           );
           done();
         })
@@ -1216,12 +1216,12 @@ describe('Bigtable/Instance', () => {
         .on('end', () => {
           assert.strictEqual(
             appProfiles[0].id,
-            response[0].name.split('/').pop()
+            response[0].name.split('/').pop(),
           );
           assert.deepStrictEqual(appProfiles[0].metadata, response[0]);
           assert.strictEqual(
             appProfiles[1].id,
-            response[1].name.split('/').pop()
+            response[1].name.split('/').pop(),
           );
           assert.deepStrictEqual(appProfiles[1].metadata, response[1]);
           done();
@@ -1357,7 +1357,7 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         assert.strictEqual(
           config.reqOpts.options.requestedPolicyVersion,
-          requestedPolicyVersion
+          requestedPolicyVersion,
         );
         done();
       };
@@ -1422,7 +1422,7 @@ describe('Bigtable/Instance', () => {
       const args = [{}, {}, {}];
       (instance.bigtable.request as Function) = (
         config: {},
-        callback: Function
+        callback: Function,
       ) => {
         callback(...args);
       };
@@ -1479,7 +1479,7 @@ describe('Bigtable/Instance', () => {
           parent: instance.name,
           view: Table.VIEWS['unspecified'],
         },
-        {pageSize: gaxOptions.pageSize, pageToken: gaxOptions.pageToken}
+        {pageSize: gaxOptions.pageSize, pageToken: gaxOptions.pageToken},
       );
       delete expectedReqOpts.gaxOptions;
 
@@ -1507,7 +1507,7 @@ describe('Bigtable/Instance', () => {
           pageSize: optionsPageSize,
           pageToken: optionsPageToken,
           gaxOptions,
-        }
+        },
       );
       const expectedReqOpts = Object.assign(
         {},
@@ -1516,7 +1516,7 @@ describe('Bigtable/Instance', () => {
           view: Table.VIEWS['unspecified'],
           pageSize: optionsPageSize,
           pageToken: optionsPageToken,
-        }
+        },
       );
 
       (instance.bigtable.request as Function) = (config: RequestOptions) => {
@@ -1578,7 +1578,7 @@ describe('Bigtable/Instance', () => {
       const response = [{}, null, {}, {}];
       (instance.bigtable.request as Function) = (
         config: {},
-        callback: Function
+        callback: Function,
       ) => {
         callback(...response);
       };
@@ -1595,7 +1595,7 @@ describe('Bigtable/Instance', () => {
       const error = new Error('Error');
       (instance.bigtable.request as Function) = (
         config: {},
-        callback: Function
+        callback: Function,
       ) => {
         callback(error);
       };
@@ -1809,7 +1809,7 @@ describe('Bigtable/Instance', () => {
       (instance.bigtable.request as Function) = (config: any) => {
         assert.deepStrictEqual(
           config.reqOpts.policy.etag,
-          Buffer.from(policy.etag)
+          Buffer.from(policy.etag),
         );
         done();
       };
@@ -1844,7 +1844,7 @@ describe('Bigtable/Instance', () => {
       (instance.bigtable.request as Function) = (
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         config: any,
-        callback: Function
+        callback: Function,
       ) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'partialUpdateInstance');
@@ -1880,7 +1880,7 @@ describe('Bigtable/Instance', () => {
       const args = [{}, {}, {}];
       (instance.bigtable.request as Function) = (
         config: {},
-        callback: Function
+        callback: Function,
       ) => {
         callback(...args);
       };
@@ -1943,7 +1943,7 @@ describe('Bigtable/Instance', () => {
       const testPermissions = ['bigtable.tables.get', 'bigtable.tables.list'];
       (instance.bigtable.request as Function) = (
         config: {},
-        callback: Function
+        callback: Function,
       ) => {
         callback(null, {permissions: testPermissions});
       };

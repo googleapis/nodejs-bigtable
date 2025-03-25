@@ -40,7 +40,7 @@ describe('Check mutation parse and mutationParseInverse are inverses', () => {
     };
     assert.deepStrictEqual(
       Mutation.parse(mutationParseInverse(gapicLayerRequest)),
-      gapicLayerRequest
+      gapicLayerRequest,
     );
   });
 });
