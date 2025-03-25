@@ -24,6 +24,7 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
 
     const instance = bigtable.instance(instanceId);
     const [instanceInfo] = await instance.exists();
+    console.log('after exists');
     if (!instanceInfo) {
       const [, operation] = await instance.create({
         clusters: {
@@ -59,15 +60,14 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
   before(async () => {
     // This line is added just to make sure the bigtable variable is assigned.
     // It is needed to solve a compile time error in the after hook.
-    const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
+    // const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
+    /*
     const options = {
       universeDomain,
     };
-    bigtable = new Bigtable({
-      BigtableClient: options,
-      BigtableInstanceAdminClient: options,
-      BigtableTableAdminClient: options,
-    });
+     */
+    process.env.GOOGLE_CLOUD_UNIVERSE_DOMAIN = 'apis-tpczero.goog';
+    bigtable = new Bigtable();
   });
 
   after(async () => {
@@ -88,6 +88,7 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
         const table = instance.table(tableId);
         await mockBigtable();
         await table.getRows();
+        console.log('done');
         done();
       } catch (e) {
         done(e);
