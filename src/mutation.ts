@@ -25,6 +25,24 @@ export type ISetCell = btTypes.bigtable.v2.Mutation.ISetCell;
 export type Bytes = string | Buffer;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Data = any;
+/*
+The Data type is expected to be in the following format:
+{
+  columnFamily1: {
+    column1: Cell,
+    column2: Cell
+  },
+  columnFamily2: {
+    otherColumn1: Cell,
+    otherColumn2: Cell
+  }
+}
+Where the Cell data type has the following structure:
+Uint8Array | string | {
+  value: Uint8Array|string,
+  timestamp: number|Long|string,
+}
+*/
 export interface JsonObj {
   [k: string]: string | JsonObj;
 }
@@ -111,7 +129,8 @@ export class Mutation {
     bytes: Buffer | string,
     options?: ConvertFromBytesOptions
   ): Buffer | Value | string {
-    const buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
+    const buf =
+      bytes instanceof Buffer ? bytes : Buffer.from(bytes as string, 'base64');
     if (options && options.isPossibleNumber && buf.length === 8) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const num = Long.fromBytes(buf as any).toNumber();

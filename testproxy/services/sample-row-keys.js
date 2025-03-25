@@ -14,37 +14,34 @@
 'use strict';
 
 const grpc = require('@grpc/grpc-js');
-
+const {
+  getSRKRequest,
+} = require('../../build/testproxy/services/utils/request/sampleRowKeys.js');
 const normalizeCallback = require('./utils/normalize-callback.js');
-
-const v2 = Symbol.for('v2');
 
 const sampleRowKeys = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
-    const {request: sampleRowKeysRequest} = request;
+    const {clientId, request: sampleRowKeysRequest} = request;
     const {appProfileId, tableName} = sampleRowKeysRequest;
 
-    const {clientId} = request;
-    const client = clientMap.get(clientId)[v2];
-    const samples = await new Promise((res, rej) => {
-      const response = [];
-      client
-        .sampleRowKeys({
-          appProfileId,
-          tableName,
-        })
-        .on('data', data => {
-          response.push(data);
-        })
-        .on('error', rej)
-        .on('end', () => res(response));
-    });
+    const bigtable = clientMap.get(clientId);
+    bigtable.appProfileId = appProfileId;
 
-    return {
-      status: {code: grpc.status.OK, details: []},
-      samples,
-    };
+    try {
+      const response = await getSRKRequest(bigtable, {appProfileId, tableName});
+
+      return {
+        status: {code: grpc.status.OK, details: []},
+        response,
+      };
+    } catch (error) {
+      console.error('Error:', error.code);
+
+      return {
+        status: {code: error.code, details: []},
+      };
+    }
   });
 
 module.exports = sampleRowKeys;
