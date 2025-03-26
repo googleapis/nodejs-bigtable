@@ -177,7 +177,7 @@ describe('Bigtable/Filter', () => {
       assert((Filter.prototype.row as sinon.SinonSpy).calledWithExactly('a'));
       assert.strictEqual(
         (Filter.prototype.value as sinon.SinonSpy).callCount,
-        1
+        1,
       );
       assert((Filter.prototype.value as sinon.SinonSpy).calledWithExactly('b'));
     });
@@ -204,7 +204,7 @@ describe('Bigtable/Filter', () => {
       assert.strictEqual(parsedFilter, fakeProto);
       assert.strictEqual(
         (Filter.prototype.toProto as sinon.SinonSpy).callCount,
-        1
+        1,
       );
       stub.restore();
     });
@@ -535,7 +535,7 @@ describe('Bigtable/Filter', () => {
       const bytesSpy = ((FakeMutation as any).convertToBytes = sandbox.spy(
         () => {
           return fakeConvertedValue;
-        }
+        },
       ));
 
       filter.set = (filterName, val) => {
@@ -565,7 +565,7 @@ describe('Bigtable/Filter', () => {
       const bytesSpy = ((FakeMutation.convertToBytes as any) = sandbox.spy(
         () => {
           return fakeConvertedValue;
-        }
+        },
       ));
 
       filter.set = (filterName, val) => {

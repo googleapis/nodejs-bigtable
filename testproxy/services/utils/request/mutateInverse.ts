@@ -38,7 +38,7 @@ export function mutationParseInverse(req: {
         if (cell) {
           const family = cell.familyName!;
           const qualifier = Mutation.convertFromBytes(
-            cell.columnQualifier! as Bytes
+            cell.columnQualifier! as Bytes,
           );
 
           // Now TypeScript knows that 'data' is an object, and 'family' is a string key
@@ -54,7 +54,7 @@ export function mutationParseInverse(req: {
       data = localData;
     } else if (
       req.mutations.some(
-        m => m.deleteFromColumn || m.deleteFromFamily || m.deleteFromRow
+        m => m.deleteFromColumn || m.deleteFromFamily || m.deleteFromRow,
       )
     ) {
       method = Mutation.methods.DELETE;

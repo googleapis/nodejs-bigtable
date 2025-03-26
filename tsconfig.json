@@ -16,6 +16,12 @@
     "test/**/*.ts",
     "system-test/*.ts",
     "testproxy/*.ts",
-    "testproxy/**/*.ts"
+    "testproxy/**/*.ts",
+    "test-common/metrics-handler-fixture.ts",
+    "test-common/test-metrics-handler.ts",
+    "src/v2/bigtable_instance_admin_client_config.json",
+    "src/v2/bigtable_table_admin_client_config.json",
+    "src/v2/bigtable_client_config.json",
+    "protos/protos.json"
   ]
 }

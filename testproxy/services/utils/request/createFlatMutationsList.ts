@@ -32,7 +32,7 @@ import arrify = require('arrify');
  */
 export function createFlatMutationsListWithFn<T>(
   entries: FilterConfigOption[],
-  f: (entry: Mutation) => {mutations: T[]}
+  f: (entry: Mutation) => {mutations: T[]},
 ) {
   const e2 = arrify(entries).map(entry => f(entry as Mutation).mutations!);
   return e2.reduce((a, b) => a.concat(b), []);
@@ -51,7 +51,7 @@ export function createFlatMutationsListWithFn<T>(
 export function createFlatMutationsListWithFnInverse<T>(
   entries: T[],
   fInverse: (entry: T) => Mutation,
-  numEntries: number
+  numEntries: number,
 ): FilterConfigOption[] {
   const invertedEntries: FilterConfigOption[] = [];
   const mutationsPerEntry = entries.length / numEntries;

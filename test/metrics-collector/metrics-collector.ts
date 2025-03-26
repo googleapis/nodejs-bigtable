@@ -25,7 +25,7 @@ import {grpc} from 'google-gax';
 import {expectedRequestsHandled} from '../../test-common/metrics-handler-fixture';
 import * as gax from 'google-gax';
 const root = gax.protobuf.loadSync(
-  './protos/google/bigtable/v2/response_params.proto'
+  './protos/google/bigtable/v2/response_params.proto',
 );
 const ResponseParams = root.lookupType('ResponseParams');
 
@@ -81,7 +81,7 @@ describe('Bigtable/MetricsCollector', () => {
         hours?: number,
         minutes?: number,
         seconds?: number,
-        ms?: number
+        ms?: number,
       ): number {
         return originalDate.UTC(year, month, date, hours, minutes, seconds, ms);
       }
@@ -130,7 +130,7 @@ describe('Bigtable/MetricsCollector', () => {
             this,
             metricsHandlers,
             MethodName.READ_ROWS,
-            StreamingState.STREAMING
+            StreamingState.STREAMING,
           );
           // In this method we simulate a series of events that might happen
           // when a user calls one of the Table methods.
@@ -152,7 +152,7 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '8. A transient error occurs.\n';
           metricsCollector.onAttemptComplete(
             this.bigtable.projectId,
-            grpc.status.DEADLINE_EXCEEDED
+            grpc.status.DEADLINE_EXCEEDED,
           );
           logger.value += '9. After a timeout, the second attempt is made.\n';
           metricsCollector.onAttemptStart();
@@ -170,11 +170,11 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '16. Stream ends, operation completes\n';
           metricsCollector.onAttemptComplete(
             this.bigtable.projectId,
-            grpc.status.OK
+            grpc.status.OK,
           );
           metricsCollector.onOperationComplete(
             this.bigtable.projectId,
-            grpc.status.OK
+            grpc.status.OK,
           );
         }
       }
@@ -183,13 +183,13 @@ describe('Bigtable/MetricsCollector', () => {
     await table.fakeMethod();
     const expectedOutput = fs.readFileSync(
       './test/metrics-collector/typical-method-call.txt',
-      'utf8'
+      'utf8',
     );
     // Ensure events occurred in the right order here:
     assert.strictEqual(logger.value, expectedOutput.replace(/\r/g, ''));
     assert.deepStrictEqual(
       testHandler.requestsHandled,
-      expectedRequestsHandled
+      expectedRequestsHandled,
     );
   });
 });

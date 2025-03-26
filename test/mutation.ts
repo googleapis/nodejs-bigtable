@@ -14,8 +14,9 @@
 
 import * as assert from 'assert';
 import {beforeEach, describe, it, afterEach} from 'mocha';
-import * as Long from 'long';
 import * as sinon from 'sinon';
+
+const Long = require('long');
 
 import {IMutateRowRequest, Mutation, IMutation} from '../src/mutation.js';
 
@@ -47,7 +48,7 @@ describe('Bigtable/Mutation', () => {
       it('should convert a base64 encoded number when true', () => {
         const num = 10;
         const encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
-          'base64'
+          'base64',
         );
         const decoded = Mutation.convertFromBytes(encoded, {
           isPossibleNumber: true,
@@ -59,7 +60,7 @@ describe('Bigtable/Mutation', () => {
       it('should convert a base64 encoded MIN_SAFE_INTEGER number when true', () => {
         const num = Number.MIN_SAFE_INTEGER;
         const encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
-          'base64'
+          'base64',
         );
         const decoded = Mutation.convertFromBytes(encoded, {
           isPossibleNumber: true,
@@ -71,7 +72,7 @@ describe('Bigtable/Mutation', () => {
       it('should convert a base64 encoded MAX_SAFE_INTEGER number when true', () => {
         const num = Number.MAX_SAFE_INTEGER;
         const encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
-          'base64'
+          'base64',
         );
         const decoded = Mutation.convertFromBytes(encoded, {
           isPossibleNumber: true,
@@ -83,7 +84,7 @@ describe('Bigtable/Mutation', () => {
       it('should not convert a base64 encoded smaller than MIN_SAFE_INTEGER number when true', () => {
         const num = Number.MIN_SAFE_INTEGER - 100;
         const encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
-          'base64'
+          'base64',
         );
         const decoded = Mutation.convertFromBytes(encoded, {
           isPossibleNumber: true,
@@ -95,7 +96,7 @@ describe('Bigtable/Mutation', () => {
       it('should not convert a base64 encoded larger than MAX_SAFE_INTEGER number when true', () => {
         const num = Number.MAX_SAFE_INTEGER + 100;
         const encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
-          'base64'
+          'base64',
         );
         const decoded = Mutation.convertFromBytes(encoded, {
           isPossibleNumber: true,
@@ -107,7 +108,7 @@ describe('Bigtable/Mutation', () => {
       it('should not convert a base64 encoded number when false', () => {
         const num = 10;
         const encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
-          'base64'
+          'base64',
         );
         const decoded = Mutation.convertFromBytes(encoded);
 

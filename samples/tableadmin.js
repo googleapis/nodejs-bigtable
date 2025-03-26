@@ -207,7 +207,7 @@ async function runTableOperations(instanceID, tableID) {
   console.log(`${family.id} deleted successfully\n`);
   // [END bigtable_delete_family]
   console.log(
-    'Run node $0 delete --instance [instanceID] --table [tableID] to delete the table.\n'
+    'Run node $0 delete --instance [instanceID] --table [tableID] to delete the table.\n',
   );
 }
 
@@ -231,19 +231,19 @@ require('yargs')
     'run',
     'Create a table (if does not exist) and run basic table operations.',
     {},
-    argv => runTableOperations(argv.instance, argv.table)
+    argv => runTableOperations(argv.instance, argv.table),
   )
   .example(
     'node $0 run --instance [instanceID] --table [tableID]',
-    'Create a table (if does not exist) and run basic table operations.'
+    'Create a table (if does not exist) and run basic table operations.',
   )
   .wrap(120)
   .command('delete', 'Delete table.', {}, argv =>
-    deleteTable(argv.instance, argv.table)
+    deleteTable(argv.instance, argv.table),
   )
   .example(
     'node $0 delete --instance [instanceID] --table [tableID]',
-    'Delete a table.'
+    'Delete a table.',
   )
   .wrap(120)
   .nargs('instance', 1)

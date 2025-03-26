@@ -29,7 +29,7 @@ const getRowsOptions = readRowsRequest => {
         ({startKeyClosed, endKeyClosed}) => ({
           start: {inclusive: true, value: String(startKeyClosed)},
           end: {inclusive: true, value: String(endKeyClosed)},
-        })
+        }),
       );
     }
 

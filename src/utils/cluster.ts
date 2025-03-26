@@ -77,17 +77,17 @@ export class ClusterUtils {
     }
     if (metadata.minServeNodes) {
       updateMask.push(
-        'cluster_config.cluster_autoscaling_config.autoscaling_limits.min_serve_nodes'
+        'cluster_config.cluster_autoscaling_config.autoscaling_limits.min_serve_nodes',
       );
     }
     if (metadata.maxServeNodes) {
       updateMask.push(
-        'cluster_config.cluster_autoscaling_config.autoscaling_limits.max_serve_nodes'
+        'cluster_config.cluster_autoscaling_config.autoscaling_limits.max_serve_nodes',
       );
     }
     if (metadata.cpuUtilizationPercent) {
       updateMask.push(
-        'cluster_config.cluster_autoscaling_config.autoscaling_targets.cpu_utilization_percent'
+        'cluster_config.cluster_autoscaling_config.autoscaling_targets.cpu_utilization_percent',
       );
     }
     return updateMask;
@@ -96,13 +96,13 @@ export class ClusterUtils {
   static getClusterBaseConfigWithFullLocation(
     metadata: BasicClusterConfig,
     projectId: string,
-    name: string | undefined
+    name: string | undefined,
   ): google.bigtable.admin.v2.ICluster {
     const metadataClone = Object.assign({}, metadata);
     if (metadataClone.location) {
       metadataClone.location = Cluster.getLocation_(
         projectId,
-        metadataClone.location
+        metadataClone.location,
       );
     }
     return ClusterUtils.getClusterBaseConfig(metadataClone, name);
@@ -110,7 +110,7 @@ export class ClusterUtils {
 
   static getClusterBaseConfig(
     metadata: SetClusterMetadataOptions,
-    name: string | undefined
+    name: string | undefined,
   ): google.bigtable.admin.v2.ICluster {
     let clusterConfig;
     if (
@@ -136,18 +136,18 @@ export class ClusterUtils {
       name ? {name} : null,
       location ? {location} : null,
       clusterConfig ? {clusterConfig} : null,
-      metadata.nodes ? {serveNodes: metadata.nodes} : null
+      metadata.nodes ? {serveNodes: metadata.nodes} : null,
     );
   }
 
   static getClusterFromMetadata(
     metadata: SetClusterMetadataOptions,
-    name: string
+    name: string,
   ): google.bigtable.admin.v2.ICluster {
     const cluster: ICluster | SetClusterMetadataOptions = Object.assign(
       {},
       this.getClusterBaseConfig(metadata, name),
-      metadata
+      metadata,
     );
     delete (cluster as SetClusterMetadataOptions).nodes;
     delete (cluster as SetClusterMetadataOptions).minServeNodes;
@@ -158,7 +158,7 @@ export class ClusterUtils {
 
   static getRequestFromMetadata(
     metadata: SetClusterMetadataOptions,
-    name: string
+    name: string,
   ): protos.google.bigtable.admin.v2.IPartialUpdateClusterRequest {
     return {
       cluster: this.getClusterFromMetadata(metadata, name),
