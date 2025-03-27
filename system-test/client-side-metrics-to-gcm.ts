@@ -111,6 +111,18 @@ describe('Bigtable/ClientSideMetricsToGCM', () => {
         await table.createFamily(columnFamilyId);
       }
     }
+    // Add some data so that a firstResponseLatency is recorded.
+    await table.insert([
+      {
+        key: 'rowId',
+        data: {
+          [columnFamilyId]: {
+            gwashington: 1,
+            tjefferson: 1,
+          },
+        },
+      },
+    ]);
   }
 
   const instanceId = 'emulator-test-instance';
