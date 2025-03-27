@@ -432,6 +432,7 @@ export class Bigtable {
   // Therefore, metrics handlers should be created at the client level and
   // reused throughout the library to reduce latency:
   metricsHandlers: IMetricsHandler[];
+  collectMetrics: boolean;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -531,8 +532,10 @@ export class Bigtable {
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
 
     if (options.collectMetrics === false) {
+      this.collectMetrics = false;
       this.metricsHandlers = [];
     } else {
+      this.collectMetrics = true;
       this.metricsHandlers = [
         new GCPMetricsHandler(new CloudMonitoringExporter()),
       ];

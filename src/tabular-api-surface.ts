@@ -343,15 +343,17 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
-    const metricsCollector = new OperationMetricsCollector(
-      this,
-      this.bigtable.metricsHandlers,
-      MethodName.READ_ROWS,
-      StreamingState.STREAMING
-    );
-    metricsCollector.onOperationStart();
+    const metricsCollector = this.bigtable.collectMetrics
+      ? new OperationMetricsCollector(
+          this,
+          this.bigtable.metricsHandlers,
+          MethodName.READ_ROWS,
+          StreamingState.STREAMING
+        )
+      : null;
+    metricsCollector?.onOperationStart();
     const makeNewRequest = () => {
-      metricsCollector.onAttemptStart();
+      metricsCollector?.onAttemptStart();
 
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
@@ -528,21 +530,24 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return false;
       };
 
-      requestStream
-        .on(
-          'metadata',
-          (metadata: {internalRepr: Map<string, string[]>; options: {}}) => {
-            metricsCollector.onMetadataReceived(metadata);
-          }
-        )
-        .on(
-          'status',
-          (status: {
-            metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
-          }) => {
-            metricsCollector.onStatusMetadataReceived(status);
-          }
-        );
+      if (this.bigtable.collectMetrics) {
+        requestStream
+          .on(
+            'metadata',
+            (metadata: {internalRepr: Map<string, string[]>; options: {}}) => {
+              metricsCollector?.onMetadataReceived(metadata);
+            }
+          )
+          .on(
+            'status',
+            (status: {
+              metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
+            }) => {
+              metricsCollector?.onStatusMetadataReceived(status);
+            }
+          );
+      }
+
       rowStream
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
@@ -568,7 +573,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               numConsecutiveErrors,
               backOffSettings
             );
-            metricsCollector.onAttemptComplete(
+            metricsCollector?.onAttemptComplete(
               this.bigtable.projectId,
               error.code
             );
@@ -587,11 +592,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               //
               error.code = grpc.status.CANCELLED;
             }
-            metricsCollector.onAttemptComplete(
+            metricsCollector?.onAttemptComplete(
               this.bigtable.projectId,
               error.code
             );
-            metricsCollector.onOperationComplete(
+            metricsCollector?.onOperationComplete(
               this.bigtable.projectId,
               error.code
             );
@@ -602,16 +607,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
-          metricsCollector.onResponse(this.bigtable.projectId);
+          metricsCollector?.onResponse(this.bigtable.projectId);
         })
         .on('end', () => {
           numRequestsMade++;
           activeRequestStream = null;
-          metricsCollector.onAttemptComplete(
+          metricsCollector?.onAttemptComplete(
             this.bigtable.projectId,
             grpc.status.OK
           );
-          metricsCollector.onOperationComplete(
+          metricsCollector?.onOperationComplete(
             this.bigtable.projectId,
             grpc.status.OK
           );
