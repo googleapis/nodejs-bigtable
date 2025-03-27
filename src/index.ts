@@ -533,7 +533,9 @@ export class Bigtable {
     if (options.collectMetrics === false) {
       this.metricsHandlers = [];
     } else {
-      this.metricsHandlers = [new GCPMetricsHandler(new CloudMonitoringExporter())];
+      this.metricsHandlers = [
+        new GCPMetricsHandler(new CloudMonitoringExporter()),
+      ];
     }
   }
 
