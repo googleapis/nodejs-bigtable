@@ -28,6 +28,7 @@ import {
   CreateInstanceCallback,
   CreateInstanceResponse,
   IInstance,
+  ClusterInfo,
 } from './instance';
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
@@ -634,7 +635,7 @@ export class Bigtable {
 
     reqOpts.clusters = arrify(options.clusters).reduce(
       (clusters, cluster) => {
-        if (!(cluster as Cluster).id) {
+        if (!(cluster as ClusterInfo).id) {
           throw new Error(
             'A cluster was provided without an `id` property defined.'
           );
