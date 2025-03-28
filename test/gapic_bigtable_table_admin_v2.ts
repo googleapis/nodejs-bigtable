@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -289,7 +289,9 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      client.initialize().catch(err => {
+        throw err;
+      });
       assert(client.bigtableTableAdminStub);
       client.close().then(() => {
         done();
@@ -348,7 +350,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableRequest()
       );
@@ -357,7 +359,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
@@ -379,7 +381,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableRequest()
       );
@@ -388,7 +390,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
@@ -426,7 +428,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableRequest()
       );
@@ -435,7 +437,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.createTable = stubSimpleCall(
         undefined,
@@ -457,7 +459,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableRequest()
       );
@@ -478,7 +480,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetTableRequest()
       );
@@ -487,7 +489,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
@@ -509,7 +511,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetTableRequest()
       );
@@ -518,7 +520,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
@@ -556,7 +558,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetTableRequest()
       );
@@ -565,7 +567,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.getTable = stubSimpleCall(undefined, expectedError);
       await assert.rejects(client.getTable(request), expectedError);
@@ -584,7 +586,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetTableRequest()
       );
@@ -605,7 +607,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteTableRequest()
       );
@@ -614,7 +616,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -636,7 +638,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteTableRequest()
       );
@@ -645,7 +647,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -683,7 +685,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteTableRequest()
       );
@@ -692,7 +694,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.deleteTable = stubSimpleCall(
         undefined,
@@ -714,7 +716,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteTableRequest()
       );
@@ -735,7 +737,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetAuthorizedViewRequest()
       );
@@ -744,7 +746,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.AuthorizedView()
       );
@@ -766,7 +768,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetAuthorizedViewRequest()
       );
@@ -775,7 +777,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.AuthorizedView()
       );
@@ -813,7 +815,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetAuthorizedViewRequest()
       );
@@ -822,7 +824,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.getAuthorizedView = stubSimpleCall(
         undefined,
@@ -844,7 +846,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetAuthorizedViewRequest()
       );
@@ -865,7 +867,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteAuthorizedViewRequest()
       );
@@ -874,7 +876,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -897,7 +899,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteAuthorizedViewRequest()
       );
@@ -906,7 +908,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -944,7 +946,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteAuthorizedViewRequest()
       );
@@ -953,7 +955,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.deleteAuthorizedView = stubSimpleCall(
         undefined,
@@ -975,7 +977,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteAuthorizedViewRequest()
       );
@@ -996,7 +998,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ModifyColumnFamiliesRequest()
       );
@@ -1005,7 +1007,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
@@ -1028,7 +1030,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ModifyColumnFamiliesRequest()
       );
@@ -1037,7 +1039,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
@@ -1075,7 +1077,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ModifyColumnFamiliesRequest()
       );
@@ -1084,7 +1086,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.modifyColumnFamilies = stubSimpleCall(
         undefined,
@@ -1106,7 +1108,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ModifyColumnFamiliesRequest()
       );
@@ -1127,7 +1129,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DropRowRangeRequest()
       );
@@ -1136,7 +1138,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -1158,7 +1160,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DropRowRangeRequest()
       );
@@ -1167,7 +1169,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -1205,7 +1207,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DropRowRangeRequest()
       );
@@ -1214,7 +1216,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.dropRowRange = stubSimpleCall(
         undefined,
@@ -1236,7 +1238,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DropRowRangeRequest()
       );
@@ -1257,7 +1259,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenRequest()
       );
@@ -1266,7 +1268,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenResponse()
       );
@@ -1289,7 +1291,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenRequest()
       );
@@ -1298,7 +1300,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenResponse()
       );
@@ -1336,7 +1338,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenRequest()
       );
@@ -1345,7 +1347,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.generateConsistencyToken = stubSimpleCall(
         undefined,
@@ -1370,7 +1372,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenRequest()
       );
@@ -1394,7 +1396,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CheckConsistencyRequest()
       );
@@ -1403,7 +1405,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CheckConsistencyResponse()
       );
@@ -1425,7 +1427,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CheckConsistencyRequest()
       );
@@ -1434,7 +1436,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CheckConsistencyResponse()
       );
@@ -1472,7 +1474,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CheckConsistencyRequest()
       );
@@ -1481,7 +1483,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.checkConsistency = stubSimpleCall(
         undefined,
@@ -1503,7 +1505,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CheckConsistencyRequest()
       );
@@ -1524,7 +1526,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetSnapshotRequest()
       );
@@ -1533,7 +1535,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Snapshot()
       );
@@ -1555,7 +1557,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetSnapshotRequest()
       );
@@ -1564,7 +1566,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Snapshot()
       );
@@ -1602,7 +1604,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetSnapshotRequest()
       );
@@ -1611,7 +1613,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.getSnapshot = stubSimpleCall(
         undefined,
@@ -1633,7 +1635,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetSnapshotRequest()
       );
@@ -1654,7 +1656,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteSnapshotRequest()
       );
@@ -1663,7 +1665,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -1685,7 +1687,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteSnapshotRequest()
       );
@@ -1694,7 +1696,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -1732,7 +1734,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteSnapshotRequest()
       );
@@ -1741,7 +1743,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.deleteSnapshot = stubSimpleCall(
         undefined,
@@ -1763,7 +1765,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteSnapshotRequest()
       );
@@ -1784,7 +1786,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetBackupRequest()
       );
@@ -1793,7 +1795,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Backup()
       );
@@ -1815,7 +1817,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetBackupRequest()
       );
@@ -1824,7 +1826,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Backup()
       );
@@ -1862,7 +1864,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetBackupRequest()
       );
@@ -1871,7 +1873,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.getBackup = stubSimpleCall(undefined, expectedError);
       await assert.rejects(client.getBackup(request), expectedError);
@@ -1890,7 +1892,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetBackupRequest()
       );
@@ -1911,7 +1913,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateBackupRequest()
       );
@@ -1921,7 +1923,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['backup', 'name']
       );
       request.backup.name = defaultValue1;
-      const expectedHeaderRequestParams = `backup.name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `backup.name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Backup()
       );
@@ -1943,7 +1945,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateBackupRequest()
       );
@@ -1953,7 +1955,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['backup', 'name']
       );
       request.backup.name = defaultValue1;
-      const expectedHeaderRequestParams = `backup.name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `backup.name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Backup()
       );
@@ -1991,7 +1993,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateBackupRequest()
       );
@@ -2001,7 +2003,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['backup', 'name']
       );
       request.backup.name = defaultValue1;
-      const expectedHeaderRequestParams = `backup.name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `backup.name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.updateBackup = stubSimpleCall(
         undefined,
@@ -2023,7 +2025,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateBackupRequest()
       );
@@ -2045,7 +2047,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteBackupRequest()
       );
@@ -2054,7 +2056,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -2076,7 +2078,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteBackupRequest()
       );
@@ -2085,7 +2087,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -2123,7 +2125,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteBackupRequest()
       );
@@ -2132,7 +2134,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.deleteBackup = stubSimpleCall(
         undefined,
@@ -2154,7 +2156,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteBackupRequest()
       );
@@ -2175,7 +2177,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
@@ -2184,7 +2186,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['resource']
       );
       request.resource = defaultValue1;
-      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+      const expectedHeaderRequestParams = `resource=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.Policy()
       );
@@ -2206,7 +2208,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
@@ -2215,7 +2217,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['resource']
       );
       request.resource = defaultValue1;
-      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+      const expectedHeaderRequestParams = `resource=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.Policy()
       );
@@ -2253,7 +2255,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
@@ -2262,7 +2264,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['resource']
       );
       request.resource = defaultValue1;
-      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+      const expectedHeaderRequestParams = `resource=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.getIamPolicy = stubSimpleCall(
         undefined,
@@ -2284,7 +2286,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
@@ -2305,7 +2307,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
@@ -2314,7 +2316,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['resource']
       );
       request.resource = defaultValue1;
-      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+      const expectedHeaderRequestParams = `resource=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.Policy()
       );
@@ -2336,7 +2338,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
@@ -2345,7 +2347,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['resource']
       );
       request.resource = defaultValue1;
-      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+      const expectedHeaderRequestParams = `resource=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.Policy()
       );
@@ -2383,7 +2385,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
@@ -2392,7 +2394,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['resource']
       );
       request.resource = defaultValue1;
-      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+      const expectedHeaderRequestParams = `resource=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.setIamPolicy = stubSimpleCall(
         undefined,
@@ -2414,7 +2416,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
@@ -2435,7 +2437,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
@@ -2444,7 +2446,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['resource']
       );
       request.resource = defaultValue1;
-      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+      const expectedHeaderRequestParams = `resource=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsResponse()
       );
@@ -2467,7 +2469,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
@@ -2476,7 +2478,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['resource']
       );
       request.resource = defaultValue1;
-      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+      const expectedHeaderRequestParams = `resource=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsResponse()
       );
@@ -2514,7 +2516,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
@@ -2523,7 +2525,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['resource']
       );
       request.resource = defaultValue1;
-      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
+      const expectedHeaderRequestParams = `resource=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.testIamPermissions = stubSimpleCall(
         undefined,
@@ -2545,7 +2547,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
@@ -2566,7 +2568,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableFromSnapshotRequest()
       );
@@ -2575,7 +2577,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2599,7 +2601,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableFromSnapshotRequest()
       );
@@ -2608,7 +2610,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2653,7 +2655,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableFromSnapshotRequest()
       );
@@ -2662,7 +2664,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.createTableFromSnapshot = stubLongRunningCall(
         undefined,
@@ -2687,7 +2689,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableFromSnapshotRequest()
       );
@@ -2696,7 +2698,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.createTableFromSnapshot = stubLongRunningCall(
         undefined,
@@ -2720,7 +2722,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
       );
@@ -2743,7 +2745,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedError = new Error('expected');
 
       client.operationsClient.getOperation = stubSimpleCall(
@@ -2764,7 +2766,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateTableRequest()
       );
@@ -2774,7 +2776,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['table', 'name']
       );
       request.table.name = defaultValue1;
-      const expectedHeaderRequestParams = `table.name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `table.name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2797,7 +2799,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateTableRequest()
       );
@@ -2807,7 +2809,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['table', 'name']
       );
       request.table.name = defaultValue1;
-      const expectedHeaderRequestParams = `table.name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `table.name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2852,7 +2854,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateTableRequest()
       );
@@ -2862,7 +2864,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['table', 'name']
       );
       request.table.name = defaultValue1;
-      const expectedHeaderRequestParams = `table.name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `table.name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.updateTable = stubLongRunningCall(
         undefined,
@@ -2884,7 +2886,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateTableRequest()
       );
@@ -2894,7 +2896,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['table', 'name']
       );
       request.table.name = defaultValue1;
-      const expectedHeaderRequestParams = `table.name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `table.name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.updateTable = stubLongRunningCall(
         undefined,
@@ -2918,7 +2920,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
       );
@@ -2940,7 +2942,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedError = new Error('expected');
 
       client.operationsClient.getOperation = stubSimpleCall(
@@ -2958,7 +2960,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UndeleteTableRequest()
       );
@@ -2967,7 +2969,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2991,7 +2993,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UndeleteTableRequest()
       );
@@ -3000,7 +3002,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -3045,7 +3047,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UndeleteTableRequest()
       );
@@ -3054,7 +3056,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.undeleteTable = stubLongRunningCall(
         undefined,
@@ -3076,7 +3078,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UndeleteTableRequest()
       );
@@ -3085,7 +3087,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.undeleteTable = stubLongRunningCall(
         undefined,
@@ -3109,7 +3111,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
       );
@@ -3131,7 +3133,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedError = new Error('expected');
 
       client.operationsClient.getOperation = stubSimpleCall(
@@ -3152,7 +3154,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateAuthorizedViewRequest()
       );
@@ -3161,7 +3163,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -3185,7 +3187,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateAuthorizedViewRequest()
       );
@@ -3194,7 +3196,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -3239,7 +3241,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateAuthorizedViewRequest()
       );
@@ -3248,7 +3250,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.createAuthorizedView = stubLongRunningCall(
         undefined,
@@ -3270,7 +3272,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateAuthorizedViewRequest()
       );
@@ -3279,7 +3281,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.createAuthorizedView = stubLongRunningCall(
         undefined,
@@ -3303,7 +3305,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
       );
@@ -3325,7 +3327,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedError = new Error('expected');
 
       client.operationsClient.getOperation = stubSimpleCall(
@@ -3346,7 +3348,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateAuthorizedViewRequest()
       );
@@ -3356,7 +3358,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['authorizedView', 'name']
       );
       request.authorizedView.name = defaultValue1;
-      const expectedHeaderRequestParams = `authorized_view.name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `authorized_view.name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -3380,7 +3382,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateAuthorizedViewRequest()
       );
@@ -3390,7 +3392,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['authorizedView', 'name']
       );
       request.authorizedView.name = defaultValue1;
-      const expectedHeaderRequestParams = `authorized_view.name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `authorized_view.name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -3435,7 +3437,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateAuthorizedViewRequest()
       );
@@ -3445,7 +3447,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['authorizedView', 'name']
       );
       request.authorizedView.name = defaultValue1;
-      const expectedHeaderRequestParams = `authorized_view.name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `authorized_view.name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.updateAuthorizedView = stubLongRunningCall(
         undefined,
@@ -3467,7 +3469,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateAuthorizedViewRequest()
       );
@@ -3477,7 +3479,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['authorizedView', 'name']
       );
       request.authorizedView.name = defaultValue1;
-      const expectedHeaderRequestParams = `authorized_view.name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `authorized_view.name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.updateAuthorizedView = stubLongRunningCall(
         undefined,
@@ -3501,7 +3503,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
       );
@@ -3523,7 +3525,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedError = new Error('expected');
 
       client.operationsClient.getOperation = stubSimpleCall(
@@ -3544,7 +3546,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.SnapshotTableRequest()
       );
@@ -3553,7 +3555,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -3577,7 +3579,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.SnapshotTableRequest()
       );
@@ -3586,7 +3588,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -3631,7 +3633,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.SnapshotTableRequest()
       );
@@ -3640,7 +3642,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.snapshotTable = stubLongRunningCall(
         undefined,
@@ -3662,7 +3664,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.SnapshotTableRequest()
       );
@@ -3671,7 +3673,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['name']
       );
       request.name = defaultValue1;
-      const expectedHeaderRequestParams = `name=${defaultValue1}`;
+      const expectedHeaderRequestParams = `name=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.snapshotTable = stubLongRunningCall(
         undefined,
@@ -3695,7 +3697,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
       );
@@ -3717,7 +3719,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedError = new Error('expected');
 
       client.operationsClient.getOperation = stubSimpleCall(
@@ -3738,7 +3740,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateBackupRequest()
       );
@@ -3747,7 +3749,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -3770,7 +3772,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateBackupRequest()
       );
@@ -3779,7 +3781,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -3824,7 +3826,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateBackupRequest()
       );
@@ -3833,7 +3835,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.createBackup = stubLongRunningCall(
         undefined,
@@ -3855,7 +3857,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateBackupRequest()
       );
@@ -3864,7 +3866,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.createBackup = stubLongRunningCall(
         undefined,
@@ -3888,7 +3890,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
       );
@@ -3910,7 +3912,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedError = new Error('expected');
 
       client.operationsClient.getOperation = stubSimpleCall(
@@ -3928,7 +3930,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.RestoreTableRequest()
       );
@@ -3937,7 +3939,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -3960,7 +3962,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.RestoreTableRequest()
       );
@@ -3969,7 +3971,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -4014,7 +4016,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.RestoreTableRequest()
       );
@@ -4023,7 +4025,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.restoreTable = stubLongRunningCall(
         undefined,
@@ -4045,7 +4047,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.RestoreTableRequest()
       );
@@ -4054,7 +4056,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.restoreTable = stubLongRunningCall(
         undefined,
@@ -4078,7 +4080,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
       );
@@ -4100,7 +4102,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedError = new Error('expected');
 
       client.operationsClient.getOperation = stubSimpleCall(
@@ -4118,7 +4120,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CopyBackupRequest()
       );
@@ -4127,7 +4129,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -4150,7 +4152,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CopyBackupRequest()
       );
@@ -4159,7 +4161,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -4204,7 +4206,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CopyBackupRequest()
       );
@@ -4213,7 +4215,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.copyBackup = stubLongRunningCall(
         undefined,
@@ -4235,7 +4237,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CopyBackupRequest()
       );
@@ -4244,7 +4246,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.copyBackup = stubLongRunningCall(
         undefined,
@@ -4268,7 +4270,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
       );
@@ -4290,7 +4292,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const expectedError = new Error('expected');
 
       client.operationsClient.getOperation = stubSimpleCall(
@@ -4308,7 +4310,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
@@ -4317,7 +4319,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
@@ -4341,7 +4343,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
@@ -4350,7 +4352,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
@@ -4390,7 +4392,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
@@ -4399,7 +4401,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.listTables = stubSimpleCall(
         undefined,
@@ -4421,7 +4423,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
@@ -4430,7 +4432,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
@@ -4472,7 +4474,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
@@ -4481,7 +4483,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listTables.createStream = stubPageStreamingCall(
         undefined,
@@ -4520,7 +4522,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
@@ -4529,7 +4531,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
@@ -4563,7 +4565,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
@@ -4572,7 +4574,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listTables.asyncIterate = stubAsyncIterationCall(
         undefined,
@@ -4607,7 +4609,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAuthorizedViewsRequest()
       );
@@ -4616,7 +4618,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(
           new protos.google.bigtable.admin.v2.AuthorizedView()
@@ -4647,7 +4649,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAuthorizedViewsRequest()
       );
@@ -4656,7 +4658,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(
           new protos.google.bigtable.admin.v2.AuthorizedView()
@@ -4702,7 +4704,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAuthorizedViewsRequest()
       );
@@ -4711,7 +4713,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.listAuthorizedViews = stubSimpleCall(
         undefined,
@@ -4733,7 +4735,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAuthorizedViewsRequest()
       );
@@ -4742,7 +4744,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(
           new protos.google.bigtable.admin.v2.AuthorizedView()
@@ -4793,7 +4795,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAuthorizedViewsRequest()
       );
@@ -4802,7 +4804,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listAuthorizedViews.createStream =
         stubPageStreamingCall(undefined, expectedError);
@@ -4842,7 +4844,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAuthorizedViewsRequest()
       );
@@ -4851,7 +4853,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(
           new protos.google.bigtable.admin.v2.AuthorizedView()
@@ -4891,7 +4893,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAuthorizedViewsRequest()
       );
@@ -4900,7 +4902,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listAuthorizedViews.asyncIterate =
         stubAsyncIterationCall(undefined, expectedError);
@@ -4933,7 +4935,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
@@ -4942,7 +4944,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
@@ -4966,7 +4968,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
@@ -4975,7 +4977,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
@@ -5015,7 +5017,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
@@ -5024,7 +5026,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.listSnapshots = stubSimpleCall(
         undefined,
@@ -5046,7 +5048,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
@@ -5055,7 +5057,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
@@ -5100,7 +5102,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
@@ -5109,7 +5111,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listSnapshots.createStream =
         stubPageStreamingCall(undefined, expectedError);
@@ -5149,7 +5151,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
@@ -5158,7 +5160,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
@@ -5192,7 +5194,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
@@ -5201,7 +5203,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listSnapshots.asyncIterate =
         stubAsyncIterationCall(undefined, expectedError);
@@ -5234,7 +5236,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
@@ -5243,7 +5245,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
@@ -5267,7 +5269,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
@@ -5276,7 +5278,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
@@ -5316,7 +5318,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
@@ -5325,7 +5327,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.listBackups = stubSimpleCall(
         undefined,
@@ -5347,7 +5349,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
@@ -5356,7 +5358,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
@@ -5401,7 +5403,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
@@ -5410,7 +5412,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listBackups.createStream = stubPageStreamingCall(
         undefined,
@@ -5452,7 +5454,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
@@ -5461,7 +5463,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
@@ -5495,7 +5497,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
@@ -5504,7 +5506,7 @@ describe('v2.BigtableTableAdminClient', () => {
         ['parent']
       );
       request.parent = defaultValue1;
-      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
+      const expectedHeaderRequestParams = `parent=${defaultValue1 ?? ''}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listBackups.asyncIterate = stubAsyncIterationCall(
         undefined,
@@ -5534,7 +5536,7 @@ describe('v2.BigtableTableAdminClient', () => {
   });
 
   describe('Path templates', () => {
-    describe('appProfile', () => {
+    describe('appProfile', async () => {
       const fakePath = '/rendered/path/appProfile';
       const expectedParameters = {
         project: 'projectValue',
@@ -5545,7 +5547,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       client.pathTemplates.appProfilePathTemplate.render = sinon
         .stub()
         .returns(fakePath);
@@ -5598,7 +5600,7 @@ describe('v2.BigtableTableAdminClient', () => {
       });
     });
 
-    describe('authorizedView', () => {
+    describe('authorizedView', async () => {
       const fakePath = '/rendered/path/authorizedView';
       const expectedParameters = {
         project: 'projectValue',
@@ -5610,7 +5612,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       client.pathTemplates.authorizedViewPathTemplate.render = sinon
         .stub()
         .returns(fakePath);
@@ -5675,7 +5677,7 @@ describe('v2.BigtableTableAdminClient', () => {
       });
     });
 
-    describe('backup', () => {
+    describe('backup', async () => {
       const fakePath = '/rendered/path/backup';
       const expectedParameters = {
         project: 'projectValue',
@@ -5687,7 +5689,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       client.pathTemplates.backupPathTemplate.render = sinon
         .stub()
         .returns(fakePath);
@@ -5751,7 +5753,7 @@ describe('v2.BigtableTableAdminClient', () => {
       });
     });
 
-    describe('cluster', () => {
+    describe('cluster', async () => {
       const fakePath = '/rendered/path/cluster';
       const expectedParameters = {
         project: 'projectValue',
@@ -5762,7 +5764,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       client.pathTemplates.clusterPathTemplate.render = sinon
         .stub()
         .returns(fakePath);
@@ -5815,7 +5817,7 @@ describe('v2.BigtableTableAdminClient', () => {
       });
     });
 
-    describe('hotTablet', () => {
+    describe('hotTablet', async () => {
       const fakePath = '/rendered/path/hotTablet';
       const expectedParameters = {
         project: 'projectValue',
@@ -5827,7 +5829,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       client.pathTemplates.hotTabletPathTemplate.render = sinon
         .stub()
         .returns(fakePath);
@@ -5891,7 +5893,7 @@ describe('v2.BigtableTableAdminClient', () => {
       });
     });
 
-    describe('instance', () => {
+    describe('instance', async () => {
       const fakePath = '/rendered/path/instance';
       const expectedParameters = {
         project: 'projectValue',
@@ -5901,7 +5903,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       client.pathTemplates.instancePathTemplate.render = sinon
         .stub()
         .returns(fakePath);
@@ -5940,7 +5942,139 @@ describe('v2.BigtableTableAdminClient', () => {
       });
     });
 
-    describe('project', () => {
+    describe('logicalView', async () => {
+      const fakePath = '/rendered/path/logicalView';
+      const expectedParameters = {
+        project: 'projectValue',
+        instance: 'instanceValue',
+        logical_view: 'logicalViewValue',
+      };
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      await client.initialize();
+      client.pathTemplates.logicalViewPathTemplate.render = sinon
+        .stub()
+        .returns(fakePath);
+      client.pathTemplates.logicalViewPathTemplate.match = sinon
+        .stub()
+        .returns(expectedParameters);
+
+      it('logicalViewPath', () => {
+        const result = client.logicalViewPath(
+          'projectValue',
+          'instanceValue',
+          'logicalViewValue'
+        );
+        assert.strictEqual(result, fakePath);
+        assert(
+          (client.pathTemplates.logicalViewPathTemplate.render as SinonStub)
+            .getCall(-1)
+            .calledWith(expectedParameters)
+        );
+      });
+
+      it('matchProjectFromLogicalViewName', () => {
+        const result = client.matchProjectFromLogicalViewName(fakePath);
+        assert.strictEqual(result, 'projectValue');
+        assert(
+          (client.pathTemplates.logicalViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchInstanceFromLogicalViewName', () => {
+        const result = client.matchInstanceFromLogicalViewName(fakePath);
+        assert.strictEqual(result, 'instanceValue');
+        assert(
+          (client.pathTemplates.logicalViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchLogicalViewFromLogicalViewName', () => {
+        const result = client.matchLogicalViewFromLogicalViewName(fakePath);
+        assert.strictEqual(result, 'logicalViewValue');
+        assert(
+          (client.pathTemplates.logicalViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+    });
+
+    describe('materializedView', async () => {
+      const fakePath = '/rendered/path/materializedView';
+      const expectedParameters = {
+        project: 'projectValue',
+        instance: 'instanceValue',
+        materialized_view: 'materializedViewValue',
+      };
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      await client.initialize();
+      client.pathTemplates.materializedViewPathTemplate.render = sinon
+        .stub()
+        .returns(fakePath);
+      client.pathTemplates.materializedViewPathTemplate.match = sinon
+        .stub()
+        .returns(expectedParameters);
+
+      it('materializedViewPath', () => {
+        const result = client.materializedViewPath(
+          'projectValue',
+          'instanceValue',
+          'materializedViewValue'
+        );
+        assert.strictEqual(result, fakePath);
+        assert(
+          (
+            client.pathTemplates.materializedViewPathTemplate
+              .render as SinonStub
+          )
+            .getCall(-1)
+            .calledWith(expectedParameters)
+        );
+      });
+
+      it('matchProjectFromMaterializedViewName', () => {
+        const result = client.matchProjectFromMaterializedViewName(fakePath);
+        assert.strictEqual(result, 'projectValue');
+        assert(
+          (client.pathTemplates.materializedViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchInstanceFromMaterializedViewName', () => {
+        const result = client.matchInstanceFromMaterializedViewName(fakePath);
+        assert.strictEqual(result, 'instanceValue');
+        assert(
+          (client.pathTemplates.materializedViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchMaterializedViewFromMaterializedViewName', () => {
+        const result =
+          client.matchMaterializedViewFromMaterializedViewName(fakePath);
+        assert.strictEqual(result, 'materializedViewValue');
+        assert(
+          (client.pathTemplates.materializedViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+    });
+
+    describe('project', async () => {
       const fakePath = '/rendered/path/project';
       const expectedParameters = {
         project: 'projectValue',
@@ -5949,7 +6083,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       client.pathTemplates.projectPathTemplate.render = sinon
         .stub()
         .returns(fakePath);
@@ -5978,7 +6112,7 @@ describe('v2.BigtableTableAdminClient', () => {
       });
     });
 
-    describe('snapshot', () => {
+    describe('snapshot', async () => {
       const fakePath = '/rendered/path/snapshot';
       const expectedParameters = {
         project: 'projectValue',
@@ -5990,7 +6124,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       client.pathTemplates.snapshotPathTemplate.render = sinon
         .stub()
         .returns(fakePath);
@@ -6054,7 +6188,7 @@ describe('v2.BigtableTableAdminClient', () => {
       });
     });
 
-    describe('table', () => {
+    describe('table', async () => {
       const fakePath = '/rendered/path/table';
       const expectedParameters = {
         project: 'projectValue',
@@ -6065,7 +6199,7 @@ describe('v2.BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      client.initialize();
+      await client.initialize();
       client.pathTemplates.tablePathTemplate.render = sinon
         .stub()
         .returns(fakePath);
