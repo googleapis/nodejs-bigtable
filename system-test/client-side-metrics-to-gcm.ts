@@ -24,8 +24,9 @@ import {
 } from '../src/client-side-metrics/exporter';
 import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 import * as mocha from 'mocha';
+import {setupBigtable} from './client-side-metrics-setup-table';
 
-describe('Bigtable/ClientSideMetricsToGCM', () => {
+describe.only('Bigtable/ClientSideMetricsToGCM', () => {
   async function mockBigtable(done: mocha.Done) {
     /*
     We need to create a timeout here because if we don't then mocha shuts down
@@ -84,45 +85,7 @@ describe('Bigtable/ClientSideMetricsToGCM', () => {
     }).Bigtable;
     bigtable = new FakeBigtable();
 
-    const instance = bigtable.instance(instanceId);
-    const [instanceInfo] = await instance.exists();
-    if (!instanceInfo) {
-      const [, operation] = await instance.create({
-        clusters: {
-          id: 'fake-cluster3',
-          location: 'us-west1-c',
-          nodes: 1,
-        },
-      });
-      await operation.promise();
-    }
-
-    const table = instance.table(tableId);
-    const [tableExists] = await table.exists();
-    if (!tableExists) {
-      await table.create({families: [columnFamilyId]}); // Create column family
-    } else {
-      // Check if column family exists and create it if not.
-      const [families] = await table.getFamilies();
-
-      if (
-        !families.some((family: {id: string}) => family.id === columnFamilyId)
-      ) {
-        await table.createFamily(columnFamilyId);
-      }
-    }
-    // Add some data so that a firstResponseLatency is recorded.
-    await table.insert([
-      {
-        key: 'rowId',
-        data: {
-          [columnFamilyId]: {
-            gwashington: 1,
-            tjefferson: 1,
-          },
-        },
-      },
-    ]);
+    await setupBigtable(bigtable, columnFamilyId, instanceId, [tableId]);
   }
 
   const instanceId = 'emulator-test-instance';
