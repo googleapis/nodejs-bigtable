@@ -29,7 +29,10 @@ describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
           assert.strictEqual(this.requestsHandled.length, 2);
           const firstRequest = this.requestsHandled[0] as any;
           // We would expect these parameters to be different every time so delete
-          // them from the comparison.
+          // them from the comparison after checking they exist.
+          assert(firstRequest.attemptLatency);
+          assert(firstRequest.serverLatency);
+          assert(firstRequest.metricsCollectorData.client_uid);
           delete firstRequest.attemptLatency;
           delete firstRequest.serverLatency;
           delete firstRequest.metricsCollectorData.client_uid;
@@ -49,6 +52,11 @@ describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
             projectId,
           });
           const secondRequest = this.requestsHandled[1] as any;
+          // We would expect these parameters to be different every time so delete
+          // them from the comparison after checking they exist.
+          assert(secondRequest.operationLatency);
+          assert(secondRequest.firstResponseLatency);
+          assert(secondRequest.metricsCollectorData.client_uid);
           delete secondRequest.operationLatency;
           delete secondRequest.firstResponseLatency;
           delete secondRequest.metricsCollectorData.client_uid;
