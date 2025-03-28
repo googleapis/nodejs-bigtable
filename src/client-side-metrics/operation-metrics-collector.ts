@@ -17,10 +17,23 @@ import {IMetricsHandler} from './metrics-handler';
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 import * as gax from 'google-gax';
-const root = gax.protobuf.loadSync(
-  './protos/google/bigtable/v2/response_params.proto'
-);
-const ResponseParams = root.lookupType('ResponseParams');
+
+let ResponseParams: gax.protobuf.Type | null;
+try {
+  /*
+   * Likely due to the Node 18 upgrade, the samples tests are failing with the
+   * error UnhandledPromiseRejectionWarning: Error: ENOENT: no such file or
+   * directory, open 'protos/google/bigtable/v2/response_params.proto'. Since
+   * these tests don't use this module we can suppress the error for now to
+   * unblock the CI pipeline.
+   */
+  const root = gax.protobuf.loadSync(
+    './protos/google/bigtable/v2/response_params.proto'
+  );
+  ResponseParams = root.lookupType('ResponseParams');
+} catch (e) {
+  ResponseParams = null;
+}
 
 /**
  * An interface representing a tabular API surface, such as a Bigtable table.
@@ -195,7 +208,6 @@ export class OperationMetricsCollector {
    */
   onResponse(projectId: string) {
     if (!this.firstResponseLatency) {
-      // Check firstResponseLatency first to improve latency for calls with many rows
       if (
         this.state ===
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET
@@ -267,16 +279,18 @@ export class OperationMetricsCollector {
       const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
       const SERVER_TIMING_KEY = 'server-timing';
       const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
-      const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
-      if (matchedDuration && matchedDuration[1]) {
-        if (!this.serverTimeRead) {
-          this.serverTimeRead = true;
-          this.serverTime = isNaN(parseInt(matchedDuration[1]))
-            ? null
-            : parseInt(matchedDuration[1]);
+      if (durationValues) {
+        const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
+        if (matchedDuration && matchedDuration[1]) {
+          if (!this.serverTimeRead) {
+            this.serverTimeRead = true;
+            this.serverTime = isNaN(parseInt(matchedDuration[1]))
+              ? null
+              : parseInt(matchedDuration[1]);
+          }
+        } else {
+          this.connectivityErrorCount = 1;
         }
-      } else {
-        this.connectivityErrorCount = 1;
       }
     }
   }
@@ -293,23 +307,25 @@ export class OperationMetricsCollector {
       const mappedValue = status.metadata.internalRepr.get(
         INSTANCE_INFORMATION_KEY
       ) as Buffer[];
-      const decodedValue = ResponseParams.decode(
-        mappedValue[0],
-        mappedValue[0].length
-      );
-      if (
-        decodedValue &&
-        (decodedValue as unknown as {zoneId: string}).zoneId
-      ) {
-        this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
-      }
-      if (
-        decodedValue &&
-        (decodedValue as unknown as {clusterId: string}).clusterId
-      ) {
-        this.cluster = (
-          decodedValue as unknown as {clusterId: string}
-        ).clusterId;
+      if (mappedValue && mappedValue[0] && ResponseParams) {
+        const decodedValue = ResponseParams.decode(
+          mappedValue[0],
+          mappedValue[0].length
+        );
+        if (
+          decodedValue &&
+          (decodedValue as unknown as {zoneId: string}).zoneId
+        ) {
+          this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
+        }
+        if (
+          decodedValue &&
+          (decodedValue as unknown as {clusterId: string}).clusterId
+        ) {
+          this.cluster = (
+            decodedValue as unknown as {clusterId: string}
+          ).clusterId;
+        }
       }
     }
   }

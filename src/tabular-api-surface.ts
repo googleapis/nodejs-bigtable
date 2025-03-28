@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {Instance} from './instance';
@@ -39,6 +40,10 @@ import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {TableUtils} from './utils/table';
+import {
+  MethodName,
+  StreamingState,
+} from './client-side-metrics/client-side-metrics-attributes';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -332,14 +337,26 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
-
+    const metricsCollector = this.bigtable.collectMetrics
+      ? new OperationMetricsCollector(
+          this,
+          this.bigtable.metricsHandlers,
+          MethodName.READ_ROWS,
+          StreamingState.STREAMING
+        )
+      : null;
+    metricsCollector?.onOperationStart();
     const makeNewRequest = () => {
+      metricsCollector?.onAttemptStart();
+
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
       retryTimer = null;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
+      chunkTransformer = new ChunkTransformer({
+        decode: options.decode,
+      } as any);
 
       // If the viewName is provided then request will be made for an
       // authorized view. Otherwise, the request is made for a table.
@@ -507,6 +524,24 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return false;
       };
 
+      if (this.bigtable.collectMetrics) {
+        requestStream
+          .on(
+            'metadata',
+            (metadata: {internalRepr: Map<string, string[]>; options: {}}) => {
+              metricsCollector?.onMetadataReceived(metadata);
+            }
+          )
+          .on(
+            'status',
+            (status: {
+              metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
+            }) => {
+              metricsCollector?.onStatusMetadataReceived(status);
+            }
+          );
+      }
+
       rowStream
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
@@ -532,6 +567,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               numConsecutiveErrors,
               backOffSettings
             );
+            metricsCollector?.onAttemptComplete(
+              this.bigtable.projectId,
+              error.code
+            );
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
             if (
@@ -547,6 +586,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               //
               error.code = grpc.status.CANCELLED;
             }
+            metricsCollector?.onAttemptComplete(
+              this.bigtable.projectId,
+              error.code
+            );
+            metricsCollector?.onOperationComplete(
+              this.bigtable.projectId,
+              error.code
+            );
             userStream.emit('error', error);
           }
         })
@@ -554,9 +601,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
+          metricsCollector?.onResponse(this.bigtable.projectId);
         })
         .on('end', () => {
           activeRequestStream = null;
+          metricsCollector?.onAttemptComplete(
+            this.bigtable.projectId,
+            grpc.status.OK
+          );
+          metricsCollector?.onOperationComplete(
+            this.bigtable.projectId,
+            grpc.status.OK
+          );
         });
       rowStreamPipe(rowStream, userStream);
     };
