@@ -14,6 +14,7 @@
 
 import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
 import {promisifyAll} from '@google-cloud/promisify';
+import arrify = require('arrify');
 import {Instance} from './instance';
 import {Mutation} from './mutation';
 import {
@@ -24,7 +25,7 @@ import {
   SampleRowKeysCallback,
   SampleRowsKeysResponse,
 } from './index';
-import {BoundData, Filter, RawFilter} from './filter';
+import {Filter, BoundData, RawFilter} from './filter';
 import {Row} from './row';
 import {
   ChunkPushData,
@@ -43,12 +44,6 @@ import {
   MethodName,
   StreamingState,
 } from './client-side-metrics/client-side-metrics-attributes';
-
-let attemptCounter = 0;
-
-import arrify = require('arrify');
-import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
-import {CloudMonitoringExporter} from './client-side-metrics/exporter';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -220,7 +215,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * region_tag:bigtable_api_table_readstream
    */
   createReadStream(opts?: GetRowsOptions) {
-    attemptCounter++;
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
     let activeRequestStream: AbortableDuplex | null;
