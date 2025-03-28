@@ -293,23 +293,25 @@ export class OperationMetricsCollector {
       const mappedValue = status.metadata.internalRepr.get(
         INSTANCE_INFORMATION_KEY
       ) as Buffer[];
-      const decodedValue = ResponseParams.decode(
-        mappedValue[0],
-        mappedValue[0].length
-      );
-      if (
-        decodedValue &&
-        (decodedValue as unknown as {zoneId: string}).zoneId
-      ) {
-        this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
-      }
-      if (
-        decodedValue &&
-        (decodedValue as unknown as {clusterId: string}).clusterId
-      ) {
-        this.cluster = (
-          decodedValue as unknown as {clusterId: string}
-        ).clusterId;
+      if (mappedValue) {
+        const decodedValue = ResponseParams.decode(
+          mappedValue[0],
+          mappedValue[0].length
+        );
+        if (
+          decodedValue &&
+          (decodedValue as unknown as {zoneId: string}).zoneId
+        ) {
+          this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
+        }
+        if (
+          decodedValue &&
+          (decodedValue as unknown as {clusterId: string}).clusterId
+        ) {
+          this.cluster = (
+            decodedValue as unknown as {clusterId: string}
+          ).clusterId;
+        }
       }
     }
   }
