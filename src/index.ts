@@ -432,6 +432,10 @@ export class Bigtable {
   // Therefore, metrics handlers should be created at the client level and
   // reused throughout the library to reduce latency:
   metricsHandlers: IMetricsHandler[];
+  // collectMetrics is a member variable that is used to ensure that if the
+  // user provides a `false` value and opts out of metrics collection that
+  // the metrics collector is ignored altogether to reduce latency in the
+  // client.
   collectMetrics: boolean;
 
   constructor(options: BigtableOptions = {}) {
