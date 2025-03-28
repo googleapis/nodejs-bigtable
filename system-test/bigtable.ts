@@ -227,7 +227,7 @@ describe('Bigtable', () => {
         params: {cryptoKeyId},
         data: {purpose: 'ENCRYPT_DECRYPT'},
       });
-      cryptoKeyVersionName = resp.data.primary.name;
+      cryptoKeyVersionName = (resp.data as any).primary.name;
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_, operation] = await CMEK_INSTANCE.create({
