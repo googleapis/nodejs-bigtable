@@ -19,6 +19,7 @@ import * as mocha from 'mocha';
 import * as assert from 'assert';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
+import {setupBigtable} from './client-side-metrics-setup-table';
 
 describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
   async function mockBigtable(projectId: string, done: mocha.Done) {
@@ -133,54 +134,17 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
         }
       }
     }
+
     const FakeBigtable = proxyquire('../src/index.js', {
       './client-side-metrics/gcp-metrics-handler': {
         GCPMetricsHandler: TestGCPMetricsHandler,
       },
     }).Bigtable;
     bigtable = new FakeBigtable();
-
-    const instance = bigtable.instance(instanceId);
-    const [instanceInfo] = await instance.exists();
-    if (!instanceInfo) {
-      const [, operation] = await instance.create({
-        clusters: {
-          id: 'fake-cluster3',
-          location: 'us-west1-c',
-          nodes: 1,
-        },
-      });
-      await operation.promise();
-    }
-    const table = instance.table(tableId);
-    const table2 = instance.table(tableId2);
-    for (const currentTable of [table, table2]) {
-      const [tableExists] = await currentTable.exists();
-      if (!tableExists) {
-        await currentTable.create({families: [columnFamilyId]}); // Create column family
-      } else {
-        // Check if column family exists and create it if not.
-        const [families] = await currentTable.getFamilies();
-
-        if (
-          !families.some((family: {id: string}) => family.id === columnFamilyId)
-        ) {
-          await currentTable.createFamily(columnFamilyId);
-        }
-      }
-      // Add some data so that a firstResponseLatency is recorded.
-      await currentTable.insert([
-        {
-          key: 'rowId',
-          data: {
-            [columnFamilyId]: {
-              gwashington: 1,
-              tjefferson: 1,
-            },
-          },
-        },
-      ]);
-    }
+    await setupBigtable(bigtable, columnFamilyId, instanceId, [
+      tableId,
+      tableId2,
+    ]);
   }
 
   const instanceId = 'emulator-test-instance';
