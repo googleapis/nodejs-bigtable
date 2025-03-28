@@ -604,7 +604,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           metricsCollector?.onResponse(this.bigtable.projectId);
         })
         .on('end', () => {
-          numRequestsMade++;
           activeRequestStream = null;
           metricsCollector?.onAttemptComplete(
             this.bigtable.projectId,
@@ -617,7 +616,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         });
       rowStreamPipe(rowStream, userStream);
     };
-    
+
     makeNewRequest();
     return userStream;
   }
