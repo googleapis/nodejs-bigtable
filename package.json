@@ -56,7 +56,7 @@
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/resources": "^1.30.0",
     "@opentelemetry/sdk-metrics": "^1.30.0",
-    "arrify": "^3.0.0",
+    "arrify": "2.0.0",
     "concat-stream": "^2.0.0",
     "escape-string-regexp": "3.0.0",
     "extend": "^3.0.2",
