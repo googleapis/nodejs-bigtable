@@ -14,9 +14,8 @@
 
 import * as assert from 'assert';
 import {beforeEach, describe, it, afterEach} from 'mocha';
+import * as Long from 'long';
 import * as sinon from 'sinon';
-
-const Long = require('long');
 
 import {IMutateRowRequest, Mutation, IMutation} from '../src/mutation.js';
 

@@ -649,8 +649,8 @@ export class Bigtable {
             'A cluster was provided with both `encryption` and `key` defined.'
           );
         }
-        ClusterUtils.validateClusterMetadata(cluster as ClusterInfo);
-        clusters[(cluster as ClusterInfo).id!] =
+        ClusterUtils.validateClusterMetadata(cluster);
+        clusters[cluster.id!] =
           ClusterUtils.getClusterBaseConfigWithFullLocation(
             cluster,
             this.projectId,
