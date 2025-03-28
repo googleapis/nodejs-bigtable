@@ -21,7 +21,7 @@ import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
 import {setupBigtable} from './client-side-metrics-setup-table';
 
-describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
   async function mockBigtable(projectId: string, done: mocha.Done) {
     let handlerRequestCount = 0;
     class TestGCPMetricsHandler extends TestMetricsHandler {
