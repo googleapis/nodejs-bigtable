@@ -617,6 +617,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         });
       rowStreamPipe(rowStream, userStream);
     };
+    
     makeNewRequest();
     return userStream;
   }
