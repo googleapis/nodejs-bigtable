@@ -51,6 +51,13 @@ interface MetricsInstruments {
 export class GCPMetricsHandler implements IMetricsHandler {
   private otelInstruments?: MetricsInstruments;
   private exporter: PushMetricExporter;
+  // instanceToZone and instanceToCluster are used to cache clusterId and zone
+  // values for each instance because the metrics handler will only receive
+  // zone and cluster values for the first operation. This is because the zone
+  // and cluster only get returned from the server on the first call for the
+  // instance so they only get stored on the first metrics collector.
+  private instanceToZone: {[instanceId: string]: string} = {};
+  private instanceToCluster: {[instanceId: string]: string} = {};
 
   /**
    * The `GCPMetricsHandler` is responsible for managing and recording
@@ -209,22 +216,66 @@ export class GCPMetricsHandler implements IMetricsHandler {
   }
 
   /**
+   * This method caches the cluster for an instance and returns the cached
+   * cluster if the metrics handler doesn't receive a cluster value. This is
+   * necessary because the server only returns instance information including
+   * the cluster name on the first call so we need to store the cluster name
+   * since it will only be available from the first metrics collector used.
+   *
+   * @param instanceId The instance identifier
+   * @param cluster The cluster identifier
+   */
+  getCachedCluster(instanceId: string, cluster?: string) {
+    const cachedCluster = cluster ?? this.instanceToCluster[instanceId];
+    if (cachedCluster) {
+      this.instanceToCluster[instanceId] = cachedCluster;
+    }
+    return cachedCluster;
+  }
+
+  /**
+   * This method caches the zone for an instance and returns the cached
+   * cluster if the metrics handler doesn't receive a cluster value. This is
+   * necessary because the server only returns instance information including
+   * the zone name on the first call so we need to store the cluster name
+   * since it will only be available from the first metrics collector used.
+   *
+   * @param instanceId The instance identifier
+   * @param zone The zone identifier
+   */
+  getCachedZone(instanceId: string, zone?: string) {
+    const cachedZone = zone ?? this.instanceToZone[instanceId];
+    if (cachedZone) {
+      this.instanceToZone[instanceId] = cachedZone;
+    }
+    return cachedZone;
+  }
+
+  /**
    * Records metrics for a completed Bigtable operation.
    * This method records the operation latency and retry count, associating them with provided attributes.
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
     const otelInstruments = this.getInstruments(data.projectId);
+    // If the cluster/zone are not available then use the cached cluster/zone
+    // from the first server response:
+    const instanceId = data.metricsCollectorData.instanceId;
+    const zone = this.getCachedZone(instanceId, data.metricsCollectorData.zone);
+    const cluster = this.getCachedCluster(
+      instanceId,
+      data.metricsCollectorData.cluster
+    );
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
       client_uid: data.metricsCollectorData.client_uid,
       status: data.status,
       client_name: data.client_name,
-      instanceId: data.metricsCollectorData.instanceId,
+      instanceId,
       table: data.metricsCollectorData.table,
-      cluster: data.metricsCollectorData.cluster,
-      zone: data.metricsCollectorData.zone,
+      cluster,
+      zone,
     };
     otelInstruments.operationLatencies.record(data.operationLatency, {
       streaming: data.streaming,
@@ -245,16 +296,24 @@ export class GCPMetricsHandler implements IMetricsHandler {
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
     const otelInstruments = this.getInstruments(data.projectId);
+    // If the cluster/zone are not available then use the cached cluster/zone
+    // from the first server response:
+    const instanceId = data.metricsCollectorData.instanceId;
+    const zone = this.getCachedZone(instanceId, data.metricsCollectorData.zone);
+    const cluster = this.getCachedCluster(
+      instanceId,
+      data.metricsCollectorData.cluster
+    );
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
       client_uid: data.metricsCollectorData.client_uid,
       status: data.status,
       client_name: data.client_name,
-      instanceId: data.metricsCollectorData.instanceId,
+      instanceId,
       table: data.metricsCollectorData.table,
-      cluster: data.metricsCollectorData.cluster,
-      zone: data.metricsCollectorData.zone,
+      cluster,
+      zone,
     };
     otelInstruments.attemptLatencies.record(data.attemptLatency, {
       streaming: data.streaming,
