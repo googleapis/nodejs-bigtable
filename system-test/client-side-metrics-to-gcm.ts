@@ -83,11 +83,14 @@ describe.only('Bigtable/ClientSideMetricsToGCM', () => {
       },
     }).Bigtable;
     bigtable = new FakeBigtable();
-
-    await setupBigtable(bigtable, columnFamilyId, instanceId, [tableId]);
+    await setupBigtable(bigtable, columnFamilyId, instanceId, [
+      tableId,
+      tableId2,
+    ]);
   }
 
   const instanceId = 'emulator-test-instance';
+  // const instanceId2 = 'emulator-test-instance2';
   const tableId = 'my-table';
   const tableId2 = 'my-table2';
   const columnFamilyId = 'cf1';
