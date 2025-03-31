@@ -45,23 +45,27 @@ describe.only('Bigtable/ClientSideMetricsToGCM', () => {
         metrics: ResourceMetrics,
         resultCallback: (result: ExportResult) => void
       ): void {
-        super.export(metrics, (result: ExportResult) => {
-          if (!exported) {
-            exported = true;
-            try {
-              clearTimeout(timeout);
-              // The test passes when the code is 0 because that means the
-              // result from calling export was successful.
-              assert.strictEqual(result.code, 0);
-              done();
-              resultCallback({code: 0});
-            } catch (error) {
-              // The code here isn't 0 so we report the original error to the mocha test runner.
-              done(result);
-              done(error);
+        try {
+          super.export(metrics, (result: ExportResult) => {
+            if (!exported) {
+              exported = true;
+              try {
+                clearTimeout(timeout);
+                // The test passes when the code is 0 because that means the
+                // result from calling export was successful.
+                assert.strictEqual(result.code, 0);
+                done();
+                resultCallback({code: 0});
+              } catch (error) {
+                // The code here isn't 0 so we report the original error to the mocha test runner.
+                done(result);
+                done(error);
+              }
             }
-          }
-        });
+          });
+        } catch (error) {
+          done(error);
+        }
       }
     }
 
@@ -83,15 +87,11 @@ describe.only('Bigtable/ClientSideMetricsToGCM', () => {
       },
     }).Bigtable;
     bigtable = new FakeBigtable();
-    await setupBigtable(bigtable, columnFamilyId, instanceId, [
-      tableId,
-      tableId2,
-    ]);
   }
 
-  const instanceId = 'emulator-test-instance';
-  // const instanceId2 = 'emulator-test-instance2';
-  const tableId = 'my-table';
+  const instanceId1 = 'emulator-test-instance';
+  const instanceId2 = 'emulator-test-instance2';
+  const tableId1 = 'my-table';
   const tableId2 = 'my-table2';
   const columnFamilyId = 'cf1';
   let bigtable: Bigtable;
@@ -106,7 +106,7 @@ describe.only('Bigtable/ClientSideMetricsToGCM', () => {
     try {
       // If the instance has been deleted already by another source, we don't
       // want this after hook to block the continuous integration pipeline.
-      const instance = bigtable.instance(instanceId);
+      const instance = bigtable.instance(instanceId1);
       await instance.delete({});
     } catch (e) {
       console.warn('The instance has been deleted already');
@@ -114,13 +114,24 @@ describe.only('Bigtable/ClientSideMetricsToGCM', () => {
   });
 
   it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
+    //
     (async () => {
-      await mockBigtable(done);
-      const instance = bigtable.instance(instanceId);
-      const table = instance.table(tableId);
-      await table.getRows();
-      const table2 = instance.table(tableId2);
-      await table2.getRows();
+      try {
+        await mockBigtable(done);
+        for (const instanceId of [instanceId1, instanceId2]) {
+          await setupBigtable(bigtable, columnFamilyId, instanceId, [
+            tableId1,
+            tableId2,
+          ]);
+          const instance = bigtable.instance(instanceId);
+          const table = instance.table(tableId1);
+          await table.getRows();
+          const table2 = instance.table(tableId2);
+          await table2.getRows();
+        }
+      } catch (e) {
+        done(e);
+      }
     })();
   });
 });
