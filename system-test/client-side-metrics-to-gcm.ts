@@ -16,7 +16,6 @@ import {describe, it, before, after} from 'mocha';
 import * as assert from 'assert';
 import {Bigtable} from '../src';
 import * as proxyquire from 'proxyquire';
-import {TabularApiSurface} from '../src/tabular-api-surface';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import {
   CloudMonitoringExporter,
@@ -26,7 +25,7 @@ import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler'
 import * as mocha from 'mocha';
 import {setupBigtable} from './client-side-metrics-setup-table';
 
-describe('Bigtable/ClientSideMetricsToGCM', () => {
+describe.only('Bigtable/ClientSideMetricsToGCM', () => {
   async function mockBigtable(done: mocha.Done) {
     /*
     We need to create a timeout here because if we don't then mocha shuts down
@@ -93,6 +92,7 @@ describe('Bigtable/ClientSideMetricsToGCM', () => {
   const instanceId = 'emulator-test-instance';
   // const instanceId2 = 'emulator-test-instance2';
   const tableId = 'my-table';
+  const tableId2 = 'my-table2';
   const columnFamilyId = 'cf1';
   let bigtable: Bigtable;
 
@@ -119,6 +119,8 @@ describe('Bigtable/ClientSideMetricsToGCM', () => {
       const instance = bigtable.instance(instanceId);
       const table = instance.table(tableId);
       await table.getRows();
+      const table2 = instance.table(tableId2);
+      await table2.getRows();
     })();
   });
 });
