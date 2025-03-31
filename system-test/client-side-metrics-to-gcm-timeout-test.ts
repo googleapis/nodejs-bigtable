@@ -25,7 +25,7 @@ import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler'
 import * as mocha from 'mocha';
 import {setupBigtable} from './client-side-metrics-setup-table';
 
-describe.only('Bigtable/ClientSideMetricsToGCM', () => {
+describe.only('Bigtable/ClientSideMetricsToGCMTimeout', () => {
   // This test suite simulates a situation where the user creates multiple
   // clients and ensures that the exporter doesn't produce any errors even
   // when multiple clients are attempting an export.
