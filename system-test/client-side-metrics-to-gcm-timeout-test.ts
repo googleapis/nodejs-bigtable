@@ -135,6 +135,7 @@ describe.only('Bigtable/ClientSideMetricsToGCMTimeout', () => {
           }
         }
       } catch (e) {
+        done(new Error('An error occurred while running the script'));
         done(e);
       }
     })();

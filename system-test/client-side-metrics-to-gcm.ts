@@ -145,6 +145,7 @@ describe.only('Bigtable/ClientSideMetricsToGCM', () => {
           await table2.getRows();
         }
       } catch (e) {
+        done(new Error('An error occurred while running the script'));
         done(e);
       }
     })();

@@ -21,7 +21,7 @@ export async function setupBigtable(
 ) {
   const instance = bigtable.instance(instanceId);
   const [instanceInfo] = await instance.exists();
-  if (!instanceInfo) {
+  while (!instanceInfo) {
     const [, operation] = await instance.create({
       clusters: {
         id: 'fake-cluster3',
@@ -30,6 +30,15 @@ export async function setupBigtable(
       },
     });
     await operation.promise();
+    /**
+     * For whatever reason, even after waiting for an operation.promise()
+     * call to complete, the instance still doesn't seem to be ready yet so
+     * we do another check to ensure the instance is ready.
+     */
+    const [instanceInfoAgain] = await instance.exists();
+    if (instanceInfoAgain) {
+      break;
+    }
   }
   const tables = tableIds.map(tableId => instance.table(tableId));
   for (const currentTable of tables) {
