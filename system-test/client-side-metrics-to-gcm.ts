@@ -25,7 +25,8 @@ import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler'
 import * as mocha from 'mocha';
 import {setupBigtable} from './client-side-metrics-setup-table';
 
-describe('Bigtable/ClientSideMetricsToGCM', () => {
+describe.only('Bigtable/ClientSideMetricsToGCM', () => {
+  let numberOfExports = 0;
   async function mockBigtable(done: mocha.Done) {
     /*
     We need to create a timeout here because if we don't then mocha shuts down
@@ -54,8 +55,11 @@ describe('Bigtable/ClientSideMetricsToGCM', () => {
                 // The test passes when the code is 0 because that means the
                 // result from calling export was successful.
                 assert.strictEqual(result.code, 0);
-                done();
                 resultCallback({code: 0});
+                if (numberOfExports > 1) {
+                  done();
+                }
+                numberOfExports++;
               } catch (error) {
                 // The code here isn't 0 so we report the original error to the mocha test runner.
                 done(result);
