@@ -30,17 +30,6 @@ describe.only('Bigtable/ClientSideMetricsToGCMTimeout', () => {
   // clients and ensures that the exporter doesn't produce any errors even
   // when multiple clients are attempting an export.
   async function mockBigtable(done: mocha.Done) {
-    let testFinished = false;
-    /*
-    We need to create a timeout here because if we don't then mocha shuts down
-    the test as it is sleeping before the GCPMetricsHandler has a chance to
-    export the data.
-    */
-    const timeout = setTimeout(() => {
-      testFinished = true;
-      done();
-    }, 120000);
-
     class TestExporter extends CloudMonitoringExporter {
       export(
         metrics: ResourceMetrics,
@@ -48,22 +37,18 @@ describe.only('Bigtable/ClientSideMetricsToGCMTimeout', () => {
       ): void {
         try {
           super.export(metrics, (result: ExportResult) => {
-            if (!testFinished) {
-              try {
-                // The code is expected to be 0 because the
-                // result from calling export was successful.
-                assert.strictEqual(result.code, 0);
-                resultCallback({code: 0});
-              } catch (error) {
-                // The code here isn't 0 so we report the original error to the
-                // mocha test runner.
-                // The test fails here because it means that an export was
-                // unsuccessful.
-                done(result);
-                done(error);
-              }
-            } else {
+            try {
+              // The code is expected to be 0 because the
+              // result from calling export was successful.
+              assert.strictEqual(result.code, 0);
               resultCallback({code: 0});
+            } catch (error) {
+              // The code here isn't 0 so we report the original error to the
+              // mocha test runner.
+              // The test fails here because it means that an export was
+              // unsuccessful.
+              done(result);
+              done(error);
             }
           });
         } catch (error) {
@@ -121,6 +106,17 @@ describe.only('Bigtable/ClientSideMetricsToGCMTimeout', () => {
   });
 
   it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
+    let testFinished = false;
+    /*
+    We need to create a timeout here because if we don't then mocha shuts down
+    the test as it is sleeping before the GCPMetricsHandler has a chance to
+    export the data. When the timeout is finished, if there were no export
+    errors then the test passes.
+    */
+    const timeout = setTimeout(() => {
+      testFinished = true;
+      done();
+    }, 120000);
     (async () => {
       try {
         const bigtable1 = await mockBigtable(done);

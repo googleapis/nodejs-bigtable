@@ -132,19 +132,17 @@ describe.only('Bigtable/ClientSideMetricsToGCM', () => {
   it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
     (async () => {
       try {
-        const bigtable1 = await mockBigtable(done);
-        for (const bigtable of [bigtable1]) {
-          for (const instanceId of [instanceId1, instanceId2]) {
-            await setupBigtable(bigtable, columnFamilyId, instanceId, [
-              tableId1,
-              tableId2,
-            ]);
-            const instance = bigtable.instance(instanceId);
-            const table = instance.table(tableId1);
-            await table.getRows();
-            const table2 = instance.table(tableId2);
-            await table2.getRows();
-          }
+        const bigtable = await mockBigtable(done);
+        for (const instanceId of [instanceId1, instanceId2]) {
+          await setupBigtable(bigtable, columnFamilyId, instanceId, [
+            tableId1,
+            tableId2,
+          ]);
+          const instance = bigtable.instance(instanceId);
+          const table = instance.table(tableId1);
+          await table.getRows();
+          const table2 = instance.table(tableId2);
+          await table2.getRows();
         }
       } catch (e) {
         done(e);
