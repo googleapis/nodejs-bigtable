@@ -86,7 +86,7 @@ describe.only('Bigtable/ClientSideMetricsToGCM', () => {
         GCPMetricsHandler: TestGCPMetricsHandler,
       },
     }).Bigtable;
-    bigtable = new FakeBigtable();
+    return new FakeBigtable();
   }
 
   const instanceId1 = 'emulator-test-instance';
@@ -94,13 +94,9 @@ describe.only('Bigtable/ClientSideMetricsToGCM', () => {
   const tableId1 = 'my-table';
   const tableId2 = 'my-table2';
   const columnFamilyId = 'cf1';
-  let bigtable: Bigtable;
-
-  before(async () => {
-    // This line is added just to make sure the bigtable variable is assigned.
-    // It is needed to solve a compile time error in the after hook.
-    bigtable = new Bigtable();
-  });
+  // This line is added just to make sure the bigtable variable is assigned.
+  // It is needed to solve a compile time error in the after hook.
+  const bigtable = new Bigtable();
 
   after(async () => {
     try {
@@ -111,23 +107,34 @@ describe.only('Bigtable/ClientSideMetricsToGCM', () => {
     } catch (e) {
       console.warn('The instance has been deleted already');
     }
+    try {
+      // If the instance has been deleted already by another source, we don't
+      // want this after hook to block the continuous integration pipeline.
+      const instance = bigtable.instance(instanceId2);
+      await instance.delete({});
+    } catch (e) {
+      console.warn('The instance has been deleted already');
+    }
   });
 
   it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
     //
     (async () => {
       try {
-        await mockBigtable(done);
-        for (const instanceId of [instanceId1, instanceId2]) {
-          await setupBigtable(bigtable, columnFamilyId, instanceId, [
-            tableId1,
-            tableId2,
-          ]);
-          const instance = bigtable.instance(instanceId);
-          const table = instance.table(tableId1);
-          await table.getRows();
-          const table2 = instance.table(tableId2);
-          await table2.getRows();
+        const bigtable1 = await mockBigtable(done);
+        const bigtable2 = await mockBigtable(done);
+        for (const bigtable of [bigtable1, bigtable2]) {
+          for (const instanceId of [instanceId1, instanceId2]) {
+            await setupBigtable(bigtable, columnFamilyId, instanceId, [
+              tableId1,
+              tableId2,
+            ]);
+            const instance = bigtable.instance(instanceId);
+            const table = instance.table(tableId1);
+            await table.getRows();
+            const table2 = instance.table(tableId2);
+            await table2.getRows();
+          }
         }
       } catch (e) {
         done(e);
