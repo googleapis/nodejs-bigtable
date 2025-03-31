@@ -113,7 +113,7 @@ describe.only('Bigtable/ClientSideMetricsToGCMTimeout', () => {
     export the data. When the timeout is finished, if there were no export
     errors then the test passes.
     */
-    const timeout = setTimeout(() => {
+    setTimeout(() => {
       testFinished = true;
       done();
     }, 120000);
