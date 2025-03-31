@@ -136,13 +136,17 @@ export class OperationMetricsCollector {
    * Called when the operation starts. Records the start time.
    */
   onOperationStart() {
-    if (this.state === MetricsCollectorState.OPERATION_NOT_STARTED) {
-      this.operationStartTime = new Date();
-      this.firstResponseLatency = null;
-      this.state =
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
-    } else {
-      console.warn('Invalid state transition');
+    try {
+      if (this.state === MetricsCollectorState.OPERATION_NOT_STARTED) {
+        this.operationStartTime = new Date();
+        this.firstResponseLatency = null;
+        this.state =
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
+      } else {
+        console.warn('Invalid state transition');
+      }
+    } finally {
+      // Nothing is required here. We just don't want errors reaching the user.
     }
   }
 
@@ -152,37 +156,41 @@ export class OperationMetricsCollector {
    * @param {grpc.status} attemptStatus The grpc status for the attempt.
    */
   onAttemptComplete(projectId: string, attemptStatus: grpc.status) {
-    if (
-      this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
-      this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED
-    ) {
-      this.state =
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
-      this.attemptCount++;
-      const endTime = new Date();
-      if (projectId && this.attemptStartTime) {
-        const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
-        this.metricsHandlers.forEach(metricsHandler => {
-          if (metricsHandler.onAttemptComplete) {
-            // attemptStatus?.toString() is optional because in a test proxy
-            // test the server does not send back the status.
-            metricsHandler.onAttemptComplete({
-              attemptLatency: totalTime,
-              serverLatency: this.serverTime ?? undefined,
-              connectivityErrorCount: this.connectivityErrorCount,
-              streaming: this.streamingOperation,
-              status: attemptStatus?.toString(),
-              client_name: `nodejs-bigtable/${version}`,
-              metricsCollectorData: this.getMetricsCollectorData(),
-              projectId,
-            });
-          }
-        });
+    try {
+      if (
+        this.state ===
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
+        this.state ===
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED
+      ) {
+        this.state =
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
+        this.attemptCount++;
+        const endTime = new Date();
+        if (projectId && this.attemptStartTime) {
+          const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
+          this.metricsHandlers.forEach(metricsHandler => {
+            if (metricsHandler.onAttemptComplete) {
+              // attemptStatus?.toString() is optional because in a test proxy
+              // test the server does not send back the status.
+              metricsHandler.onAttemptComplete({
+                attemptLatency: totalTime,
+                serverLatency: this.serverTime ?? undefined,
+                connectivityErrorCount: this.connectivityErrorCount,
+                streaming: this.streamingOperation,
+                status: attemptStatus?.toString(),
+                client_name: `nodejs-bigtable/${version}`,
+                metricsCollectorData: this.getMetricsCollectorData(),
+                projectId,
+              });
+            }
+          });
+        }
+      } else {
+        console.warn('Invalid state transition attempted');
       }
-    } else {
-      console.warn('Invalid state transition attempted');
+    } finally {
+      // Nothing is required here. We just don't want errors reaching the user.
     }
   }
 
@@ -190,18 +198,22 @@ export class OperationMetricsCollector {
    * Called when a new attempt starts. Records the start time of the attempt.
    */
   onAttemptStart() {
-    if (
-      this.state ===
-      MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
-    ) {
-      this.state =
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET;
-      this.attemptStartTime = new Date();
-      this.serverTime = null;
-      this.serverTimeRead = false;
-      this.connectivityErrorCount = 0;
-    } else {
-      console.warn('Invalid state transition attempted');
+    try {
+      if (
+        this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
+      ) {
+        this.state =
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET;
+        this.attemptStartTime = new Date();
+        this.serverTime = null;
+        this.serverTimeRead = false;
+        this.connectivityErrorCount = 0;
+      } else {
+        console.warn('Invalid state transition attempted');
+      }
+    } finally {
+      // Nothing is required here. We just don't want errors reaching the user.
     }
   }
 
@@ -209,19 +221,23 @@ export class OperationMetricsCollector {
    * Called when the first response is received. Records first response latencies.
    */
   onResponse(projectId: string) {
-    if (!this.firstResponseLatency) {
-      if (
-        this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET
-      ) {
-        this.state =
-          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
-        const endTime = new Date();
-        if (projectId && this.operationStartTime) {
-          this.firstResponseLatency =
-            endTime.getTime() - this.operationStartTime.getTime();
+    try {
+      if (!this.firstResponseLatency) {
+        if (
+          this.state ===
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET
+        ) {
+          this.state =
+            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
+          const endTime = new Date();
+          if (projectId && this.operationStartTime) {
+            this.firstResponseLatency =
+              endTime.getTime() - this.operationStartTime.getTime();
+          }
         }
       }
+    } finally {
+      // Nothing is required here. We just don't want errors reaching the user.
     }
   }
 
@@ -232,35 +248,40 @@ export class OperationMetricsCollector {
    * @param {grpc.status} finalOperationStatus Information about the completed operation.
    */
   onOperationComplete(projectId: string, finalOperationStatus: grpc.status) {
-    if (
-      this.state ===
-      MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
-    ) {
-      this.state = MetricsCollectorState.OPERATION_COMPLETE;
-      const endTime = new Date();
-      if (projectId && this.operationStartTime) {
-        const totalTime = endTime.getTime() - this.operationStartTime.getTime();
-        {
-          this.metricsHandlers.forEach(metricsHandler => {
-            if (metricsHandler.onOperationComplete) {
-              // finalOperationStatus?.toString() is optional because in a test
-              // proxy test the server does not send back the status.
-              metricsHandler.onOperationComplete({
-                status: finalOperationStatus?.toString(),
-                streaming: this.streamingOperation,
-                metricsCollectorData: this.getMetricsCollectorData(),
-                client_name: `nodejs-bigtable/${version}`,
-                projectId,
-                operationLatency: totalTime,
-                retryCount: this.attemptCount - 1,
-                firstResponseLatency: this.firstResponseLatency ?? undefined,
-              });
-            }
-          });
+    try {
+      if (
+        this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
+      ) {
+        this.state = MetricsCollectorState.OPERATION_COMPLETE;
+        const endTime = new Date();
+        if (projectId && this.operationStartTime) {
+          const totalTime =
+            endTime.getTime() - this.operationStartTime.getTime();
+          {
+            this.metricsHandlers.forEach(metricsHandler => {
+              if (metricsHandler.onOperationComplete) {
+                // finalOperationStatus?.toString() is optional because in a test
+                // proxy test the server does not send back the status.
+                metricsHandler.onOperationComplete({
+                  status: finalOperationStatus?.toString(),
+                  streaming: this.streamingOperation,
+                  metricsCollectorData: this.getMetricsCollectorData(),
+                  client_name: `nodejs-bigtable/${version}`,
+                  projectId,
+                  operationLatency: totalTime,
+                  retryCount: this.attemptCount - 1,
+                  firstResponseLatency: this.firstResponseLatency ?? undefined,
+                });
+              }
+            });
+          }
         }
+      } else {
+        console.warn('Invalid state transition attempted');
       }
-    } else {
-      console.warn('Invalid state transition attempted');
+    } finally {
+      // Nothing is required here. We just don't want errors reaching the user.
     }
   }
 
@@ -272,30 +293,34 @@ export class OperationMetricsCollector {
     internalRepr: Map<string, string[]>;
     options: {};
   }) {
-    if (!this.serverTimeRead && this.connectivityErrorCount < 1) {
-      // Check serverTimeRead, connectivityErrorCount here to reduce latency.
-      const mappedEntries = new Map(
-        Array.from(metadata.internalRepr.entries(), ([key, value]) => [
-          key,
-          value.toString(),
-        ])
-      );
-      const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
-      const SERVER_TIMING_KEY = 'server-timing';
-      const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
-      if (durationValues) {
-        const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
-        if (matchedDuration && matchedDuration[1]) {
-          if (!this.serverTimeRead) {
-            this.serverTimeRead = true;
-            this.serverTime = isNaN(parseInt(matchedDuration[1]))
-              ? null
-              : parseInt(matchedDuration[1]);
+    try {
+      if (!this.serverTimeRead && this.connectivityErrorCount < 1) {
+        // Check serverTimeRead, connectivityErrorCount here to reduce latency.
+        const mappedEntries = new Map(
+          Array.from(metadata.internalRepr.entries(), ([key, value]) => [
+            key,
+            value.toString(),
+          ])
+        );
+        const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
+        const SERVER_TIMING_KEY = 'server-timing';
+        const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
+        if (durationValues) {
+          const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
+          if (matchedDuration && matchedDuration[1]) {
+            if (!this.serverTimeRead) {
+              this.serverTimeRead = true;
+              this.serverTime = isNaN(parseInt(matchedDuration[1]))
+                ? null
+                : parseInt(matchedDuration[1]);
+            }
+          } else {
+            this.connectivityErrorCount = 1;
           }
-        } else {
-          this.connectivityErrorCount = 1;
         }
       }
+    } finally {
+      // Nothing is required here. We just don't want errors reaching the user.
     }
   }
 
@@ -306,31 +331,35 @@ export class OperationMetricsCollector {
   onStatusMetadataReceived(status: {
     metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
   }) {
-    if (!this.zone || !this.cluster) {
-      const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
-      const mappedValue = status.metadata.internalRepr.get(
-        INSTANCE_INFORMATION_KEY
-      ) as Buffer[];
-      if (mappedValue && mappedValue[0] && ResponseParams) {
-        const decodedValue = ResponseParams.decode(
-          mappedValue[0],
-          mappedValue[0].length
-        );
-        if (
-          decodedValue &&
-          (decodedValue as unknown as {zoneId: string}).zoneId
-        ) {
-          this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
-        }
-        if (
-          decodedValue &&
-          (decodedValue as unknown as {clusterId: string}).clusterId
-        ) {
-          this.cluster = (
-            decodedValue as unknown as {clusterId: string}
-          ).clusterId;
+    try {
+      if (!this.zone || !this.cluster) {
+        const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
+        const mappedValue = status.metadata.internalRepr.get(
+          INSTANCE_INFORMATION_KEY
+        ) as Buffer[];
+        if (mappedValue && mappedValue[0] && ResponseParams) {
+          const decodedValue = ResponseParams.decode(
+            mappedValue[0],
+            mappedValue[0].length
+          );
+          if (
+            decodedValue &&
+            (decodedValue as unknown as {zoneId: string}).zoneId
+          ) {
+            this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
+          }
+          if (
+            decodedValue &&
+            (decodedValue as unknown as {clusterId: string}).clusterId
+          ) {
+            this.cluster = (
+              decodedValue as unknown as {clusterId: string}
+            ).clusterId;
+          }
         }
       }
+    } finally {
+      // Nothing is required here. We just don't want errors reaching the user.
     }
   }
 }
