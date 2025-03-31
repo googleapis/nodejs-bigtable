@@ -29,12 +29,6 @@ describe.only('Bigtable/ClientSideMetricsToGCM', () => {
   let numberOfExports = 0;
   async function mockBigtable(done: mocha.Done) {
     /*
-    We need to create a timeout here because if we don't then mocha shuts down
-    the test as it is sleeping before the GCPMetricsHandler has a chance to
-    export the data.
-    */
-    const timeout = setTimeout(() => {}, 120000);
-    /*
     The exporter is called every x seconds, but we only want to test the value
     it receives once. Since done cannot be called multiple times in mocha,
     exported variable ensures we only test the value export receives one time.
@@ -122,7 +116,20 @@ describe.only('Bigtable/ClientSideMetricsToGCM', () => {
   });
 
   it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
-    //
+    /*
+    We need to create a timeout here because if we don't then mocha shuts down
+    the test as it is sleeping before the GCPMetricsHandler has a chance to
+    export the data.
+    */
+    const timeout = setTimeout(() => {
+      if (numberOfExports < 2) {
+        done(
+          new Error(
+            'The exporters have not completed yet and the timeout is over'
+          )
+        );
+      }
+    }, 240000);
     (async () => {
       try {
         const bigtable1 = await mockBigtable(done);
