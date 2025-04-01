@@ -15,7 +15,7 @@
 import {describe, it} from 'mocha';
 import {Bigtable} from '../src';
 
-describe('Bigtable/ClientSideMetrics', () => {
+describe.only('Bigtable/ClientSideMetrics', () => {
   const bigtable = new Bigtable();
   const instanceId = 'large-table-instance-id';
   const tableId = 'large-table';
@@ -31,7 +31,9 @@ describe('Bigtable/ClientSideMetrics', () => {
             hundredValues.push(i);
           }
           const promises = hundredValues.map(i => table.getRows());
+          console.log('running 100 readRows calls');
           await Promise.all(promises);
+          console.log('complete');
           done();
         } catch (e) {
           done(new Error('An error occurred while running the script'));
