@@ -27,13 +27,17 @@ describe.only('Bigtable/ClientSideMetrics', () => {
           const instance = bigtable.instance(instanceId);
           const table = instance.table(tableId);
           const hundredValues = [];
-          for (let i = 0; i < 100; i++) {
-            hundredValues.push(i);
+          for (let j = 0; j < 1000; j++) {
+            for (let i = 0; i < 10000; i++) {
+              hundredValues.push(i);
+            }
+            const promises = hundredValues.map(i =>
+              table.getRows({limit: 100})
+            );
+            console.log('running 100 readRows calls');
+            await Promise.all(promises);
+            console.log('complete');
           }
-          const promises = hundredValues.map(i => table.getRows());
-          console.log('running 100 readRows calls');
-          await Promise.all(promises);
-          console.log('complete');
           done();
         } catch (e) {
           done(new Error('An error occurred while running the script'));
