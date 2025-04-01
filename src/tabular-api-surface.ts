@@ -297,6 +297,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           callback();
           return;
         }
+        console.log(row.id);
         lastRowKey = row.id;
         rowsRead++;
         callback(null, row);
