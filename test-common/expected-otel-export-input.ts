@@ -67,7 +67,7 @@ export const expectedOtelExportConvertedValue = {
           value: {
             distributionValue: {
               count: '1',
-              mean: 6000,
+              mean: 10000,
               bucketOptions: {
                 explicitBuckets: {
                   bounds: [
@@ -797,9 +797,9 @@ export const expectedOtelExportInput = {
               startTime: [123, 789],
               endTime: [456, 789],
               value: {
-                min: 6000,
-                max: 6000,
-                sum: 6000,
+                min: 10000,
+                max: 10000,
+                sum: 10000,
                 buckets: {
                   boundaries: [
                     0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65,
@@ -853,9 +853,9 @@ export const expectedOtelExportInput = {
               startTime: [123, 789],
               endTime: [456, 789],
               value: {
-                min: 2000,
-                max: 2000,
-                sum: 2000,
+                min: 4000,
+                max: 4000,
+                sum: 4000,
                 buckets: {
                   boundaries: [
                     0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65,
@@ -865,7 +865,7 @@ export const expectedOtelExportInput = {
                   ],
                   counts: [
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0,
                   ],
                 },
@@ -887,9 +887,9 @@ export const expectedOtelExportInput = {
               startTime: [123, 789],
               endTime: [456, 789],
               value: {
-                min: 1000,
-                max: 1000,
-                sum: 1000,
+                min: 3000,
+                max: 3000,
+                sum: 3000,
                 buckets: {
                   boundaries: [
                     0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65,

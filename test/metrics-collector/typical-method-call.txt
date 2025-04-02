@@ -32,6 +32,6 @@ getDate call returns 9000 ms
 getDate call returns 10000 ms
 Recording parameters for onAttemptComplete:
 {"attemptLatency":3000,"serverLatency":103,"connectivityErrorCount":0,"streaming":"true","status":"0","client_name":"nodejs-bigtable","metricsCollectorData":{"instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","method":"Bigtable.ReadRows","client_uid":"fake-uuid"},"projectId":"my-project"}
-getDate call returns 12000 ms
+getDate call returns 11000 ms
 Recording parameters for onOperationComplete:
 {"status":"0","streaming":"true","metricsCollectorData":{"instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","method":"Bigtable.ReadRows","client_uid":"fake-uuid"},"client_name":"nodejs-bigtable","projectId":"my-project","operationLatency":10000,"retryCount":1,"firstResponseLatency":2000,"applicationLatencies":[1000,1000]}
