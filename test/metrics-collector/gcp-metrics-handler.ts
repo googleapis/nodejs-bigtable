@@ -35,7 +35,7 @@ import {replaceTimestamps} from '../../test-common/replace-timestamps';
 describe('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value ready for sending to the CloudMonitoringExporter', function (done) {
     this.timeout(600000);
-    (async () => {
+    void (async () => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
       the test as it is sleeping before the GCPMetricsHandler has a chance to

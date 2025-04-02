@@ -31,7 +31,7 @@ import {replaceTimestamps} from '../test-common/replace-timestamps';
 
 describe('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value to the GCPMetricsHandler', done => {
-    (async () => {
+    void (async () => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
       the test as it is sleeping before the GCPMetricsHandler has a chance to
@@ -106,7 +106,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
     // what we would be doing when calling readRows on two separate tables that
     // the data doesn't store duplicates in the same place and export twice as
     // much data as it should.
-    (async () => {
+    void (async () => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
       the test as it is sleeping before the GCPMetricsHandler has a chance to
@@ -238,7 +238,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
     // what we would be doing when calling readRows on two separate tables that
     // the data doesn't store duplicates in the same place and export twice as
     // much data as it should.
-    (async () => {
+    void (async () => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
       the test as it is sleeping before the GCPMetricsHandler has a chance to
@@ -361,7 +361,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
     })();
   });
   it('Should write two duplicate points inserted into the metrics handler', done => {
-    (async () => {
+    void (async () => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
       the test as it is sleeping before the GCPMetricsHandler has a chance to

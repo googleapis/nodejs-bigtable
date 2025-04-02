@@ -299,7 +299,7 @@ export class CloudMonitoringExporter extends MetricExporter {
     metrics: ResourceMetrics,
     resultCallback: (result: ExportResult) => void,
   ): void {
-    (async () => {
+    void (async () => {
       try {
         const request = metricsToRequest(metrics);
         await this.monitoringClient.createTimeSeries(

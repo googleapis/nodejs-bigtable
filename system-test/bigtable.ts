@@ -54,7 +54,7 @@ describe('Bigtable', () => {
     const q = new Q({concurrency: 5});
     return Promise.all(
       backups.map(backup => {
-        q.add(async () => {
+        void q.add(async () => {
           try {
             await backup.delete({timeout: 50 * 1000});
           } catch (e) {
@@ -80,7 +80,7 @@ describe('Bigtable', () => {
     await Promise.all(testInstances.map(instance => reapBackups(instance)));
     await Promise.all(
       testInstances.map(instance => {
-        q.add(async () => {
+        void q.add(async () => {
           try {
             await instance.delete();
           } catch (e) {
@@ -115,7 +115,7 @@ describe('Bigtable', () => {
     await Promise.all(instances.map(instance => reapBackups(instance)));
     await Promise.all(
       instances.map(instance => {
-        q.add(async () => {
+        void q.add(async () => {
           try {
             await instance.delete();
           } catch (e) {
@@ -1892,7 +1892,7 @@ describe('Bigtable', () => {
         });
       });
       it('should call createReadStream for the authorized view', done => {
-        (async () => {
+        void (async () => {
           try {
             const stream = await authorizedView.createReadStream();
             let receivedDataCount = 0;
@@ -2054,7 +2054,7 @@ describe('Bigtable', () => {
         );
       });
       it('should call sampleRowKeysStream for the authorized view', done => {
-        (async () => {
+        void (async () => {
           try {
             const stream = await authorizedView.sampleRowKeysStream();
             let receivedDataCount = 0;
@@ -2080,7 +2080,7 @@ describe('Bigtable', () => {
     });
     describe('CheckAndMutate grpc calls', () => {
       it('should error when the request is made for the row key not in a view', done => {
-        (async () => {
+        void (async () => {
           try {
             try {
               await authorizedView.filter(
@@ -2114,7 +2114,7 @@ describe('Bigtable', () => {
         })();
       });
       it('should call filter for the authorized view', done => {
-        (async () => {
+        void (async () => {
           try {
             // Add the row so that the cell offset filter takes effect:
             await authorizedViewTable.insert([
