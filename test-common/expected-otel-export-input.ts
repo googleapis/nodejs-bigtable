@@ -250,7 +250,7 @@ export const expectedOtelExportConvertedValue = {
         {
           interval: {
             endTime: {
-              seconds: 1743608810,
+              seconds: 456,
             },
             startTime: {
               seconds: 123,
@@ -885,7 +885,7 @@ export const expectedOtelExportInput = {
                 zone: 'us-west1-c',
               },
               startTime: [123, 789],
-              endTime: [1743608810, 692000000],
+              endTime: [456, 789],
               value: {
                 min: 3000,
                 max: 3000,
