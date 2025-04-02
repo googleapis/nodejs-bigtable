@@ -238,7 +238,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
       status: data.status,
       ...commonAttributes,
     });
-    for (const applicationLatency in data.applicationLatencies) {
+    for (const applicationLatency of data.applicationLatencies) {
       otelInstruments.applicationBlockingLatencies.record(
         applicationLatency,
         commonAttributes
