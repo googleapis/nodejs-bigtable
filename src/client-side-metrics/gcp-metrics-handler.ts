@@ -219,7 +219,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
       client_uid: data.metricsCollectorData.client_uid,
-      status: data.status,
       client_name: data.client_name,
       instanceId: data.metricsCollectorData.instanceId,
       table: data.metricsCollectorData.table,
@@ -228,13 +227,23 @@ export class GCPMetricsHandler implements IMetricsHandler {
     };
     otelInstruments.operationLatencies.record(data.operationLatency, {
       streaming: data.streaming,
+      status: data.status,
       ...commonAttributes,
     });
-    otelInstruments.retryCount.add(data.retryCount, commonAttributes);
-    otelInstruments?.firstResponseLatencies.record(
-      data.firstResponseLatency,
-      commonAttributes
-    );
+    otelInstruments.retryCount.add(data.retryCount, {
+      status: data.status,
+      ...commonAttributes,
+    });
+    otelInstruments.firstResponseLatencies.record(data.firstResponseLatency, {
+      status: data.status,
+      ...commonAttributes,
+    });
+    for (const applicationLatency in data.applicationLatencies) {
+      otelInstruments.applicationBlockingLatencies.record(
+        applicationLatency,
+        commonAttributes
+      );
+    }
   }
 
   /**

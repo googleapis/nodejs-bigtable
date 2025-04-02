@@ -163,7 +163,7 @@ export const expectedOtelExportConvertedValue = {
           value: {
             distributionValue: {
               count: '1',
-              mean: 2000,
+              mean: 4000,
               bucketOptions: {
                 explicitBuckets: {
                   bounds: [
@@ -204,8 +204,8 @@ export const expectedOtelExportConvertedValue = {
                 '0',
                 '0',
                 '0',
-                '1',
                 '0',
+                '1',
                 '0',
                 '0',
                 '0',
@@ -250,7 +250,7 @@ export const expectedOtelExportConvertedValue = {
         {
           interval: {
             endTime: {
-              seconds: 456,
+              seconds: 1743608810,
             },
             startTime: {
               seconds: 123,
@@ -259,7 +259,7 @@ export const expectedOtelExportConvertedValue = {
           value: {
             distributionValue: {
               count: '1',
-              mean: 1000,
+              mean: 3000,
               bucketOptions: {
                 explicitBuckets: {
                   bounds: [
@@ -299,9 +299,9 @@ export const expectedOtelExportConvertedValue = {
                 '0',
                 '0',
                 '0',
+                '0',
+                '0',
                 '1',
-                '0',
-                '0',
                 '0',
                 '0',
                 '0',
@@ -785,9 +785,9 @@ export const expectedOtelExportInput = {
             {
               attributes: {
                 streaming: 'true',
+                status: '0',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '0',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -865,7 +865,7 @@ export const expectedOtelExportInput = {
                   ],
                   counts: [
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0,
                   ],
                 },
@@ -885,7 +885,7 @@ export const expectedOtelExportInput = {
                 zone: 'us-west1-c',
               },
               startTime: [123, 789],
-              endTime: [456, 789],
+              endTime: [1743608810, 692000000],
               value: {
                 min: 3000,
                 max: 3000,
@@ -899,7 +899,7 @@ export const expectedOtelExportInput = {
                   ],
                   counts: [
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0,
                   ],
                 },
@@ -923,9 +923,9 @@ export const expectedOtelExportInput = {
           dataPoints: [
             {
               attributes: {
+                status: '0',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '0',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -961,9 +961,9 @@ export const expectedOtelExportInput = {
           dataPoints: [
             {
               attributes: {
+                status: '0',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '0',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
