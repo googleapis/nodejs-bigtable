@@ -35,9 +35,14 @@ import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
+import {IMetricsHandler} from './client-side-metrics/metrics-handler';
+import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
+import {CloudMonitoringExporter} from './client-side-metrics/exporter';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
+
+const crypto = require('crypto');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const PKG = require('../../package.json');
@@ -100,6 +105,8 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
    * Internal only.
    */
   BigtableTableAdminClient?: gax.ClientOptions;
+
+  collectMetrics?: boolean;
 }
 
 /**
@@ -417,9 +424,19 @@ export class Bigtable {
   appProfileId?: string;
   projectName: string;
   shouldReplaceProjectIdToken: boolean;
+  clientUid = crypto.randomUUID();
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
+  // Each time a metrics handler is created it introduces significant latency.
+  // Therefore, metrics handlers should be created at the client level and
+  // reused throughout the library to reduce latency:
+  metricsHandlers: IMetricsHandler[];
+  // collectMetrics is a member variable that is used to ensure that if the
+  // user provides a `false` value and opts out of metrics collection that
+  // the metrics collector is ignored altogether to reduce latency in the
+  // client.
+  collectMetrics: boolean;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -517,6 +534,16 @@ export class Bigtable {
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
+
+    if (options.collectMetrics === false) {
+      this.collectMetrics = false;
+      this.metricsHandlers = [];
+    } else {
+      this.collectMetrics = true;
+      this.metricsHandlers = [
+        new GCPMetricsHandler(new CloudMonitoringExporter()),
+      ];
+    }
   }
 
   createInstance(
@@ -904,6 +931,7 @@ export class Bigtable {
         gaxStream
           .on('error', stream.destroy.bind(stream))
           .on('metadata', stream.emit.bind(stream, 'metadata'))
+          .on('status', stream.emit.bind(stream, 'status'))
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
       });
