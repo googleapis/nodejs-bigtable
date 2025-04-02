@@ -17,7 +17,7 @@
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
-  readType = 'readRow'
+  readType = 'readRow',
 ) {
   // [START bigtable_reads_print]
   const {Bigtable} = require('@google-cloud/bigtable');
@@ -175,7 +175,7 @@ async function main(
             ? ` [${cell.labels.join(',')}]`
             : '';
           console.log(
-            `\t${columnQualifier}: ${cell.value} @${cell.timestamp}${labels}`
+            `\t${columnQualifier}: ${cell.value} @${cell.timestamp}${labels}`,
           );
         }
       }

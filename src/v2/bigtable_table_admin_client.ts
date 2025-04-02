@@ -116,7 +116,7 @@ export class BigtableTableAdminClient {
    */
   constructor(
     opts?: ClientOptions,
-    gaxInstance?: typeof gax | typeof gax.fallback
+    gaxInstance?: typeof gax | typeof gax.fallback,
   ) {
     // Ensure that options include all the required fields.
     const staticMembers = this.constructor as typeof BigtableTableAdminClient;
@@ -126,7 +126,7 @@ export class BigtableTableAdminClient {
       opts?.universe_domain !== opts?.universeDomain
     ) {
       throw new Error(
-        'Please set either universe_domain or universeDomain, but not both.'
+        'Please set either universe_domain or universeDomain, but not both.',
       );
     }
     const universeDomainEnvVar =
@@ -210,37 +210,37 @@ export class BigtableTableAdminClient {
     // Create useful helper objects for these.
     this.pathTemplates = {
       appProfilePathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}/instances/{instance}/appProfiles/{app_profile}'
+        'projects/{project}/instances/{instance}/appProfiles/{app_profile}',
       ),
       authorizedViewPathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}'
+        'projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}',
       ),
       backupPathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}'
+        'projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}',
       ),
       clusterPathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}/instances/{instance}/clusters/{cluster}'
+        'projects/{project}/instances/{instance}/clusters/{cluster}',
       ),
       hotTabletPathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}/instances/{instance}/clusters/{cluster}/hotTablets/{hot_tablet}'
+        'projects/{project}/instances/{instance}/clusters/{cluster}/hotTablets/{hot_tablet}',
       ),
       instancePathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}/instances/{instance}'
+        'projects/{project}/instances/{instance}',
       ),
       logicalViewPathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}/instances/{instance}/logicalViews/{logical_view}'
+        'projects/{project}/instances/{instance}/logicalViews/{logical_view}',
       ),
       materializedViewPathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}/instances/{instance}/materializedViews/{materialized_view}'
+        'projects/{project}/instances/{instance}/materializedViews/{materialized_view}',
       ),
       projectPathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}'
+        'projects/{project}',
       ),
       snapshotPathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}'
+        'projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}',
       ),
       tablePathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}/instances/{instance}/tables/{table}'
+        'projects/{project}/instances/{instance}/tables/{table}',
       ),
     };
 
@@ -251,22 +251,22 @@ export class BigtableTableAdminClient {
       listTables: new this._gaxModule.PageDescriptor(
         'pageToken',
         'nextPageToken',
-        'tables'
+        'tables',
       ),
       listAuthorizedViews: new this._gaxModule.PageDescriptor(
         'pageToken',
         'nextPageToken',
-        'authorizedViews'
+        'authorizedViews',
       ),
       listSnapshots: new this._gaxModule.PageDescriptor(
         'pageToken',
         'nextPageToken',
-        'snapshots'
+        'snapshots',
       ),
       listBackups: new this._gaxModule.PageDescriptor(
         'pageToken',
         'nextPageToken',
-        'backups'
+        'backups',
       ),
     };
 
@@ -303,109 +303,109 @@ export class BigtableTableAdminClient {
       .lro(lroOptions)
       .operationsClient(opts);
     const createTableFromSnapshotResponse = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.Table'
+      '.google.bigtable.admin.v2.Table',
     ) as gax.protobuf.Type;
     const createTableFromSnapshotMetadata = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.CreateTableFromSnapshotMetadata'
+      '.google.bigtable.admin.v2.CreateTableFromSnapshotMetadata',
     ) as gax.protobuf.Type;
     const updateTableResponse = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.Table'
+      '.google.bigtable.admin.v2.Table',
     ) as gax.protobuf.Type;
     const updateTableMetadata = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.UpdateTableMetadata'
+      '.google.bigtable.admin.v2.UpdateTableMetadata',
     ) as gax.protobuf.Type;
     const undeleteTableResponse = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.Table'
+      '.google.bigtable.admin.v2.Table',
     ) as gax.protobuf.Type;
     const undeleteTableMetadata = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.UndeleteTableMetadata'
+      '.google.bigtable.admin.v2.UndeleteTableMetadata',
     ) as gax.protobuf.Type;
     const createAuthorizedViewResponse = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.AuthorizedView'
+      '.google.bigtable.admin.v2.AuthorizedView',
     ) as gax.protobuf.Type;
     const createAuthorizedViewMetadata = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.CreateAuthorizedViewMetadata'
+      '.google.bigtable.admin.v2.CreateAuthorizedViewMetadata',
     ) as gax.protobuf.Type;
     const updateAuthorizedViewResponse = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.AuthorizedView'
+      '.google.bigtable.admin.v2.AuthorizedView',
     ) as gax.protobuf.Type;
     const updateAuthorizedViewMetadata = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.UpdateAuthorizedViewMetadata'
+      '.google.bigtable.admin.v2.UpdateAuthorizedViewMetadata',
     ) as gax.protobuf.Type;
     const snapshotTableResponse = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.Snapshot'
+      '.google.bigtable.admin.v2.Snapshot',
     ) as gax.protobuf.Type;
     const snapshotTableMetadata = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.SnapshotTableMetadata'
+      '.google.bigtable.admin.v2.SnapshotTableMetadata',
     ) as gax.protobuf.Type;
     const createBackupResponse = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.Backup'
+      '.google.bigtable.admin.v2.Backup',
     ) as gax.protobuf.Type;
     const createBackupMetadata = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.CreateBackupMetadata'
+      '.google.bigtable.admin.v2.CreateBackupMetadata',
     ) as gax.protobuf.Type;
     const restoreTableResponse = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.Table'
+      '.google.bigtable.admin.v2.Table',
     ) as gax.protobuf.Type;
     const restoreTableMetadata = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.RestoreTableMetadata'
+      '.google.bigtable.admin.v2.RestoreTableMetadata',
     ) as gax.protobuf.Type;
     const copyBackupResponse = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.Backup'
+      '.google.bigtable.admin.v2.Backup',
     ) as gax.protobuf.Type;
     const copyBackupMetadata = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.CopyBackupMetadata'
+      '.google.bigtable.admin.v2.CopyBackupMetadata',
     ) as gax.protobuf.Type;
 
     this.descriptors.longrunning = {
       createTableFromSnapshot: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         createTableFromSnapshotResponse.decode.bind(
-          createTableFromSnapshotResponse
+          createTableFromSnapshotResponse,
         ),
         createTableFromSnapshotMetadata.decode.bind(
-          createTableFromSnapshotMetadata
-        )
+          createTableFromSnapshotMetadata,
+        ),
       ),
       updateTable: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         updateTableResponse.decode.bind(updateTableResponse),
-        updateTableMetadata.decode.bind(updateTableMetadata)
+        updateTableMetadata.decode.bind(updateTableMetadata),
       ),
       undeleteTable: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         undeleteTableResponse.decode.bind(undeleteTableResponse),
-        undeleteTableMetadata.decode.bind(undeleteTableMetadata)
+        undeleteTableMetadata.decode.bind(undeleteTableMetadata),
       ),
       createAuthorizedView: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         createAuthorizedViewResponse.decode.bind(createAuthorizedViewResponse),
-        createAuthorizedViewMetadata.decode.bind(createAuthorizedViewMetadata)
+        createAuthorizedViewMetadata.decode.bind(createAuthorizedViewMetadata),
       ),
       updateAuthorizedView: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         updateAuthorizedViewResponse.decode.bind(updateAuthorizedViewResponse),
-        updateAuthorizedViewMetadata.decode.bind(updateAuthorizedViewMetadata)
+        updateAuthorizedViewMetadata.decode.bind(updateAuthorizedViewMetadata),
       ),
       snapshotTable: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         snapshotTableResponse.decode.bind(snapshotTableResponse),
-        snapshotTableMetadata.decode.bind(snapshotTableMetadata)
+        snapshotTableMetadata.decode.bind(snapshotTableMetadata),
       ),
       createBackup: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         createBackupResponse.decode.bind(createBackupResponse),
-        createBackupMetadata.decode.bind(createBackupMetadata)
+        createBackupMetadata.decode.bind(createBackupMetadata),
       ),
       restoreTable: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         restoreTableResponse.decode.bind(restoreTableResponse),
-        restoreTableMetadata.decode.bind(restoreTableMetadata)
+        restoreTableMetadata.decode.bind(restoreTableMetadata),
       ),
       copyBackup: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         copyBackupResponse.decode.bind(copyBackupResponse),
-        copyBackupMetadata.decode.bind(copyBackupMetadata)
+        copyBackupMetadata.decode.bind(copyBackupMetadata),
       ),
     };
 
@@ -414,7 +414,7 @@ export class BigtableTableAdminClient {
       'google.bigtable.admin.v2.BigtableTableAdmin',
       gapicConfig as gax.ClientConfig,
       opts.clientConfig || {},
-      {'x-goog-api-client': clientHeader.join(' ')}
+      {'x-goog-api-client': clientHeader.join(' ')},
     );
 
     // Set up a dictionary of "inner API calls"; the core implementation
@@ -448,12 +448,12 @@ export class BigtableTableAdminClient {
     this.bigtableTableAdminStub = this._gaxGrpc.createStub(
       this._opts.fallback
         ? (this._protos as protobuf.Root).lookupService(
-            'google.bigtable.admin.v2.BigtableTableAdmin'
+            'google.bigtable.admin.v2.BigtableTableAdmin',
           )
         : // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (this._protos as any).google.bigtable.admin.v2.BigtableTableAdmin,
       this._opts,
-      this._providedCustomServicePath
+      this._providedCustomServicePath,
     ) as Promise<{[method: string]: Function}>;
 
     // Iterate over each of the methods that the service provides
@@ -502,7 +502,7 @@ export class BigtableTableAdminClient {
           },
         (err: Error | null | undefined) => () => {
           throw err;
-        }
+        },
       );
 
       const descriptor =
@@ -513,7 +513,7 @@ export class BigtableTableAdminClient {
         callPromise,
         this._defaults[methodName],
         descriptor,
-        this._opts.fallback
+        this._opts.fallback,
       );
 
       this.innerApiCalls[methodName] = apiCall;
@@ -534,7 +534,7 @@ export class BigtableTableAdminClient {
     ) {
       process.emitWarning(
         'Static servicePath is deprecated, please use the instance method instead.',
-        'DeprecationWarning'
+        'DeprecationWarning',
       );
     }
     return 'bigtableadmin.googleapis.com';
@@ -552,7 +552,7 @@ export class BigtableTableAdminClient {
     ) {
       process.emitWarning(
         'Static apiEndpoint is deprecated, please use the instance method instead.',
-        'DeprecationWarning'
+        'DeprecationWarning',
       );
     }
     return 'bigtableadmin.googleapis.com';
@@ -601,7 +601,7 @@ export class BigtableTableAdminClient {
    * @returns {Promise} A promise that resolves to string containing the project ID.
    */
   getProjectId(
-    callback?: Callback<string, undefined, undefined>
+    callback?: Callback<string, undefined, undefined>,
   ): Promise<string> | void {
     if (callback) {
       this.auth.getProjectId(callback);
@@ -657,7 +657,7 @@ export class BigtableTableAdminClient {
    */
   createTable(
     request?: protos.google.bigtable.admin.v2.ICreateTableRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ITable,
@@ -672,7 +672,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.ITable,
       protos.google.bigtable.admin.v2.ICreateTableRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   createTable(
     request: protos.google.bigtable.admin.v2.ICreateTableRequest,
@@ -680,7 +680,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.ITable,
       protos.google.bigtable.admin.v2.ICreateTableRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   createTable(
     request?: protos.google.bigtable.admin.v2.ICreateTableRequest,
@@ -697,7 +697,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.ITable,
       protos.google.bigtable.admin.v2.ICreateTableRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ITable,
@@ -748,7 +748,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('createTable response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -774,7 +774,7 @@ export class BigtableTableAdminClient {
    */
   getTable(
     request?: protos.google.bigtable.admin.v2.IGetTableRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ITable,
@@ -789,7 +789,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.ITable,
       protos.google.bigtable.admin.v2.IGetTableRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   getTable(
     request: protos.google.bigtable.admin.v2.IGetTableRequest,
@@ -797,7 +797,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.ITable,
       protos.google.bigtable.admin.v2.IGetTableRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   getTable(
     request?: protos.google.bigtable.admin.v2.IGetTableRequest,
@@ -812,7 +812,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.ITable,
       protos.google.bigtable.admin.v2.IGetTableRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ITable,
@@ -861,7 +861,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('getTable response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -884,7 +884,7 @@ export class BigtableTableAdminClient {
    */
   deleteTable(
     request?: protos.google.bigtable.admin.v2.IDeleteTableRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.protobuf.IEmpty,
@@ -899,7 +899,7 @@ export class BigtableTableAdminClient {
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteTableRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   deleteTable(
     request: protos.google.bigtable.admin.v2.IDeleteTableRequest,
@@ -907,7 +907,7 @@ export class BigtableTableAdminClient {
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteTableRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   deleteTable(
     request?: protos.google.bigtable.admin.v2.IDeleteTableRequest,
@@ -924,7 +924,7 @@ export class BigtableTableAdminClient {
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteTableRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.protobuf.IEmpty,
@@ -975,7 +975,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('deleteTable response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -1001,7 +1001,7 @@ export class BigtableTableAdminClient {
    */
   getAuthorizedView(
     request?: protos.google.bigtable.admin.v2.IGetAuthorizedViewRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IAuthorizedView,
@@ -1018,7 +1018,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   getAuthorizedView(
     request: protos.google.bigtable.admin.v2.IGetAuthorizedViewRequest,
@@ -1028,7 +1028,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   getAuthorizedView(
     request?: protos.google.bigtable.admin.v2.IGetAuthorizedViewRequest,
@@ -1047,7 +1047,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IAuthorizedView,
@@ -1098,7 +1098,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('getAuthorizedView response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -1126,7 +1126,7 @@ export class BigtableTableAdminClient {
    */
   deleteAuthorizedView(
     request?: protos.google.bigtable.admin.v2.IDeleteAuthorizedViewRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.protobuf.IEmpty,
@@ -1143,7 +1143,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   deleteAuthorizedView(
     request: protos.google.bigtable.admin.v2.IDeleteAuthorizedViewRequest,
@@ -1153,7 +1153,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   deleteAuthorizedView(
     request?: protos.google.bigtable.admin.v2.IDeleteAuthorizedViewRequest,
@@ -1172,7 +1172,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.protobuf.IEmpty,
@@ -1226,7 +1226,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('deleteAuthorizedView response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -1259,7 +1259,7 @@ export class BigtableTableAdminClient {
    */
   modifyColumnFamilies(
     request?: protos.google.bigtable.admin.v2.IModifyColumnFamiliesRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ITable,
@@ -1276,7 +1276,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   modifyColumnFamilies(
     request: protos.google.bigtable.admin.v2.IModifyColumnFamiliesRequest,
@@ -1286,7 +1286,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   modifyColumnFamilies(
     request?: protos.google.bigtable.admin.v2.IModifyColumnFamiliesRequest,
@@ -1305,7 +1305,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ITable,
@@ -1359,7 +1359,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('modifyColumnFamilies response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -1389,7 +1389,7 @@ export class BigtableTableAdminClient {
    */
   dropRowRange(
     request?: protos.google.bigtable.admin.v2.IDropRowRangeRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.protobuf.IEmpty,
@@ -1404,7 +1404,7 @@ export class BigtableTableAdminClient {
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDropRowRangeRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   dropRowRange(
     request: protos.google.bigtable.admin.v2.IDropRowRangeRequest,
@@ -1412,7 +1412,7 @@ export class BigtableTableAdminClient {
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDropRowRangeRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   dropRowRange(
     request?: protos.google.bigtable.admin.v2.IDropRowRangeRequest,
@@ -1429,7 +1429,7 @@ export class BigtableTableAdminClient {
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDropRowRangeRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.protobuf.IEmpty,
@@ -1480,7 +1480,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('dropRowRange response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -1506,7 +1506,7 @@ export class BigtableTableAdminClient {
    */
   generateConsistencyToken(
     request?: protos.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IGenerateConsistencyTokenResponse,
@@ -1526,7 +1526,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   generateConsistencyToken(
     request: protos.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest,
@@ -1536,7 +1536,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   generateConsistencyToken(
     request?: protos.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest,
@@ -1555,7 +1555,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IGenerateConsistencyTokenResponse,
@@ -1612,7 +1612,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('generateConsistencyToken response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -1647,7 +1647,7 @@ export class BigtableTableAdminClient {
    */
   checkConsistency(
     request?: protos.google.bigtable.admin.v2.ICheckConsistencyRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ICheckConsistencyResponse,
@@ -1664,7 +1664,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   checkConsistency(
     request: protos.google.bigtable.admin.v2.ICheckConsistencyRequest,
@@ -1674,7 +1674,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   checkConsistency(
     request?: protos.google.bigtable.admin.v2.ICheckConsistencyRequest,
@@ -1693,7 +1693,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ICheckConsistencyResponse,
@@ -1744,7 +1744,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('checkConsistency response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -1773,7 +1773,7 @@ export class BigtableTableAdminClient {
    */
   getSnapshot(
     request?: protos.google.bigtable.admin.v2.IGetSnapshotRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ISnapshot,
@@ -1788,7 +1788,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.ISnapshot,
       protos.google.bigtable.admin.v2.IGetSnapshotRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   getSnapshot(
     request: protos.google.bigtable.admin.v2.IGetSnapshotRequest,
@@ -1796,7 +1796,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.ISnapshot,
       protos.google.bigtable.admin.v2.IGetSnapshotRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   getSnapshot(
     request?: protos.google.bigtable.admin.v2.IGetSnapshotRequest,
@@ -1813,7 +1813,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.ISnapshot,
       protos.google.bigtable.admin.v2.IGetSnapshotRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ISnapshot,
@@ -1864,7 +1864,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('getSnapshot response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -1893,7 +1893,7 @@ export class BigtableTableAdminClient {
    */
   deleteSnapshot(
     request?: protos.google.bigtable.admin.v2.IDeleteSnapshotRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.protobuf.IEmpty,
@@ -1908,7 +1908,7 @@ export class BigtableTableAdminClient {
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteSnapshotRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   deleteSnapshot(
     request: protos.google.bigtable.admin.v2.IDeleteSnapshotRequest,
@@ -1916,7 +1916,7 @@ export class BigtableTableAdminClient {
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteSnapshotRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   deleteSnapshot(
     request?: protos.google.bigtable.admin.v2.IDeleteSnapshotRequest,
@@ -1933,7 +1933,7 @@ export class BigtableTableAdminClient {
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteSnapshotRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.protobuf.IEmpty,
@@ -1984,7 +1984,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('deleteSnapshot response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -2007,7 +2007,7 @@ export class BigtableTableAdminClient {
    */
   getBackup(
     request?: protos.google.bigtable.admin.v2.IGetBackupRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IBackup,
@@ -2022,7 +2022,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IBackup,
       protos.google.bigtable.admin.v2.IGetBackupRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   getBackup(
     request: protos.google.bigtable.admin.v2.IGetBackupRequest,
@@ -2030,7 +2030,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IBackup,
       protos.google.bigtable.admin.v2.IGetBackupRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   getBackup(
     request?: protos.google.bigtable.admin.v2.IGetBackupRequest,
@@ -2045,7 +2045,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IBackup,
       protos.google.bigtable.admin.v2.IGetBackupRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IBackup,
@@ -2094,7 +2094,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('getBackup response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -2125,7 +2125,7 @@ export class BigtableTableAdminClient {
    */
   updateBackup(
     request?: protos.google.bigtable.admin.v2.IUpdateBackupRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IBackup,
@@ -2140,7 +2140,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IBackup,
       protos.google.bigtable.admin.v2.IUpdateBackupRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   updateBackup(
     request: protos.google.bigtable.admin.v2.IUpdateBackupRequest,
@@ -2148,7 +2148,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IBackup,
       protos.google.bigtable.admin.v2.IUpdateBackupRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   updateBackup(
     request?: protos.google.bigtable.admin.v2.IUpdateBackupRequest,
@@ -2165,7 +2165,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IBackup,
       protos.google.bigtable.admin.v2.IUpdateBackupRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IBackup,
@@ -2216,7 +2216,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('updateBackup response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -2239,7 +2239,7 @@ export class BigtableTableAdminClient {
    */
   deleteBackup(
     request?: protos.google.bigtable.admin.v2.IDeleteBackupRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.protobuf.IEmpty,
@@ -2254,7 +2254,7 @@ export class BigtableTableAdminClient {
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteBackupRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   deleteBackup(
     request: protos.google.bigtable.admin.v2.IDeleteBackupRequest,
@@ -2262,7 +2262,7 @@ export class BigtableTableAdminClient {
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteBackupRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   deleteBackup(
     request?: protos.google.bigtable.admin.v2.IDeleteBackupRequest,
@@ -2279,7 +2279,7 @@ export class BigtableTableAdminClient {
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteBackupRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.protobuf.IEmpty,
@@ -2330,7 +2330,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('deleteBackup response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -2357,7 +2357,7 @@ export class BigtableTableAdminClient {
    */
   getIamPolicy(
     request?: protos.google.iam.v1.IGetIamPolicyRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.iam.v1.IPolicy,
@@ -2372,7 +2372,7 @@ export class BigtableTableAdminClient {
       protos.google.iam.v1.IPolicy,
       protos.google.iam.v1.IGetIamPolicyRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   getIamPolicy(
     request: protos.google.iam.v1.IGetIamPolicyRequest,
@@ -2380,7 +2380,7 @@ export class BigtableTableAdminClient {
       protos.google.iam.v1.IPolicy,
       protos.google.iam.v1.IGetIamPolicyRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   getIamPolicy(
     request?: protos.google.iam.v1.IGetIamPolicyRequest,
@@ -2395,7 +2395,7 @@ export class BigtableTableAdminClient {
       protos.google.iam.v1.IPolicy,
       protos.google.iam.v1.IGetIamPolicyRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.iam.v1.IPolicy,
@@ -2444,7 +2444,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('getIamPolicy response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -2478,7 +2478,7 @@ export class BigtableTableAdminClient {
    */
   setIamPolicy(
     request?: protos.google.iam.v1.ISetIamPolicyRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.iam.v1.IPolicy,
@@ -2493,7 +2493,7 @@ export class BigtableTableAdminClient {
       protos.google.iam.v1.IPolicy,
       protos.google.iam.v1.ISetIamPolicyRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   setIamPolicy(
     request: protos.google.iam.v1.ISetIamPolicyRequest,
@@ -2501,7 +2501,7 @@ export class BigtableTableAdminClient {
       protos.google.iam.v1.IPolicy,
       protos.google.iam.v1.ISetIamPolicyRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   setIamPolicy(
     request?: protos.google.iam.v1.ISetIamPolicyRequest,
@@ -2516,7 +2516,7 @@ export class BigtableTableAdminClient {
       protos.google.iam.v1.IPolicy,
       protos.google.iam.v1.ISetIamPolicyRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.iam.v1.IPolicy,
@@ -2565,7 +2565,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('setIamPolicy response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
   /**
@@ -2593,7 +2593,7 @@ export class BigtableTableAdminClient {
    */
   testIamPermissions(
     request?: protos.google.iam.v1.ITestIamPermissionsRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.iam.v1.ITestIamPermissionsResponse,
@@ -2608,7 +2608,7 @@ export class BigtableTableAdminClient {
       protos.google.iam.v1.ITestIamPermissionsResponse,
       protos.google.iam.v1.ITestIamPermissionsRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   testIamPermissions(
     request: protos.google.iam.v1.ITestIamPermissionsRequest,
@@ -2616,7 +2616,7 @@ export class BigtableTableAdminClient {
       protos.google.iam.v1.ITestIamPermissionsResponse,
       protos.google.iam.v1.ITestIamPermissionsRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   testIamPermissions(
     request?: protos.google.iam.v1.ITestIamPermissionsRequest,
@@ -2631,7 +2631,7 @@ export class BigtableTableAdminClient {
       protos.google.iam.v1.ITestIamPermissionsResponse,
       protos.google.iam.v1.ITestIamPermissionsRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.iam.v1.ITestIamPermissionsResponse,
@@ -2680,7 +2680,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('testIamPermissions response %j', response);
           return [response, options, rawResponse];
-        }
+        },
       );
   }
 
@@ -2720,7 +2720,7 @@ export class BigtableTableAdminClient {
    */
   createTableFromSnapshot(
     request?: protos.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       LROperation<
@@ -2741,7 +2741,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   createTableFromSnapshot(
     request: protos.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest,
@@ -2752,7 +2752,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   createTableFromSnapshot(
     request?: protos.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest,
@@ -2773,7 +2773,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       LROperation<
@@ -2831,7 +2831,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('createTableFromSnapshot response %j', rawResponse);
           return [response, rawResponse, _];
-        }
+        },
       );
   }
   /**
@@ -2846,7 +2846,7 @@ export class BigtableTableAdminClient {
    * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_CreateTableFromSnapshot_async
    */
   async checkCreateTableFromSnapshotProgress(
-    name: string
+    name: string,
   ): Promise<
     LROperation<
       protos.google.bigtable.admin.v2.Table,
@@ -2856,13 +2856,13 @@ export class BigtableTableAdminClient {
     this._log.info('createTableFromSnapshot long-running');
     const request =
       new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest(
-        {name}
+        {name},
       );
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(
       operation,
       this.descriptors.longrunning.createTableFromSnapshot,
-      this._gaxModule.createDefaultBackoffSettings()
+      this._gaxModule.createDefaultBackoffSettings(),
     );
     return decodeOperation as LROperation<
       protos.google.bigtable.admin.v2.Table,
@@ -2906,7 +2906,7 @@ export class BigtableTableAdminClient {
    */
   updateTable(
     request?: protos.google.bigtable.admin.v2.IUpdateTableRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       LROperation<
@@ -2927,7 +2927,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   updateTable(
     request: protos.google.bigtable.admin.v2.IUpdateTableRequest,
@@ -2938,7 +2938,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   updateTable(
     request?: protos.google.bigtable.admin.v2.IUpdateTableRequest,
@@ -2959,7 +2959,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       LROperation<
@@ -3017,7 +3017,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('updateTable response %j', rawResponse);
           return [response, rawResponse, _];
-        }
+        },
       );
   }
   /**
@@ -3032,7 +3032,7 @@ export class BigtableTableAdminClient {
    * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_UpdateTable_async
    */
   async checkUpdateTableProgress(
-    name: string
+    name: string,
   ): Promise<
     LROperation<
       protos.google.bigtable.admin.v2.Table,
@@ -3042,13 +3042,13 @@ export class BigtableTableAdminClient {
     this._log.info('updateTable long-running');
     const request =
       new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest(
-        {name}
+        {name},
       );
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(
       operation,
       this.descriptors.longrunning.updateTable,
-      this._gaxModule.createDefaultBackoffSettings()
+      this._gaxModule.createDefaultBackoffSettings(),
     );
     return decodeOperation as LROperation<
       protos.google.bigtable.admin.v2.Table,
@@ -3077,7 +3077,7 @@ export class BigtableTableAdminClient {
    */
   undeleteTable(
     request?: protos.google.bigtable.admin.v2.IUndeleteTableRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       LROperation<
@@ -3098,7 +3098,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   undeleteTable(
     request: protos.google.bigtable.admin.v2.IUndeleteTableRequest,
@@ -3109,7 +3109,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   undeleteTable(
     request?: protos.google.bigtable.admin.v2.IUndeleteTableRequest,
@@ -3130,7 +3130,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       LROperation<
@@ -3188,7 +3188,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('undeleteTable response %j', rawResponse);
           return [response, rawResponse, _];
-        }
+        },
       );
   }
   /**
@@ -3203,7 +3203,7 @@ export class BigtableTableAdminClient {
    * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_UndeleteTable_async
    */
   async checkUndeleteTableProgress(
-    name: string
+    name: string,
   ): Promise<
     LROperation<
       protos.google.bigtable.admin.v2.Table,
@@ -3213,13 +3213,13 @@ export class BigtableTableAdminClient {
     this._log.info('undeleteTable long-running');
     const request =
       new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest(
-        {name}
+        {name},
       );
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(
       operation,
       this.descriptors.longrunning.undeleteTable,
-      this._gaxModule.createDefaultBackoffSettings()
+      this._gaxModule.createDefaultBackoffSettings(),
     );
     return decodeOperation as LROperation<
       protos.google.bigtable.admin.v2.Table,
@@ -3255,7 +3255,7 @@ export class BigtableTableAdminClient {
    */
   createAuthorizedView(
     request?: protos.google.bigtable.admin.v2.ICreateAuthorizedViewRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       LROperation<
@@ -3276,7 +3276,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   createAuthorizedView(
     request: protos.google.bigtable.admin.v2.ICreateAuthorizedViewRequest,
@@ -3287,7 +3287,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   createAuthorizedView(
     request?: protos.google.bigtable.admin.v2.ICreateAuthorizedViewRequest,
@@ -3308,7 +3308,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       LROperation<
@@ -3366,7 +3366,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('createAuthorizedView response %j', rawResponse);
           return [response, rawResponse, _];
-        }
+        },
       );
   }
   /**
@@ -3381,7 +3381,7 @@ export class BigtableTableAdminClient {
    * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_CreateAuthorizedView_async
    */
   async checkCreateAuthorizedViewProgress(
-    name: string
+    name: string,
   ): Promise<
     LROperation<
       protos.google.bigtable.admin.v2.AuthorizedView,
@@ -3391,13 +3391,13 @@ export class BigtableTableAdminClient {
     this._log.info('createAuthorizedView long-running');
     const request =
       new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest(
-        {name}
+        {name},
       );
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(
       operation,
       this.descriptors.longrunning.createAuthorizedView,
-      this._gaxModule.createDefaultBackoffSettings()
+      this._gaxModule.createDefaultBackoffSettings(),
     );
     return decodeOperation as LROperation<
       protos.google.bigtable.admin.v2.AuthorizedView,
@@ -3438,7 +3438,7 @@ export class BigtableTableAdminClient {
    */
   updateAuthorizedView(
     request?: protos.google.bigtable.admin.v2.IUpdateAuthorizedViewRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       LROperation<
@@ -3459,7 +3459,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   updateAuthorizedView(
     request: protos.google.bigtable.admin.v2.IUpdateAuthorizedViewRequest,
@@ -3470,7 +3470,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   updateAuthorizedView(
     request?: protos.google.bigtable.admin.v2.IUpdateAuthorizedViewRequest,
@@ -3491,7 +3491,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       LROperation<
@@ -3549,7 +3549,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('updateAuthorizedView response %j', rawResponse);
           return [response, rawResponse, _];
-        }
+        },
       );
   }
   /**
@@ -3564,7 +3564,7 @@ export class BigtableTableAdminClient {
    * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_UpdateAuthorizedView_async
    */
   async checkUpdateAuthorizedViewProgress(
-    name: string
+    name: string,
   ): Promise<
     LROperation<
       protos.google.bigtable.admin.v2.AuthorizedView,
@@ -3574,13 +3574,13 @@ export class BigtableTableAdminClient {
     this._log.info('updateAuthorizedView long-running');
     const request =
       new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest(
-        {name}
+        {name},
       );
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(
       operation,
       this.descriptors.longrunning.updateAuthorizedView,
-      this._gaxModule.createDefaultBackoffSettings()
+      this._gaxModule.createDefaultBackoffSettings(),
     );
     return decodeOperation as LROperation<
       protos.google.bigtable.admin.v2.AuthorizedView,
@@ -3632,7 +3632,7 @@ export class BigtableTableAdminClient {
    */
   snapshotTable(
     request?: protos.google.bigtable.admin.v2.ISnapshotTableRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       LROperation<
@@ -3653,7 +3653,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   snapshotTable(
     request: protos.google.bigtable.admin.v2.ISnapshotTableRequest,
@@ -3664,7 +3664,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   snapshotTable(
     request?: protos.google.bigtable.admin.v2.ISnapshotTableRequest,
@@ -3685,7 +3685,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       LROperation<
@@ -3743,7 +3743,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('snapshotTable response %j', rawResponse);
           return [response, rawResponse, _];
-        }
+        },
       );
   }
   /**
@@ -3758,7 +3758,7 @@ export class BigtableTableAdminClient {
    * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_SnapshotTable_async
    */
   async checkSnapshotTableProgress(
-    name: string
+    name: string,
   ): Promise<
     LROperation<
       protos.google.bigtable.admin.v2.Snapshot,
@@ -3768,13 +3768,13 @@ export class BigtableTableAdminClient {
     this._log.info('snapshotTable long-running');
     const request =
       new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest(
-        {name}
+        {name},
       );
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(
       operation,
       this.descriptors.longrunning.snapshotTable,
-      this._gaxModule.createDefaultBackoffSettings()
+      this._gaxModule.createDefaultBackoffSettings(),
     );
     return decodeOperation as LROperation<
       protos.google.bigtable.admin.v2.Snapshot,
@@ -3819,7 +3819,7 @@ export class BigtableTableAdminClient {
    */
   createBackup(
     request?: protos.google.bigtable.admin.v2.ICreateBackupRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       LROperation<
@@ -3840,7 +3840,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   createBackup(
     request: protos.google.bigtable.admin.v2.ICreateBackupRequest,
@@ -3851,7 +3851,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   createBackup(
     request?: protos.google.bigtable.admin.v2.ICreateBackupRequest,
@@ -3872,7 +3872,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       LROperation<
@@ -3930,7 +3930,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('createBackup response %j', rawResponse);
           return [response, rawResponse, _];
-        }
+        },
       );
   }
   /**
@@ -3945,7 +3945,7 @@ export class BigtableTableAdminClient {
    * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_CreateBackup_async
    */
   async checkCreateBackupProgress(
-    name: string
+    name: string,
   ): Promise<
     LROperation<
       protos.google.bigtable.admin.v2.Backup,
@@ -3955,13 +3955,13 @@ export class BigtableTableAdminClient {
     this._log.info('createBackup long-running');
     const request =
       new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest(
-        {name}
+        {name},
       );
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(
       operation,
       this.descriptors.longrunning.createBackup,
-      this._gaxModule.createDefaultBackoffSettings()
+      this._gaxModule.createDefaultBackoffSettings(),
     );
     return decodeOperation as LROperation<
       protos.google.bigtable.admin.v2.Backup,
@@ -4003,7 +4003,7 @@ export class BigtableTableAdminClient {
    */
   restoreTable(
     request?: protos.google.bigtable.admin.v2.IRestoreTableRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       LROperation<
@@ -4024,7 +4024,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   restoreTable(
     request: protos.google.bigtable.admin.v2.IRestoreTableRequest,
@@ -4035,7 +4035,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   restoreTable(
     request?: protos.google.bigtable.admin.v2.IRestoreTableRequest,
@@ -4056,7 +4056,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       LROperation<
@@ -4114,7 +4114,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('restoreTable response %j', rawResponse);
           return [response, rawResponse, _];
-        }
+        },
       );
   }
   /**
@@ -4129,7 +4129,7 @@ export class BigtableTableAdminClient {
    * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async
    */
   async checkRestoreTableProgress(
-    name: string
+    name: string,
   ): Promise<
     LROperation<
       protos.google.bigtable.admin.v2.Table,
@@ -4139,13 +4139,13 @@ export class BigtableTableAdminClient {
     this._log.info('restoreTable long-running');
     const request =
       new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest(
-        {name}
+        {name},
       );
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(
       operation,
       this.descriptors.longrunning.restoreTable,
-      this._gaxModule.createDefaultBackoffSettings()
+      this._gaxModule.createDefaultBackoffSettings(),
     );
     return decodeOperation as LROperation<
       protos.google.bigtable.admin.v2.Table,
@@ -4196,7 +4196,7 @@ export class BigtableTableAdminClient {
    */
   copyBackup(
     request?: protos.google.bigtable.admin.v2.ICopyBackupRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       LROperation<
@@ -4217,7 +4217,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   copyBackup(
     request: protos.google.bigtable.admin.v2.ICopyBackupRequest,
@@ -4228,7 +4228,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   copyBackup(
     request?: protos.google.bigtable.admin.v2.ICopyBackupRequest,
@@ -4249,7 +4249,7 @@ export class BigtableTableAdminClient {
       >,
       protos.google.longrunning.IOperation | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       LROperation<
@@ -4307,7 +4307,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('copyBackup response %j', rawResponse);
           return [response, rawResponse, _];
-        }
+        },
       );
   }
   /**
@@ -4322,7 +4322,7 @@ export class BigtableTableAdminClient {
    * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_CopyBackup_async
    */
   async checkCopyBackupProgress(
-    name: string
+    name: string,
   ): Promise<
     LROperation<
       protos.google.bigtable.admin.v2.Backup,
@@ -4332,13 +4332,13 @@ export class BigtableTableAdminClient {
     this._log.info('copyBackup long-running');
     const request =
       new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest(
-        {name}
+        {name},
       );
     const [operation] = await this.operationsClient.getOperation(request);
     const decodeOperation = new this._gaxModule.Operation(
       operation,
       this.descriptors.longrunning.copyBackup,
-      this._gaxModule.createDefaultBackoffSettings()
+      this._gaxModule.createDefaultBackoffSettings(),
     );
     return decodeOperation as LROperation<
       protos.google.bigtable.admin.v2.Backup,
@@ -4382,7 +4382,7 @@ export class BigtableTableAdminClient {
    */
   listTables(
     request?: protos.google.bigtable.admin.v2.IListTablesRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ITable[],
@@ -4397,7 +4397,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IListTablesRequest,
       protos.google.bigtable.admin.v2.IListTablesResponse | null | undefined,
       protos.google.bigtable.admin.v2.ITable
-    >
+    >,
   ): void;
   listTables(
     request: protos.google.bigtable.admin.v2.IListTablesRequest,
@@ -4405,7 +4405,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IListTablesRequest,
       protos.google.bigtable.admin.v2.IListTablesResponse | null | undefined,
       protos.google.bigtable.admin.v2.ITable
-    >
+    >,
   ): void;
   listTables(
     request?: protos.google.bigtable.admin.v2.IListTablesRequest,
@@ -4422,7 +4422,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IListTablesRequest,
       protos.google.bigtable.admin.v2.IListTablesResponse | null | undefined,
       protos.google.bigtable.admin.v2.ITable
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ITable[],
@@ -4473,7 +4473,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('listTables values %j', response);
           return [response, input, output];
-        }
+        },
       );
   }
 
@@ -4512,7 +4512,7 @@ export class BigtableTableAdminClient {
    */
   listTablesStream(
     request?: protos.google.bigtable.admin.v2.IListTablesRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Transform {
     request = request || {};
     options = options || {};
@@ -4531,7 +4531,7 @@ export class BigtableTableAdminClient {
     return this.descriptors.page.listTables.createStream(
       this.innerApiCalls.listTables as GaxCall,
       request,
-      callSettings
+      callSettings,
     );
   }
 
@@ -4573,7 +4573,7 @@ export class BigtableTableAdminClient {
    */
   listTablesAsync(
     request?: protos.google.bigtable.admin.v2.IListTablesRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): AsyncIterable<protos.google.bigtable.admin.v2.ITable> {
     request = request || {};
     options = options || {};
@@ -4592,7 +4592,7 @@ export class BigtableTableAdminClient {
     return this.descriptors.page.listTables.asyncIterate(
       this.innerApiCalls['listTables'] as GaxCall,
       request as {},
-      callSettings
+      callSettings,
     ) as AsyncIterable<protos.google.bigtable.admin.v2.ITable>;
   }
   /**
@@ -4633,7 +4633,7 @@ export class BigtableTableAdminClient {
    */
   listAuthorizedViews(
     request?: protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IAuthorizedView[],
@@ -4650,7 +4650,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       protos.google.bigtable.admin.v2.IAuthorizedView
-    >
+    >,
   ): void;
   listAuthorizedViews(
     request: protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
@@ -4660,7 +4660,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       protos.google.bigtable.admin.v2.IAuthorizedView
-    >
+    >,
   ): void;
   listAuthorizedViews(
     request?: protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
@@ -4679,7 +4679,7 @@ export class BigtableTableAdminClient {
       | null
       | undefined,
       protos.google.bigtable.admin.v2.IAuthorizedView
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IAuthorizedView[],
@@ -4730,7 +4730,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('listAuthorizedViews values %j', response);
           return [response, input, output];
-        }
+        },
       );
   }
 
@@ -4770,7 +4770,7 @@ export class BigtableTableAdminClient {
    */
   listAuthorizedViewsStream(
     request?: protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Transform {
     request = request || {};
     options = options || {};
@@ -4789,7 +4789,7 @@ export class BigtableTableAdminClient {
     return this.descriptors.page.listAuthorizedViews.createStream(
       this.innerApiCalls.listAuthorizedViews as GaxCall,
       request,
-      callSettings
+      callSettings,
     );
   }
 
@@ -4832,7 +4832,7 @@ export class BigtableTableAdminClient {
    */
   listAuthorizedViewsAsync(
     request?: protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): AsyncIterable<protos.google.bigtable.admin.v2.IAuthorizedView> {
     request = request || {};
     options = options || {};
@@ -4851,7 +4851,7 @@ export class BigtableTableAdminClient {
     return this.descriptors.page.listAuthorizedViews.asyncIterate(
       this.innerApiCalls['listAuthorizedViews'] as GaxCall,
       request as {},
-      callSettings
+      callSettings,
     ) as AsyncIterable<protos.google.bigtable.admin.v2.IAuthorizedView>;
   }
   /**
@@ -4890,7 +4890,7 @@ export class BigtableTableAdminClient {
    */
   listSnapshots(
     request?: protos.google.bigtable.admin.v2.IListSnapshotsRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ISnapshot[],
@@ -4905,7 +4905,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IListSnapshotsRequest,
       protos.google.bigtable.admin.v2.IListSnapshotsResponse | null | undefined,
       protos.google.bigtable.admin.v2.ISnapshot
-    >
+    >,
   ): void;
   listSnapshots(
     request: protos.google.bigtable.admin.v2.IListSnapshotsRequest,
@@ -4913,7 +4913,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IListSnapshotsRequest,
       protos.google.bigtable.admin.v2.IListSnapshotsResponse | null | undefined,
       protos.google.bigtable.admin.v2.ISnapshot
-    >
+    >,
   ): void;
   listSnapshots(
     request?: protos.google.bigtable.admin.v2.IListSnapshotsRequest,
@@ -4930,7 +4930,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IListSnapshotsRequest,
       protos.google.bigtable.admin.v2.IListSnapshotsResponse | null | undefined,
       protos.google.bigtable.admin.v2.ISnapshot
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ISnapshot[],
@@ -4981,7 +4981,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('listSnapshots values %j', response);
           return [response, input, output];
-        }
+        },
       );
   }
 
@@ -5013,7 +5013,7 @@ export class BigtableTableAdminClient {
    */
   listSnapshotsStream(
     request?: protos.google.bigtable.admin.v2.IListSnapshotsRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Transform {
     request = request || {};
     options = options || {};
@@ -5032,7 +5032,7 @@ export class BigtableTableAdminClient {
     return this.descriptors.page.listSnapshots.createStream(
       this.innerApiCalls.listSnapshots as GaxCall,
       request,
-      callSettings
+      callSettings,
     );
   }
 
@@ -5067,7 +5067,7 @@ export class BigtableTableAdminClient {
    */
   listSnapshotsAsync(
     request?: protos.google.bigtable.admin.v2.IListSnapshotsRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): AsyncIterable<protos.google.bigtable.admin.v2.ISnapshot> {
     request = request || {};
     options = options || {};
@@ -5086,7 +5086,7 @@ export class BigtableTableAdminClient {
     return this.descriptors.page.listSnapshots.asyncIterate(
       this.innerApiCalls['listSnapshots'] as GaxCall,
       request as {},
-      callSettings
+      callSettings,
     ) as AsyncIterable<protos.google.bigtable.admin.v2.ISnapshot>;
   }
   /**
@@ -5180,7 +5180,7 @@ export class BigtableTableAdminClient {
    */
   listBackups(
     request?: protos.google.bigtable.admin.v2.IListBackupsRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IBackup[],
@@ -5195,7 +5195,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IListBackupsRequest,
       protos.google.bigtable.admin.v2.IListBackupsResponse | null | undefined,
       protos.google.bigtable.admin.v2.IBackup
-    >
+    >,
   ): void;
   listBackups(
     request: protos.google.bigtable.admin.v2.IListBackupsRequest,
@@ -5203,7 +5203,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IListBackupsRequest,
       protos.google.bigtable.admin.v2.IListBackupsResponse | null | undefined,
       protos.google.bigtable.admin.v2.IBackup
-    >
+    >,
   ): void;
   listBackups(
     request?: protos.google.bigtable.admin.v2.IListBackupsRequest,
@@ -5220,7 +5220,7 @@ export class BigtableTableAdminClient {
       protos.google.bigtable.admin.v2.IListBackupsRequest,
       protos.google.bigtable.admin.v2.IListBackupsResponse | null | undefined,
       protos.google.bigtable.admin.v2.IBackup
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IBackup[],
@@ -5271,7 +5271,7 @@ export class BigtableTableAdminClient {
         ]) => {
           this._log.info('listBackups values %j', response);
           return [response, input, output];
-        }
+        },
       );
   }
 
@@ -5363,7 +5363,7 @@ export class BigtableTableAdminClient {
    */
   listBackupsStream(
     request?: protos.google.bigtable.admin.v2.IListBackupsRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Transform {
     request = request || {};
     options = options || {};
@@ -5382,7 +5382,7 @@ export class BigtableTableAdminClient {
     return this.descriptors.page.listBackups.createStream(
       this.innerApiCalls.listBackups as GaxCall,
       request,
-      callSettings
+      callSettings,
     );
   }
 
@@ -5477,7 +5477,7 @@ export class BigtableTableAdminClient {
    */
   listBackupsAsync(
     request?: protos.google.bigtable.admin.v2.IListBackupsRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): AsyncIterable<protos.google.bigtable.admin.v2.IBackup> {
     request = request || {};
     options = options || {};
@@ -5496,7 +5496,7 @@ export class BigtableTableAdminClient {
     return this.descriptors.page.listBackups.asyncIterate(
       this.innerApiCalls['listBackups'] as GaxCall,
       request as {},
-      callSettings
+      callSettings,
     ) as AsyncIterable<protos.google.bigtable.admin.v2.IBackup>;
   }
   // --------------------
@@ -5568,7 +5568,7 @@ export class BigtableTableAdminClient {
     project: string,
     instance: string,
     table: string,
-    authorizedView: string
+    authorizedView: string,
   ) {
     return this.pathTemplates.authorizedViewPathTemplate.render({
       project: project,
@@ -5587,7 +5587,7 @@ export class BigtableTableAdminClient {
    */
   matchProjectFromAuthorizedViewName(authorizedViewName: string) {
     return this.pathTemplates.authorizedViewPathTemplate.match(
-      authorizedViewName
+      authorizedViewName,
     ).project;
   }
 
@@ -5600,7 +5600,7 @@ export class BigtableTableAdminClient {
    */
   matchInstanceFromAuthorizedViewName(authorizedViewName: string) {
     return this.pathTemplates.authorizedViewPathTemplate.match(
-      authorizedViewName
+      authorizedViewName,
     ).instance;
   }
 
@@ -5613,7 +5613,7 @@ export class BigtableTableAdminClient {
    */
   matchTableFromAuthorizedViewName(authorizedViewName: string) {
     return this.pathTemplates.authorizedViewPathTemplate.match(
-      authorizedViewName
+      authorizedViewName,
     ).table;
   }
 
@@ -5626,7 +5626,7 @@ export class BigtableTableAdminClient {
    */
   matchAuthorizedViewFromAuthorizedViewName(authorizedViewName: string) {
     return this.pathTemplates.authorizedViewPathTemplate.match(
-      authorizedViewName
+      authorizedViewName,
     ).authorized_view;
   }
 
@@ -5643,7 +5643,7 @@ export class BigtableTableAdminClient {
     project: string,
     instance: string,
     cluster: string,
-    backup: string
+    backup: string,
   ) {
     return this.pathTemplates.backupPathTemplate.render({
       project: project,
@@ -5759,7 +5759,7 @@ export class BigtableTableAdminClient {
     project: string,
     instance: string,
     cluster: string,
-    hotTablet: string
+    hotTablet: string,
   ) {
     return this.pathTemplates.hotTabletPathTemplate.render({
       project: project,
@@ -5916,7 +5916,7 @@ export class BigtableTableAdminClient {
   materializedViewPath(
     project: string,
     instance: string,
-    materializedView: string
+    materializedView: string,
   ) {
     return this.pathTemplates.materializedViewPathTemplate.render({
       project: project,
@@ -5934,7 +5934,7 @@ export class BigtableTableAdminClient {
    */
   matchProjectFromMaterializedViewName(materializedViewName: string) {
     return this.pathTemplates.materializedViewPathTemplate.match(
-      materializedViewName
+      materializedViewName,
     ).project;
   }
 
@@ -5947,7 +5947,7 @@ export class BigtableTableAdminClient {
    */
   matchInstanceFromMaterializedViewName(materializedViewName: string) {
     return this.pathTemplates.materializedViewPathTemplate.match(
-      materializedViewName
+      materializedViewName,
     ).instance;
   }
 
@@ -5960,7 +5960,7 @@ export class BigtableTableAdminClient {
    */
   matchMaterializedViewFromMaterializedViewName(materializedViewName: string) {
     return this.pathTemplates.materializedViewPathTemplate.match(
-      materializedViewName
+      materializedViewName,
     ).materialized_view;
   }
 
@@ -6000,7 +6000,7 @@ export class BigtableTableAdminClient {
     project: string,
     instance: string,
     cluster: string,
-    snapshot: string
+    snapshot: string,
   ) {
     return this.pathTemplates.snapshotPathTemplate.render({
       project: project,

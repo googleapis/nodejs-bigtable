@@ -52,7 +52,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       class TestExporter extends MetricExporter {
         export(
           metrics: ResourceMetrics,
-          resultCallback: (result: ExportResult) => void
+          resultCallback: (result: ExportResult) => void,
         ): void {
           if (!exported) {
             exported = true;
@@ -60,14 +60,14 @@ describe('Bigtable/GCPMetricsHandler', () => {
               replaceTimestamps(
                 metrics as unknown as typeof expectedOtelExportInput,
                 [123, 789],
-                [456, 789]
+                [456, 789],
               );
               const parsedExportInput: ResourceMetrics = JSON.parse(
-                JSON.stringify(metrics)
+                JSON.stringify(metrics),
               );
               assert.deepStrictEqual(
                 parsedExportInput.scopeMetrics[0].metrics.length,
-                expectedOtelExportInput.scopeMetrics[0].metrics.length
+                expectedOtelExportInput.scopeMetrics[0].metrics.length,
               );
               for (
                 let index = 0;
@@ -77,17 +77,17 @@ describe('Bigtable/GCPMetricsHandler', () => {
                 // We need to compare pointwise because mocha truncates to an 8192 character limit.
                 assert.deepStrictEqual(
                   parsedExportInput.scopeMetrics[0].metrics[index],
-                  expectedOtelExportInput.scopeMetrics[0].metrics[index]
+                  expectedOtelExportInput.scopeMetrics[0].metrics[index],
                 );
               }
               assert.deepStrictEqual(
                 JSON.parse(JSON.stringify(metrics)),
-                expectedOtelExportInput
+                expectedOtelExportInput,
               );
               const convertedRequest = metricsToRequest(parsedExportInput);
               assert.deepStrictEqual(
                 convertedRequest.timeSeries.length,
-                expectedOtelExportConvertedValue.timeSeries.length
+                expectedOtelExportConvertedValue.timeSeries.length,
               );
               for (
                 let index = 0;
@@ -97,7 +97,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
                 // We need to compare pointwise because mocha truncates to an 8192 character limit.
                 assert.deepStrictEqual(
                   convertedRequest.timeSeries[index],
-                  expectedOtelExportConvertedValue.timeSeries[index]
+                  expectedOtelExportConvertedValue.timeSeries[index],
                 );
               }
               clearTimeout(timeout);
@@ -115,7 +115,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       }
 
       const handler = new GCPMetricsHandler(
-        new TestExporter({projectId: 'some-project'})
+        new TestExporter({projectId: 'some-project'}),
       );
 
       for (const request of expectedRequestsHandled) {

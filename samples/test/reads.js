@@ -146,42 +146,42 @@ describe('reads', async () => {
 
   it('should read part of one row', async () => {
     const stdout = execSync(
-      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowPartial`
+      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowPartial`,
     );
     snapshot(stdout);
   });
 
   it('should read multiple rows', async () => {
     const stdout = execSync(
-      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRows`
+      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRows`,
     );
     snapshot(stdout);
   });
 
   it('should read a range of rows', async () => {
     const stdout = execSync(
-      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowRange`
+      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowRange`,
     );
     snapshot(stdout);
   });
 
   it('should read multiple ranges of rows', async () => {
     const stdout = execSync(
-      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowRanges`
+      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowRanges`,
     );
     snapshot(stdout);
   });
 
   it('should read using a row prefix', async () => {
     const stdout = execSync(
-      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readPrefix`
+      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readPrefix`,
     );
     snapshot(stdout);
   });
 
   it('should read with a filter', async () => {
     const stdout = execSync(
-      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readFilter`
+      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readFilter`,
     );
 
     snapshot(stdout);
