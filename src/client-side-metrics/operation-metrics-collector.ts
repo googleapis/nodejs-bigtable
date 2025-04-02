@@ -200,16 +200,19 @@ export class OperationMetricsCollector {
    * Called when the first response is received. Records first response latencies.
    */
   onResponse(projectId: string) {
-    if (
-      this.state ===
-      MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET
-    ) {
-      this.state =
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
-      const endTime = new Date();
-      if (projectId && this.operationStartTime) {
-        this.firstResponseLatency =
-          endTime.getTime() - this.operationStartTime.getTime();
+    if (!this.firstResponseLatency) {
+      // Check firstResponseLatency first to improve latency for calls with many rows
+      if (
+        this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET
+      ) {
+        this.state =
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
+        const endTime = new Date();
+        if (projectId && this.operationStartTime) {
+          this.firstResponseLatency =
+            endTime.getTime() - this.operationStartTime.getTime();
+        }
       }
     }
   }
@@ -260,25 +263,28 @@ export class OperationMetricsCollector {
     internalRepr: Map<string, string[]>;
     options: {};
   }) {
-    const mappedEntries = new Map(
-      Array.from(metadata.internalRepr.entries(), ([key, value]) => [
-        key,
-        value.toString(),
-      ])
-    );
-    const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
-    const SERVER_TIMING_KEY = 'server-timing';
-    const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
-    const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
-    if (matchedDuration && matchedDuration[1]) {
-      if (!this.serverTimeRead) {
-        this.serverTimeRead = true;
-        this.serverTime = isNaN(parseInt(matchedDuration[1]))
-          ? null
-          : parseInt(matchedDuration[1]);
+    if (!this.serverTimeRead && this.connectivityErrorCount < 1) {
+      // Check serverTimeRead, connectivityErrorCount here to reduce latency.
+      const mappedEntries = new Map(
+        Array.from(metadata.internalRepr.entries(), ([key, value]) => [
+          key,
+          value.toString(),
+        ])
+      );
+      const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
+      const SERVER_TIMING_KEY = 'server-timing';
+      const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
+      const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
+      if (matchedDuration && matchedDuration[1]) {
+        if (!this.serverTimeRead) {
+          this.serverTimeRead = true;
+          this.serverTime = isNaN(parseInt(matchedDuration[1]))
+            ? null
+            : parseInt(matchedDuration[1]);
+        }
+      } else {
+        this.connectivityErrorCount = 1;
       }
-    } else {
-      this.connectivityErrorCount = 1;
     }
   }
 
@@ -308,22 +314,29 @@ export class OperationMetricsCollector {
   onStatusMetadataReceived(status: {
     metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
   }) {
-    const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
-    const mappedValue = status.metadata.internalRepr.get(
-      INSTANCE_INFORMATION_KEY
-    ) as Buffer[];
-    const decodedValue = ResponseParams.decode(
-      mappedValue[0],
-      mappedValue[0].length
-    );
-    if (decodedValue && (decodedValue as unknown as {zoneId: string}).zoneId) {
-      this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
-    }
-    if (
-      decodedValue &&
-      (decodedValue as unknown as {clusterId: string}).clusterId
-    ) {
-      this.cluster = (decodedValue as unknown as {clusterId: string}).clusterId;
+    if (!this.zone || !this.cluster) {
+      const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
+      const mappedValue = status.metadata.internalRepr.get(
+        INSTANCE_INFORMATION_KEY
+      ) as Buffer[];
+      const decodedValue = ResponseParams.decode(
+        mappedValue[0],
+        mappedValue[0].length
+      );
+      if (
+        decodedValue &&
+        (decodedValue as unknown as {zoneId: string}).zoneId
+      ) {
+        this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
+      }
+      if (
+        decodedValue &&
+        (decodedValue as unknown as {clusterId: string}).clusterId
+      ) {
+        this.cluster = (
+          decodedValue as unknown as {clusterId: string}
+        ).clusterId;
+      }
     }
   }
 }
