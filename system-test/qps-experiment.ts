@@ -27,7 +27,9 @@ describe.only('Bigtable/ClientSideMetrics', () => {
           const instance = bigtable.instance(instanceId);
           const table = instance.table(tableId);
           const hundredValues = [];
-          for (let j = 0; j < 10000; j++) {
+          // Get the starting time (in milliseconds since the Unix epoch)
+          const startTime = Date.now();
+          for (let j = 0; j < 10; j++) {
             for (let i = 0; i < 1000; i++) {
               hundredValues.push(i);
             }
@@ -38,6 +40,11 @@ describe.only('Bigtable/ClientSideMetrics', () => {
             await Promise.all(promises);
             console.log('complete');
           }
+          // Get the ending time
+          const endTime = Date.now();
+          // Calculate the elapsed time in milliseconds
+          const elapsedTime = endTime - startTime;
+          console.log(`Elapsed time: ${elapsedTime}`);
           done();
         } catch (e) {
           done(new Error('An error occurred while running the script'));
