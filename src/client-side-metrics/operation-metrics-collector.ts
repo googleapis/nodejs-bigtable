@@ -76,6 +76,8 @@ export class OperationMetricsCollector {
   private serverTime: number | null;
   private connectivityErrorCount: number;
   private streamingOperation: StreamingState;
+  private applicationLatencies: number[];
+  private lastRowReceivedTime: Date | null;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -102,6 +104,8 @@ export class OperationMetricsCollector {
     this.serverTime = null;
     this.connectivityErrorCount = 0;
     this.streamingOperation = streamingOperation;
+    this.lastRowReceivedTime = null;
+    this.applicationLatencies = [];
   }
 
   private getMetricsCollectorData() {
@@ -126,6 +130,7 @@ export class OperationMetricsCollector {
     if (this.state === MetricsCollectorState.OPERATION_NOT_STARTED) {
       this.operationStartTime = new Date();
       this.firstResponseLatency = null;
+      this.applicationLatencies = [];
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
     } else {
@@ -185,6 +190,7 @@ export class OperationMetricsCollector {
       this.serverTime = null;
       this.serverTimeRead = false;
       this.connectivityErrorCount = 0;
+      this.lastRowReceivedTime = null;
     } else {
       console.warn('Invalid state transition attempted');
     }
@@ -238,6 +244,7 @@ export class OperationMetricsCollector {
                 operationLatency: totalTime,
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? undefined,
+                applicationLatencies: this.applicationLatencies,
               });
             }
           });
@@ -279,6 +286,25 @@ export class OperationMetricsCollector {
         this.connectivityErrorCount = 1;
       }
     }
+  }
+
+  /**
+   * Called when a row from the Bigtable stream reaches the application user.
+   *
+   * This method is used to calculate the latency experienced by the application
+   * when reading rows from a Bigtable stream. It records the time between the
+   * previous row being received and the current row reaching the user. These
+   * latencies are then collected and reported as `applicationBlockingLatencies`
+   * when the operation completes.
+   */
+  onRowReachesUser() {
+    const currentTime = new Date();
+    if (this.lastRowReceivedTime) {
+      this.applicationLatencies.push(
+        currentTime.getTime() - this.lastRowReceivedTime.getTime()
+      );
+    }
+    this.lastRowReceivedTime = currentTime;
   }
 
   /**
