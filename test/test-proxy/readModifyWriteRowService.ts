@@ -129,7 +129,9 @@ describe('TestProxy/ReadModifyWriteRow', () => {
             );
           });
           done();
-        })();
+        })().catch(err => {
+          throw err;
+        });
       });
     });
   });

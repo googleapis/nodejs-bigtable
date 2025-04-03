@@ -315,6 +315,8 @@ export class CloudMonitoringExporter extends MetricExporter {
       } catch (error) {
         resultCallback(error as ServiceError);
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   }
 }

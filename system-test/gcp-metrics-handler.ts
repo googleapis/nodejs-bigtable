@@ -99,7 +99,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
           handler.onOperationComplete(request as OnOperationCompleteData);
         }
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
   it('Should export a value to two GCPMetricsHandlers', done => {
     // This test ensures that when we create two GCPMetricsHandlers much like
@@ -231,7 +233,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
           handler2.onOperationComplete(request as OnOperationCompleteData);
         }
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
   it('Should export a value to ten GCPMetricsHandlers', done => {
     // This test ensures that when we create two GCPMetricsHandlers much like
@@ -358,7 +362,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
           }
         }
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
   it('Should write two duplicate points inserted into the metrics handler', done => {
     (async () => {
@@ -431,6 +437,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
           }
         }
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
 });

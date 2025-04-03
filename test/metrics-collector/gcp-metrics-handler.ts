@@ -125,6 +125,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
           handler.onOperationComplete(request as OnOperationCompleteData);
         }
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
 });

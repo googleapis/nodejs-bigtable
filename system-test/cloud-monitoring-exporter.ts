@@ -75,6 +75,8 @@ describe('Bigtable/CloudMonitoringExporter', () => {
         transformedExportInput as unknown as ResourceMetrics,
         resultCallback,
       );
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
 });

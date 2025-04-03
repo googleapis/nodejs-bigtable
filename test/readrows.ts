@@ -400,7 +400,9 @@ describe('Bigtable/ReadRows', () => {
       } catch (error) {
         done(error);
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
   it('should return row data in the right order with a predictable sleep function', function (done) {
     this.timeout(600000);
@@ -458,7 +460,9 @@ describe('Bigtable/ReadRows', () => {
       } catch (error) {
         done(error);
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
 
   it.skip('pitfall: should not request full table scan during a retry on a transient error', async () => {

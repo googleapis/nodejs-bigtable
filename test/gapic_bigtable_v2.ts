@@ -214,9 +214,14 @@ describe('v2.BigtableClient', () => {
         throw err;
       });
       assert(client.bigtableStub);
-      client.close().then(() => {
-        done();
-      });
+      client
+        .close()
+        .then(() => {
+          done();
+        })
+        .catch(err => {
+          throw err;
+        });
     });
 
     it('has close method for the non-initialized client', done => {
@@ -225,9 +230,14 @@ describe('v2.BigtableClient', () => {
         projectId: 'bogus',
       });
       assert.strictEqual(client.bigtableStub, undefined);
-      client.close().then(() => {
-        done();
-      });
+      client
+        .close()
+        .then(() => {
+          done();
+        })
+        .catch(err => {
+          throw err;
+        });
     });
 
     it('has getProjectId method', async () => {
@@ -382,7 +392,9 @@ describe('v2.BigtableClient', () => {
       request.authorizedViewName =
         'projects/value/instances/value/tables/value/authorizedViews/value';
       const expectedError = new Error('The client has already been closed.');
-      client.close();
+      client.close().catch(err => {
+        throw err;
+      });
       await assert.rejects(client.mutateRow(request), expectedError);
     });
   });
@@ -507,7 +519,9 @@ describe('v2.BigtableClient', () => {
       request.authorizedViewName =
         'projects/value/instances/value/tables/value/authorizedViews/value';
       const expectedError = new Error('The client has already been closed.');
-      client.close();
+      client.close().catch(err => {
+        throw err;
+      });
       await assert.rejects(client.checkAndMutateRow(request), expectedError);
     });
   });
@@ -625,7 +639,9 @@ describe('v2.BigtableClient', () => {
       // path template is empty
       request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
-      client.close();
+      client.close().catch(err => {
+        throw err;
+      });
       await assert.rejects(client.pingAndWarm(request), expectedError);
     });
   });
@@ -751,7 +767,9 @@ describe('v2.BigtableClient', () => {
       request.authorizedViewName =
         'projects/value/instances/value/tables/value/authorizedViews/value';
       const expectedError = new Error('The client has already been closed.');
-      client.close();
+      client.close().catch(err => {
+        throw err;
+      });
       await assert.rejects(client.readModifyWriteRow(request), expectedError);
     });
   });
@@ -869,7 +887,9 @@ describe('v2.BigtableClient', () => {
       // path template is empty
       request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
-      client.close();
+      client.close().catch(err => {
+        throw err;
+      });
       await assert.rejects(client.prepareQuery(request), expectedError);
     });
   });
@@ -1015,7 +1035,9 @@ describe('v2.BigtableClient', () => {
       request.authorizedViewName =
         'projects/value/instances/value/tables/value/authorizedViews/value';
       const expectedError = new Error('The client has already been closed.');
-      client.close();
+      client.close().catch(err => {
+        throw err;
+      });
       const stream = client.readRows(request, {
         retryRequestOptions: {noResponseRetries: 0},
       });
@@ -1183,7 +1205,9 @@ describe('v2.BigtableClient', () => {
       request.authorizedViewName =
         'projects/value/instances/value/tables/value/authorizedViews/value';
       const expectedError = new Error('The client has already been closed.');
-      client.close();
+      client.close().catch(err => {
+        throw err;
+      });
       const stream = client.sampleRowKeys(request, {
         retryRequestOptions: {noResponseRetries: 0},
       });
@@ -1351,7 +1375,9 @@ describe('v2.BigtableClient', () => {
       request.authorizedViewName =
         'projects/value/instances/value/tables/value/authorizedViews/value';
       const expectedError = new Error('The client has already been closed.');
-      client.close();
+      client.close().catch(err => {
+        throw err;
+      });
       const stream = client.mutateRows(request, {
         retryRequestOptions: {noResponseRetries: 0},
       });
@@ -1528,7 +1554,9 @@ describe('v2.BigtableClient', () => {
       );
       request.tableName = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
-      client.close();
+      client.close().catch(err => {
+        throw err;
+      });
       const stream = client.generateInitialChangeStreamPartitions(request, {
         retryRequestOptions: {noResponseRetries: 0},
       });
@@ -1703,7 +1731,9 @@ describe('v2.BigtableClient', () => {
       );
       request.tableName = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
-      client.close();
+      client.close().catch(err => {
+        throw err;
+      });
       const stream = client.readChangeStream(request, {
         retryRequestOptions: {noResponseRetries: 0},
       });
@@ -1864,7 +1894,9 @@ describe('v2.BigtableClient', () => {
       // path template is empty
       request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
-      client.close();
+      client.close().catch(err => {
+        throw err;
+      });
       const stream = client.executeQuery(request, {
         retryRequestOptions: {noResponseRetries: 0},
       });

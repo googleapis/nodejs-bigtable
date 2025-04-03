@@ -60,6 +60,8 @@ describe('Bigtable', () => {
           } catch (e) {
             console.log(`Error deleting backup: ${backup.id}`);
           }
+        }).catch(err => {
+          throw err;
         });
       }),
     );
@@ -86,6 +88,8 @@ describe('Bigtable', () => {
           } catch (e) {
             console.log(`Error deleting instance: ${instance.id}`);
           }
+        }).catch(err => {
+          throw err;
         });
       }),
     );
@@ -121,6 +125,8 @@ describe('Bigtable', () => {
           } catch (e) {
             console.log(`Error deleting instance: ${instance.id}`);
           }
+        }).catch(err => {
+          throw err;
         });
       }),
     );
@@ -1915,7 +1921,9 @@ describe('Bigtable', () => {
           } catch (e: unknown) {
             done(e);
           }
-        })();
+        })().catch(err => {
+          throw err;
+        });
       });
     });
     describe('MutateRows grpc calls', () => {
@@ -2075,7 +2083,9 @@ describe('Bigtable', () => {
           } catch (e: unknown) {
             done(e);
           }
-        })();
+        })().catch(err => {
+          throw err;
+        });
       });
     });
     describe('CheckAndMutate grpc calls', () => {
@@ -2111,7 +2121,9 @@ describe('Bigtable', () => {
             // Will reach this point if there is an assertion error.
             done(e);
           }
-        })();
+        })().catch(err => {
+          throw err;
+        });
       });
       it('should call filter for the authorized view', done => {
         (async () => {
@@ -2199,7 +2211,9 @@ describe('Bigtable', () => {
           } catch (e: unknown) {
             done(e);
           }
-        })();
+        })().catch(err => {
+          throw err;
+        });
       });
     });
     describe('ReadModifyWriteRow grpc calls', () => {

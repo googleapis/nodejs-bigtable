@@ -177,7 +177,9 @@ describe('TestProxy/CheckAndMutateRow', () => {
             );
           });
           done();
-        })();
+        })().catch(err => {
+          throw err;
+        });
       });
     });
   });
