@@ -363,7 +363,6 @@ export const expectedOtelExportConvertedValue = {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
           client_name: 'nodejs-bigtable',
-          status: undefined,
         },
       },
       resource: {
