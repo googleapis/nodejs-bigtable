@@ -29,13 +29,14 @@ describe.only('Bigtable/ClientSideMetrics', () => {
           const hundredValues = [];
           // Get the starting time (in milliseconds since the Unix epoch)
           const startTime = Date.now();
-          for (let j = 0; j < 10; j++) {
+          for (let j = 0; j < 10000; j++) {
             for (let i = 0; i < 1000; i++) {
               hundredValues.push(i);
             }
             const promises = hundredValues.map(i =>
               table.getRows({limit: 100})
             );
+            console.log(new Date());
             console.log('running 100 readRows calls');
             await Promise.all(promises);
             console.log('complete');
