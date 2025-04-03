@@ -27,7 +27,7 @@ describe('Bigtable/CloudMonitoringExporter', () => {
     // When this test is run, metrics should be visible at the following link:
     // https://pantheon.corp.google.com/monitoring/metrics-explorer;duration=PT1H?inv=1&invt=Abo9_A&project={projectId}
     // This test will add metrics so that they are available in Pantheon
-    void (async () => {
+    (async () => {
       const resultCallback: (result: ExportResult) => void = (
         result: ExportResult,
       ) => {

@@ -380,7 +380,7 @@ describe('Bigtable/ReadRows', () => {
     const sleep = (ms: number) => {
       return new Promise(resolve => setTimeout(resolve, ms));
     };
-    void (async () => {
+    (async () => {
       try {
         // 150 rows must be enough to reproduce issues with losing the data and to create backpressure
         const stream = table.createReadStream({
@@ -437,7 +437,7 @@ describe('Bigtable/ReadRows', () => {
         nextEventLoop();
       });
     };
-    void (async () => {
+    (async () => {
       try {
         // 150 rows must be enough to reproduce issues with losing the data and to create backpressure
         const stream = table.createReadStream({

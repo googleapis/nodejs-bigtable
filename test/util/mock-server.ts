@@ -36,15 +36,15 @@ describe('Bigtable/Mock-Server', () => {
   describe('Ensure server shuts down properly when destroyed', () => {
     it('should start a mock server', done => {
       server = new MockServer(port => {
-        void checkPort(port, true, done);
+        checkPort(port, true, done);
       }, inputPort);
     });
   });
   after(done => {
-    void checkPort(server.port, true, () => {
+    checkPort(server.port, true, () => {
       server.shutdown((err?: Error) => {
         assert.deepStrictEqual(err, undefined);
-        void checkPort(server.port, false, done);
+        checkPort(server.port, false, done);
       });
     });
   });

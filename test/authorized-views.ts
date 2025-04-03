@@ -133,7 +133,7 @@ describe('Bigtable/AuthorizedViews', () => {
 
         it('requests for createReadStream should match', done => {
           setupReadRows(done);
-          void (async () => {
+          (async () => {
             const opts = {
               decode: true,
               end: '9',
@@ -151,7 +151,7 @@ describe('Bigtable/AuthorizedViews', () => {
         });
         it('requests for getRows should match', done => {
           setupReadRows(done);
-          void (async () => {
+          (async () => {
             const opts = {
               decode: true,
               end: '9',
@@ -211,7 +211,7 @@ describe('Bigtable/AuthorizedViews', () => {
           });
         }
         it('requests for mutate should match', done => {
-          void(async () => {
+          (async () => {
             setupMutateRows(done);
             const mutation = {
               key: 'some-id',
@@ -236,7 +236,7 @@ describe('Bigtable/AuthorizedViews', () => {
           })();
         });
         it('requests for insert should match', done => {
-          void (async () => {
+          (async () => {
             setupMutateRows(done);
             const mutation = {
               key: 'some-id',
@@ -283,7 +283,7 @@ describe('Bigtable/AuthorizedViews', () => {
         }
         it('requests for sampleRowKeys should match', done => {
           setupSampleRowKeys(done);
-          void (async () => {
+          (async () => {
             const opts = {
               maxRetries: 4,
             };
@@ -294,7 +294,7 @@ describe('Bigtable/AuthorizedViews', () => {
         });
         it('requests for sampleRowKeysStream should match', done => {
           setupSampleRowKeys(done);
-          void (async () => {
+          (async () => {
             const gaxOptions = {maxRetries: 4};
             await table.sampleRowKeysStream(gaxOptions);
             await view.sampleRowKeysStream(gaxOptions);
@@ -370,7 +370,7 @@ describe('Bigtable/AuthorizedViews', () => {
 
         it('requests for createRules should match', done => {
           setupReadModifyWriteRow(done);
-          void (async () => {
+          (async () => {
             const rule = {
               column: 'columnFamilyName:columnName',
               increment: 7,
@@ -383,7 +383,7 @@ describe('Bigtable/AuthorizedViews', () => {
         });
         it('requests for increment should match', done => {
           setupReadModifyWriteRow(done);
-          void (async () => {
+          (async () => {
             // Change the response so that format families can run.
             const column = 'columnFamilyName:columnName';
             const gaxOpts = {maxRetries: 4};
@@ -458,7 +458,7 @@ describe('Bigtable/AuthorizedViews', () => {
 
         it('requests for filter should match', done => {
           setupCheckAndMutateRow(done);
-          void (async () => {
+          (async () => {
             const filter: RawFilter = {
               family: 'columnFamilyName',
               value: 'columnName',
