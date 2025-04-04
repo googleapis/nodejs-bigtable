@@ -175,62 +175,67 @@ function getMetric(
 }
 
 /**
- * In order to avoid encountering an error that says "Points must be written in
- * order. One or more of the points specified had an older start time than the
- * most recent point." we need to sort the data points before sending them
- * to the metrics service client backend.
+ * Sorts a timeSeriesArray based on the startTime of the first data point.
  *
- * @param dataPoints The data points to be sorted
+ * @param {Array<Object>} timeSeriesArray - The array of time series objects.
+ * Each object is expected to have a `points` array, where the first element
+ * has an `interval` object with a `startTime` object containing `seconds`
+ * and potentially `nanos`.
+ * @returns {Array<Object>} The sorted timeSeriesArray (sorted in-place).
  */
-function sortDataPointsByStartTime(
-  dataPoints:
-    | DataPoint<number>[]
-    | DataPoint<Histogram>[]
-    | DataPoint<ExponentialHistogram>[]
+function sortTimeSeriesByStartTime(
+  timeSeriesArray: google.monitoring.v3.ITimeSeries[]
 ) {
-  if (!Array.isArray(dataPoints)) {
-    console.warn('Invalid dataPoints array provided.');
-    return [];
+  // Check if the input is a valid array
+  if (!Array.isArray(timeSeriesArray)) {
+    console.error('Input must be an array.');
+    // Depending on desired behavior, you might throw an error instead
+    // throw new TypeError("Input must be an array.");
+    return timeSeriesArray;
   }
 
-  // Create a copy to avoid modifying the original array
-  const sortedDataPoints = [...dataPoints].sort((a, b) => {
-    // Assuming startTime is an array [seconds, nanoseconds]
-    if (
-      Array.isArray(a.startTime) &&
-      Array.isArray(b.startTime) &&
-      a.startTime.length === 2 &&
-      b.startTime.length === 2
-    ) {
-      if (a.startTime[0] > b.startTime[0]) {
-        return 1;
-      } else if (a.startTime[0] < b.startTime[0]) {
-        return -1;
-      } else {
-        // If seconds are equal, compare nanoseconds
-        if (a.startTime[1] > b.startTime[1]) {
-          return 1;
-        } else if (a.startTime[1] < b.startTime[1]) {
-          return -1;
-        } else {
-          return 0;
-        }
+  timeSeriesArray.sort((a, b) => {
+    try {
+      // More robust access with optional chaining and nullish coalescing
+      const startTimeA = a?.points?.[0]?.interval?.startTime;
+      const startTimeB = b?.points?.[0]?.interval?.startTime;
+
+      // Handle cases where startTime objects or their properties might be missing
+      if (!startTimeA || !startTimeB) {
+        console.warn(
+          'Cannot compare elements due to missing startTime structure:',
+          a,
+          b
+        );
+        // Decide how to handle incomplete data:
+        // - Treat missing startTime as earliest (return -1 if only A is missing, 1 if only B is missing)
+        // - Treat missing startTime as latest (return 1 if only A is missing, -1 if only B is missing)
+        // - Keep original order (return 0)
+        if (!startTimeA && !startTimeB) return 0;
+        return !startTimeA ? -1 : 1; // Example: treat missing as earliest
       }
-    } else if (
-      typeof a.startTime === 'number' &&
-      typeof b.startTime === 'number'
-    ) {
-      // Assuming startTime is a simple numeric timestamp
-      return a.startTime - b.startTime;
-    } else {
-      console.warn(
-        'Data points have inconsistent or unsupported startTime formats. Sorting may be unpredictable.'
-      );
-      return 0; // Maintain original order for inconsistent startTime
+
+      const secondsA = startTimeA.seconds ?? 0; // Use 0 if seconds is null/undefined
+      const secondsB = startTimeB.seconds ?? 0;
+
+      // Compare seconds first
+      const secondsDiff = (secondsA as number) - (secondsB as number);
+      if (secondsDiff !== 0) {
+        return secondsDiff;
+      }
+
+      // If seconds are equal, compare nanos
+      const nanosA = startTimeA.nanos ?? 0; // Use 0 if nanos is null/undefined
+      const nanosB = startTimeB.nanos ?? 0;
+      return nanosA - nanosB;
+    } catch (error) {
+      // Catch unexpected errors during access/comparison
+      console.error('Error during comparison:', error, 'Elements:', a, b);
+      return 0; // Keep original order on error
     }
   });
 
-  return sortedDataPoints;
+  return timeSeriesArray; // Return the array (it was sorted in-place)
 }
 
 /**
@@ -279,10 +284,7 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
   const timeSeriesArray = [];
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
-      const sortedDataPoints = sortDataPointsByStartTime(
-        scopeMetric.dataPoints
-      );
-      for (const dataPoint of sortedDataPoints) {
+      for (const dataPoint of scopeMetric.dataPoints) {
         const metric = getMetric(scopeMetric.descriptor.name, dataPoint);
         const resource = getResource(projectId, dataPoint);
         if (isCounterValue(dataPoint)) {
@@ -305,9 +307,12 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
       }
     }
   }
+  const sortedTimeSeriesArray = sortTimeSeriesByStartTime(
+    timeSeriesArray as google.monitoring.v3.ITimeSeries[]
+  );
   return {
     name: `projects/${projectId}`,
-    timeSeries: timeSeriesArray,
+    timeSeries: sortedTimeSeriesArray,
   };
 }
 
