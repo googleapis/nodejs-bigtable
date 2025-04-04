@@ -60,14 +60,11 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
   before(async () => {
     // This line is added just to make sure the bigtable variable is assigned.
     // It is needed to solve a compile time error in the after hook.
-    // const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
-    /*
+    const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
     const options = {
       universeDomain,
     };
-     */
-    process.env.GOOGLE_CLOUD_UNIVERSE_DOMAIN = 'apis-tpczero.goog';
-    bigtable = new Bigtable();
+    bigtable = new Bigtable(options);
   });
 
   after(async () => {
