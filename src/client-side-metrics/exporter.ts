@@ -175,6 +175,65 @@ function getMetric(
 }
 
 /**
+ * In order to avoid encountering an error that says "Points must be written in
+ * order. One or more of the points specified had an older start time than the
+ * most recent point." we need to sort the data points before sending them
+ * to the metrics service client backend.
+ *
+ * @param dataPoints The data points to be sorted
+ */
+function sortDataPointsByStartTime(
+  dataPoints:
+    | DataPoint<number>[]
+    | DataPoint<Histogram>[]
+    | DataPoint<ExponentialHistogram>[]
+) {
+  if (!Array.isArray(dataPoints)) {
+    console.warn('Invalid dataPoints array provided.');
+    return [];
+  }
+
+  // Create a copy to avoid modifying the original array
+  const sortedDataPoints = [...dataPoints].sort((a, b) => {
+    // Assuming startTime is an array [seconds, nanoseconds]
+    if (
+      Array.isArray(a.startTime) &&
+      Array.isArray(b.startTime) &&
+      a.startTime.length === 2 &&
+      b.startTime.length === 2
+    ) {
+      if (a.startTime[0] > b.startTime[0]) {
+        return 1;
+      } else if (a.startTime[0] < b.startTime[0]) {
+        return -1;
+      } else {
+        // If seconds are equal, compare nanoseconds
+        if (a.startTime[1] > b.startTime[1]) {
+          return 1;
+        } else if (a.startTime[1] < b.startTime[1]) {
+          return -1;
+        } else {
+          return 0;
+        }
+      }
+    } else if (
+      typeof a.startTime === 'number' &&
+      typeof b.startTime === 'number'
+    ) {
+      // Assuming startTime is a simple numeric timestamp
+      return a.startTime - b.startTime;
+    } else {
+      console.warn(
+        'Data points have inconsistent or unsupported startTime formats. Sorting may be unpredictable.'
+      );
+      return 0; // Maintain original order for inconsistent startTime
+    }
+  });
+
+  return sortedDataPoints;
+}
+
+/**
  * Converts OpenTelemetry metrics data into a format suitable for the Google Cloud
  * Monitoring API's `createTimeSeries` method.
  *
@@ -220,7 +279,10 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
   const timeSeriesArray = [];
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
-      for (const dataPoint of scopeMetric.dataPoints) {
+      const sortedDataPoints = sortDataPointsByStartTime(
+        scopeMetric.dataPoints
+      );
+      for (const dataPoint of sortedDataPoints) {
         const metric = getMetric(scopeMetric.descriptor.name, dataPoint);
         const resource = getResource(projectId, dataPoint);
         if (isCounterValue(dataPoint)) {
