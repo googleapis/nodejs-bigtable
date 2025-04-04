@@ -19,9 +19,6 @@ import * as mocha from 'mocha';
 
 describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
   async function mockBigtable() {
-    const FakeBigtable = proxyquire('../src/index.js', {}).Bigtable;
-    bigtable = new FakeBigtable();
-
     const instance = bigtable.instance(instanceId);
     const [instanceInfo] = await instance.exists();
     console.log('after exists');
