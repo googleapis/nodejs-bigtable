@@ -97,7 +97,7 @@
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "CheckConsistency": {
-          "timeout_millis": 60000,
+          "timeout_millis": 3600000,
           "retry_codes_name": "idempotent",
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },

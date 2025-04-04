@@ -22,7 +22,7 @@ const services = require('./services/index.js');
 
 const GAX_PROTOS_DIR = resolve(
   dirname(require.resolve('google-gax')),
-  '../protos'
+  '../protos',
 );
 const PROTOS_DIR = resolve(__dirname, '../protos');
 const PROTO_PATH = resolve(PROTOS_DIR, 'test_proxy.proto');
@@ -49,7 +49,7 @@ function startServer(service) {
     grpc.ServerCredentials.createInsecure(),
     () => {
       console.log(`grpc server started on port: ${port}`);
-    }
+    },
   );
 }
 

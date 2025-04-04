@@ -110,7 +110,7 @@ describe('Bigtable/Table', () => {
       try {
         await table.getRows();
         assert.fail(
-          'An error should have been thrown because the client is closed'
+          'An error should have been thrown because the client is closed',
         );
       } catch (err: any) {
         assert.strictEqual(err.message, 'The client has already been closed.');
@@ -159,16 +159,16 @@ describe('Bigtable/Table', () => {
             (range: any) => {
               const convertedRowRange = {} as {[index: string]: string};
               Object.keys(range).forEach(
-                key => (convertedRowRange[key] = range[key].asciiSlice())
+                key => (convertedRowRange[key] = range[key].asciiSlice()),
               );
               return convertedRowRange;
-            }
+            },
           );
         }
         if (reqOpts.rows && reqOpts.rows.rowKeys) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           requestOptions.rowKeys = reqOpts.rows.rowKeys.map((rowKeys: any) =>
-            rowKeys.asciiSlice()
+            rowKeys.asciiSlice(),
           );
         }
         if (reqOpts.rowsLimit) {
@@ -211,7 +211,7 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(
           responses.length,
           0,
-          'not all the responses were used'
+          'not all the responses were used',
         );
         assert.deepStrictEqual(requestedOptions, test.request_options);
       });

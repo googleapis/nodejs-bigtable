@@ -75,6 +75,26 @@
                 "testIamPermissions"
               ]
             },
+            "GetLogicalView": {
+              "methods": [
+                "getLogicalView"
+              ]
+            },
+            "DeleteLogicalView": {
+              "methods": [
+                "deleteLogicalView"
+              ]
+            },
+            "GetMaterializedView": {
+              "methods": [
+                "getMaterializedView"
+              ]
+            },
+            "DeleteMaterializedView": {
+              "methods": [
+                "deleteMaterializedView"
+              ]
+            },
             "CreateInstance": {
               "methods": [
                 "createInstance"
@@ -105,6 +125,26 @@
                 "updateAppProfile"
               ]
             },
+            "CreateLogicalView": {
+              "methods": [
+                "createLogicalView"
+              ]
+            },
+            "UpdateLogicalView": {
+              "methods": [
+                "updateLogicalView"
+              ]
+            },
+            "CreateMaterializedView": {
+              "methods": [
+                "createMaterializedView"
+              ]
+            },
+            "UpdateMaterializedView": {
+              "methods": [
+                "updateMaterializedView"
+              ]
+            },
             "ListAppProfiles": {
               "methods": [
                 "listAppProfiles",
@@ -117,6 +157,20 @@
                 "listHotTablets",
                 "listHotTabletsStream",
                 "listHotTabletsAsync"
+              ]
+            },
+            "ListLogicalViews": {
+              "methods": [
+                "listLogicalViews",
+                "listLogicalViewsStream",
+                "listLogicalViewsAsync"
+              ]
+            },
+            "ListMaterializedViews": {
+              "methods": [
+                "listMaterializedViews",
+                "listMaterializedViewsStream",
+                "listMaterializedViewsAsync"
               ]
             }
           }
@@ -189,6 +243,26 @@
                 "testIamPermissions"
               ]
             },
+            "GetLogicalView": {
+              "methods": [
+                "getLogicalView"
+              ]
+            },
+            "DeleteLogicalView": {
+              "methods": [
+                "deleteLogicalView"
+              ]
+            },
+            "GetMaterializedView": {
+              "methods": [
+                "getMaterializedView"
+              ]
+            },
+            "DeleteMaterializedView": {
+              "methods": [
+                "deleteMaterializedView"
+              ]
+            },
             "CreateInstance": {
               "methods": [
                 "createInstance"
@@ -219,6 +293,26 @@
                 "updateAppProfile"
               ]
             },
+            "CreateLogicalView": {
+              "methods": [
+                "createLogicalView"
+              ]
+            },
+            "UpdateLogicalView": {
+              "methods": [
+                "updateLogicalView"
+              ]
+            },
+            "CreateMaterializedView": {
+              "methods": [
+                "createMaterializedView"
+              ]
+            },
+            "UpdateMaterializedView": {
+              "methods": [
+                "updateMaterializedView"
+              ]
+            },
             "ListAppProfiles": {
               "methods": [
                 "listAppProfiles",
@@ -231,6 +325,20 @@
                 "listHotTablets",
                 "listHotTabletsStream",
                 "listHotTabletsAsync"
+              ]
+            },
+            "ListLogicalViews": {
+              "methods": [
+                "listLogicalViews",
+                "listLogicalViewsStream",
+                "listLogicalViewsAsync"
+              ]
+            },
+            "ListMaterializedViews": {
+              "methods": [
+                "listMaterializedViews",
+                "listMaterializedViewsStream",
+                "listMaterializedViewsAsync"
               ]
             }
           }

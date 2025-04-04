@@ -65,20 +65,20 @@ export interface GenericBackupCallback<T> {
   (
     err?: ServiceError | null,
     backup?: Backup | null,
-    apiResponse?: T | null
+    apiResponse?: T | null,
   ): void;
 }
 export type GenericBackupPromise<T> = [Backup, T];
 
 export type DeleteBackupCallback = (
   err: ServiceError | null,
-  apiResponse?: IEmpty
+  apiResponse?: IEmpty,
 ) => void;
 export type DeleteBackupResponse = [IEmpty];
 
 export type BackupExistsCallback = (
   err: ServiceError | null,
-  exists?: boolean
+  exists?: boolean,
 ) => void;
 export type BackupExistsResponse = [boolean];
 
@@ -87,14 +87,14 @@ export type GetBackupResponse = [Backup, IBackup];
 
 export type BackupGetMetadataCallback = (
   err?: ServiceError | null,
-  metadata?: IBackup | null
+  metadata?: IBackup | null,
 ) => void;
 export type BackupGetMetadataResponse = [IBackup];
 
 export type BackupSetMetadataCallback = (
   err: ServiceError | null,
   metadata: IBackup,
-  resp: IBackup
+  resp: IBackup,
 ) => void;
 export type BackupSetMetadataResponse = [IBackup, IBackup];
 
@@ -108,7 +108,7 @@ export type RestoreTableCallback = (
   err: ServiceError | null,
   table?: Table,
   operation?: Operation,
-  apiResponse?: IOperation
+  apiResponse?: IOperation,
 ) => void;
 export type RestoreTableResponse = [Table, Operation, IOperation];
 
@@ -147,7 +147,7 @@ export type GetBackupsCallback = (
   err: ServiceError | null,
   backups?: Backup[],
   nextQuery?: GetBackupsOptions,
-  apiResponse?: google.bigtable.admin.v2.IListBackupsResponse
+  apiResponse?: google.bigtable.admin.v2.IListBackupsResponse,
 ) => void;
 
 /**
@@ -270,7 +270,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
   copy(config: CopyBackupConfig): Promise<CopyBackupResponse>;
   copy(
     config: CopyBackupConfig,
-    callback?: CopyBackupCallback
+    callback?: CopyBackupCallback,
   ): void | Promise<CopyBackupResponse> {
     const reqOpts = {
       parent: config.cluster.name,
@@ -293,7 +293,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
         }
         // Second argument is a backup for the new backup id
         callback!(null, config.cluster.backup(config.id), ...args);
-      }
+      },
     );
   }
 
@@ -326,7 +326,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    */
   create(
     config: CreateBackupConfig,
-    callback?: CreateBackupCallback
+    callback?: CreateBackupCallback,
   ): void | Promise<CreateBackupResponse> {
     this.cluster.createBackup(this.id, config, callback!);
   }
@@ -348,7 +348,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    */
   delete(
     gaxOptionsOrCallback?: CallOptions | DeleteBackupCallback,
-    cb?: DeleteBackupCallback
+    cb?: DeleteBackupCallback,
   ): void | Promise<DeleteBackupResponse> {
     const gaxOpts =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
@@ -364,7 +364,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
         },
         gaxOpts,
       },
-      callback
+      callback,
     );
   }
 
@@ -383,7 +383,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    */
   exists(
     optionsOrCallback?: CallOptions | BackupExistsCallback,
-    cb?: BackupExistsCallback
+    cb?: BackupExistsCallback,
   ): void | Promise<BackupExistsResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -422,7 +422,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    */
   get(
     gaxOptionsOrCallback?: CallOptions | GetBackupCallback,
-    cb?: GetBackupCallback
+    cb?: GetBackupCallback,
   ): void | Promise<GetBackupResponse> {
     const gaxOpts =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
@@ -433,14 +433,14 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
       gaxOpts,
       (err?: ServiceError | null, metadata?: IBackup | null) => {
         callback(err, err ? null : this, metadata);
-      }
+      },
     );
   }
 
   getIamPolicy(options?: GetIamPolicyOptions): Promise<GetIamPolicyResponse>;
   getIamPolicy(
     options: GetIamPolicyOptions,
-    callback: GetIamPolicyCallback
+    callback: GetIamPolicyCallback,
   ): void;
   /**
    * @param {object} [options] Configuration object.
@@ -460,7 +460,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    */
   getIamPolicy(
     optionsOrCallback?: GetIamPolicyOptions | GetIamPolicyCallback,
-    cb?: GetIamPolicyCallback
+    cb?: GetIamPolicyCallback,
   ): void | Promise<GetIamPolicyResponse> {
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -473,7 +473,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
   getMetadata(callback: BackupGetMetadataCallback): void;
   getMetadata(
     gaxOptions: CallOptions,
-    callback: BackupGetMetadataCallback
+    callback: BackupGetMetadataCallback,
   ): void;
   /**
    * Get a backup if it exists.
@@ -491,7 +491,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    */
   getMetadata(
     gaxOptionsOrCallback?: CallOptions | BackupGetMetadataCallback,
-    cb?: BackupGetMetadataCallback
+    cb?: BackupGetMetadataCallback,
   ): void | Promise<BackupGetMetadataResponse> {
     const gaxOpts =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
@@ -512,18 +512,18 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
           this.metadata = resp;
         }
         callback(err, resp);
-      }
+      },
     );
   }
 
   restore(
     tableId: string,
-    gaxOptions?: CallOptions
+    gaxOptions?: CallOptions,
   ): Promise<RestoreTableResponse>;
   restore(
     tableId: string,
     gaxOptions: CallOptions,
-    callback: RestoreTableCallback
+    callback: RestoreTableCallback,
   ): void;
   restore(tableId: string, callback: RestoreTableCallback): void;
   /**
@@ -551,7 +551,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
   restore(
     tableId: string,
     gaxOptionsOrCallback?: CallOptions | RestoreTableCallback,
-    cb?: RestoreTableCallback
+    cb?: RestoreTableCallback,
   ): void | Promise<RestoreTableResponse> {
     const gaxOpts =
       typeof gaxOptionsOrCallback === 'object'
@@ -566,7 +566,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
         instance: this.cluster.instance,
         gaxOptions: gaxOpts,
       },
-      callback
+      callback,
     );
   }
 
@@ -599,7 +599,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    */
   restoreTo(
     config: RestoreTableConfig,
-    callback?: RestoreTableCallback
+    callback?: RestoreTableCallback,
   ): void | Promise<RestoreTableResponse> {
     let parent: string;
     if (config.instance) {
@@ -634,18 +634,18 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
           return;
         }
         callback!(err, this.cluster.instance.table(config.tableId), ...args);
-      }
+      },
     );
   }
 
   setIamPolicy(
     policy: Policy,
-    gaxOptions?: CallOptions
+    gaxOptions?: CallOptions,
   ): Promise<SetIamPolicyResponse>;
   setIamPolicy(
     policy: Policy,
     gaxOptions: CallOptions,
-    callback: SetIamPolicyCallback
+    callback: SetIamPolicyCallback,
   ): void;
   setIamPolicy(policy: Policy, callback: SetIamPolicyCallback): void;
   /**
@@ -661,7 +661,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
   setIamPolicy(
     policy: Policy,
     gaxOptionsOrCallback?: CallOptions | SetIamPolicyCallback,
-    cb?: SetIamPolicyCallback
+    cb?: SetIamPolicyCallback,
   ): void | Promise<SetIamPolicyResponse> {
     const gaxOptions =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
@@ -672,16 +672,16 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
 
   setMetadata(
     metadata: ModifiableBackupFields,
-    gaxOptions?: CallOptions
+    gaxOptions?: CallOptions,
   ): Promise<BackupSetMetadataResponse>;
   setMetadata(
     metadata: ModifiableBackupFields,
-    callback: BackupSetMetadataCallback
+    callback: BackupSetMetadataCallback,
   ): void;
   setMetadata(
     metadata: ModifiableBackupFields,
     gaxOptions: CallOptions,
-    callback: BackupSetMetadataCallback
+    callback: BackupSetMetadataCallback,
   ): void;
   /**
    * Updates this pending or completed Cloud Bigtable Backup.
@@ -700,7 +700,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
   setMetadata(
     metadata: ModifiableBackupFields,
     gaxOptionsOrCallback?: CallOptions | BackupSetMetadataCallback,
-    cb?: BackupSetMetadataCallback
+    cb?: BackupSetMetadataCallback,
   ): void | Promise<BackupSetMetadataResponse> {
     const gaxOpts =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
@@ -734,22 +734,22 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
         }
 
         callback(err, this.metadata!, resp!);
-      }
+      },
     );
   }
 
   testIamPermissions(
     permissions: string | string[],
-    gaxOptions?: CallOptions
+    gaxOptions?: CallOptions,
   ): Promise<TestIamPermissionsResponse>;
   testIamPermissions(
     permissions: string | string[],
-    callback: TestIamPermissionsCallback
+    callback: TestIamPermissionsCallback,
   ): void;
   testIamPermissions(
     permissions: string | string[],
     gaxOptions: CallOptions,
-    callback: TestIamPermissionsCallback
+    callback: TestIamPermissionsCallback,
   ): void;
   /**
    *
@@ -767,7 +767,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
   testIamPermissions(
     permissions: string | string[],
     gaxOptionsOrCallback?: CallOptions | TestIamPermissionsCallback,
-    cb?: TestIamPermissionsCallback
+    cb?: TestIamPermissionsCallback,
   ): void | Promise<TestIamPermissionsResponse> {
     const gaxOptions =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
@@ -777,7 +777,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
       this,
       permissions,
       gaxOptions,
-      callback
+      callback,
     );
   }
 }

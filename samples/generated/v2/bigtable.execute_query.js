@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,8 +45,20 @@ function main(instanceName, query, params) {
   // const appProfileId = 'abc123'
   /**
    *  Required. The query string.
+   *  Exactly one of `query` and `prepared_query` is required. Setting both
+   *  or neither is an `INVALID_ARGUMENT`.
    */
   // const query = 'abc123'
+  /**
+   *  A prepared query that was returned from `PrepareQueryResponse`.
+   *  Exactly one of `query` and `prepared_query` is required. Setting both
+   *  or neither is an `INVALID_ARGUMENT`.
+   *  Setting this field also places restrictions on several other fields:
+   *  - `data_format` must be empty.
+   *  - `validate_only` must be false.
+   *  - `params` must match the `param_types` set in the `PrepareQueryRequest`.
+   */
+  // const preparedQuery = Buffer.from('string')
   /**
    *  Protocol buffer format as described by ProtoSchema and ProtoRows
    *  messages.
@@ -70,15 +82,18 @@ function main(instanceName, query, params) {
    *  the query string.
    *  For example, if
    *  `params"firstName"  = bytes_value: "foo" type {bytes_type {}}`
-   *   then `@firstName` will be replaced with googlesql bytes value "foo" in the
-   *   query string during query evaluation.
-   *  In case of Value.kind is not set, it will be set to corresponding null
-   *  value in googlesql.
-   *   `params"firstName"  =  type {string_type {}}`
-   *   then `@firstName` will be replaced with googlesql null string.
-   *  Value.type should always be set and no inference of type will be made from
-   *  Value.kind. If Value.type is not set, we will return INVALID_ARGUMENT
-   *  error.
+   *  then `@firstName` will be replaced with googlesql bytes value "foo" in the
+   *  query string during query evaluation.
+   *  If `Value.kind` is not set, the value is treated as a NULL value of the
+   *  given type. For example, if
+   *  `params"firstName"  = type {string_type {}}`
+   *  then `@firstName` will be replaced with googlesql null string.
+   *  If `query` is set, any empty `Value.type` in the map will be rejected with
+   *  `INVALID_ARGUMENT`.
+   *  If `prepared_query` is set, any empty `Value.type` in the map will be
+   *  inferred from the `param_types` in the `PrepareQueryRequest`. Any non-empty
+   *  `Value.type` must match the corresponding `param_types` entry, or be
+   *  rejected with `INVALID_ARGUMENT`.
    */
   // const params = [1,2,3,4]
 

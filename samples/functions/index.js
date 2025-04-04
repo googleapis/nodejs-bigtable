@@ -41,7 +41,7 @@ exports.readRows = async (req, res) => {
       .on('data', row => {
         rows.push(
           `rowkey: ${row.id}, ` +
-            `os_build: ${row.data['stats_summary']['os_build'][0].value}\n`
+            `os_build: ${row.data['stats_summary']['os_build'][0].value}\n`,
         );
       })
       .on('end', () => {

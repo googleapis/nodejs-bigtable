@@ -45,7 +45,7 @@ describe('instances', () => {
 
   it('should list zones', () => {
     const output = exec(
-      `node instances.js run --instance ${instanceId} --cluster ${clusterId}`
+      `node instances.js run --instance ${instanceId} --cluster ${clusterId}`,
     );
     assert.include(output, 'Instances:');
     assert.include(output, instanceId);

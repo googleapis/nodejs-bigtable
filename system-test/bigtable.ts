@@ -60,8 +60,10 @@ describe('Bigtable', () => {
           } catch (e) {
             console.log(`Error deleting backup: ${backup.id}`);
           }
+        }).catch(err => {
+          throw err;
         });
-      })
+      }),
     );
   }
 
@@ -86,15 +88,17 @@ describe('Bigtable', () => {
           } catch (e) {
             console.log(`Error deleting instance: ${instance.id}`);
           }
+        }).catch(err => {
+          throw err;
         });
-      })
+      }),
     );
   }
 
   before(async () => {
     await reapInstances();
     const [, operation] = await INSTANCE.create(
-      createInstanceConfig(CLUSTER_ID, 'us-central1-c', 3, Date.now())
+      createInstanceConfig(CLUSTER_ID, 'us-central1-c', 3, Date.now()),
     );
 
     await operation.promise();
@@ -121,8 +125,10 @@ describe('Bigtable', () => {
           } catch (e) {
             console.log(`Error deleting instance: ${instance.id}`);
           }
+        }).catch(err => {
+          throw err;
         });
-      })
+      }),
     );
   });
 
@@ -227,7 +233,7 @@ describe('Bigtable', () => {
         params: {cryptoKeyId},
         data: {purpose: 'ENCRYPT_DECRYPT'},
       });
-      cryptoKeyVersionName = resp.data.primary.name;
+      cryptoKeyVersionName = (resp.data as any).primary.name;
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_, operation] = await CMEK_INSTANCE.create({
@@ -290,8 +296,8 @@ describe('Bigtable', () => {
       } catch (e) {
         assert(
           (e as Error).message.includes(
-            'default keys and CMEKs are not allowed'
-          )
+            'default keys and CMEKs are not allowed',
+          ),
         );
       }
     });
@@ -346,7 +352,7 @@ describe('Bigtable', () => {
       const [metadata] = await APP_PROFILE.getMetadata();
       assert.strictEqual(
         metadata.name,
-        APP_PROFILE.name.replace('{{projectId}}', bigtable.projectId)
+        APP_PROFILE.name.replace('{{projectId}}', bigtable.projectId),
       );
     });
 
@@ -361,7 +367,7 @@ describe('Bigtable', () => {
       const [updatedAppProfile] = await APP_PROFILE.get();
       assert.strictEqual(
         updatedAppProfile.metadata!.description,
-        options.description
+        options.description,
       );
       assert.deepStrictEqual(updatedAppProfile.metadata!.singleClusterRouting, {
         clusterId: CLUSTER_ID,
@@ -481,7 +487,7 @@ describe('Bigtable', () => {
       const [metadata] = await TABLE.getMetadata();
       assert.strictEqual(
         metadata.name,
-        TABLE.name.replace('{{projectId}}', bigtable.projectId)
+        TABLE.name.replace('{{projectId}}', bigtable.projectId),
       );
     });
 
@@ -1274,7 +1280,7 @@ describe('Bigtable', () => {
     // Struct, Date, or PreciseDate, to keep things easy this uses PreciseDate.
     const expireTime = new PreciseDate(PreciseDate.now() + 8 * 60 * 60 * 1000);
     const updateExpireTime = new PreciseDate(
-      expireTime.getTime() + 2 + 60 * 60 * 1000
+      expireTime.getTime() + 2 + 60 * 60 * 1000,
     );
 
     before(async () => {
@@ -1286,11 +1292,11 @@ describe('Bigtable', () => {
       await op.promise();
       backupNameFromCluster = replaceProjectIdToken(
         `${CLUSTER.name}/backups/${backupIdFromCluster}`,
-        bigtable.projectId
+        bigtable.projectId,
       );
       backupNameFromTable = replaceProjectIdToken(
         `${CLUSTER.name}/backups/${backupIdFromTable}`,
-        bigtable.projectId
+        bigtable.projectId,
       );
     });
 
@@ -1373,7 +1379,12 @@ describe('Bigtable', () => {
 
     it('should restore a backup to a different instance', async () => {
       const [, operation] = await DIFF_INSTANCE.create(
-        createInstanceConfig(generateId('d-clust'), 'us-east1-c', 3, Date.now())
+        createInstanceConfig(
+          generateId('d-clust'),
+          'us-east1-c',
+          3,
+          Date.now(),
+        ),
       );
       await operation.promise();
       const [iExists] = await DIFF_INSTANCE.exists();
@@ -1452,7 +1463,7 @@ describe('Bigtable', () => {
       async function testCopyBackup(
         backup: Backup,
         config: CopyBackupConfig,
-        instance: Instance
+        instance: Instance,
       ) {
         // Get a list of backup ids before the copy
         const [backupsBeforeCopy] = await instance.getBackups();
@@ -1477,13 +1488,13 @@ describe('Bigtable', () => {
               backupPath
                 .split('/')
                 .map((item, index) => (index === 1 ? '{{projectId}}' : item))
-                .join('/')
+                .join('/'),
             );
           }
           // Check that there is now one more backup
           const [backupsAfterCopy] = await instance.getBackups();
           const newBackups = backupsAfterCopy.filter(
-            backup => !backupIdsBeforeCopy.includes(backup.id)
+            backup => !backupIdsBeforeCopy.includes(backup.id),
           );
           assert.strictEqual(newBackups.length, 1);
           const [fetchedNewBackup] = newBackups;
@@ -1499,7 +1510,7 @@ describe('Bigtable', () => {
       describe('should create backup of a table and copy it in the same cluster', async () => {
         async function testWithExpiryTimes(
           sourceTestExpireTime: BackupTimestamp,
-          copyTestExpireTime: BackupTimestamp
+          copyTestExpireTime: BackupTimestamp,
         ) {
           const [backup, op] = await TABLE.createBackup(generateId('backup'), {
             expireTime: sourceTestExpireTime,
@@ -1518,7 +1529,7 @@ describe('Bigtable', () => {
                 id: generateId('backup'),
                 expireTime: copyTestExpireTime,
               },
-              INSTANCE
+              INSTANCE,
             );
           } finally {
             await backup.delete();
@@ -1532,13 +1543,13 @@ describe('Bigtable', () => {
           // For example: sourceExpireTime.toStruct() = {seconds: 1706659851, nanos: 981000000}
           await testWithExpiryTimes(
             sourceExpireTime.toStruct(),
-            copyExpireTime.toStruct()
+            copyExpireTime.toStruct(),
           );
         });
         it('should copy to the same cluster with date expiry times', async () => {
           await testWithExpiryTimes(
             new Date(sourceExpireTimeMilliseconds),
-            new Date(copyExpireTimeMilliseconds)
+            new Date(copyExpireTimeMilliseconds),
           );
         });
       });
@@ -1581,7 +1592,7 @@ describe('Bigtable', () => {
               id: generateId('backup'),
               expireTime: copyExpireTime,
             },
-            instance
+            instance,
           );
           await instance.delete();
         } finally {
@@ -1603,7 +1614,7 @@ describe('Bigtable', () => {
           {
             // Create destination cluster with given options
             const [, operation] = await INSTANCE.cluster(
-              destinationClusterId
+              destinationClusterId,
             ).create({
               location: 'us-central1-b',
               nodes: 3,
@@ -1618,7 +1629,7 @@ describe('Bigtable', () => {
               id: generateId('backup'),
               expireTime: copyExpireTime,
             },
-            INSTANCE
+            INSTANCE,
           );
         } finally {
           await backup.delete();
@@ -1639,10 +1650,10 @@ describe('Bigtable', () => {
           const bigtableSecondaryProject = new Bigtable(
             process.env.GCLOUD_PROJECT2
               ? {projectId: process.env.GCLOUD_PROJECT2}
-              : {}
+              : {},
           );
           const secondInstance = bigtableSecondaryProject.instance(
-            generateId('instance')
+            generateId('instance'),
           );
           const destinationClusterId = generateId('cluster');
           {
@@ -1670,7 +1681,7 @@ describe('Bigtable', () => {
               id: generateId('backup'),
               expireTime: copyExpireTime,
             },
-            secondInstance
+            secondInstance,
           );
           await secondInstance.delete();
         } finally {
@@ -1700,7 +1711,7 @@ describe('Bigtable', () => {
           backupId,
           {
             expireTime: sourceExpireTime,
-          }
+          },
         );
         try {
           await createBackupOperation.promise();
@@ -1822,7 +1833,7 @@ describe('Bigtable', () => {
         // The following operations must be performed after table.insert because bigtable.projectId needs to be assigned.
         authorizedViewTableFullName = authorizedViewTable.name.replace(
           '{{projectId}}',
-          bigtable.projectId
+          bigtable.projectId,
         );
         authorizedViewFullName = `${authorizedViewTableFullName}/authorizedViews/${authorizedViewId}`;
       }
@@ -1910,7 +1921,9 @@ describe('Bigtable', () => {
           } catch (e: unknown) {
             done(e);
           }
-        })();
+        })().catch(err => {
+          throw err;
+        });
       });
     });
     describe('MutateRows grpc calls', () => {
@@ -1931,7 +1944,7 @@ describe('Bigtable', () => {
           } catch (e: unknown) {
             assert.strictEqual(
               (e as ServiceError).message,
-              getErrorMessage(authorizedViewFullName)
+              getErrorMessage(authorizedViewFullName),
             );
           }
         });
@@ -1951,7 +1964,7 @@ describe('Bigtable', () => {
           } catch (e: unknown) {
             assert.strictEqual(
               (e as ServiceError).message,
-              getErrorMessage(authorizedViewFullName)
+              getErrorMessage(authorizedViewFullName),
             );
           }
         });
@@ -2035,7 +2048,7 @@ describe('Bigtable', () => {
           .reduce(
             (accumulator, currentValue, index) =>
               accumulator + Math.pow(currentValue, index),
-            0
+            0,
           );
       }
 
@@ -2045,7 +2058,7 @@ describe('Bigtable', () => {
         assert.strictEqual(rowKeys[0].length, 1);
         assert.deepStrictEqual(
           convertBufferToInt(rowKeys[0][0].key),
-          convertBufferToInt(Buffer.from(rowId)) + 1
+          convertBufferToInt(Buffer.from(rowId)) + 1,
         );
       });
       it('should call sampleRowKeysStream for the authorized view', done => {
@@ -2056,7 +2069,7 @@ describe('Bigtable', () => {
             stream.on('data', (row: {key: Uint8Array; offset: string}) => {
               assert.deepStrictEqual(
                 convertBufferToInt(row.key),
-                convertBufferToInt(Buffer.from(rowId)) + 1
+                convertBufferToInt(Buffer.from(rowId)) + 1,
               );
               receivedDataCount = receivedDataCount + 1;
             });
@@ -2070,7 +2083,9 @@ describe('Bigtable', () => {
           } catch (e: unknown) {
             done(e);
           }
-        })();
+        })().catch(err => {
+          throw err;
+        });
       });
     });
     describe('CheckAndMutate grpc calls', () => {
@@ -2092,13 +2107,13 @@ describe('Bigtable', () => {
                       method: 'delete',
                     },
                   ],
-                }
+                },
               );
               done('The call to filter should have failed.');
             } catch (e: unknown) {
               assert.strictEqual(
                 (e as ServiceError).details,
-                getErrorMessage(authorizedViewFullName)
+                getErrorMessage(authorizedViewFullName),
               );
               done();
             }
@@ -2106,7 +2121,9 @@ describe('Bigtable', () => {
             // Will reach this point if there is an assertion error.
             done(e);
           }
-        })();
+        })().catch(err => {
+          throw err;
+        });
       });
       it('should call filter for the authorized view', done => {
         (async () => {
@@ -2127,11 +2144,11 @@ describe('Bigtable', () => {
             assert.strictEqual(rowsAfterAddition[0].id, rowId);
             assert.deepStrictEqual(
               rowsAfterAddition[0].data[familyName][columnIdNotInView].length,
-              1
+              1,
             );
             assert.deepStrictEqual(
               rowsAfterAddition[0].data[familyName][columnIdInView].length,
-              2
+              2,
             );
             assert.strictEqual(rowsAfterAddition[1].id, otherRowId);
             assert.deepStrictEqual(rowsAfterAddition[1].data, {
@@ -2157,7 +2174,7 @@ describe('Bigtable', () => {
               },
               {
                 onMatch: mutations,
-              }
+              },
             );
             // Check the rows to ensure the row was deleted by calling `filter`.
             const rows = (await authorizedViewTable.getRows())[0];
@@ -2194,7 +2211,9 @@ describe('Bigtable', () => {
           } catch (e: unknown) {
             done(e);
           }
-        })();
+        })().catch(err => {
+          throw err;
+        });
       });
     });
     describe('ReadModifyWriteRow grpc calls', () => {
@@ -2251,7 +2270,7 @@ describe('Bigtable', () => {
             rowId,
             column: `${familyName}:${columnIdInView}`,
           },
-          1
+          1,
         );
         const rows = (await authorizedView.getRows())[0];
         rows[0].data[familyName][columnIdInView][0].timestamp = '77000';
@@ -2365,7 +2384,7 @@ function createInstanceConfig(
   clusterId: string,
   location: string,
   nodes: number,
-  time_created: number
+  time_created: number,
 ) {
   return {
     clusters: [

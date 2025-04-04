@@ -27,7 +27,7 @@ export class MockServer {
 
   constructor(
     callback?: (port: string) => void,
-    port?: string | number | undefined
+    port?: string | number | undefined,
   ) {
     const portString = Number(port ? port : DEFAULT_PORT).toString();
     this.port = portString;
@@ -38,13 +38,13 @@ export class MockServer {
       grpc.ServerCredentials.createInsecure(),
       () => {
         callback ? callback(portString) : undefined;
-      }
+      },
     );
   }
 
   setService(
     service: grpc.ServiceDefinition,
-    implementation: grpc.UntypedServiceImplementation
+    implementation: grpc.UntypedServiceImplementation,
   ) {
     if (this.services.has(service)) {
       this.server.removeService(service);

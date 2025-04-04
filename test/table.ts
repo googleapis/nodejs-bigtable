@@ -72,7 +72,7 @@ const FakeChunkTransformer = createFake(ChunkTransformer);
 FakeChunkTransformer.prototype._transform = function (
   rows: Row[],
   enc: {},
-  next: Function
+  next: Function,
 ) {
   rows.forEach(row => this.push(row));
   next();
@@ -216,7 +216,7 @@ describe('Bigtable/Table', () => {
       table.instance.createTable = (
         id: string,
         options_: {},
-        callback: Function
+        callback: Function,
       ) => {
         assert.strictEqual(id, table.id);
         assert.strictEqual(options_, options);
@@ -230,7 +230,7 @@ describe('Bigtable/Table', () => {
       table.instance.createTable = (
         id: string,
         options: {},
-        callback: Function
+        callback: Function,
       ) => {
         assert.deepStrictEqual(options, {});
         callback(); // done()
@@ -340,7 +340,7 @@ describe('Bigtable/Table', () => {
       table.createBackup(BACKUP_ID, CONFIG, (err: Error) => {
         assert.strictEqual(
           err.message,
-          'No ready clusters eligible for backup.'
+          'No ready clusters eligible for backup.',
         );
         done();
       });
@@ -515,7 +515,7 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(family, null);
           assert.strictEqual(response, apiResponse);
           done();
-        }
+        },
       );
     });
 
@@ -539,7 +539,7 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(family.metadata, response);
           assert.strictEqual(apiResponse, response);
           done();
-        }
+        },
       );
     });
   });
@@ -567,7 +567,7 @@ describe('Bigtable/Table', () => {
       bigtableInstance.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
-          bigtableInstance.appProfileId
+          bigtableInstance.appProfileId,
         );
         done();
       };
@@ -722,7 +722,7 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (parseSpy as any).getCall(0).args[0],
-            options.filter
+            options.filter,
           );
           done();
         };
@@ -952,7 +952,7 @@ describe('Bigtable/Table', () => {
         FakeChunkTransformer.prototype._transform = function (
           chunks: Array<{}>,
           enc: {},
-          next: Function
+          next: Function,
         ) {
           formattedRows.forEach(row => this.push(row));
           next();
@@ -1084,7 +1084,7 @@ describe('Bigtable/Table', () => {
         FakeChunkTransformer.prototype._transform = (
           chunks: {},
           enc: {},
-          next: Function
+          next: Function,
         ) => {
           next(error);
         };
@@ -1193,7 +1193,7 @@ describe('Bigtable/Table', () => {
         FakeChunkTransformer.prototype._transform = function (
           rows: Row[],
           enc: {},
-          next: Function
+          next: Function,
         ) {
           rows.forEach(row => this.push(row));
           this.lastRowKey = rows[rows.length - 1].key;
@@ -1233,7 +1233,7 @@ describe('Bigtable/Table', () => {
               range.end = (end as any).value || end;
             }
             return range;
-          }
+          },
         );
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1292,7 +1292,7 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Writable) => {
             const cancelledError = new Error(
-              'do not retry me!'
+              'do not retry me!',
             ) as ServiceError;
             cancelledError.code = 1;
             stream.emit('error', cancelledError);
@@ -1592,7 +1592,7 @@ describe('Bigtable/Table', () => {
       const fakePrefix = 'b';
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const spy = ((FakeMutation as any).convertToBytes = sinon.spy(
-        () => fakePrefix
+        () => fakePrefix,
       ));
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1832,7 +1832,7 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         assert.strictEqual(
           config.reqOpts.options.requestedPolicyVersion,
-          requestedPolicyVersion
+          requestedPolicyVersion,
         );
         done();
       };
@@ -1904,7 +1904,7 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(clusterStates.get('cluster1'), 'READY');
           assert.strictEqual(clusterStates.get('cluster2'), 'INITIALIZING');
           done();
-        }
+        },
       );
     });
   });
@@ -2470,7 +2470,7 @@ describe('Bigtable/Table', () => {
       bigtableInstance.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
-          bigtableInstance.appProfileId
+          bigtableInstance.appProfileId,
         );
         done();
       };
@@ -2695,13 +2695,13 @@ describe('Bigtable/Table', () => {
             (requestArgs[0].gaxOpts as any)['otherArgs']['headers'][
               'bigtable-attempt'
             ],
-            0
+            0,
           );
           assert.strictEqual(
             (requestArgs[1].gaxOpts as any)['otherArgs']['headers'][
               'bigtable-attempt'
             ],
-            1
+            1,
           );
           done();
         });
@@ -2799,7 +2799,7 @@ describe('Bigtable/Table', () => {
             } catch (e) {
               done(e);
             }
-          }
+          },
         );
       });
       it('should not retry unretriable errors', done => {
@@ -2874,13 +2874,13 @@ describe('Bigtable/Table', () => {
             (requestArgs[0].gaxOpts as any)['otherArgs']['headers'][
               'bigtable-attempt'
             ],
-            0
+            0,
           );
           assert.strictEqual(
             (requestArgs[1].gaxOpts as any)['otherArgs']['headers'][
               'bigtable-attempt'
             ],
-            1
+            1,
           );
           done();
         });
@@ -3008,7 +3008,7 @@ describe('Bigtable/Table', () => {
       bigtableInstance.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
-          bigtableInstance.appProfileId
+          bigtableInstance.appProfileId,
         );
         done();
       };
@@ -3167,7 +3167,7 @@ describe('Bigtable/Table', () => {
       table.bigtable.request = (config: any) => {
         assert.deepStrictEqual(
           config.reqOpts.policy.etag,
-          Buffer.from(policy.etag)
+          Buffer.from(policy.etag),
         );
         done();
       };
@@ -3242,7 +3242,7 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(Array.isArray(permissions), true);
           assert.deepStrictEqual(permissions, testPermissions);
           done();
-        }
+        },
       );
     });
 

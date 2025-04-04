@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,7 +49,6 @@ function main(parent, instanceId, instance, clusters) {
    *  cluster ID, e.g., just `mycluster` rather than
    *  `projects/myproject/instances/myinstance/clusters/mycluster`.
    *  Fields marked `OutputOnly` must be left blank.
-   *  Currently, at most four clusters can be specified.
    */
   // const clusters = [1,2,3,4]
 

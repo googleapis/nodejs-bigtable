@@ -90,7 +90,7 @@ describe('Bigtable/ReadRows', () => {
 
     service.setService({
       ReadRows: ReadRowsImpl.createService(
-        STANDARD_SERVICE_WITHOUT_ERRORS
+        STANDARD_SERVICE_WITHOUT_ERRORS,
       ) as ServerImplementationInterface,
     });
 
@@ -120,7 +120,7 @@ describe('Bigtable/ReadRows', () => {
   it('should create read stream and read synchronously using Transform stream', done => {
     service.setService({
       ReadRows: ReadRowsImpl.createService(
-        STANDARD_SERVICE_WITHOUT_ERRORS
+        STANDARD_SERVICE_WITHOUT_ERRORS,
       ) as ServerImplementationInterface,
     });
 
@@ -168,7 +168,7 @@ describe('Bigtable/ReadRows', () => {
     setWindowsTestTimeout(this);
     service.setService({
       ReadRows: ReadRowsImpl.createService(
-        STANDARD_SERVICE_WITHOUT_ERRORS
+        STANDARD_SERVICE_WITHOUT_ERRORS,
       ) as ServerImplementationInterface,
     });
 
@@ -220,7 +220,7 @@ describe('Bigtable/ReadRows', () => {
 
     service.setService({
       ReadRows: ReadRowsImpl.createService(
-        STANDARD_SERVICE_WITHOUT_ERRORS
+        STANDARD_SERVICE_WITHOUT_ERRORS,
       ) as ServerImplementationInterface,
     });
 
@@ -260,7 +260,7 @@ describe('Bigtable/ReadRows', () => {
 
     service.setService({
       ReadRows: ReadRowsImpl.createService(
-        STANDARD_SERVICE_WITHOUT_ERRORS
+        STANDARD_SERVICE_WITHOUT_ERRORS,
       ) as ServerImplementationInterface,
     });
 
@@ -344,7 +344,7 @@ describe('Bigtable/ReadRows', () => {
       readStream.on('end', () => {
         assert.strictEqual(
           receivedRowCount,
-          STANDARD_KEY_TO - STANDARD_KEY_FROM
+          STANDARD_KEY_TO - STANDARD_KEY_FROM,
         );
         assert.strictEqual(lastKeyReceived, STANDARD_KEY_TO - 1);
         done();
@@ -400,7 +400,9 @@ describe('Bigtable/ReadRows', () => {
       } catch (error) {
         done(error);
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
   it('should return row data in the right order with a predictable sleep function', function (done) {
     this.timeout(600000);
@@ -458,7 +460,9 @@ describe('Bigtable/ReadRows', () => {
       } catch (error) {
         done(error);
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
 
   it.skip('pitfall: should not request full table scan during a retry on a transient error', async () => {
@@ -480,7 +484,7 @@ describe('Bigtable/ReadRows', () => {
     async function readRowsWithDeadline() {
       service.setService({
         ReadRows: ReadRowsImpl.createService(
-          TRANSIENT_ERROR_SERVICE
+          TRANSIENT_ERROR_SERVICE,
         ) as ServerImplementationInterface,
       });
 

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import type {
 import {PassThrough} from 'stream';
 import * as protos from '../../protos/protos';
 import jsonProtos = require('../../protos/protos.json');
+import {loggingUtils as logging} from 'google-gax';
 
 /**
  * Client JSON configuration object, loaded from
@@ -51,6 +52,8 @@ export class BigtableClient {
   private _defaults: {[method: string]: gax.CallSettings};
   private _universeDomain: string;
   private _servicePath: string;
+  private _log = logging.log('bigtable');
+
   auth: gax.GoogleAuth;
   descriptors: Descriptors = {
     page: {},
@@ -85,7 +88,7 @@ export class BigtableClient {
    *     Developer's Console, e.g. 'grape-spaceship-123'. We will also check
    *     the environment variable GCLOUD_PROJECT for your project ID. If your
    *     app is running in an environment which supports
-   *     {@link https://developers.google.com/identity/protocols/application-default-credentials Application Default Credentials},
+   *     {@link https://cloud.google.com/docs/authentication/application-default-credentials Application Default Credentials},
    *     your project ID will be detected automatically.
    * @param {string} [options.apiEndpoint] - The domain name of the
    *     API remote host.
@@ -104,7 +107,7 @@ export class BigtableClient {
    */
   constructor(
     opts?: ClientOptions,
-    gaxInstance?: typeof gax | typeof gax.fallback
+    gaxInstance?: typeof gax | typeof gax.fallback,
   ) {
     // Ensure that options include all the required fields.
     const staticMembers = this.constructor as typeof BigtableClient;
@@ -114,7 +117,7 @@ export class BigtableClient {
       opts?.universe_domain !== opts?.universeDomain
     ) {
       throw new Error(
-        'Please set either universe_domain or universeDomain, but not both.'
+        'Please set either universe_domain or universeDomain, but not both.',
       );
     }
     const universeDomainEnvVar =
@@ -198,13 +201,16 @@ export class BigtableClient {
     // Create useful helper objects for these.
     this.pathTemplates = {
       authorizedViewPathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}'
+        'projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}',
       ),
       instancePathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}/instances/{instance}'
+        'projects/{project}/instances/{instance}',
+      ),
+      materializedViewPathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}/materializedViews/{materialized_view}',
       ),
       tablePathTemplate: new this._gaxModule.PathTemplate(
-        'projects/{project}/instances/{instance}/tables/{table}'
+        'projects/{project}/instances/{instance}/tables/{table}',
       ),
     };
 
@@ -214,33 +220,33 @@ export class BigtableClient {
       readRows: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
         !!opts.fallback,
-        !!opts.gaxServerStreamingRetries
+        !!opts.gaxServerStreamingRetries,
       ),
       sampleRowKeys: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
         !!opts.fallback,
-        !!opts.gaxServerStreamingRetries
+        !!opts.gaxServerStreamingRetries,
       ),
       mutateRows: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
         !!opts.fallback,
-        !!opts.gaxServerStreamingRetries
+        !!opts.gaxServerStreamingRetries,
       ),
       generateInitialChangeStreamPartitions:
         new this._gaxModule.StreamDescriptor(
           this._gaxModule.StreamType.SERVER_STREAMING,
           !!opts.fallback,
-          !!opts.gaxServerStreamingRetries
+          !!opts.gaxServerStreamingRetries,
         ),
       readChangeStream: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
         !!opts.fallback,
-        !!opts.gaxServerStreamingRetries
+        !!opts.gaxServerStreamingRetries,
       ),
       executeQuery: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
         !!opts.fallback,
-        !!opts.gaxServerStreamingRetries
+        !!opts.gaxServerStreamingRetries,
       ),
     };
 
@@ -249,7 +255,7 @@ export class BigtableClient {
       'google.bigtable.v2.Bigtable',
       gapicConfig as gax.ClientConfig,
       opts.clientConfig || {},
-      {'x-goog-api-client': clientHeader.join(' ')}
+      {'x-goog-api-client': clientHeader.join(' ')},
     );
 
     // Set up a dictionary of "inner API calls"; the core implementation
@@ -283,12 +289,12 @@ export class BigtableClient {
     this.bigtableStub = this._gaxGrpc.createStub(
       this._opts.fallback
         ? (this._protos as protobuf.Root).lookupService(
-            'google.bigtable.v2.Bigtable'
+            'google.bigtable.v2.Bigtable',
           )
         : // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (this._protos as any).google.bigtable.v2.Bigtable,
       this._opts,
-      this._providedCustomServicePath
+      this._providedCustomServicePath,
     ) as Promise<{[method: string]: Function}>;
 
     // Iterate over each of the methods that the service provides
@@ -303,6 +309,7 @@ export class BigtableClient {
       'readModifyWriteRow',
       'generateInitialChangeStreamPartitions',
       'readChangeStream',
+      'prepareQuery',
       'executeQuery',
     ];
     for (const methodName of bigtableStubMethods) {
@@ -311,13 +318,13 @@ export class BigtableClient {
           (...args: Array<{}>) => {
             if (this._terminated) {
               if (methodName in this.descriptors.stream) {
-                const stream = new PassThrough();
+                const stream = new PassThrough({objectMode: true});
                 setImmediate(() => {
                   stream.emit(
                     'error',
                     new this._gaxModule.GoogleError(
-                      'The client has already been closed.'
-                    )
+                      'The client has already been closed.',
+                    ),
                   );
                 });
                 return stream;
@@ -329,7 +336,7 @@ export class BigtableClient {
           },
         (err: Error | null | undefined) => () => {
           throw err;
-        }
+        },
       );
 
       const descriptor = this.descriptors.stream[methodName] || undefined;
@@ -337,7 +344,7 @@ export class BigtableClient {
         callPromise,
         this._defaults[methodName],
         descriptor,
-        this._opts.fallback
+        this._opts.fallback,
       );
 
       this.innerApiCalls[methodName] = apiCall;
@@ -358,7 +365,7 @@ export class BigtableClient {
     ) {
       process.emitWarning(
         'Static servicePath is deprecated, please use the instance method instead.',
-        'DeprecationWarning'
+        'DeprecationWarning',
       );
     }
     return 'bigtable.googleapis.com';
@@ -376,7 +383,7 @@ export class BigtableClient {
     ) {
       process.emitWarning(
         'Static apiEndpoint is deprecated, please use the instance method instead.',
-        'DeprecationWarning'
+        'DeprecationWarning',
       );
     }
     return 'bigtable.googleapis.com';
@@ -425,7 +432,7 @@ export class BigtableClient {
    * @returns {Promise} A promise that resolves to string containing the project ID.
    */
   getProjectId(
-    callback?: Callback<string, undefined, undefined>
+    callback?: Callback<string, undefined, undefined>,
   ): Promise<string> | void {
     if (callback) {
       this.auth.getProjectId(callback);
@@ -473,7 +480,7 @@ export class BigtableClient {
    */
   mutateRow(
     request?: protos.google.bigtable.v2.IMutateRowRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.v2.IMutateRowResponse,
@@ -488,7 +495,7 @@ export class BigtableClient {
       protos.google.bigtable.v2.IMutateRowResponse,
       protos.google.bigtable.v2.IMutateRowRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   mutateRow(
     request: protos.google.bigtable.v2.IMutateRowRequest,
@@ -496,7 +503,7 @@ export class BigtableClient {
       protos.google.bigtable.v2.IMutateRowResponse,
       protos.google.bigtable.v2.IMutateRowRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   mutateRow(
     request?: protos.google.bigtable.v2.IMutateRowRequest,
@@ -511,7 +518,7 @@ export class BigtableClient {
       protos.google.bigtable.v2.IMutateRowResponse,
       protos.google.bigtable.v2.IMutateRowRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.v2.IMutateRowResponse,
@@ -537,7 +544,9 @@ export class BigtableClient {
         const match = fieldValue
           .toString()
           .match(
-            RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+            RegExp(
+              '(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)',
+            ),
           );
         if (match) {
           const parameterValue = match.groups?.['table_name'] ?? fieldValue;
@@ -564,8 +573,8 @@ export class BigtableClient {
           .toString()
           .match(
             RegExp(
-              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)'
-            )
+              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)',
+            ),
           );
         if (match) {
           const parameterValue =
@@ -578,8 +587,34 @@ export class BigtableClient {
     }
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams(routingParameter);
-    this.initialize();
-    return this.innerApiCalls.mutateRow(request, options, callback);
+    this.initialize().catch(err => {
+      throw err;
+    });
+    this._log.info('mutateRow request %j', request);
+    const wrappedCallback:
+      | Callback<
+          protos.google.bigtable.v2.IMutateRowResponse,
+          protos.google.bigtable.v2.IMutateRowRequest | null | undefined,
+          {} | null | undefined
+        >
+      | undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('mutateRow response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls
+      .mutateRow(request, options, wrappedCallback)
+      ?.then(
+        ([response, options, rawResponse]: [
+          protos.google.bigtable.v2.IMutateRowResponse,
+          protos.google.bigtable.v2.IMutateRowRequest | undefined,
+          {} | undefined,
+        ]) => {
+          this._log.info('mutateRow response %j', response);
+          return [response, options, rawResponse];
+        },
+      );
   }
   /**
    * Mutates a row atomically based on the output of a predicate Reader filter.
@@ -630,7 +665,7 @@ export class BigtableClient {
    */
   checkAndMutateRow(
     request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.v2.ICheckAndMutateRowResponse,
@@ -645,7 +680,7 @@ export class BigtableClient {
       protos.google.bigtable.v2.ICheckAndMutateRowResponse,
       protos.google.bigtable.v2.ICheckAndMutateRowRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   checkAndMutateRow(
     request: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
@@ -653,7 +688,7 @@ export class BigtableClient {
       protos.google.bigtable.v2.ICheckAndMutateRowResponse,
       protos.google.bigtable.v2.ICheckAndMutateRowRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   checkAndMutateRow(
     request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
@@ -670,7 +705,7 @@ export class BigtableClient {
       protos.google.bigtable.v2.ICheckAndMutateRowResponse,
       protos.google.bigtable.v2.ICheckAndMutateRowRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.v2.ICheckAndMutateRowResponse,
@@ -696,7 +731,9 @@ export class BigtableClient {
         const match = fieldValue
           .toString()
           .match(
-            RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+            RegExp(
+              '(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)',
+            ),
           );
         if (match) {
           const parameterValue = match.groups?.['table_name'] ?? fieldValue;
@@ -723,8 +760,8 @@ export class BigtableClient {
           .toString()
           .match(
             RegExp(
-              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)'
-            )
+              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)',
+            ),
           );
         if (match) {
           const parameterValue =
@@ -737,8 +774,36 @@ export class BigtableClient {
     }
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams(routingParameter);
-    this.initialize();
-    return this.innerApiCalls.checkAndMutateRow(request, options, callback);
+    this.initialize().catch(err => {
+      throw err;
+    });
+    this._log.info('checkAndMutateRow request %j', request);
+    const wrappedCallback:
+      | Callback<
+          protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+          | protos.google.bigtable.v2.ICheckAndMutateRowRequest
+          | null
+          | undefined,
+          {} | null | undefined
+        >
+      | undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('checkAndMutateRow response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls
+      .checkAndMutateRow(request, options, wrappedCallback)
+      ?.then(
+        ([response, options, rawResponse]: [
+          protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+          protos.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
+          {} | undefined,
+        ]) => {
+          this._log.info('checkAndMutateRow response %j', response);
+          return [response, options, rawResponse];
+        },
+      );
   }
   /**
    * Warm up associated instance metadata for this connection.
@@ -762,7 +827,7 @@ export class BigtableClient {
    */
   pingAndWarm(
     request?: protos.google.bigtable.v2.IPingAndWarmRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.v2.IPingAndWarmResponse,
@@ -777,7 +842,7 @@ export class BigtableClient {
       protos.google.bigtable.v2.IPingAndWarmResponse,
       protos.google.bigtable.v2.IPingAndWarmRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   pingAndWarm(
     request: protos.google.bigtable.v2.IPingAndWarmRequest,
@@ -785,7 +850,7 @@ export class BigtableClient {
       protos.google.bigtable.v2.IPingAndWarmResponse,
       protos.google.bigtable.v2.IPingAndWarmRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   pingAndWarm(
     request?: protos.google.bigtable.v2.IPingAndWarmRequest,
@@ -800,7 +865,7 @@ export class BigtableClient {
       protos.google.bigtable.v2.IPingAndWarmResponse,
       protos.google.bigtable.v2.IPingAndWarmRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.v2.IPingAndWarmResponse,
@@ -846,8 +911,34 @@ export class BigtableClient {
     }
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams(routingParameter);
-    this.initialize();
-    return this.innerApiCalls.pingAndWarm(request, options, callback);
+    this.initialize().catch(err => {
+      throw err;
+    });
+    this._log.info('pingAndWarm request %j', request);
+    const wrappedCallback:
+      | Callback<
+          protos.google.bigtable.v2.IPingAndWarmResponse,
+          protos.google.bigtable.v2.IPingAndWarmRequest | null | undefined,
+          {} | null | undefined
+        >
+      | undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('pingAndWarm response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls
+      .pingAndWarm(request, options, wrappedCallback)
+      ?.then(
+        ([response, options, rawResponse]: [
+          protos.google.bigtable.v2.IPingAndWarmResponse,
+          protos.google.bigtable.v2.IPingAndWarmRequest | undefined,
+          {} | undefined,
+        ]) => {
+          this._log.info('pingAndWarm response %j', response);
+          return [response, options, rawResponse];
+        },
+      );
   }
   /**
    * Modifies a row atomically on the server. The method reads the latest
@@ -889,7 +980,7 @@ export class BigtableClient {
    */
   readModifyWriteRow(
     request?: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<
     [
       protos.google.bigtable.v2.IReadModifyWriteRowResponse,
@@ -904,7 +995,7 @@ export class BigtableClient {
       protos.google.bigtable.v2.IReadModifyWriteRowResponse,
       protos.google.bigtable.v2.IReadModifyWriteRowRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   readModifyWriteRow(
     request: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
@@ -912,7 +1003,7 @@ export class BigtableClient {
       protos.google.bigtable.v2.IReadModifyWriteRowResponse,
       protos.google.bigtable.v2.IReadModifyWriteRowRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): void;
   readModifyWriteRow(
     request?: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
@@ -929,7 +1020,7 @@ export class BigtableClient {
       protos.google.bigtable.v2.IReadModifyWriteRowResponse,
       protos.google.bigtable.v2.IReadModifyWriteRowRequest | null | undefined,
       {} | null | undefined
-    >
+    >,
   ): Promise<
     [
       protos.google.bigtable.v2.IReadModifyWriteRowResponse,
@@ -955,7 +1046,9 @@ export class BigtableClient {
         const match = fieldValue
           .toString()
           .match(
-            RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+            RegExp(
+              '(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)',
+            ),
           );
         if (match) {
           const parameterValue = match.groups?.['table_name'] ?? fieldValue;
@@ -982,8 +1075,8 @@ export class BigtableClient {
           .toString()
           .match(
             RegExp(
-              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)'
-            )
+              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)',
+            ),
           );
         if (match) {
           const parameterValue =
@@ -996,8 +1089,189 @@ export class BigtableClient {
     }
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams(routingParameter);
-    this.initialize();
-    return this.innerApiCalls.readModifyWriteRow(request, options, callback);
+    this.initialize().catch(err => {
+      throw err;
+    });
+    this._log.info('readModifyWriteRow request %j', request);
+    const wrappedCallback:
+      | Callback<
+          protos.google.bigtable.v2.IReadModifyWriteRowResponse,
+          | protos.google.bigtable.v2.IReadModifyWriteRowRequest
+          | null
+          | undefined,
+          {} | null | undefined
+        >
+      | undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('readModifyWriteRow response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls
+      .readModifyWriteRow(request, options, wrappedCallback)
+      ?.then(
+        ([response, options, rawResponse]: [
+          protos.google.bigtable.v2.IReadModifyWriteRowResponse,
+          protos.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
+          {} | undefined,
+        ]) => {
+          this._log.info('readModifyWriteRow response %j', response);
+          return [response, options, rawResponse];
+        },
+      );
+  }
+  /**
+   * Prepares a GoogleSQL query for execution on a particular Bigtable instance.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.instanceName
+   *   Required. The unique name of the instance against which the query should be
+   *   executed.
+   *   Values are of the form `projects/<project>/instances/<instance>`
+   * @param {string} [request.appProfileId]
+   *   Optional. This value specifies routing for preparing the query. Note that
+   *   this `app_profile_id` is only used for preparing the query. The actual
+   *   query execution will use the app profile specified in the
+   *   `ExecuteQueryRequest`. If not specified, the `default` application profile
+   *   will be used.
+   * @param {string} request.query
+   *   Required. The query string.
+   * @param {google.bigtable.v2.ProtoFormat} request.protoFormat
+   *   Protocol buffer format as described by ProtoSchema and ProtoRows
+   *   messages.
+   * @param {number[]} request.paramTypes
+   *   Required. `param_types` is a map of parameter identifier strings to their
+   *   `Type`s.
+   *
+   *   In query string, a parameter placeholder consists of the
+   *   `@` character followed by the parameter name (for example, `@firstName`) in
+   *   the query string.
+   *
+   *   For example, if param_types["firstName"] = Bytes then @firstName will be a
+   *   query parameter of type Bytes. The specific `Value` to be used for the
+   *   query execution must be sent in `ExecuteQueryRequest` in the `params` map.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing {@link protos.google.bigtable.v2.PrepareQueryResponse|PrepareQueryResponse}.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
+   *   for more details and examples.
+   */
+  prepareQuery(
+    request?: protos.google.bigtable.v2.IPrepareQueryRequest,
+    options?: CallOptions,
+  ): Promise<
+    [
+      protos.google.bigtable.v2.IPrepareQueryResponse,
+      protos.google.bigtable.v2.IPrepareQueryRequest | undefined,
+      {} | undefined,
+    ]
+  >;
+  prepareQuery(
+    request: protos.google.bigtable.v2.IPrepareQueryRequest,
+    options: CallOptions,
+    callback: Callback<
+      protos.google.bigtable.v2.IPrepareQueryResponse,
+      protos.google.bigtable.v2.IPrepareQueryRequest | null | undefined,
+      {} | null | undefined
+    >,
+  ): void;
+  prepareQuery(
+    request: protos.google.bigtable.v2.IPrepareQueryRequest,
+    callback: Callback<
+      protos.google.bigtable.v2.IPrepareQueryResponse,
+      protos.google.bigtable.v2.IPrepareQueryRequest | null | undefined,
+      {} | null | undefined
+    >,
+  ): void;
+  prepareQuery(
+    request?: protos.google.bigtable.v2.IPrepareQueryRequest,
+    optionsOrCallback?:
+      | CallOptions
+      | Callback<
+          protos.google.bigtable.v2.IPrepareQueryResponse,
+          protos.google.bigtable.v2.IPrepareQueryRequest | null | undefined,
+          {} | null | undefined
+        >,
+    callback?: Callback<
+      protos.google.bigtable.v2.IPrepareQueryResponse,
+      protos.google.bigtable.v2.IPrepareQueryRequest | null | undefined,
+      {} | null | undefined
+    >,
+  ): Promise<
+    [
+      protos.google.bigtable.v2.IPrepareQueryResponse,
+      protos.google.bigtable.v2.IPrepareQueryRequest | undefined,
+      {} | undefined,
+    ]
+  > | void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    const routingParameter = {};
+    {
+      const fieldValue = request.instanceName;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(RegExp('(?<name>projects/[^/]+/instances/[^/]+)'));
+        if (match) {
+          const parameterValue = match.groups?.['name'] ?? fieldValue;
+          Object.assign(routingParameter, {name: parameterValue});
+        }
+      }
+    }
+    {
+      const fieldValue = request.appProfileId;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(RegExp('(?<app_profile_id>.*)'));
+        if (match) {
+          const parameterValue = match.groups?.['app_profile_id'] ?? fieldValue;
+          Object.assign(routingParameter, {app_profile_id: parameterValue});
+        }
+      }
+    }
+    options.otherArgs.headers['x-goog-request-params'] =
+      this._gaxModule.routingHeader.fromParams(routingParameter);
+    this.initialize().catch(err => {
+      throw err;
+    });
+    this._log.info('prepareQuery request %j', request);
+    const wrappedCallback:
+      | Callback<
+          protos.google.bigtable.v2.IPrepareQueryResponse,
+          protos.google.bigtable.v2.IPrepareQueryRequest | null | undefined,
+          {} | null | undefined
+        >
+      | undefined = callback
+      ? (error, response, options, rawResponse) => {
+          this._log.info('prepareQuery response %j', response);
+          callback!(error, response, options, rawResponse); // We verified callback above.
+        }
+      : undefined;
+    return this.innerApiCalls
+      .prepareQuery(request, options, wrappedCallback)
+      ?.then(
+        ([response, options, rawResponse]: [
+          protos.google.bigtable.v2.IPrepareQueryResponse,
+          protos.google.bigtable.v2.IPrepareQueryRequest | undefined,
+          {} | undefined,
+        ]) => {
+          this._log.info('prepareQuery response %j', response);
+          return [response, options, rawResponse];
+        },
+      );
   }
 
   /**
@@ -1019,6 +1293,11 @@ export class BigtableClient {
    *
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorized_view>`.
+   * @param {string} [request.materializedViewName]
+   *   Optional. The unique name of the MaterializedView from which to read.
+   *
+   *   Values are of the form
+   *   `projects/<project>/instances/<instance>/materializedViews/<materialized_view>`.
    * @param {string} request.appProfileId
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
@@ -1055,7 +1334,7 @@ export class BigtableClient {
    */
   readRows(
     request?: protos.google.bigtable.v2.IReadRowsRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): gax.CancellableStream {
     request = request || {};
     options = options || {};
@@ -1068,7 +1347,9 @@ export class BigtableClient {
         const match = fieldValue
           .toString()
           .match(
-            RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+            RegExp(
+              '(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)',
+            ),
           );
         if (match) {
           const parameterValue = match.groups?.['table_name'] ?? fieldValue;
@@ -1095,8 +1376,8 @@ export class BigtableClient {
           .toString()
           .match(
             RegExp(
-              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)'
-            )
+              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)',
+            ),
           );
         if (match) {
           const parameterValue =
@@ -1109,7 +1390,10 @@ export class BigtableClient {
     }
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams(routingParameter);
-    this.initialize();
+    this.initialize().catch(err => {
+      throw err;
+    });
+    this._log.info('readRows stream %j', options);
     return this.innerApiCalls.readRows(request, options);
   }
 
@@ -1132,6 +1416,11 @@ export class BigtableClient {
    *
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorized_view>`.
+   * @param {string} [request.materializedViewName]
+   *   Optional. The unique name of the MaterializedView from which to read.
+   *
+   *   Values are of the form
+   *   `projects/<project>/instances/<instance>/materializedViews/<materialized_view>`.
    * @param {string} request.appProfileId
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
@@ -1144,7 +1433,7 @@ export class BigtableClient {
    */
   sampleRowKeys(
     request?: protos.google.bigtable.v2.ISampleRowKeysRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): gax.CancellableStream {
     request = request || {};
     options = options || {};
@@ -1157,7 +1446,9 @@ export class BigtableClient {
         const match = fieldValue
           .toString()
           .match(
-            RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+            RegExp(
+              '(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)',
+            ),
           );
         if (match) {
           const parameterValue = match.groups?.['table_name'] ?? fieldValue;
@@ -1184,8 +1475,8 @@ export class BigtableClient {
           .toString()
           .match(
             RegExp(
-              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)'
-            )
+              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)',
+            ),
           );
         if (match) {
           const parameterValue =
@@ -1198,7 +1489,10 @@ export class BigtableClient {
     }
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams(routingParameter);
-    this.initialize();
+    this.initialize().catch(err => {
+      throw err;
+    });
+    this._log.info('sampleRowKeys stream %j', options);
     return this.innerApiCalls.sampleRowKeys(request, options);
   }
 
@@ -1239,7 +1533,7 @@ export class BigtableClient {
    */
   mutateRows(
     request?: protos.google.bigtable.v2.IMutateRowsRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): gax.CancellableStream {
     request = request || {};
     options = options || {};
@@ -1252,7 +1546,9 @@ export class BigtableClient {
         const match = fieldValue
           .toString()
           .match(
-            RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+            RegExp(
+              '(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)',
+            ),
           );
         if (match) {
           const parameterValue = match.groups?.['table_name'] ?? fieldValue;
@@ -1279,8 +1575,8 @@ export class BigtableClient {
           .toString()
           .match(
             RegExp(
-              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)'
-            )
+              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)',
+            ),
           );
         if (match) {
           const parameterValue =
@@ -1293,7 +1589,10 @@ export class BigtableClient {
     }
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams(routingParameter);
-    this.initialize();
+    this.initialize().catch(err => {
+      throw err;
+    });
+    this._log.info('mutateRows stream %j', options);
     return this.innerApiCalls.mutateRows(request, options);
   }
 
@@ -1323,7 +1622,7 @@ export class BigtableClient {
    */
   generateInitialChangeStreamPartitions(
     request?: protos.google.bigtable.v2.IGenerateInitialChangeStreamPartitionsRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): gax.CancellableStream {
     request = request || {};
     options = options || {};
@@ -1333,10 +1632,13 @@ export class BigtableClient {
       this._gaxModule.routingHeader.fromParams({
         table_name: request.tableName ?? '',
       });
-    this.initialize();
+    this.initialize().catch(err => {
+      throw err;
+    });
+    this._log.info('generateInitialChangeStreamPartitions stream %j', options);
     return this.innerApiCalls.generateInitialChangeStreamPartitions(
       request,
-      options
+      options,
     );
   }
 
@@ -1391,7 +1693,7 @@ export class BigtableClient {
    */
   readChangeStream(
     request?: protos.google.bigtable.v2.IReadChangeStreamRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): gax.CancellableStream {
     request = request || {};
     options = options || {};
@@ -1401,12 +1703,15 @@ export class BigtableClient {
       this._gaxModule.routingHeader.fromParams({
         table_name: request.tableName ?? '',
       });
-    this.initialize();
+    this.initialize().catch(err => {
+      throw err;
+    });
+    this._log.info('readChangeStream stream %j', options);
     return this.innerApiCalls.readChangeStream(request, options);
   }
 
   /**
-   * Executes a BTQL query against a particular Cloud Bigtable instance.
+   * Executes a SQL query against a particular Bigtable instance.
    *
    * @param {Object} request
    *   The request object that will be sent.
@@ -1419,6 +1724,19 @@ export class BigtableClient {
    *   the `default` application profile will be used.
    * @param {string} request.query
    *   Required. The query string.
+   *
+   *   Exactly one of `query` and `prepared_query` is required. Setting both
+   *   or neither is an `INVALID_ARGUMENT`.
+   * @param {Buffer} request.preparedQuery
+   *   A prepared query that was returned from `PrepareQueryResponse`.
+   *
+   *   Exactly one of `query` and `prepared_query` is required. Setting both
+   *   or neither is an `INVALID_ARGUMENT`.
+   *
+   *   Setting this field also places restrictions on several other fields:
+   *   - `data_format` must be empty.
+   *   - `validate_only` must be false.
+   *   - `params` must match the `param_types` set in the `PrepareQueryRequest`.
    * @param {google.bigtable.v2.ProtoFormat} request.protoFormat
    *   Protocol buffer format as described by ProtoSchema and ProtoRows
    *   messages.
@@ -1439,17 +1757,21 @@ export class BigtableClient {
    *
    *   For example, if
    *   `params["firstName"] = bytes_value: "foo" type {bytes_type {}}`
-   *    then `@firstName` will be replaced with googlesql bytes value "foo" in the
-   *    query string during query evaluation.
+   *   then `@firstName` will be replaced with googlesql bytes value "foo" in the
+   *   query string during query evaluation.
    *
-   *   In case of Value.kind is not set, it will be set to corresponding null
-   *   value in googlesql.
-   *    `params["firstName"] =  type {string_type {}}`
-   *    then `@firstName` will be replaced with googlesql null string.
+   *   If `Value.kind` is not set, the value is treated as a NULL value of the
+   *   given type. For example, if
+   *   `params["firstName"] = type {string_type {}}`
+   *   then `@firstName` will be replaced with googlesql null string.
    *
-   *   Value.type should always be set and no inference of type will be made from
-   *   Value.kind. If Value.type is not set, we will return INVALID_ARGUMENT
-   *   error.
+   *   If `query` is set, any empty `Value.type` in the map will be rejected with
+   *   `INVALID_ARGUMENT`.
+   *
+   *   If `prepared_query` is set, any empty `Value.type` in the map will be
+   *   inferred from the `param_types` in the `PrepareQueryRequest`. Any non-empty
+   *   `Value.type` must match the corresponding `param_types` entry, or be
+   *   rejected with `INVALID_ARGUMENT`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Stream}
@@ -1459,7 +1781,7 @@ export class BigtableClient {
    */
   executeQuery(
     request?: protos.google.bigtable.v2.IExecuteQueryRequest,
-    options?: CallOptions
+    options?: CallOptions,
   ): gax.CancellableStream {
     request = request || {};
     options = options || {};
@@ -1492,7 +1814,10 @@ export class BigtableClient {
     }
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams(routingParameter);
-    this.initialize();
+    this.initialize().catch(err => {
+      throw err;
+    });
+    this._log.info('executeQuery stream %j', options);
     return this.innerApiCalls.executeQuery(request, options);
   }
 
@@ -1513,7 +1838,7 @@ export class BigtableClient {
     project: string,
     instance: string,
     table: string,
-    authorizedView: string
+    authorizedView: string,
   ) {
     return this.pathTemplates.authorizedViewPathTemplate.render({
       project: project,
@@ -1532,7 +1857,7 @@ export class BigtableClient {
    */
   matchProjectFromAuthorizedViewName(authorizedViewName: string) {
     return this.pathTemplates.authorizedViewPathTemplate.match(
-      authorizedViewName
+      authorizedViewName,
     ).project;
   }
 
@@ -1545,7 +1870,7 @@ export class BigtableClient {
    */
   matchInstanceFromAuthorizedViewName(authorizedViewName: string) {
     return this.pathTemplates.authorizedViewPathTemplate.match(
-      authorizedViewName
+      authorizedViewName,
     ).instance;
   }
 
@@ -1558,7 +1883,7 @@ export class BigtableClient {
    */
   matchTableFromAuthorizedViewName(authorizedViewName: string) {
     return this.pathTemplates.authorizedViewPathTemplate.match(
-      authorizedViewName
+      authorizedViewName,
     ).table;
   }
 
@@ -1571,7 +1896,7 @@ export class BigtableClient {
    */
   matchAuthorizedViewFromAuthorizedViewName(authorizedViewName: string) {
     return this.pathTemplates.authorizedViewPathTemplate.match(
-      authorizedViewName
+      authorizedViewName,
     ).authorized_view;
   }
 
@@ -1609,6 +1934,65 @@ export class BigtableClient {
    */
   matchInstanceFromInstanceName(instanceName: string) {
     return this.pathTemplates.instancePathTemplate.match(instanceName).instance;
+  }
+
+  /**
+   * Return a fully-qualified materializedView resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @param {string} materialized_view
+   * @returns {string} Resource name string.
+   */
+  materializedViewPath(
+    project: string,
+    instance: string,
+    materializedView: string,
+  ) {
+    return this.pathTemplates.materializedViewPathTemplate.render({
+      project: project,
+      instance: instance,
+      materialized_view: materializedView,
+    });
+  }
+
+  /**
+   * Parse the project from MaterializedView resource.
+   *
+   * @param {string} materializedViewName
+   *   A fully-qualified path representing MaterializedView resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromMaterializedViewName(materializedViewName: string) {
+    return this.pathTemplates.materializedViewPathTemplate.match(
+      materializedViewName,
+    ).project;
+  }
+
+  /**
+   * Parse the instance from MaterializedView resource.
+   *
+   * @param {string} materializedViewName
+   *   A fully-qualified path representing MaterializedView resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromMaterializedViewName(materializedViewName: string) {
+    return this.pathTemplates.materializedViewPathTemplate.match(
+      materializedViewName,
+    ).instance;
+  }
+
+  /**
+   * Parse the materialized_view from MaterializedView resource.
+   *
+   * @param {string} materializedViewName
+   *   A fully-qualified path representing MaterializedView resource.
+   * @returns {string} A string representing the materialized_view.
+   */
+  matchMaterializedViewFromMaterializedViewName(materializedViewName: string) {
+    return this.pathTemplates.materializedViewPathTemplate.match(
+      materializedViewName,
+    ).materialized_view;
   }
 
   /**
@@ -1669,6 +2053,7 @@ export class BigtableClient {
   close(): Promise<void> {
     if (this.bigtableStub && !this._terminated) {
       return this.bigtableStub.then(stub => {
+        this._log.info('ending gRPC channel');
         this._terminated = true;
         stub.close();
       });
