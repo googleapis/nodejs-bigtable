@@ -55,9 +55,11 @@ function getInterval(
   return {
     endTime: {
       seconds: dataPoint.endTime[0],
+      nanos: dataPoint.endTime[1],
     },
     startTime: {
       seconds: dataPoint.startTime[0],
+      nanos: dataPoint.endTime[1],
     },
   };
 }
