@@ -21,37 +21,39 @@ describe.only('Bigtable/ClientSideMetrics', () => {
   const tableId = 'large-table';
 
   describe('Bigtable/QPSExperiment', () => {
-    it('readRows call', done => {
-      (async () => {
-        try {
-          const instance = bigtable.instance(instanceId);
-          const table = instance.table(tableId);
-          const hundredValues = [];
-          // Get the starting time (in milliseconds since the Unix epoch)
-          const startTime = Date.now();
-          for (let j = 0; j < 10000; j++) {
-            for (let i = 0; i < 1000; i++) {
-              hundredValues.push(i);
+    for (let k = 0; k < 10000; k++) {
+      it(`readRows call ${k}`, done => {
+        (async () => {
+          try {
+            const instance = bigtable.instance(instanceId);
+            const table = instance.table(tableId);
+            const hundredValues = [];
+            // Get the starting time (in milliseconds since the Unix epoch)
+            const startTime = Date.now();
+            for (let j = 0; j < 10; j++) {
+              for (let i = 0; i < 1000; i++) {
+                hundredValues.push(i);
+              }
+              const promises = hundredValues.map(i =>
+                table.getRows({limit: 100})
+              );
+              console.log(new Date());
+              console.log('running 100 readRows calls');
+              await Promise.all(promises);
+              console.log('complete');
             }
-            const promises = hundredValues.map(i =>
-              table.getRows({limit: 100})
-            );
-            console.log(new Date());
-            console.log('running 100 readRows calls');
-            await Promise.all(promises);
-            console.log('complete');
+            // Get the ending time
+            const endTime = Date.now();
+            // Calculate the elapsed time in milliseconds
+            const elapsedTime = endTime - startTime;
+            console.log(`Elapsed time: ${elapsedTime}`);
+            done();
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
           }
-          // Get the ending time
-          const endTime = Date.now();
-          // Calculate the elapsed time in milliseconds
-          const elapsedTime = endTime - startTime;
-          console.log(`Elapsed time: ${elapsedTime}`);
-          done();
-        } catch (e) {
-          done(new Error('An error occurred while running the script'));
-          done(e);
-        }
-      })();
-    });
+        })();
+      });
+    }
   });
 });
