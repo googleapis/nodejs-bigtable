@@ -29,7 +29,7 @@ import * as assert from 'assert';
 import {expectedOtelExportInput} from '../test-common/expected-otel-export-input';
 import {replaceTimestamps} from '../test-common/replace-timestamps';
 
-describe.only('Bigtable/GCPMetricsHandler', () => {
+describe('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value to the GCPMetricsHandler', done => {
     (async () => {
       /*
@@ -233,7 +233,7 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
       }
     })();
   });
-  it('Should export a value to ten GCPMetricsHandlers', done => {
+  it.only('Should export a value to ten GCPMetricsHandlers', done => {
     // This test ensures that when we create two GCPMetricsHandlers much like
     // what we would be doing when calling readRows on two separate tables that
     // the data doesn't store duplicates in the same place and export twice as

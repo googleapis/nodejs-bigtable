@@ -23,6 +23,10 @@ import {ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
+import {Mutex} from 'async-mutex';
+
+// This mutex is a global singleton that ensures the
+const mutex = new Mutex();
 
 export interface ExportResult {
   code: number;
@@ -307,9 +311,12 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
       }
     }
   }
+  console.log('exported');
+  // TODO: This sortTimeSeriesByStartTime call isn't necessary.
   const sortedTimeSeriesArray = sortTimeSeriesByStartTime(
     timeSeriesArray as google.monitoring.v3.ITimeSeries[]
   );
+  console.log(JSON.stringify(sortedTimeSeriesArray));
   return {
     name: `projects/${projectId}`,
     timeSeries: sortedTimeSeriesArray,
@@ -371,16 +378,28 @@ export class CloudMonitoringExporter extends MetricExporter {
     (async () => {
       try {
         const request = metricsToRequest(metrics);
-        await this.monitoringClient.createTimeSeries(
-          request as ICreateTimeSeriesRequest
-        );
-        // The resultCallback typically accepts a value equal to {code: x}
-        // for some value x along with other info. When the code is equal to 0
-        // then the operation completed successfully. When the code is not equal
-        // to 0 then the operation failed. Open telemetry logs errors to the
-        // console when the resultCallback passes in non-zero code values and
-        // logs nothing when the code is 0.
-        resultCallback({code: 0});
+        // Even if the data from various metrics handlers gets passed into
+        // export in order, if we allow the second export call to call
+        // createTimeSeries before the first export call completes then there is
+        // a chance the second createTimeSeries call reaches the server first
+        // causing a "Points must be written in order" error. Therefore, we
+        // need a mutex to ensure points are written in order.
+        await mutex.runExclusive(async () => {
+          try {
+            await this.monitoringClient.createTimeSeries(
+              request as ICreateTimeSeriesRequest
+            );
+            // The resultCallback typically accepts a value equal to {code: x}
+            // for some value x along with other info. When the code is equal to 0
+            // then the operation completed successfully. When the code is not equal
+            // to 0 then the operation failed. Open telemetry logs errors to the
+            // console when the resultCallback passes in non-zero code values and
+            // logs nothing when the code is 0.
+            resultCallback({code: 0});
+          } catch (e: any) {
+            resultCallback(e as ServiceError);
+          }
+        });
       } catch (error) {
         resultCallback(error as ServiceError);
       }
