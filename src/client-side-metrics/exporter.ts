@@ -25,7 +25,9 @@ import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
 import {Mutex} from 'async-mutex';
 
-// This mutex is a global singleton that ensures the
+// This mutex is a global singleton that ensures the metric exports to GCM
+// happen in the order they are passed into the export function to avoid
+// "Points must be written in order" errors.
 const mutex = new Mutex();
 
 export interface ExportResult {
