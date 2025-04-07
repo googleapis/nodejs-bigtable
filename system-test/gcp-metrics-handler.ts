@@ -24,10 +24,35 @@ import {
   ExportResult,
 } from '../src/client-side-metrics/exporter';
 import {Bigtable} from '../src';
-import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
+import {PushMetricExporter, ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import {expectedOtelHundredExportInputs} from '../test-common/expected-otel-export-input';
 import {replaceTimestamps} from '../test-common/replace-timestamps';
+
+class ExporterDelegator implements PushMetricExporter {
+  exporterDelegate: PushMetricExporter;
+
+  constructor(exporterDelegate: PushMetricExporter) {
+    this.exporterDelegate = exporterDelegate;
+  }
+
+  export(
+    metrics: ResourceMetrics,
+    resultCallback: (result: ExportResult) => void
+  ) {
+    return this.exporterDelegate.export(metrics, resultCallback);
+  }
+
+  forceFlush() {
+    return this.exporterDelegate.forceFlush();
+  }
+
+  shutdown() {
+    return this.exporterDelegate.shutdown();
+  }
+}
+
+let exporterDelegator: ExporterDelegator;
 
 describe.only('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value to the GCPMetricsHandler', done => {
@@ -89,7 +114,8 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
           }
         });
       });
-      const handler = new GCPMetricsHandler(new MockExporter({projectId}));
+      exporterDelegator = new ExporterDelegator(new MockExporter({projectId}));
+      const handler = new GCPMetricsHandler(exporterDelegator);
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
@@ -227,8 +253,9 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
         )
       );
       const handlers = [];
+      exporterDelegator.exporterDelegate = new MockExporter({projectId});
       for (let i = 0; i < 100; i++) {
-        handlers.push(new GCPMetricsHandler(new MockExporter({projectId})));
+        handlers.push(new GCPMetricsHandler(exporterDelegator));
         for (const request of transformedRequestsHandled) {
           if (request.attemptLatency) {
             handlers[i].onAttemptComplete(request as OnAttemptCompleteData);
@@ -298,7 +325,8 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
           }
         });
       });
-      const handler = new GCPMetricsHandler(new MockExporter({projectId}));
+      exporterDelegator.exporterDelegate = new MockExporter({projectId});
+      const handler = new GCPMetricsHandler(exporterDelegator);
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
