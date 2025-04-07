@@ -28,6 +28,9 @@ const {
   PeriodicExportingMetricReader,
 } = require('@opentelemetry/sdk-metrics');
 
+// TODO: Add types
+const projectToInstruments: {[projectId: string]: MetricsInstruments} = {};
+
 /**
  * A collection of OpenTelemetry metric instruments used to record
  * Bigtable client-side metrics.
@@ -49,7 +52,6 @@ interface MetricsInstruments {
  * associating them with relevant attributes for detailed analysis in Cloud Monitoring.
  */
 export class GCPMetricsHandler implements IMetricsHandler {
-  private otelInstruments?: MetricsInstruments;
   private exporter: PushMetricExporter;
 
   /**
@@ -79,7 +81,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
     // The projectId is needed per metrics handler because when the exporter is
     // used it provides the project id for the name of the time series exported.
     // ie. name: `projects/${....['monitored_resource.project_id']}`,
-    if (!this.otelInstruments) {
+    if (!projectToInstruments[projectId]) {
       const latencyBuckets = [
         0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0, 16.0, 20.0, 25.0,
         30.0, 40.0, 50.0, 65.0, 80.0, 100.0, 130.0, 160.0, 200.0, 250.0, 300.0,
@@ -121,7 +123,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
         ],
       });
       const meter = meterProvider.getMeter('bigtable.googleapis.com');
-      this.otelInstruments = {
+      const otelInstruments = {
         operationLatencies: meter.createHistogram(
           'bigtable.googleapis.com/internal/client/operation_latencies',
           {
@@ -204,8 +206,10 @@ export class GCPMetricsHandler implements IMetricsHandler {
           }
         ),
       };
+      projectToInstruments[projectId] = otelInstruments;
+      return otelInstruments;
     }
-    return this.otelInstruments;
+    return projectToInstruments[projectId];
   }
 
   /**
