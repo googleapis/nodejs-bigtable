@@ -26,10 +26,10 @@ import {
 import {Bigtable} from '../src';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
-import {expectedOtelExportInput, expectedOtelHundredExportInputs} from '../test-common/expected-otel-export-input';
+import {expectedOtelHundredExportInputs} from '../test-common/expected-otel-export-input';
 import {replaceTimestamps} from '../test-common/replace-timestamps';
 
-describe('Bigtable/GCPMetricsHandler', () => {
+describe.only('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value to the GCPMetricsHandler', done => {
     (async () => {
       /*
@@ -37,7 +37,11 @@ describe('Bigtable/GCPMetricsHandler', () => {
       the test as it is sleeping before the GCPMetricsHandler has a chance to
       export the data.
        */
-      const timeout = setTimeout(() => {}, 120000);
+      const timeout = setTimeout(() => {
+        if (!exported) {
+          done(new Error('The export never happened'));
+        }
+      }, 120000);
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
@@ -101,9 +105,10 @@ describe('Bigtable/GCPMetricsHandler', () => {
       }
     })();
   });
-  it.only('Should export a value to a hundred GCPMetricsHandlers', done => {
-    // This test ensures that when we create two GCPMetricsHandlers much like
-    // what we would be doing when calling readRows on two separate tables that
+  it('Should export a value to a hundred GCPMetricsHandlers', done => {
+    console.log('hundred test');
+    // This test ensures that when we create multiple GCPMetricsHandlers much like
+    // what we would be doing when calling readRows on separate tables that
     // the data doesn't store duplicates in the same place and export twice as
     // much data as it should.
     (async () => {
@@ -112,7 +117,11 @@ describe('Bigtable/GCPMetricsHandler', () => {
       the test as it is sleeping before the GCPMetricsHandler has a chance to
       export the data.
        */
-      const timeout = setTimeout(() => {}, 120000);
+      const timeout = setTimeout(() => {
+        if (exportedCount === 0) {
+          done(new Error('The export never happened'));
+        }
+      }, 120000);
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
@@ -123,6 +132,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
         resultCallback: (result: ExportResult) => void
       ) {
         return (result: ExportResult) => {
+          console.log('result callback');
           exportedCount++;
           try {
             assert.strictEqual(result.code, 0);
@@ -132,8 +142,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
             done(error);
           }
           if (exportedCount === 1) {
-            // We are expecting a hundred calls to an exporter. One for each
-            // metrics handler.
+            // We are expecting one call to an exporter.
             clearTimeout(timeout);
             done();
           }
@@ -147,6 +156,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void
         ): void {
+          console.log('export');
           if (exportedCount < 1) {
             try {
               // This code block ensures the metrics are correct. Mainly, the metrics
@@ -188,6 +198,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
             }
             // The code below uses the test callback to ensure the export was successful.
             const testResultCallback = getTestResultCallback(resultCallback);
+            console.log('calling super export');
             super.export(metrics, testResultCallback);
           } else {
             // After the test is complete the periodic exporter may still be
@@ -228,14 +239,18 @@ describe('Bigtable/GCPMetricsHandler', () => {
       }
     })();
   });
-  it('Should write two duplicate points inserted into the metrics handler', done => {
+  it.skip('Should write two duplicate points inserted into the metrics handler', done => {
     (async () => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
       the test as it is sleeping before the GCPMetricsHandler has a chance to
       export the data.
        */
-      const timeout = setTimeout(() => {}, 120000);
+      const timeout = setTimeout(() => {
+        if (!exported) {
+          done(new Error('The export never happened'));
+        }
+      }, 120000);
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,

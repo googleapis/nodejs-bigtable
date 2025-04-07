@@ -313,12 +313,10 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
       }
     }
   }
-  console.log('exported');
   // TODO: This sortTimeSeriesByStartTime call isn't necessary.
   const sortedTimeSeriesArray = sortTimeSeriesByStartTime(
     timeSeriesArray as google.monitoring.v3.ITimeSeries[]
   );
-  console.log(JSON.stringify(sortedTimeSeriesArray));
   return {
     name: `projects/${projectId}`,
     timeSeries: sortedTimeSeriesArray,
