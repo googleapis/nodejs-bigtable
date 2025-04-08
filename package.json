@@ -57,7 +57,6 @@
     "@opentelemetry/resources": "^1.30.0",
     "@opentelemetry/sdk-metrics": "^1.30.0",
     "arrify": "^2.0.0",
-    "async-mutex": "^0.5.0",
     "concat-stream": "^2.0.0",
     "dot-prop": "^6.0.0",
     "escape-string-regexp": "^4.0.0",

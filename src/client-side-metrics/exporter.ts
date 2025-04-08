@@ -175,70 +175,6 @@ function getMetric(
 }
 
 /**
- * Sorts a timeSeriesArray based on the startTime of the first data point.
- *
- * @param {Array<Object>} timeSeriesArray - The array of time series objects.
- * Each object is expected to have a `points` array, where the first element
- * has an `interval` object with a `startTime` object containing `seconds`
- * and potentially `nanos`.
- * @returns {Array<Object>} The sorted timeSeriesArray (sorted in-place).
- */
-function sortTimeSeriesByStartTime(
-  timeSeriesArray: google.monitoring.v3.ITimeSeries[]
-) {
-  // Check if the input is a valid array
-  if (!Array.isArray(timeSeriesArray)) {
-    console.error('Input must be an array.');
-    // Depending on desired behavior, you might throw an error instead
-    // throw new TypeError("Input must be an array.");
-    return timeSeriesArray;
-  }
-
-  timeSeriesArray.sort((a, b) => {
-    try {
-      // More robust access with optional chaining and nullish coalescing
-      const startTimeA = a?.points?.[0]?.interval?.startTime;
-      const startTimeB = b?.points?.[0]?.interval?.startTime;
-
-      // Handle cases where startTime objects or their properties might be missing
-      if (!startTimeA || !startTimeB) {
-        console.warn(
-          'Cannot compare elements due to missing startTime structure:',
-          a,
-          b
-        );
-        // Decide how to handle incomplete data:
-        // - Treat missing startTime as earliest (return -1 if only A is missing, 1 if only B is missing)
-        // - Treat missing startTime as latest (return 1 if only A is missing, -1 if only B is missing)
-        // - Keep original order (return 0)
-        if (!startTimeA && !startTimeB) return 0;
-        return !startTimeA ? -1 : 1; // Example: treat missing as earliest
-      }
-
-      const secondsA = startTimeA.seconds ?? 0; // Use 0 if seconds is null/undefined
-      const secondsB = startTimeB.seconds ?? 0;
-
-      // Compare seconds first
-      const secondsDiff = (secondsA as number) - (secondsB as number);
-      if (secondsDiff !== 0) {
-        return secondsDiff;
-      }
-
-      // If seconds are equal, compare nanos
-      const nanosA = startTimeA.nanos ?? 0; // Use 0 if nanos is null/undefined
-      const nanosB = startTimeB.nanos ?? 0;
-      return nanosA - nanosB;
-    } catch (error) {
-      // Catch unexpected errors during access/comparison
-      console.error('Error during comparison:', error, 'Elements:', a, b);
-      return 0; // Keep original order on error
-    }
-  });
-
-  return timeSeriesArray; // Return the array (it was sorted in-place)
-}
-
-/**
  * Converts OpenTelemetry metrics data into a format suitable for the Google Cloud
  * Monitoring API's `createTimeSeries` method.
  *
@@ -307,13 +243,9 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
       }
     }
   }
-  // TODO: This sortTimeSeriesByStartTime call isn't necessary.
-  const sortedTimeSeriesArray = sortTimeSeriesByStartTime(
-    timeSeriesArray as google.monitoring.v3.ITimeSeries[]
-  );
   return {
     name: `projects/${projectId}`,
-    timeSeries: sortedTimeSeriesArray,
+    timeSeries: timeSeriesArray,
   };
 }
 
