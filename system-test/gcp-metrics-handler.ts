@@ -119,7 +119,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
       the test as it is sleeping before the GCPMetricsHandler has a chance to
       export the data.
        */
-      const timeout = setTimeout(() => {}, 120000);
+      const timeout = setTimeout(() => {
+        done(new Error('The export never happened'));
+      }, 120000);
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
