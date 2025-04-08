@@ -38,7 +38,7 @@ const defaultProjectToInstruments: {[projectId: string]: MetricsInstruments} =
  * A collection of OpenTelemetry metric instruments used to record
  * Bigtable client-side metrics.
  */
-export interface MetricsInstruments {
+interface MetricsInstruments {
   operationLatencies: typeof Histogram;
   attemptLatencies: typeof Histogram;
   retryCount: typeof Histogram;
