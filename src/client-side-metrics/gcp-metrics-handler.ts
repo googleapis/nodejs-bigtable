@@ -82,6 +82,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
     // used it provides the project id for the name of the time series exported.
     // ie. name: `projects/${....['monitored_resource.project_id']}`,
     if (!projectToInstruments[projectId]) {
+      console.log('initializing stack');
       const latencyBuckets = [
         0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0, 16.0, 20.0, 25.0,
         30.0, 40.0, 50.0, 65.0, 80.0, 100.0, 130.0, 160.0, 200.0, 250.0, 300.0,
