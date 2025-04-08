@@ -28,14 +28,17 @@ const {
   PeriodicExportingMetricReader,
 } = require('@opentelemetry/sdk-metrics');
 
-// TODO: Add types
-const projectToInstruments: {[projectId: string]: MetricsInstruments} = {};
+// The variable below is the singleton map from projects to instrument stacks
+// which exists so that we only create one instrument stack per project. This
+// will eliminate errors due to the maximum sampling period.
+const defaultProjectToInstruments: {[projectId: string]: MetricsInstruments} =
+  {};
 
 /**
  * A collection of OpenTelemetry metric instruments used to record
  * Bigtable client-side metrics.
  */
-interface MetricsInstruments {
+export interface MetricsInstruments {
   operationLatencies: typeof Histogram;
   attemptLatencies: typeof Histogram;
   retryCount: typeof Histogram;
@@ -53,6 +56,7 @@ interface MetricsInstruments {
  */
 export class GCPMetricsHandler implements IMetricsHandler {
   private exporter: PushMetricExporter;
+  private projectToInstruments: {[projectId: string]: MetricsInstruments};
 
   /**
    * The `GCPMetricsHandler` is responsible for managing and recording
@@ -65,8 +69,14 @@ export class GCPMetricsHandler implements IMetricsHandler {
    *   metrics to Google Cloud Monitoring. This exporter is responsible for
    *   sending the collected metrics data to the monitoring backend. The provided exporter must be fully configured, for example the projectId must have been set.
    */
-  constructor(exporter: PushMetricExporter) {
+  constructor(
+    exporter: PushMetricExporter,
+    projectToInstruments: {
+      [projectId: string]: MetricsInstruments;
+    } = defaultProjectToInstruments
+  ) {
     this.exporter = exporter;
+    this.projectToInstruments = projectToInstruments;
   }
 
   /**
@@ -81,8 +91,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
     // The projectId is needed per metrics handler because when the exporter is
     // used it provides the project id for the name of the time series exported.
     // ie. name: `projects/${....['monitored_resource.project_id']}`,
-    if (!projectToInstruments[projectId]) {
-      console.log('initializing stack');
+    if (!this.projectToInstruments[projectId]) {
       const latencyBuckets = [
         0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0, 16.0, 20.0, 25.0,
         30.0, 40.0, 50.0, 65.0, 80.0, 100.0, 130.0, 160.0, 200.0, 250.0, 300.0,
@@ -207,10 +216,10 @@ export class GCPMetricsHandler implements IMetricsHandler {
           }
         ),
       };
-      projectToInstruments[projectId] = otelInstruments;
+      this.projectToInstruments[projectId] = otelInstruments;
       return otelInstruments;
     }
-    return projectToInstruments[projectId];
+    return this.projectToInstruments[projectId];
   }
 
   /**

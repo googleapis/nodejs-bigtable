@@ -52,8 +52,6 @@ class ExporterDelegator implements PushMetricExporter {
   }
 }
 
-let exporterDelegator: ExporterDelegator;
-
 describe.only('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value to the GCPMetricsHandler', done => {
     (async () => {
@@ -63,9 +61,7 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
       export the data.
        */
       const timeout = setTimeout(() => {
-        if (!exported) {
-          done(new Error('The export never happened'));
-        }
+        done(new Error('The export never happened'));
       }, 120000);
       /*
       The exporter is called every x seconds, but we only want to test the value
@@ -114,8 +110,9 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
           }
         });
       });
-      exporterDelegator = new ExporterDelegator(new MockExporter({projectId}));
-      const handler = new GCPMetricsHandler(exporterDelegator);
+      // projectToInstruments argument is set to {} because we want a fresh
+      // instrument stack each time this test is run.
+      const handler = new GCPMetricsHandler(new MockExporter({projectId}), {});
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
@@ -144,9 +141,7 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
       export the data.
        */
       const timeout = setTimeout(() => {
-        if (exportedCount === 0) {
-          done(new Error('The export never happened'));
-        }
+        done(new Error('The export never happened'));
       }, 120000);
       /*
       The exporter is called every x seconds, but we only want to test the value
@@ -253,9 +248,16 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
         )
       );
       const handlers = [];
-      exporterDelegator.exporterDelegate = new MockExporter({projectId});
+      // projectToInstruments argument is set to {} because we want a fresh
+      // instrument stack each time this test is run.
+      const projectToInstruments = {};
       for (let i = 0; i < 100; i++) {
-        handlers.push(new GCPMetricsHandler(exporterDelegator));
+        handlers.push(
+          new GCPMetricsHandler(
+            new MockExporter({projectId}),
+            projectToInstruments
+          )
+        );
         for (const request of transformedRequestsHandled) {
           if (request.attemptLatency) {
             handlers[i].onAttemptComplete(request as OnAttemptCompleteData);
@@ -266,7 +268,7 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
       }
     })();
   });
-  it.skip('Should write two duplicate points inserted into the metrics handler', done => {
+  it('Should write two duplicate points inserted into the metrics handler', done => {
     (async () => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
@@ -274,9 +276,7 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
       export the data.
        */
       const timeout = setTimeout(() => {
-        if (!exported) {
-          done(new Error('The export never happened'));
-        }
+        done(new Error('The export never happened'));
       }, 120000);
       /*
       The exporter is called every x seconds, but we only want to test the value
@@ -325,8 +325,9 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
           }
         });
       });
-      exporterDelegator.exporterDelegate = new MockExporter({projectId});
-      const handler = new GCPMetricsHandler(exporterDelegator);
+      // projectToInstruments argument is set to {} because we want a fresh
+      // instrument stack each time this test is run.
+      const handler = new GCPMetricsHandler(new MockExporter({projectId}), {});
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
