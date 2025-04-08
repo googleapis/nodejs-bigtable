@@ -112,7 +112,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
           new View({
             instrumentName: name,
             name,
-            aggregation: !name.endsWith('latencies')
+            aggregation: name.endsWith('latencies')
               ? Aggregation.Sum()
               : new ExplicitBucketHistogramAggregation(latencyBuckets),
           })
