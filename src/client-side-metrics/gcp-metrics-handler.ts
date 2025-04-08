@@ -133,7 +133,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
         ],
       });
       const meter = meterProvider.getMeter('bigtable.googleapis.com');
-      const otelInstruments = {
+      this.projectToInstruments[projectId] = {
         operationLatencies: meter.createHistogram(
           'bigtable.googleapis.com/internal/client/operation_latencies',
           {
@@ -216,8 +216,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
           }
         ),
       };
-      this.projectToInstruments[projectId] = otelInstruments;
-      return otelInstruments;
     }
     return this.projectToInstruments[projectId];
   }
