@@ -26,7 +26,10 @@ import {
 import {Bigtable} from '../src';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
-import {expectedOtelHundredExportInputs} from '../test-common/expected-otel-export-input';
+import {
+  expectedOtelExportInput,
+  expectedOtelHundredExportInputs,
+} from '../test-common/expected-otel-export-input';
 import {replaceTimestamps} from '../test-common/replace-timestamps';
 
 describe('Bigtable/GCPMetricsHandler', () => {
@@ -101,6 +104,109 @@ describe('Bigtable/GCPMetricsHandler', () => {
           handler.onAttemptComplete(request as OnAttemptCompleteData);
         } else {
           handler.onOperationComplete(request as OnOperationCompleteData);
+        }
+      }
+    })();
+  });
+  it('Should export a value to two GCPMetricsHandlers', done => {
+    // This test ensures that when we create two GCPMetricsHandlers much like
+    // what we would be doing when calling readRows on two separate tables that
+    // the data doesn't store duplicates in the same place and export twice as
+    // much data as it should.
+    (async () => {
+      /*
+      We need to create a timeout here because if we don't then mocha shuts down
+      the test as it is sleeping before the GCPMetricsHandler has a chance to
+      export the data.
+       */
+      const timeout = setTimeout(() => {}, 120000);
+      /*
+      The exporter is called every x seconds, but we only want to test the value
+      it receives once. Since done cannot be called multiple times in mocha,
+      exported variable ensures we only test the value export receives one time.
+      */
+      let exportedCount = 0;
+      function getTestResultCallback(
+        resultCallback: (result: ExportResult) => void
+      ) {
+        return (result: ExportResult) => {
+          exportedCount++;
+          try {
+            assert.strictEqual(result.code, 0);
+          } catch (error) {
+            // Code isn't 0 so report the original error.
+            done(result);
+            done(error);
+          }
+          if (exportedCount === 1) {
+            // We are expecting two calls to an exporter. One for each
+            // metrics handler.
+            clearTimeout(timeout);
+            done();
+          }
+          // The resultCallback needs to be called to end the exporter operation
+          // so that the test shuts down in mocha.
+          resultCallback({code: 0});
+        };
+      }
+      class MockExporter extends CloudMonitoringExporter {
+        export(
+          metrics: ResourceMetrics,
+          resultCallback: (result: ExportResult) => void
+        ): void {
+          if (exportedCount < 1) {
+            // The code below uses the test callback to ensure the export was successful.
+            const testResultCallback = getTestResultCallback(resultCallback);
+            super.export(metrics, testResultCallback);
+          } else {
+            // After the test is complete the periodic exporter may still be
+            // running in which case we don't want to do any checks. We just
+            // want to call the resultCallback so that there are no hanging
+            // threads.
+            resultCallback({code: 0});
+          }
+        }
+      }
+
+      const bigtable = new Bigtable();
+      const projectId: string = await new Promise((resolve, reject) => {
+        bigtable.getProjectId_((err, projectId) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(projectId as string);
+          }
+        });
+      });
+      // projectToInstruments argument is set to {} because we want a fresh
+      // instrument stack each time this test is run.
+      const projectToInstruments = {};
+      const handler = new GCPMetricsHandler(
+        new MockExporter({projectId}),
+        projectToInstruments
+      );
+      const handler2 = new GCPMetricsHandler(
+        new MockExporter({projectId}),
+        projectToInstruments
+      );
+      const transformedRequestsHandled = JSON.parse(
+        JSON.stringify(expectedRequestsHandled).replace(
+          /my-project/g,
+          projectId
+        )
+      );
+      for (const request of transformedRequestsHandled) {
+        if (request.attemptLatency) {
+          handler.onAttemptComplete(request as OnAttemptCompleteData);
+        } else {
+          handler.onOperationComplete(request as OnOperationCompleteData);
+        }
+      }
+      for (const request of transformedRequestsHandled) {
+        if (request.attemptLatency) {
+          handler2.onAttemptComplete(request as OnAttemptCompleteData);
+        } else {
+          handler2.onOperationComplete(request as OnOperationCompleteData);
         }
       }
     })();
