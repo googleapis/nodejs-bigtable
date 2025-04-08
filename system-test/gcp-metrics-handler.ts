@@ -24,33 +24,10 @@ import {
   ExportResult,
 } from '../src/client-side-metrics/exporter';
 import {Bigtable} from '../src';
-import {PushMetricExporter, ResourceMetrics} from '@opentelemetry/sdk-metrics';
+import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import {expectedOtelHundredExportInputs} from '../test-common/expected-otel-export-input';
 import {replaceTimestamps} from '../test-common/replace-timestamps';
-
-class ExporterDelegator implements PushMetricExporter {
-  exporterDelegate: PushMetricExporter;
-
-  constructor(exporterDelegate: PushMetricExporter) {
-    this.exporterDelegate = exporterDelegate;
-  }
-
-  export(
-    metrics: ResourceMetrics,
-    resultCallback: (result: ExportResult) => void
-  ) {
-    return this.exporterDelegate.export(metrics, resultCallback);
-  }
-
-  forceFlush() {
-    return this.exporterDelegate.forceFlush();
-  }
-
-  shutdown() {
-    return this.exporterDelegate.shutdown();
-  }
-}
 
 describe.only('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value to the GCPMetricsHandler', done => {
