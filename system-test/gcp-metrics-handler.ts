@@ -106,7 +106,6 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
     })();
   });
   it('Should export a value to a hundred GCPMetricsHandlers', done => {
-    console.log('hundred test');
     // This test ensures that when we create multiple GCPMetricsHandlers much like
     // what we would be doing when calling readRows on separate tables that
     // the data doesn't store duplicates in the same place and export twice as
@@ -130,7 +129,6 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
         resultCallback: (result: ExportResult) => void
       ) {
         return (result: ExportResult) => {
-          console.log('result callback');
           exportedCount++;
           try {
             assert.strictEqual(result.code, 0);
@@ -154,7 +152,6 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void
         ): void {
-          console.log('export');
           if (exportedCount < 1) {
             try {
               // This code block ensures the metrics are correct. Mainly, the metrics
@@ -196,7 +193,6 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
             }
             // The code below uses the test callback to ensure the export was successful.
             const testResultCallback = getTestResultCallback(resultCallback);
-            console.log('calling super export');
             super.export(metrics, testResultCallback);
           } else {
             // After the test is complete the periodic exporter may still be
