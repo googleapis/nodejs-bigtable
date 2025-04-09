@@ -308,6 +308,18 @@ export class OperationMetricsCollector {
   }
 
   /**
+   * This is a useful helper method for all the times we want to record that an
+   * attempt is complete when an operation is also complete.
+   *
+   * @param {string} projectId The id of the project.
+   * @param {grpc.status} finalOperationStatus Information about the completed operation.
+   */
+  onOperationSucceeded(projectId: string, attemptStatus: grpc.status) {
+    this.onAttemptComplete(projectId, attemptStatus);
+    this.onOperationComplete(projectId, attemptStatus);
+  }
+
+  /**
    * Called when metadata is received. Extracts server timing information if available.
    * @param {object} metadata The received metadata.
    */
