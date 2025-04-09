@@ -88,6 +88,20 @@ function withMetricsDebug<T>(fn: () => T): T | undefined {
   return;
 }
 
+// Checks that the state transition is valid and if not it throws a warning.
+function checkState<T>(
+  currentState: MetricsCollectorState,
+  allowedStates: MetricsCollectorState[],
+  fn: () => T
+): T | undefined {
+  if (allowedStates.includes(currentState)) {
+    return fn();
+  } else {
+    console.warn('Invalid state transition');
+  }
+  return;
+}
+
 /**
  * A class for tracing and recording client-side metrics related to Bigtable operations.
  */
@@ -154,14 +168,16 @@ export class OperationMetricsCollector {
    */
   onOperationStart() {
     withMetricsDebug(() => {
-      if (this.state === MetricsCollectorState.OPERATION_NOT_STARTED) {
-        this.operationStartTime = new Date();
-        this.firstResponseLatency = null;
-        this.state =
-          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
-      } else {
-        console.warn('Invalid state transition');
-      }
+      checkState(
+        this.state,
+        [MetricsCollectorState.OPERATION_NOT_STARTED],
+        () => {
+          this.operationStartTime = new Date();
+          this.firstResponseLatency = null;
+          this.state =
+            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
+        }
+      );
     });
   }
 
@@ -172,38 +188,39 @@ export class OperationMetricsCollector {
    */
   onAttemptComplete(projectId: string, attemptStatus: grpc.status) {
     withMetricsDebug(() => {
-      if (
-        this.state ===
-          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
-        this.state ===
-          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED
-      ) {
-        this.state =
-          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
-        this.attemptCount++;
-        const endTime = new Date();
-        if (projectId && this.attemptStartTime) {
-          const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
-          this.metricsHandlers.forEach(metricsHandler => {
-            if (metricsHandler.onAttemptComplete) {
-              // attemptStatus?.toString() is optional because in a test proxy
-              // test the server does not send back the status.
-              metricsHandler.onAttemptComplete({
-                attemptLatency: totalTime,
-                serverLatency: this.serverTime ?? undefined,
-                connectivityErrorCount: this.connectivityErrorCount,
-                streaming: this.streamingOperation,
-                status: attemptStatus?.toString(),
-                client_name: `nodejs-bigtable/${version}`,
-                metricsCollectorData: this.getMetricsCollectorData(),
-                projectId,
-              });
-            }
-          });
+      checkState(
+        this.state,
+        [
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED,
+        ],
+        () => {
+          this.state =
+            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
+          this.attemptCount++;
+          const endTime = new Date();
+          if (projectId && this.attemptStartTime) {
+            const totalTime =
+              endTime.getTime() - this.attemptStartTime.getTime();
+            this.metricsHandlers.forEach(metricsHandler => {
+              if (metricsHandler.onAttemptComplete) {
+                // attemptStatus?.toString() is optional because in a test proxy
+                // test the server does not send back the status.
+                metricsHandler.onAttemptComplete({
+                  attemptLatency: totalTime,
+                  serverLatency: this.serverTime ?? undefined,
+                  connectivityErrorCount: this.connectivityErrorCount,
+                  streaming: this.streamingOperation,
+                  status: attemptStatus?.toString(),
+                  client_name: `nodejs-bigtable/${version}`,
+                  metricsCollectorData: this.getMetricsCollectorData(),
+                  projectId,
+                });
+              }
+            });
+          }
         }
-      } else {
-        console.warn('Invalid state transition attempted');
-      }
+      );
     });
   }
 
@@ -212,19 +229,18 @@ export class OperationMetricsCollector {
    */
   onAttemptStart() {
     withMetricsDebug(() => {
-      if (
-        this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
-      ) {
-        this.state =
-          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET;
-        this.attemptStartTime = new Date();
-        this.serverTime = null;
-        this.serverTimeRead = false;
-        this.connectivityErrorCount = 0;
-      } else {
-        console.warn('Invalid state transition attempted');
-      }
+      checkState(
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS,
+        [MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS],
+        () => {
+          this.state =
+            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET;
+          this.attemptStartTime = new Date();
+          this.serverTime = null;
+          this.serverTimeRead = false;
+          this.connectivityErrorCount = 0;
+        }
+      );
     });
   }
 
@@ -234,18 +250,21 @@ export class OperationMetricsCollector {
   onResponse(projectId: string) {
     withMetricsDebug(() => {
       if (!this.firstResponseLatency) {
-        if (
-          this.state ===
-          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET
-        ) {
-          this.state =
-            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
-          const endTime = new Date();
-          if (projectId && this.operationStartTime) {
-            this.firstResponseLatency =
-              endTime.getTime() - this.operationStartTime.getTime();
+        checkState(
+          this.state,
+          [
+            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
+          ],
+          () => {
+            this.state =
+              MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
+            const endTime = new Date();
+            if (projectId && this.operationStartTime) {
+              this.firstResponseLatency =
+                endTime.getTime() - this.operationStartTime.getTime();
+            }
           }
-        }
+        );
       }
     });
   }
@@ -258,37 +277,37 @@ export class OperationMetricsCollector {
    */
   onOperationComplete(projectId: string, finalOperationStatus: grpc.status) {
     withMetricsDebug(() => {
-      if (
-        this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
-      ) {
-        this.state = MetricsCollectorState.OPERATION_COMPLETE;
-        const endTime = new Date();
-        if (projectId && this.operationStartTime) {
-          const totalTime =
-            endTime.getTime() - this.operationStartTime.getTime();
-          {
-            this.metricsHandlers.forEach(metricsHandler => {
-              if (metricsHandler.onOperationComplete) {
-                // finalOperationStatus?.toString() is optional because in a test
-                // proxy test the server does not send back the status.
-                metricsHandler.onOperationComplete({
-                  status: finalOperationStatus?.toString(),
-                  streaming: this.streamingOperation,
-                  metricsCollectorData: this.getMetricsCollectorData(),
-                  client_name: `nodejs-bigtable/${version}`,
-                  projectId,
-                  operationLatency: totalTime,
-                  retryCount: this.attemptCount - 1,
-                  firstResponseLatency: this.firstResponseLatency ?? undefined,
-                });
-              }
-            });
+      checkState(
+        this.state,
+        [MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS],
+        () => {
+          this.state = MetricsCollectorState.OPERATION_COMPLETE;
+          const endTime = new Date();
+          if (projectId && this.operationStartTime) {
+            const totalTime =
+              endTime.getTime() - this.operationStartTime.getTime();
+            {
+              this.metricsHandlers.forEach(metricsHandler => {
+                if (metricsHandler.onOperationComplete) {
+                  // finalOperationStatus?.toString() is optional because in a test
+                  // proxy test the server does not send back the status.
+                  metricsHandler.onOperationComplete({
+                    status: finalOperationStatus?.toString(),
+                    streaming: this.streamingOperation,
+                    metricsCollectorData: this.getMetricsCollectorData(),
+                    client_name: `nodejs-bigtable/${version}`,
+                    projectId,
+                    operationLatency: totalTime,
+                    retryCount: this.attemptCount - 1,
+                    firstResponseLatency:
+                      this.firstResponseLatency ?? undefined,
+                  });
+                }
+              });
+            }
           }
         }
-      } else {
-        console.warn('Invalid state transition attempted');
-      }
+      );
     });
   }
 
