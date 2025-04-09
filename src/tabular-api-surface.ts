@@ -587,10 +587,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             ) {
               //
               // The TestReadRows_Generic_CloseClient conformance test requires
-              // a grpc code to be present when the client is closed. According
-              // to Gemini, the appropriate code for a closed client is
-              // CANCELLED since the user actually cancelled the call by closing
-              // the client.
+              // a grpc code to be present when the client is closed. The
+              // appropriate code for a closed client is CANCELLED since the
+              // user actually cancelled the call by closing the client.
               //
               error.code = grpc.status.CANCELLED;
             }
