@@ -230,7 +230,7 @@ export class OperationMetricsCollector {
   onAttemptStart() {
     withMetricsDebug(() => {
       checkState(
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS,
+        this.state,
         [MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS],
         () => {
           this.state =
