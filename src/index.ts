@@ -19,6 +19,7 @@ import * as extend from 'extend';
 import {GoogleAuth, CallOptions, grpc as gaxVendoredGrpc} from 'google-gax';
 import * as gax from 'google-gax';
 import * as protos from '../protos/protos';
+import * as os from 'os';
 
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
@@ -132,6 +133,13 @@ function getDomain(prefix: string, opts?: gax.ClientOptions) {
     universeDomainEnvVar ??
     'googleapis.com'
   }`;
+}
+
+function generateClientUuid() {
+  const hostname = os.hostname() || 'localhost';
+  const currentPid = process.pid || '';
+  const uuid4 = crypto.randomUUID();
+  return `node-${uuid4}-${currentPid}${hostname}`;
 }
 
 /**
@@ -424,7 +432,7 @@ export class Bigtable {
   appProfileId?: string;
   projectName: string;
   shouldReplaceProjectIdToken: boolean;
-  clientUid = crypto.randomUUID();
+  clientUid = generateClientUuid();
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
