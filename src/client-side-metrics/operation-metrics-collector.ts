@@ -216,6 +216,8 @@ export class OperationMetricsCollector {
                 });
               }
             });
+          } else {
+            console.warn('ProjectId and start time should always be provided');
           }
         }
       );
