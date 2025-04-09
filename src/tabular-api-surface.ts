@@ -604,14 +604,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         })
         .on('end', () => {
           activeRequestStream = null;
-          metricsCollector?.onAttemptComplete(
+          metricsCollector?.onLastAttemptCompleted(
             this.bigtable.projectId,
             grpc.status.OK
-          );
-          metricsCollector?.onOperationComplete(
-            this.bigtable.projectId,
-            grpc.status.OK
-          );
+          )
         });
       rowStreamPipe(rowStream, userStream);
     };
