@@ -550,6 +550,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             // We ignore the `cancelled` "error", since we are the ones who cause
             // it when the user calls `.abort()`.
             userStream.end();
+            metricsCollector?.onAttemptComplete(
+              this.bigtable.projectId,
+              error.code
+            );
+            metricsCollector?.onOperationComplete(
+              this.bigtable.projectId,
+              error.code
+            );
             return;
           }
           numConsecutiveErrors++;
