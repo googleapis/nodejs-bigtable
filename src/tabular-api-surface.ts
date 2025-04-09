@@ -524,23 +524,21 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return false;
       };
 
-      if (this.bigtable.metricsEnabled) {
-        requestStream
-          .on(
-            'metadata',
-            (metadata: {internalRepr: Map<string, string[]>; options: {}}) => {
-              metricsCollector?.onMetadataReceived(metadata);
-            }
-          )
-          .on(
-            'status',
-            (status: {
-              metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
-            }) => {
-              metricsCollector?.onStatusMetadataReceived(status);
-            }
-          );
-      }
+      requestStream
+        .on(
+          'metadata',
+          (metadata: {internalRepr: Map<string, string[]>; options: {}}) => {
+            metricsCollector?.onMetadataReceived(metadata);
+          }
+        )
+        .on(
+          'status',
+          (status: {
+            metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
+          }) => {
+            metricsCollector?.onStatusMetadataReceived(status);
+          }
+        );
 
       rowStream
         .on('error', (error: ServiceError) => {
