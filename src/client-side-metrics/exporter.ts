@@ -309,6 +309,8 @@ export class CloudMonitoringExporter extends MetricExporter {
         // frequently than the maximum sampling period configured for the
         // metric." error we should have the metric service client retry a few
         // times to ensure the metrics do get written.
+        // We use all the usual retry codes plus code 3 because 3 corresponds
+        // to the maximum sampling error.
         const retry = new RetryOptions([3, 4, 8, 10, 14], {
           initialRetryDelayMillis: 10,
           retryDelayMultiplier: 2,
