@@ -607,7 +607,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           metricsCollector?.onLastAttemptCompleted(
             this.bigtable.projectId,
             grpc.status.OK
-          )
+          );
         });
       rowStreamPipe(rowStream, userStream);
     };
