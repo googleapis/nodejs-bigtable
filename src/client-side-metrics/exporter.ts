@@ -23,6 +23,7 @@ import {ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
+import {RetryOptions} from 'google-gax';
 
 export interface ExportResult {
   code: number;
@@ -304,8 +305,20 @@ export class CloudMonitoringExporter extends MetricExporter {
     (async () => {
       try {
         const request = metricsToRequest(metrics);
+        // In order to manage the "One or more points were written more
+        // frequently than the maximum sampling period configured for the
+        // metric." error we should have the metric service client retry a few
+        // times to ensure the metrics do get written.
+        const retry = new RetryOptions([3, 4, 8, 10, 14], {
+          initialRetryDelayMillis: 10,
+          retryDelayMultiplier: 2,
+          maxRetryDelayMillis: 10000,
+        });
         await this.monitoringClient.createTimeSeries(
-          request as ICreateTimeSeriesRequest
+          request as ICreateTimeSeriesRequest,
+          {
+            retry,
+          }
         );
         // The resultCallback typically accepts a value equal to {code: x}
         // for some value x along with other info. When the code is equal to 0
