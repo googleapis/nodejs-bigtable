@@ -204,8 +204,6 @@ export class OperationMetricsCollector {
               endTime.getTime() - this.attemptStartTime.getTime();
             this.metricsHandlers.forEach(metricsHandler => {
               if (metricsHandler.onAttemptComplete) {
-                // attemptStatus?.toString() is optional because in a test proxy
-                // test the server does not send back the status.
                 metricsHandler.onAttemptComplete({
                   attemptLatency: totalTime,
                   serverLatency: this.serverTime ?? undefined,
@@ -289,8 +287,6 @@ export class OperationMetricsCollector {
             {
               this.metricsHandlers.forEach(metricsHandler => {
                 if (metricsHandler.onOperationComplete) {
-                  // finalOperationStatus.toString() is optional because in a test
-                  // proxy test the server does not send back the status.
                   metricsHandler.onOperationComplete({
                     status: finalOperationStatus.toString(),
                     streaming: this.streamingOperation,
