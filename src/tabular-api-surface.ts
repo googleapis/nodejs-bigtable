@@ -550,7 +550,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             // We ignore the `cancelled` "error", since we are the ones who cause
             // it when the user calls `.abort()`.
             userStream.end();
-            metricsCollector?.onOperationSucceeded(
+            metricsCollector?.onLastAttemptCompleted(
               this.bigtable.projectId,
               error.code
             );
@@ -589,7 +589,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               //
               error.code = grpc.status.CANCELLED;
             }
-            metricsCollector?.onOperationSucceeded(
+            metricsCollector?.onLastAttemptCompleted(
               this.bigtable.projectId,
               error.code
             );

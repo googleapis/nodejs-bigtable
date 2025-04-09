@@ -314,7 +314,7 @@ export class OperationMetricsCollector {
    * @param {string} projectId The id of the project.
    * @param {grpc.status} finalOperationStatus Information about the completed operation.
    */
-  onOperationSucceeded(projectId: string, attemptStatus: grpc.status) {
+  onLastAttemptCompleted(projectId: string, attemptStatus: grpc.status) {
     this.onAttemptComplete(projectId, attemptStatus);
     this.onOperationComplete(projectId, attemptStatus);
   }
