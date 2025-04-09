@@ -107,7 +107,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
    */
   BigtableTableAdminClient?: gax.ClientOptions;
 
-  collectMetrics?: boolean;
+  metricsEnabled?: boolean;
 }
 
 /**
@@ -440,11 +440,11 @@ export class Bigtable {
   // Therefore, metrics handlers should be created at the client level and
   // reused throughout the library to reduce latency:
   metricsHandlers: IMetricsHandler[];
-  // collectMetrics is a member variable that is used to ensure that if the
+  // metricsEnabled is a member variable that is used to ensure that if the
   // user provides a `false` value and opts out of metrics collection that
   // the metrics collector is ignored altogether to reduce latency in the
   // client.
-  collectMetrics: boolean;
+  metricsEnabled: boolean;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -543,11 +543,11 @@ export class Bigtable {
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
 
-    if (options.collectMetrics === false) {
-      this.collectMetrics = false;
+    if (options.metricsEnabled === false) {
+      this.metricsEnabled = false;
       this.metricsHandlers = [];
     } else {
-      this.collectMetrics = true;
+      this.metricsEnabled = true;
       this.metricsHandlers = [
         new GCPMetricsHandler(new CloudMonitoringExporter()),
       ];

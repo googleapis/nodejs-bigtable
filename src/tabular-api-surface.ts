@@ -337,7 +337,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
-    const metricsCollector = this.bigtable.collectMetrics
+    const metricsCollector = this.bigtable.metricsEnabled
       ? new OperationMetricsCollector(
           this,
           this.bigtable.metricsHandlers,
@@ -524,7 +524,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return false;
       };
 
-      if (this.bigtable.collectMetrics) {
+      if (this.bigtable.metricsEnabled) {
         requestStream
           .on(
             'metadata',
