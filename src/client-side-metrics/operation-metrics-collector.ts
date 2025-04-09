@@ -20,7 +20,7 @@ import * as gax from 'google-gax';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
-const METRIC_DEBUG = process.env.METRIC_DEBUG;
+const METRICS_DEBUG = process.env.METRICS_DEBUG;
 
 let ResponseParams: gax.protobuf.Type | null;
 try {
@@ -81,7 +81,7 @@ function withMetricsDebug<T>(fn: () => T): T | undefined {
   try {
     return fn();
   } catch (e) {
-    if (METRIC_DEBUG) {
+    if (METRICS_DEBUG) {
       console.warn(e);
     }
   }
