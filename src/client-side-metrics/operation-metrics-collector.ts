@@ -21,6 +21,7 @@ const root = gax.protobuf.loadSync(
   './protos/google/bigtable/v2/response_params.proto'
 );
 const ResponseParams = root.lookupType('ResponseParams');
+const {hrtime} = require('node:process');
 
 /**
  * An interface representing a tabular API surface, such as a Bigtable table.
@@ -63,8 +64,8 @@ enum MetricsCollectorState {
  */
 export class OperationMetricsCollector {
   private state: MetricsCollectorState;
-  private operationStartTime: Date | null;
-  private attemptStartTime: Date | null;
+  private operationStartTime: bigint | null;
+  private attemptStartTime: bigint | null;
   private zone: string | undefined;
   private cluster: string | undefined;
   private tabularApiSurface: ITabularApiSurface;
@@ -77,7 +78,7 @@ export class OperationMetricsCollector {
   private connectivityErrorCount: number;
   private streamingOperation: StreamingState;
   private applicationLatencies: number[];
-  private lastRowReceivedTime: Date | null;
+  private lastRowReceivedTime: bigint | null;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -128,7 +129,7 @@ export class OperationMetricsCollector {
    */
   onOperationStart() {
     if (this.state === MetricsCollectorState.OPERATION_NOT_STARTED) {
-      this.operationStartTime = new Date();
+      this.operationStartTime = hrtime.bigint();
       this.firstResponseLatency = null;
       this.applicationLatencies = [];
       this.state =
@@ -153,9 +154,11 @@ export class OperationMetricsCollector {
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
       this.attemptCount++;
-      const endTime = new Date();
+      const endTime = hrtime.bigint();
       if (projectId && this.attemptStartTime) {
-        const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
+        const totalTime = Number(
+          (endTime - this.attemptStartTime) / BigInt(1000000)
+        );
         this.metricsHandlers.forEach(metricsHandler => {
           if (metricsHandler.onAttemptComplete) {
             metricsHandler.onAttemptComplete({
@@ -186,7 +189,7 @@ export class OperationMetricsCollector {
     ) {
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET;
-      this.attemptStartTime = new Date();
+      this.attemptStartTime = hrtime.bigint();
       this.serverTime = null;
       this.serverTimeRead = false;
       this.connectivityErrorCount = 0;
@@ -208,10 +211,11 @@ export class OperationMetricsCollector {
       ) {
         this.state =
           MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
-        const endTime = new Date();
+        const endTime = hrtime.bigint();
         if (projectId && this.operationStartTime) {
-          this.firstResponseLatency =
-            endTime.getTime() - this.operationStartTime.getTime();
+          this.firstResponseLatency = Number(
+            (endTime - this.operationStartTime) / BigInt(1000000)
+          );
         }
       }
     }
@@ -229,9 +233,11 @@ export class OperationMetricsCollector {
       MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
     ) {
       this.state = MetricsCollectorState.OPERATION_COMPLETE;
-      const endTime = new Date();
+      const endTime = hrtime.bigint();
       if (projectId && this.operationStartTime) {
-        const totalTime = endTime.getTime() - this.operationStartTime.getTime();
+        const totalTime = Number(
+          (endTime - this.operationStartTime) / BigInt(1000000)
+        );
         {
           this.metricsHandlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
@@ -298,11 +304,12 @@ export class OperationMetricsCollector {
    * when the operation completes.
    */
   onRowReachesUser() {
-    const currentTime = new Date();
+    const currentTime = hrtime.bigint();
     if (this.lastRowReceivedTime) {
-      this.applicationLatencies.push(
-        currentTime.getTime() - this.lastRowReceivedTime.getTime()
+      const applicationLatency = Number(
+        (currentTime - this.lastRowReceivedTime) / BigInt(1000000)
       );
+      this.applicationLatencies.push(applicationLatency);
     }
     this.lastRowReceivedTime = currentTime;
   }
