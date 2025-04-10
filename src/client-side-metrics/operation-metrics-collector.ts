@@ -262,6 +262,10 @@ export class OperationMetricsCollector {
             if (projectId && this.operationStartTime) {
               this.firstResponseLatency =
                 endTime.getTime() - this.operationStartTime.getTime();
+            } else {
+              console.warn(
+                'ProjectId and operationStartTime should always be provided'
+              );
             }
           }
         );
@@ -303,6 +307,10 @@ export class OperationMetricsCollector {
                 }
               });
             }
+          } else {
+            console.warn(
+              'projectId and operation start time should always be available here'
+            );
           }
         }
       );
