@@ -16,7 +16,7 @@ import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {PreciseDate} from '@google-cloud/precise-date';
 import * as assert from 'assert';
 import {beforeEach, afterEach, describe, it, before, after} from 'mocha';
-import Q = require('p-queue');
+import PQueue from 'p-queue';
 
 import {
   Backup,
@@ -51,7 +51,7 @@ describe('Bigtable', () => {
 
   async function reapBackups(instance: Instance) {
     const [backups] = await instance.getBackups();
-    const q = new Q({concurrency: 5});
+    const q = new PQueue({concurrency: 5});
     return Promise.all(
       backups.map(backup => {
         q.add(async () => {
@@ -60,7 +60,7 @@ describe('Bigtable', () => {
           } catch (e) {
             console.log(`Error deleting backup: ${backup.id}`);
           }
-        }).catch(err => {
+        }).catch((err: any) => {
           throw err;
         });
       }),
@@ -77,7 +77,7 @@ describe('Bigtable', () => {
         const oneHourAgo = new Date(Date.now() - 3600000);
         return !timeCreated || timeCreated <= oneHourAgo;
       });
-    const q = new Q({concurrency: 5});
+    const q = new PQueue({concurrency: 5});
     // need to delete backups first due to instance deletion precondition
     await Promise.all(testInstances.map(instance => reapBackups(instance)));
     await Promise.all(
@@ -88,7 +88,7 @@ describe('Bigtable', () => {
           } catch (e) {
             console.log(`Error deleting instance: ${instance.id}`);
           }
-        }).catch(err => {
+        }).catch((err: any) => {
           throw err;
         });
       }),
@@ -112,7 +112,7 @@ describe('Bigtable', () => {
   });
 
   after(async () => {
-    const q = new Q({concurrency: 5});
+    const q = new PQueue({concurrency: 5});
     const instances = [INSTANCE, DIFF_INSTANCE, CMEK_INSTANCE];
 
     // need to delete backups first due to instance deletion precondition
@@ -125,7 +125,7 @@ describe('Bigtable', () => {
           } catch (e) {
             console.log(`Error deleting instance: ${instance.id}`);
           }
-        }).catch(err => {
+        }).catch((err: any) => {
           throw err;
         });
       }),
