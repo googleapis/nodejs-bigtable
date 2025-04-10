@@ -15,7 +15,7 @@
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
-  backupId = 'YOUR_BACKUP_ID'
+  backupId = 'YOUR_BACKUP_ID',
 ) {
   // [START bigtable_api_restore_backup]
   const {Bigtable} = require('@google-cloud/bigtable');

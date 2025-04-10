@@ -63,15 +63,15 @@ describe('TestProxy/ReadModifyWriteRow', () => {
                   reject(args[0]);
                 }
                 resolve(args[1]);
-              }
+              },
             );
           });
           const bigtable = clientMap.get(
-            'TestReadModifyWriteRow_NoRetry_TransientError'
+            'TestReadModifyWriteRow_NoRetry_TransientError',
           );
           // Mock out the Gapic layer so we can see requests coming into it
           const bigtableClient = new BigtableClient(
-            bigtable.options.BigtableClient
+            bigtable.options.BigtableClient,
           );
           bigtable.api['BigtableClient'] = bigtableClient;
           bigtableClient.readModifyWriteRow = (
@@ -91,7 +91,7 @@ describe('TestProxy/ReadModifyWriteRow', () => {
               | null
               | undefined,
               {} | null | undefined
-            >
+            >,
           ) => {
             try {
               // If the Gapic request is correct then the test passes.
@@ -125,11 +125,13 @@ describe('TestProxy/ReadModifyWriteRow', () => {
                   reject(args[0]);
                 }
                 resolve(args[1]);
-              }
+              },
             );
           });
           done();
-        })();
+        })().catch(err => {
+          throw err;
+        });
       });
     });
   });

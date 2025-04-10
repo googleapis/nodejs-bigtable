@@ -22,7 +22,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 102,
+          "end": 108,
           "type": "FULL"
         }
       ],
@@ -37,6 +37,10 @@
           },
           {
             "name": "authorized_view_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "materialized_view_name",
             "type": "TYPE_STRING"
           },
           {
@@ -90,7 +94,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 72,
+          "end": 78,
           "type": "FULL"
         }
       ],
@@ -105,6 +109,10 @@
           },
           {
             "name": "authorized_view_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "materialized_view_name",
             "type": "TYPE_STRING"
           },
           {
@@ -508,17 +516,73 @@
       }
     },
     {
+      "regionTag": "bigtable_v2_generated_Bigtable_PrepareQuery_async",
+      "title": "bigtable prepareQuery Sample",
+      "origin": "API_DEFINITION",
+      "description": " Prepares a GoogleSQL query for execution on a particular Bigtable instance.",
+      "canonical": false,
+      "file": "bigtable.prepare_query.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 29,
+          "end": 89,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "PrepareQuery",
+        "fullName": "google.bigtable.v2.Bigtable.PrepareQuery",
+        "async": true,
+        "parameters": [
+          {
+            "name": "instance_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "query",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "proto_format",
+            "type": ".google.bigtable.v2.ProtoFormat"
+          },
+          {
+            "name": "param_types",
+            "type": "TYPE_MESSAGE[]"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.PrepareQueryResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "PrepareQuery",
+          "fullName": "google.bigtable.v2.Bigtable.PrepareQuery",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
       "regionTag": "bigtable_v2_generated_Bigtable_ExecuteQuery_async",
       "title": "bigtable executeQuery Sample",
       "origin": "API_DEFINITION",
-      "description": " Executes a BTQL query against a particular Cloud Bigtable instance.",
+      "description": " Executes a SQL query against a particular Bigtable instance.",
       "canonical": false,
       "file": "bigtable.execute_query.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
           "start": 29,
-          "end": 106,
+          "end": 121,
           "type": "FULL"
         }
       ],
@@ -538,6 +602,10 @@
           {
             "name": "query",
             "type": "TYPE_STRING"
+          },
+          {
+            "name": "prepared_query",
+            "type": "TYPE_BYTES"
           },
           {
             "name": "proto_format",

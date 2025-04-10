@@ -45,7 +45,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       */
       let exported = false;
       function getTestResultCallback(
-        resultCallback: (result: ExportResult) => void
+        resultCallback: (result: ExportResult) => void,
       ) {
         return (result: ExportResult) => {
           exported = true;
@@ -64,7 +64,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       class MockExporter extends CloudMonitoringExporter {
         export(
           metrics: ResourceMetrics,
-          resultCallback: (result: ExportResult) => void
+          resultCallback: (result: ExportResult) => void,
         ): void {
           const testResultCallback = getTestResultCallback(resultCallback);
           if (!exported) {
@@ -89,8 +89,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
-          projectId
-        )
+          projectId,
+        ),
       );
       for (const request of transformedRequestsHandled) {
         if (request.attemptLatency) {
@@ -99,7 +99,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
           handler.onOperationComplete(request as OnOperationCompleteData);
         }
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
   it('Should export a value to two GCPMetricsHandlers', done => {
     // This test ensures that when we create two GCPMetricsHandlers much like
@@ -120,7 +122,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       */
       let exportedCount = 0;
       function getTestResultCallback(
-        resultCallback: (result: ExportResult) => void
+        resultCallback: (result: ExportResult) => void,
       ) {
         return (result: ExportResult) => {
           exportedCount++;
@@ -145,7 +147,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       class MockExporter extends CloudMonitoringExporter {
         export(
           metrics: ResourceMetrics,
-          resultCallback: (result: ExportResult) => void
+          resultCallback: (result: ExportResult) => void,
         ): void {
           if (exportedCount < 2) {
             try {
@@ -159,16 +161,16 @@ describe('Bigtable/GCPMetricsHandler', () => {
               // metric service client will fail. Therefore, we must make a copy
               // of the metrics and use that.
               const parsedExportInput: ResourceMetrics = JSON.parse(
-                JSON.stringify(metrics)
+                JSON.stringify(metrics),
               );
               replaceTimestamps(
                 parsedExportInput as unknown as typeof expectedOtelExportInput,
                 [123, 789],
-                [456, 789]
+                [456, 789],
               );
               assert.deepStrictEqual(
                 parsedExportInput.scopeMetrics[0].metrics.length,
-                expectedOtelExportInput.scopeMetrics[0].metrics.length
+                expectedOtelExportInput.scopeMetrics[0].metrics.length,
               );
               for (
                 let index = 0;
@@ -178,7 +180,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
                 // We need to compare pointwise because mocha truncates to an 8192 character limit.
                 assert.deepStrictEqual(
                   parsedExportInput.scopeMetrics[0].metrics[index],
-                  expectedOtelExportInput.scopeMetrics[0].metrics[index]
+                  expectedOtelExportInput.scopeMetrics[0].metrics[index],
                 );
               }
             } catch (e) {
@@ -214,8 +216,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
-          projectId
-        )
+          projectId,
+        ),
       );
       for (const request of transformedRequestsHandled) {
         if (request.attemptLatency) {
@@ -231,7 +233,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
           handler2.onOperationComplete(request as OnOperationCompleteData);
         }
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
   it('Should export a value to ten GCPMetricsHandlers', done => {
     // This test ensures that when we create two GCPMetricsHandlers much like
@@ -252,7 +256,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       */
       let exportedCount = 0;
       function getTestResultCallback(
-        resultCallback: (result: ExportResult) => void
+        resultCallback: (result: ExportResult) => void,
       ) {
         return (result: ExportResult) => {
           exportedCount++;
@@ -277,7 +281,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       class MockExporter extends CloudMonitoringExporter {
         export(
           metrics: ResourceMetrics,
-          resultCallback: (result: ExportResult) => void
+          resultCallback: (result: ExportResult) => void,
         ): void {
           if (exportedCount < 10) {
             try {
@@ -291,16 +295,16 @@ describe('Bigtable/GCPMetricsHandler', () => {
               // metric service client will fail. Therefore, we must make a copy
               // of the metrics and use that.
               const parsedExportInput: ResourceMetrics = JSON.parse(
-                JSON.stringify(metrics)
+                JSON.stringify(metrics),
               );
               replaceTimestamps(
                 parsedExportInput as unknown as typeof expectedOtelExportInput,
                 [123, 789],
-                [456, 789]
+                [456, 789],
               );
               assert.deepStrictEqual(
                 parsedExportInput.scopeMetrics[0].metrics.length,
-                expectedOtelExportInput.scopeMetrics[0].metrics.length
+                expectedOtelExportInput.scopeMetrics[0].metrics.length,
               );
               for (
                 let index = 0;
@@ -310,7 +314,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
                 // We need to compare pointwise because mocha truncates to an 8192 character limit.
                 assert.deepStrictEqual(
                   parsedExportInput.scopeMetrics[0].metrics[index],
-                  expectedOtelExportInput.scopeMetrics[0].metrics[index]
+                  expectedOtelExportInput.scopeMetrics[0].metrics[index],
                 );
               }
             } catch (e) {
@@ -344,8 +348,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
-          projectId
-        )
+          projectId,
+        ),
       );
       const handlers = [];
       for (let i = 0; i < 10; i++) {
@@ -358,7 +362,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
           }
         }
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
   it('Should write two duplicate points inserted into the metrics handler', done => {
     (async () => {
@@ -375,7 +381,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       */
       let exported = false;
       function getTestResultCallback(
-        resultCallback: (result: ExportResult) => void
+        resultCallback: (result: ExportResult) => void,
       ) {
         return (result: ExportResult) => {
           exported = true;
@@ -394,7 +400,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       class MockExporter extends CloudMonitoringExporter {
         export(
           metrics: ResourceMetrics,
-          resultCallback: (result: ExportResult) => void
+          resultCallback: (result: ExportResult) => void,
         ): void {
           const testResultCallback = getTestResultCallback(resultCallback);
           if (!exported) {
@@ -419,8 +425,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
-          projectId
-        )
+          projectId,
+        ),
       );
       for (let i = 0; i < 2; i++) {
         for (const request of transformedRequestsHandled) {
@@ -431,6 +437,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
           }
         }
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
 });

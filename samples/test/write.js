@@ -44,7 +44,7 @@ describe('writes', async () => {
 
   it('should do a conditional write', () => {
     const stdout = execSync(
-      `node writeConditionally ${INSTANCE_ID} ${TABLE_ID}`
+      `node writeConditionally ${INSTANCE_ID} ${TABLE_ID}`,
     );
     assert.match(stdout, /Successfully updated row's os_name/);
   });

@@ -11,7 +11,7 @@
     "api-reference-doc-snippets/*.js"
   ],
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18"
   },
   "dependencies": {
     "@google-cloud/bigtable": "^5.1.2",

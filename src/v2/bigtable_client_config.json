@@ -73,9 +73,14 @@
           "retry_codes_name": "non_idempotent",
           "retry_params_name": "default"
         },
-        "ExecuteQuery": {
+        "PrepareQuery": {
           "retry_codes_name": "non_idempotent",
           "retry_params_name": "default"
+        },
+        "ExecuteQuery": {
+          "timeout_millis": 43200000,
+          "retry_codes_name": "idempotent",
+          "retry_params_name": "5af39a0f6db447f61c4f695240caeccb74f78362"
         }
       }
     }

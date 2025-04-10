@@ -20,7 +20,7 @@
 
 async function main(
   INSTANCE_ID = 'my-instance', // ID of the Cloud Bigtable instance
-  TABLE_ID = 'my-table' // ID of the Cloud Bigtable table
+  TABLE_ID = 'my-table', // ID of the Cloud Bigtable table
 ) {
   // [START bigtable_quickstart]
   // Imports the Google Cloud client library

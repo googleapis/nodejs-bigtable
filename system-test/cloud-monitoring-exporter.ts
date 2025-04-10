@@ -29,7 +29,7 @@ describe('Bigtable/CloudMonitoringExporter', () => {
     // This test will add metrics so that they are available in Pantheon
     (async () => {
       const resultCallback: (result: ExportResult) => void = (
-        result: ExportResult
+        result: ExportResult,
       ) => {
         try {
           assert.strictEqual(result.code, 0);
@@ -53,8 +53,8 @@ describe('Bigtable/CloudMonitoringExporter', () => {
       const transformedExportInput = JSON.parse(
         JSON.stringify(expectedOtelExportInput).replace(
           /my-project/g,
-          projectId
-        )
+          projectId,
+        ),
       ) as unknown as typeof expectedOtelExportInput;
       {
         // This replaces the fake dates in time series with recent dates in the right order.
@@ -73,8 +73,10 @@ describe('Bigtable/CloudMonitoringExporter', () => {
       const exporter = new CloudMonitoringExporter();
       exporter.export(
         transformedExportInput as unknown as ResourceMetrics,
-        resultCallback
+        resultCallback,
       );
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
 });

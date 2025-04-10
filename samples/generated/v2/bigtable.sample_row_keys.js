@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,6 +45,12 @@ function main() {
    *  `projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorized_view>`.
    */
   // const authorizedViewName = 'abc123'
+  /**
+   *  Optional. The unique name of the MaterializedView from which to read.
+   *  Values are of the form
+   *  `projects/<project>/instances/<instance>/materializedViews/<materialized_view>`.
+   */
+  // const materializedViewName = 'abc123'
   /**
    *  This value specifies routing for replication. If not specified, the
    *  "default" application profile will be used.

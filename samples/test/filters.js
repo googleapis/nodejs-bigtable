@@ -194,7 +194,7 @@ describe('filters', async () => {
 
   it('should filter with row sample', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterRowSample`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterRowSample`,
     );
     console.log('stdout', stdout);
     assert.include(stdout, 'Reading data for');
@@ -202,7 +202,7 @@ describe('filters', async () => {
 
   it('should filter with row regex', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterRowRegex`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterRowRegex`,
     );
 
     snapshot(stdout);
@@ -210,7 +210,7 @@ describe('filters', async () => {
 
   it('should filter with cells per col', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCellsPerCol`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCellsPerCol`,
     );
 
     snapshot(stdout);
@@ -218,7 +218,7 @@ describe('filters', async () => {
 
   it('should filter with cells per row', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCellsPerRow`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCellsPerRow`,
     );
 
     snapshot(stdout);
@@ -226,7 +226,7 @@ describe('filters', async () => {
 
   it('should filter with cells per row offset', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCellsPerRowOffset`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCellsPerRowOffset`,
     );
 
     snapshot(stdout);
@@ -234,7 +234,7 @@ describe('filters', async () => {
 
   it('should filter with col family regex', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterColFamilyRegex`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterColFamilyRegex`,
     );
 
     snapshot(stdout);
@@ -242,7 +242,7 @@ describe('filters', async () => {
 
   it('should filter with col qualifier regex', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterColQualifierRegex`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterColQualifierRegex`,
     );
 
     snapshot(stdout);
@@ -250,7 +250,7 @@ describe('filters', async () => {
 
   it('should filter with col range', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterColRange`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterColRange`,
     );
 
     snapshot(stdout);
@@ -258,7 +258,7 @@ describe('filters', async () => {
 
   it('should filter with value range', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterValueRange`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterValueRange`,
     );
 
     snapshot(stdout);
@@ -266,7 +266,7 @@ describe('filters', async () => {
 
   it('should filter with value regex', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterValueRegex`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterValueRegex`,
     );
 
     snapshot(stdout);
@@ -274,7 +274,7 @@ describe('filters', async () => {
 
   it('should filter with timestamp range', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterTimestampRange`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterTimestampRange`,
     );
 
     snapshot(stdout);
@@ -282,7 +282,7 @@ describe('filters', async () => {
 
   it('should filter with block all', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterBlockAll`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterBlockAll`,
     );
     const result = '';
     assert.equal(stdout, result);
@@ -290,7 +290,7 @@ describe('filters', async () => {
 
   it('should filter with pass all', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterPassAll`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterPassAll`,
     );
 
     snapshot(stdout);
@@ -298,7 +298,7 @@ describe('filters', async () => {
 
   it('should filter with strip value', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterStripValue`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterStripValue`,
     );
 
     snapshot(stdout);
@@ -306,28 +306,28 @@ describe('filters', async () => {
 
   it('should filter with label', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterApplyLabel`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterApplyLabel`,
     );
 
     snapshot(stdout);
   });
   it('should filter with chain', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterChain`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterChain`,
     );
 
     snapshot(stdout);
   });
   it('should filter with interleave', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterInterleave`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterInterleave`,
     );
 
     snapshot(stdout);
   });
   it('should filter with condition', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCondition`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCondition`,
     );
 
     snapshot(stdout);
