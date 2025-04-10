@@ -49,6 +49,13 @@ interface MetricsInstruments {
   clientBlockingLatencies: typeof Histogram;
 }
 
+/**
+ * This method gets the open telemetry instruments that will store GCP metrics
+ * for a particular project.
+ *
+ * @param projectId The project for which the instruments will be stored.
+ * @param exporter The exporter the metrics will be sent to.
+ */
 function getInstruments(projectId: string, exporter: PushMetricExporter) {
   const latencyBuckets = [
     0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0, 16.0, 20.0, 25.0, 30.0,
