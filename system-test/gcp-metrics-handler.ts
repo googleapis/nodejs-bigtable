@@ -89,7 +89,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       });
       // projectToInstruments argument is set to {} because we want a fresh
       // instrument stack each time this test is run.
-      GCPMetricsHandler.projectToInstruments = {};
+      GCPMetricsHandler.instrumentsForProject = {};
       const handler = new GCPMetricsHandler(new MockExporter({projectId}));
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
@@ -180,7 +180,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       });
       // projectToInstruments argument is set to {} because we want a fresh
       // instrument stack each time this test is run.
-      GCPMetricsHandler.projectToInstruments = {};
+      GCPMetricsHandler.instrumentsForProject = {};
       const handler = new GCPMetricsHandler(new MockExporter({projectId}));
       const handler2 = new GCPMetricsHandler(new MockExporter({projectId}));
       const transformedRequestsHandled = JSON.parse(
@@ -323,7 +323,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       const handlers = [];
       // projectToInstruments argument is set to {} because we want a fresh
       // instrument stack each time this test is run.
-      GCPMetricsHandler.projectToInstruments = {};
+      GCPMetricsHandler.instrumentsForProject = {};
       for (let i = 0; i < 100; i++) {
         handlers.push(new GCPMetricsHandler(new MockExporter({projectId})));
         for (const request of transformedRequestsHandled) {
@@ -395,7 +395,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       });
       // projectToInstruments argument is set to {} because we want a fresh
       // instrument stack each time this test is run.
-      GCPMetricsHandler.projectToInstruments = {};
+      GCPMetricsHandler.instrumentsForProject = {};
       const handler = new GCPMetricsHandler(new MockExporter({projectId}));
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(

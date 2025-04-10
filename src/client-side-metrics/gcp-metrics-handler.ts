@@ -187,7 +187,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
   // The variable below is the singleton map from projects to instrument stacks
   // which exists so that we only create one instrument stack per project. This
   // will eliminate errors due to the maximum sampling period.
-  static projectToInstruments: {[projectId: string]: MetricsInstruments} = {};
+  static instrumentsForProject: {[projectId: string]: MetricsInstruments} = {};
 
   /**
    * The `GCPMetricsHandler` is responsible for managing and recording
@@ -216,13 +216,13 @@ export class GCPMetricsHandler implements IMetricsHandler {
     // The projectId is needed per metrics handler because when the exporter is
     // used it provides the project id for the name of the time series exported.
     // ie. name: `projects/${....['monitored_resource.project_id']}`,
-    if (!GCPMetricsHandler.projectToInstruments[projectId]) {
-      GCPMetricsHandler.projectToInstruments[projectId] = getInstruments(
+    if (!GCPMetricsHandler.instrumentsForProject[projectId]) {
+      GCPMetricsHandler.instrumentsForProject[projectId] = getInstruments(
         projectId,
         this.exporter
       );
     }
-    return GCPMetricsHandler.projectToInstruments[projectId];
+    return GCPMetricsHandler.instrumentsForProject[projectId];
   }
 
   /**
