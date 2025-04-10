@@ -28,12 +28,6 @@ const {
   PeriodicExportingMetricReader,
 } = require('@opentelemetry/sdk-metrics');
 
-// The variable below is the singleton map from projects to instrument stacks
-// which exists so that we only create one instrument stack per project. This
-// will eliminate errors due to the maximum sampling period.
-const defaultProjectToInstruments: {[projectId: string]: MetricsInstruments} =
-  {};
-
 /**
  * A collection of OpenTelemetry metric instruments used to record
  * Bigtable client-side metrics.
@@ -190,7 +184,10 @@ function getInstruments(projectId: string, exporter: PushMetricExporter) {
  */
 export class GCPMetricsHandler implements IMetricsHandler {
   private exporter: PushMetricExporter;
-  static projectToInstruments: {[projectId: string]: MetricsInstruments};
+  // The variable below is the singleton map from projects to instrument stacks
+  // which exists so that we only create one instrument stack per project. This
+  // will eliminate errors due to the maximum sampling period.
+  static projectToInstruments: {[projectId: string]: MetricsInstruments} = {};
 
   /**
    * The `GCPMetricsHandler` is responsible for managing and recording
@@ -203,14 +200,8 @@ export class GCPMetricsHandler implements IMetricsHandler {
    *   metrics to Google Cloud Monitoring. This exporter is responsible for
    *   sending the collected metrics data to the monitoring backend. The provided exporter must be fully configured, for example the projectId must have been set.
    */
-  constructor(
-    exporter: PushMetricExporter,
-    projectToInstruments: {
-      [projectId: string]: MetricsInstruments;
-    } = defaultProjectToInstruments
-  ) {
+  constructor(exporter: PushMetricExporter) {
     this.exporter = exporter;
-    GCPMetricsHandler.projectToInstruments = projectToInstruments;
   }
 
   /**
