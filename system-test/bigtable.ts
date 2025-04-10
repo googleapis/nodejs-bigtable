@@ -16,7 +16,7 @@ import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {PreciseDate} from '@google-cloud/precise-date';
 import * as assert from 'assert';
 import {beforeEach, afterEach, describe, it, before, after} from 'mocha';
-import Q from 'p-queue';
+import * as Q from 'p-queue';
 
 import {
   Backup,
