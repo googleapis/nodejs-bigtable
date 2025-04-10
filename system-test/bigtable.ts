@@ -39,6 +39,9 @@ import {generateId, PREFIX} from './common';
 import {BigtableTableAdminClient} from '../src/v2';
 import {ServiceError} from 'google-gax';
 
+console.log('Second project');
+console.log(process.env.GCLOUD_PROJECT2);
+
 describe('Bigtable', () => {
   const bigtable = new Bigtable();
   const INSTANCE = bigtable.instance(generateId('instance'));
