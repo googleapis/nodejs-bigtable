@@ -304,14 +304,25 @@ export class OperationMetricsCollector {
    * when the operation completes.
    */
   onRowReachesUser() {
-    const currentTime = hrtime.bigint();
-    if (this.lastRowReceivedTime) {
-      const applicationLatency = Number(
-        (currentTime - this.lastRowReceivedTime) / BigInt(1000000)
-      );
-      this.applicationLatencies.push(applicationLatency);
+    if (
+      this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
+      this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED ||
+      this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
+    ) {
+      const currentTime = hrtime.bigint();
+      if (this.lastRowReceivedTime) {
+        const applicationLatency = Number(
+          (currentTime - this.lastRowReceivedTime) / BigInt(1000000)
+        );
+        this.applicationLatencies.push(applicationLatency);
+      }
+      this.lastRowReceivedTime = currentTime;
+    } else {
+      console.warn('Invalid state transition attempted');
     }
-    this.lastRowReceivedTime = currentTime;
   }
 
   /**
