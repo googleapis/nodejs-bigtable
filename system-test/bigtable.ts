@@ -16,7 +16,6 @@ import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {PreciseDate} from '@google-cloud/precise-date';
 import * as assert from 'assert';
 import {beforeEach, afterEach, describe, it, before, after} from 'mocha';
-import PQueue from 'p-queue';
 
 import {
   Backup,
@@ -51,20 +50,13 @@ describe('Bigtable', () => {
 
   async function reapBackups(instance: Instance) {
     const [backups] = await instance.getBackups();
-    const q = new PQueue({concurrency: 5});
-    return Promise.all(
-      backups.map(backup => {
-        q.add(async () => {
-          try {
-            await backup.delete({timeout: 50 * 1000});
-          } catch (e) {
-            console.log(`Error deleting backup: ${backup.id}`);
-          }
-        }).catch((err: any) => {
-          throw err;
-        });
-      }),
-    );
+    for (const backup of backups) {
+      try {
+        await backup.delete({timeout: 50 * 1000});
+      } catch (e) {
+        console.log(`Error deleting backup: ${backup.id}`);
+      }
+    }
   }
 
   async function reapInstances() {
@@ -77,19 +69,17 @@ describe('Bigtable', () => {
         const oneHourAgo = new Date(Date.now() - 3600000);
         return !timeCreated || timeCreated <= oneHourAgo;
       });
-    const q = new PQueue({concurrency: 5});
+    const q = [];
     // need to delete backups first due to instance deletion precondition
     await Promise.all(testInstances.map(instance => reapBackups(instance)));
     await Promise.all(
       testInstances.map(instance => {
-        q.add(async () => {
+        q.push(async () => {
           try {
             await instance.delete();
           } catch (e) {
             console.log(`Error deleting instance: ${instance.id}`);
           }
-        }).catch((err: any) => {
-          throw err;
         });
       }),
     );
@@ -112,21 +102,19 @@ describe('Bigtable', () => {
   });
 
   after(async () => {
-    const q = new PQueue({concurrency: 5});
+    const q = [];
     const instances = [INSTANCE, DIFF_INSTANCE, CMEK_INSTANCE];
 
     // need to delete backups first due to instance deletion precondition
     await Promise.all(instances.map(instance => reapBackups(instance)));
     await Promise.all(
       instances.map(instance => {
-        q.add(async () => {
+        q.push(async () => {
           try {
             await instance.delete();
           } catch (e) {
             console.log(`Error deleting instance: ${instance.id}`);
           }
-        }).catch((err: any) => {
-          throw err;
         });
       }),
     );
