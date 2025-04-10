@@ -312,9 +312,9 @@ export class CloudMonitoringExporter extends MetricExporter {
         // We use all the usual retry codes plus code 3 because 3 corresponds
         // to the maximum sampling error.
         const retry = new RetryOptions([3, 4, 8, 10, 14], {
-          initialRetryDelayMillis: 10,
+          initialRetryDelayMillis: 5000,
           retryDelayMultiplier: 2,
-          maxRetryDelayMillis: 10000,
+          maxRetryDelayMillis: 50000,
         });
         await this.monitoringClient.createTimeSeries(
           request as ICreateTimeSeriesRequest,
