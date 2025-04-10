@@ -19,7 +19,7 @@ import {
   Histogram,
   ResourceMetrics,
 } from '@opentelemetry/sdk-metrics';
-import {ServiceError} from 'google-gax';
+import {grpc, ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
@@ -311,11 +311,20 @@ export class CloudMonitoringExporter extends MetricExporter {
         // times to ensure the metrics do get written.
         // We use all the usual retry codes plus code 3 because 3 corresponds
         // to the maximum sampling error.
-        const retry = new RetryOptions([3, 4, 8, 10, 14], {
-          initialRetryDelayMillis: 5000,
-          retryDelayMultiplier: 2,
-          maxRetryDelayMillis: 50000,
-        });
+        const retry = new RetryOptions(
+          [
+            grpc.status.INVALID_ARGUMENT,
+            grpc.status.DEADLINE_EXCEEDED,
+            grpc.status.RESOURCE_EXHAUSTED,
+            grpc.status.ABORTED,
+            grpc.status.UNAVAILABLE,
+          ],
+          {
+            initialRetryDelayMillis: 5000,
+            retryDelayMultiplier: 2,
+            maxRetryDelayMillis: 50000,
+          },
+        );
         await this.monitoringClient.createTimeSeries(
           request as ICreateTimeSeriesRequest,
           {
