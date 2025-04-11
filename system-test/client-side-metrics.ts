@@ -27,7 +27,39 @@ import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
 
-describe('Bigtable/ClientSideMetrics', () => {
+function getFakeBigtable(
+  metricsHandlerClass: typeof GCPMetricsHandler | typeof TestMetricsHandler
+) {
+  /*
+  Below we mock out the table so that it sends the metrics to a test exporter
+  that will still send the metrics to Google Cloud Monitoring, but then also
+  ensure the export was successful and pass the test with code 0 if it is
+  successful.
+   */
+  const FakeOperationMetricsCollector = proxyquire(
+    '../src/client-side-metrics/operation-metrics-collector',
+    {
+      './gcp-metrics-handler': {GCPMetricsHandler: metricsHandlerClass},
+    }
+  ).OperationMetricsCollector;
+  const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
+    './client-side-metrics/operation-metrics-collector': {
+      OperationMetricsCollector: FakeOperationMetricsCollector,
+    },
+  }).TabularApiSurface;
+  const FakeTable = proxyquire('../src/table.js', {
+    './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
+  }).Table;
+  const FakeInstance = proxyquire('../src/instance.js', {
+    './table': {Table: FakeTable},
+  }).Instance;
+  const FakeBigtable = proxyquire('../src/index.js', {
+    './instance': {Instance: FakeInstance},
+  }).Bigtable;
+  return new FakeBigtable();
+}
+
+describe.only('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -64,7 +96,7 @@ describe('Bigtable/ClientSideMetrics', () => {
     }
   });
 
-  describe.only('Bigtable/ClientSideMetricsToGCM', () => {
+  describe('Bigtable/ClientSideMetricsToGCM', () => {
     // This test suite ensures that for each test all the export calls are
     // successful even when multiple instances and tables are created.
     async function mockBigtable(done: mocha.Done) {
@@ -127,37 +159,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      /*
-      Below we mock out the table so that it sends the metrics to a test exporter
-      that will still send the metrics to Google Cloud Monitoring, but then also
-      ensure the export was successful and pass the test with code 0 if it is
-      successful.
-       */
-      const FakeOperationMetricsCollector = proxyquire(
-        '../src/client-side-metrics/operation-metrics-collector',
-        {
-          './gcp-metrics-handler': {GCPMetricsHandler: TestGCPMetricsHandler},
-        }
-      ).OperationMetricsCollector;
-      const FakeTabularApiSurface = proxyquire(
-        '../src/tabular-api-surface.js',
-        {
-          './client-side-metrics/operation-metrics-collector': {
-            OperationMetricsCollector: FakeOperationMetricsCollector,
-          },
-        }
-      ).TabularApiSurface;
-      const FakeTable = proxyquire('../src/table.js', {
-        './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
-      }).Table;
-      const FakeInstance = proxyquire('../src/instance.js', {
-        './table': {Table: FakeTable},
-      }).Instance;
-      const FakeBigtable = proxyquire('../src/index.js', {
-        './instance': {Instance: FakeInstance},
-      }).Bigtable;
-      const fakeBigtable = new FakeBigtable();
-      return fakeBigtable;
+      return getFakeBigtable(TestGCPMetricsHandler);
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
@@ -226,12 +228,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       ensure the export was successful and pass the test with code 0 if it is
       successful.
        */
-      const FakeBigtable = proxyquire('../src/index.js', {
-        './client-side-metrics/gcp-metrics-handler': {
-          GCPMetricsHandler: TestGCPMetricsHandler,
-        },
-      }).Bigtable;
-      return new FakeBigtable();
+      return getFakeBigtable(TestGCPMetricsHandler);
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
@@ -384,12 +381,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      const FakeBigtable = proxyquire('../src/index.js', {
-        './client-side-metrics/gcp-metrics-handler': {
-          GCPMetricsHandler: TestGCPMetricsHandler,
-        },
-      }).Bigtable;
-      bigtable = new FakeBigtable();
+      bigtable = getFakeBigtable(TestGCPMetricsHandler);
       await setupBigtable(bigtable, columnFamilyId, instanceId1, [
         tableId1,
         tableId2,
