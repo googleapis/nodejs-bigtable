@@ -170,10 +170,6 @@ describe('Bigtable/MetricsCollector', () => {
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '15. User reads row 1\n';
           logger.value += '16. Stream ends, operation completes\n';
-          metricsCollector.onAttemptComplete(
-            this.bigtable.projectId,
-            grpc.status.OK
-          );
           metricsCollector.onOperationComplete(
             this.bigtable.projectId,
             grpc.status.OK

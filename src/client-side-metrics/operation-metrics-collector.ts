@@ -304,6 +304,7 @@ export class OperationMetricsCollector {
    * @param {grpc.status} finalOperationStatus Information about the completed operation.
    */
   onOperationComplete(projectId: string, finalOperationStatus: grpc.status) {
+    this.onAttemptComplete(projectId, finalOperationStatus);
     withMetricsDebug(() => {
       checkState(
         this.state,
@@ -341,18 +342,6 @@ export class OperationMetricsCollector {
         }
       );
     });
-  }
-
-  /**
-   * This is a useful helper method for all the times we want to record that an
-   * attempt is complete when an operation is also complete.
-   *
-   * @param {string} projectId The id of the project.
-   * @param {grpc.status} finalOperationStatus Information about the completed operation.
-   */
-  onLastAttemptCompleted(projectId: string, attemptStatus: grpc.status) {
-    this.onAttemptComplete(projectId, attemptStatus);
-    this.onOperationComplete(projectId, attemptStatus);
   }
 
   /**
