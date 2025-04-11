@@ -153,7 +153,6 @@ describe('Bigtable/ClientSideMetrics', () => {
       const FakeInstance = proxyquire('../src/instance.js', {
         './table': {Table: FakeTable},
       }).Instance;
-      FakeInstance.instanceName = 'fakeInstance';
       const FakeBigtable = proxyquire('../src/index.js', {
         './instance': {Instance: FakeInstance},
       }).Bigtable;
