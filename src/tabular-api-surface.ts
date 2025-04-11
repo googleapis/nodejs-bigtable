@@ -525,22 +525,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return false;
       };
 
-      requestStream
-        .on(
-          'metadata',
-          (metadata: {internalRepr: Map<string, string[]>; options: {}}) => {
-            metricsCollector?.onMetadataReceived(metadata);
-          }
-        )
-        .on(
-          'status',
-          (status: {
-            metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
-          }) => {
-            metricsCollector?.onStatusMetadataReceived(status);
-          }
-        );
-
+      metricsCollector?.handleStatusAndMetadata(requestStream);
       rowStream
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);

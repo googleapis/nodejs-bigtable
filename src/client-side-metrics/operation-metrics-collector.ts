@@ -18,6 +18,7 @@ import {grpc} from 'google-gax';
 import * as gax from 'google-gax';
 import {GCPMetricsHandler} from './gcp-metrics-handler';
 import {CloudMonitoringExporter} from './exporter';
+import {AbortableDuplex} from '../index';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
@@ -158,6 +159,30 @@ export class OperationMetricsCollector {
       },
       appProfileId ? {app_profile: appProfileId} : {}
     );
+  }
+
+  /**
+   * Called to add handlers to the stream so that we can observe
+   * header and trailer data for client side metrics.
+   *
+   * @param stream
+   */
+  handleStatusAndMetadata(stream: AbortableDuplex) {
+    stream
+      .on(
+        'metadata',
+        (metadata: {internalRepr: Map<string, string[]>; options: {}}) => {
+          this.onMetadataReceived(metadata);
+        }
+      )
+      .on(
+        'status',
+        (status: {
+          metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
+        }) => {
+          this.onStatusMetadataReceived(status);
+        }
+      );
   }
 
   /**
