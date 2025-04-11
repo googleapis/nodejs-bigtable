@@ -13,10 +13,23 @@
 // limitations under the License.
 
 import * as fs from 'fs';
-import {IMetricsHandler} from './metrics-handler';
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 import * as gax from 'google-gax';
+import {GCPMetricsHandler} from './gcp-metrics-handler';
+import {CloudMonitoringExporter} from './exporter';
+
+// When this environment variable is set then print any errors associated
+// with failures in the metrics collector.
+const METRICS_DEBUG = process.env.METRICS_DEBUG;
+
+/*
+ * The samples tests are failing with the
+ * error UnhandledPromiseRejectionWarning: Error: ENOENT: no such file or
+ * directory, open 'protos/google/bigtable/v2/response_params.proto'. Since
+ * these tests don't use this module we can suppress the error for now to
+ * unblock the CI pipeline.
+ */
 const root = gax.protobuf.loadSync(
   './protos/google/bigtable/v2/response_params.proto'
 );
@@ -58,6 +71,33 @@ enum MetricsCollectorState {
   OPERATION_COMPLETE,
 }
 
+// This method swallows errors when metrics debugging is not enabled so
+// that errors don't bubble up to the user.
+function withMetricsDebug<T>(fn: () => T): T | undefined {
+  try {
+    return fn();
+  } catch (e) {
+    if (METRICS_DEBUG) {
+      console.warn(e);
+    }
+  }
+  return;
+}
+
+// Checks that the state transition is valid and if not it throws a warning.
+function checkState<T>(
+  currentState: MetricsCollectorState,
+  allowedStates: MetricsCollectorState[],
+  fn: () => T
+): T | undefined {
+  if (allowedStates.includes(currentState)) {
+    return fn();
+  } else {
+    console.warn('Invalid state transition');
+  }
+  return;
+}
+
 /**
  * A class for tracing and recording client-side metrics related to Bigtable operations.
  */
@@ -70,22 +110,22 @@ export class OperationMetricsCollector {
   private tabularApiSurface: ITabularApiSurface;
   private methodName: MethodName;
   private attemptCount = 0;
-  private metricsHandlers: IMetricsHandler[];
   private firstResponseLatency: number | null;
   private serverTimeRead: boolean;
   private serverTime: number | null;
   private connectivityErrorCount: number;
   private streamingOperation: StreamingState;
+  static metricsHandlers = [
+    new GCPMetricsHandler(new CloudMonitoringExporter()),
+  ];
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
-   * @param {IMetricsHandler[]} metricsHandlers The metrics handlers used for recording metrics.
    * @param {MethodName} methodName The name of the method being traced.
    * @param {StreamingState} streamingOperation Whether or not the call is a streaming operation.
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
-    metricsHandlers: IMetricsHandler[],
     methodName: MethodName,
     streamingOperation: StreamingState
   ) {
@@ -96,7 +136,6 @@ export class OperationMetricsCollector {
     this.methodName = methodName;
     this.operationStartTime = null;
     this.attemptStartTime = null;
-    this.metricsHandlers = metricsHandlers;
     this.firstResponseLatency = null;
     this.serverTimeRead = false;
     this.serverTime = null;
@@ -123,14 +162,18 @@ export class OperationMetricsCollector {
    * Called when the operation starts. Records the start time.
    */
   onOperationStart() {
-    if (this.state === MetricsCollectorState.OPERATION_NOT_STARTED) {
-      this.operationStartTime = new Date();
-      this.firstResponseLatency = null;
-      this.state =
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
-    } else {
-      console.warn('Invalid state transition');
-    }
+    withMetricsDebug(() => {
+      checkState(
+        this.state,
+        [MetricsCollectorState.OPERATION_NOT_STARTED],
+        () => {
+          this.operationStartTime = new Date();
+          this.firstResponseLatency = null;
+          this.state =
+            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
+        }
+      );
+    });
   }
 
   /**
@@ -139,76 +182,92 @@ export class OperationMetricsCollector {
    * @param {grpc.status} attemptStatus The grpc status for the attempt.
    */
   onAttemptComplete(projectId: string, attemptStatus: grpc.status) {
-    if (
-      this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
-      this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED
-    ) {
-      this.state =
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
-      this.attemptCount++;
-      const endTime = new Date();
-      if (projectId && this.attemptStartTime) {
-        const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
-        this.metricsHandlers.forEach(metricsHandler => {
-          if (metricsHandler.onAttemptComplete) {
-            metricsHandler.onAttemptComplete({
-              attemptLatency: totalTime,
-              serverLatency: this.serverTime ?? undefined,
-              connectivityErrorCount: this.connectivityErrorCount,
-              streaming: this.streamingOperation,
-              status: attemptStatus.toString(),
-              client_name: `nodejs-bigtable/${version}`,
-              metricsCollectorData: this.getMetricsCollectorData(),
-              projectId,
-            });
+    withMetricsDebug(() => {
+      checkState(
+        this.state,
+        [
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED,
+        ],
+        () => {
+          this.state =
+            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
+          this.attemptCount++;
+          const endTime = new Date();
+          if (projectId && this.attemptStartTime) {
+            const totalTime =
+              endTime.getTime() - this.attemptStartTime.getTime();
+            OperationMetricsCollector.metricsHandlers.forEach(
+              metricsHandler => {
+                if (metricsHandler.onAttemptComplete) {
+                  metricsHandler.onAttemptComplete({
+                    attemptLatency: totalTime,
+                    serverLatency: this.serverTime ?? undefined,
+                    connectivityErrorCount: this.connectivityErrorCount,
+                    streaming: this.streamingOperation,
+                    status: attemptStatus.toString(),
+                    client_name: `nodejs-bigtable/${version}`,
+                    metricsCollectorData: this.getMetricsCollectorData(),
+                    projectId,
+                  });
+                }
+              }
+            );
+          } else {
+            console.warn('ProjectId and start time should always be provided');
           }
-        });
-      }
-    } else {
-      console.warn('Invalid state transition attempted');
-    }
+        }
+      );
+    });
   }
 
   /**
    * Called when a new attempt starts. Records the start time of the attempt.
    */
   onAttemptStart() {
-    if (
-      this.state ===
-      MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
-    ) {
-      this.state =
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET;
-      this.attemptStartTime = new Date();
-      this.serverTime = null;
-      this.serverTimeRead = false;
-      this.connectivityErrorCount = 0;
-    } else {
-      console.warn('Invalid state transition attempted');
-    }
+    withMetricsDebug(() => {
+      checkState(
+        this.state,
+        [MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS],
+        () => {
+          this.state =
+            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET;
+          this.attemptStartTime = new Date();
+          this.serverTime = null;
+          this.serverTimeRead = false;
+          this.connectivityErrorCount = 0;
+        }
+      );
+    });
   }
 
   /**
    * Called when the first response is received. Records first response latencies.
    */
   onResponse(projectId: string) {
-    if (!this.firstResponseLatency) {
-      // Check firstResponseLatency first to improve latency for calls with many rows
-      if (
-        this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET
-      ) {
-        this.state =
-          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
-        const endTime = new Date();
-        if (projectId && this.operationStartTime) {
-          this.firstResponseLatency =
-            endTime.getTime() - this.operationStartTime.getTime();
-        }
+    withMetricsDebug(() => {
+      if (!this.firstResponseLatency) {
+        checkState(
+          this.state,
+          [
+            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
+          ],
+          () => {
+            this.state =
+              MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
+            const endTime = new Date();
+            if (projectId && this.operationStartTime) {
+              this.firstResponseLatency =
+                endTime.getTime() - this.operationStartTime.getTime();
+            } else {
+              console.warn(
+                'ProjectId and operationStartTime should always be provided'
+              );
+            }
+          }
+        );
       }
-    }
+    });
   }
 
   /**
@@ -218,34 +277,55 @@ export class OperationMetricsCollector {
    * @param {grpc.status} finalOperationStatus Information about the completed operation.
    */
   onOperationComplete(projectId: string, finalOperationStatus: grpc.status) {
-    if (
-      this.state ===
-      MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
-    ) {
-      this.state = MetricsCollectorState.OPERATION_COMPLETE;
-      const endTime = new Date();
-      if (projectId && this.operationStartTime) {
-        const totalTime = endTime.getTime() - this.operationStartTime.getTime();
-        {
-          this.metricsHandlers.forEach(metricsHandler => {
-            if (metricsHandler.onOperationComplete) {
-              metricsHandler.onOperationComplete({
-                status: finalOperationStatus.toString(),
-                streaming: this.streamingOperation,
-                metricsCollectorData: this.getMetricsCollectorData(),
-                client_name: `nodejs-bigtable/${version}`,
-                projectId,
-                operationLatency: totalTime,
-                retryCount: this.attemptCount - 1,
-                firstResponseLatency: this.firstResponseLatency ?? undefined,
-              });
+    withMetricsDebug(() => {
+      checkState(
+        this.state,
+        [MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS],
+        () => {
+          this.state = MetricsCollectorState.OPERATION_COMPLETE;
+          const endTime = new Date();
+          if (projectId && this.operationStartTime) {
+            const totalTime =
+              endTime.getTime() - this.operationStartTime.getTime();
+            {
+              OperationMetricsCollector.metricsHandlers.forEach(
+                metricsHandler => {
+                  if (metricsHandler.onOperationComplete) {
+                    metricsHandler.onOperationComplete({
+                      status: finalOperationStatus.toString(),
+                      streaming: this.streamingOperation,
+                      metricsCollectorData: this.getMetricsCollectorData(),
+                      client_name: `nodejs-bigtable/${version}`,
+                      projectId,
+                      operationLatency: totalTime,
+                      retryCount: this.attemptCount - 1,
+                      firstResponseLatency:
+                        this.firstResponseLatency ?? undefined,
+                    });
+                  }
+                }
+              );
             }
-          });
+          } else {
+            console.warn(
+              'projectId and operation start time should always be available here'
+            );
+          }
         }
-      }
-    } else {
-      console.warn('Invalid state transition attempted');
-    }
+      );
+    });
+  }
+
+  /**
+   * This is a useful helper method for all the times we want to record that an
+   * attempt is complete when an operation is also complete.
+   *
+   * @param {string} projectId The id of the project.
+   * @param {grpc.status} finalOperationStatus Information about the completed operation.
+   */
+  onLastAttemptCompleted(projectId: string, attemptStatus: grpc.status) {
+    this.onAttemptComplete(projectId, attemptStatus);
+    this.onOperationComplete(projectId, attemptStatus);
   }
 
   /**
@@ -256,29 +336,33 @@ export class OperationMetricsCollector {
     internalRepr: Map<string, string[]>;
     options: {};
   }) {
-    if (!this.serverTimeRead && this.connectivityErrorCount < 1) {
-      // Check serverTimeRead, connectivityErrorCount here to reduce latency.
-      const mappedEntries = new Map(
-        Array.from(metadata.internalRepr.entries(), ([key, value]) => [
-          key,
-          value.toString(),
-        ])
-      );
-      const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
-      const SERVER_TIMING_KEY = 'server-timing';
-      const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
-      const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
-      if (matchedDuration && matchedDuration[1]) {
-        if (!this.serverTimeRead) {
-          this.serverTimeRead = true;
-          this.serverTime = isNaN(parseInt(matchedDuration[1]))
-            ? null
-            : parseInt(matchedDuration[1]);
+    withMetricsDebug(() => {
+      if (!this.serverTimeRead && this.connectivityErrorCount < 1) {
+        // Check serverTimeRead, connectivityErrorCount here to reduce latency.
+        const mappedEntries = new Map(
+          Array.from(metadata.internalRepr.entries(), ([key, value]) => [
+            key,
+            value.toString(),
+          ])
+        );
+        const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
+        const SERVER_TIMING_KEY = 'server-timing';
+        const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
+        if (durationValues) {
+          const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
+          if (matchedDuration && matchedDuration[1]) {
+            if (!this.serverTimeRead) {
+              this.serverTimeRead = true;
+              this.serverTime = isNaN(parseInt(matchedDuration[1]))
+                ? null
+                : parseInt(matchedDuration[1]);
+            }
+          } else {
+            this.connectivityErrorCount = 1;
+          }
         }
-      } else {
-        this.connectivityErrorCount = 1;
       }
-    }
+    });
   }
 
   /**
@@ -288,29 +372,33 @@ export class OperationMetricsCollector {
   onStatusMetadataReceived(status: {
     metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
   }) {
-    if (!this.zone || !this.cluster) {
-      const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
-      const mappedValue = status.metadata.internalRepr.get(
-        INSTANCE_INFORMATION_KEY
-      ) as Buffer[];
-      const decodedValue = ResponseParams.decode(
-        mappedValue[0],
-        mappedValue[0].length
-      );
-      if (
-        decodedValue &&
-        (decodedValue as unknown as {zoneId: string}).zoneId
-      ) {
-        this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
+    withMetricsDebug(() => {
+      if (!this.zone || !this.cluster) {
+        const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
+        const mappedValue = status.metadata.internalRepr.get(
+          INSTANCE_INFORMATION_KEY
+        ) as Buffer[];
+        if (mappedValue && mappedValue[0] && ResponseParams) {
+          const decodedValue = ResponseParams.decode(
+            mappedValue[0],
+            mappedValue[0].length
+          );
+          if (
+            decodedValue &&
+            (decodedValue as unknown as {zoneId: string}).zoneId
+          ) {
+            this.zone = (decodedValue as unknown as {zoneId: string}).zoneId;
+          }
+          if (
+            decodedValue &&
+            (decodedValue as unknown as {clusterId: string}).clusterId
+          ) {
+            this.cluster = (
+              decodedValue as unknown as {clusterId: string}
+            ).clusterId;
+          }
+        }
       }
-      if (
-        decodedValue &&
-        (decodedValue as unknown as {clusterId: string}).clusterId
-      ) {
-        this.cluster = (
-          decodedValue as unknown as {clusterId: string}
-        ).clusterId;
-      }
-    }
+    });
   }
 }

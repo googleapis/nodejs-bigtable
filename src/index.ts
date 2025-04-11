@@ -19,6 +19,7 @@ import * as extend from 'extend';
 import {GoogleAuth, CallOptions, grpc as gaxVendoredGrpc} from 'google-gax';
 import * as gax from 'google-gax';
 import * as protos from '../protos/protos';
+import * as os from 'os';
 
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
@@ -35,9 +36,14 @@ import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
+import {IMetricsHandler} from './client-side-metrics/metrics-handler';
+import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
+import {CloudMonitoringExporter} from './client-side-metrics/exporter';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
+
+const crypto = require('crypto');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const PKG = require('../../package.json');
@@ -100,6 +106,8 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
    * Internal only.
    */
   BigtableTableAdminClient?: gax.ClientOptions;
+
+  metricsEnabled?: boolean;
 }
 
 /**
@@ -125,6 +133,13 @@ function getDomain(prefix: string, opts?: gax.ClientOptions) {
     universeDomainEnvVar ??
     'googleapis.com'
   }`;
+}
+
+function generateClientUuid() {
+  const hostname = os.hostname() || 'localhost';
+  const currentPid = process.pid || '';
+  const uuid4 = crypto.randomUUID();
+  return `node-${uuid4}-${currentPid}${hostname}`;
 }
 
 /**
@@ -417,9 +432,15 @@ export class Bigtable {
   appProfileId?: string;
   projectName: string;
   shouldReplaceProjectIdToken: boolean;
+  clientUid = generateClientUuid();
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
+  // metricsEnabled is a member variable that is used to ensure that if the
+  // user provides a `false` value and opts out of metrics collection that
+  // the metrics collector is ignored altogether to reduce latency in the
+  // client.
+  metricsEnabled: boolean;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -517,6 +538,12 @@ export class Bigtable {
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
+
+    if (options.metricsEnabled === false) {
+      this.metricsEnabled = false;
+    } else {
+      this.metricsEnabled = true;
+    }
   }
 
   createInstance(
@@ -904,6 +931,7 @@ export class Bigtable {
         gaxStream
           .on('error', stream.destroy.bind(stream))
           .on('metadata', stream.emit.bind(stream, 'metadata'))
+          .on('status', stream.emit.bind(stream, 'status'))
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
       });
