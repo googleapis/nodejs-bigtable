@@ -78,7 +78,7 @@ function withMetricsDebug<T>(fn: () => T): T | undefined {
     return fn();
   } catch (e) {
     if (METRICS_DEBUG) {
-      console.warn(e);
+      throw e;
     }
   }
   return;
@@ -93,7 +93,9 @@ function checkState<T>(
   if (allowedStates.includes(currentState)) {
     return fn();
   } else {
-    console.warn('Invalid state transition');
+    if (METRICS_DEBUG) {
+      throw Error('Invalid state transition');
+    }
   }
   return;
 }
