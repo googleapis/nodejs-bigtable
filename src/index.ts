@@ -436,11 +436,6 @@ export class Bigtable {
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
-  // Metrics handlers should be created at the client level and
-  // reused throughout the library to reduce latency due to creation of the
-  // open telemetry instruments. We also only want one OTEL stack per project
-  // so that we don't encounter errors from exporting too frequently:
-  metricsHandlers: IMetricsHandler[];
   // metricsEnabled is a member variable that is used to ensure that if the
   // user provides a `false` value and opts out of metrics collection that
   // the metrics collector is ignored altogether to reduce latency in the
@@ -546,12 +541,8 @@ export class Bigtable {
 
     if (options.metricsEnabled === false) {
       this.metricsEnabled = false;
-      this.metricsHandlers = [];
     } else {
       this.metricsEnabled = true;
-      this.metricsHandlers = [
-        new GCPMetricsHandler(new CloudMonitoringExporter()),
-      ];
     }
   }
 

@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import * as fs from 'fs';
-import {IMetricsHandler} from './metrics-handler';
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 import * as gax from 'google-gax';
+import {GCPMetricsHandler} from './gcp-metrics-handler';
+import {CloudMonitoringExporter} from './exporter';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
@@ -109,22 +110,22 @@ export class OperationMetricsCollector {
   private tabularApiSurface: ITabularApiSurface;
   private methodName: MethodName;
   private attemptCount = 0;
-  private metricsHandlers: IMetricsHandler[];
   private firstResponseLatency: number | null;
   private serverTimeRead: boolean;
   private serverTime: number | null;
   private connectivityErrorCount: number;
   private streamingOperation: StreamingState;
+  static metricsHandlers = [
+    new GCPMetricsHandler(new CloudMonitoringExporter()),
+  ];
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
-   * @param {IMetricsHandler[]} metricsHandlers The metrics handlers used for recording metrics.
    * @param {MethodName} methodName The name of the method being traced.
    * @param {StreamingState} streamingOperation Whether or not the call is a streaming operation.
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
-    metricsHandlers: IMetricsHandler[],
     methodName: MethodName,
     streamingOperation: StreamingState
   ) {
@@ -135,7 +136,6 @@ export class OperationMetricsCollector {
     this.methodName = methodName;
     this.operationStartTime = null;
     this.attemptStartTime = null;
-    this.metricsHandlers = metricsHandlers;
     this.firstResponseLatency = null;
     this.serverTimeRead = false;
     this.serverTime = null;
@@ -197,20 +197,22 @@ export class OperationMetricsCollector {
           if (projectId && this.attemptStartTime) {
             const totalTime =
               endTime.getTime() - this.attemptStartTime.getTime();
-            this.metricsHandlers.forEach(metricsHandler => {
-              if (metricsHandler.onAttemptComplete) {
-                metricsHandler.onAttemptComplete({
-                  attemptLatency: totalTime,
-                  serverLatency: this.serverTime ?? undefined,
-                  connectivityErrorCount: this.connectivityErrorCount,
-                  streaming: this.streamingOperation,
-                  status: attemptStatus.toString(),
-                  client_name: `nodejs-bigtable/${version}`,
-                  metricsCollectorData: this.getMetricsCollectorData(),
-                  projectId,
-                });
+            OperationMetricsCollector.metricsHandlers.forEach(
+              metricsHandler => {
+                if (metricsHandler.onAttemptComplete) {
+                  metricsHandler.onAttemptComplete({
+                    attemptLatency: totalTime,
+                    serverLatency: this.serverTime ?? undefined,
+                    connectivityErrorCount: this.connectivityErrorCount,
+                    streaming: this.streamingOperation,
+                    status: attemptStatus.toString(),
+                    client_name: `nodejs-bigtable/${version}`,
+                    metricsCollectorData: this.getMetricsCollectorData(),
+                    projectId,
+                  });
+                }
               }
-            });
+            );
           } else {
             console.warn('ProjectId and start time should always be provided');
           }
@@ -286,21 +288,23 @@ export class OperationMetricsCollector {
             const totalTime =
               endTime.getTime() - this.operationStartTime.getTime();
             {
-              this.metricsHandlers.forEach(metricsHandler => {
-                if (metricsHandler.onOperationComplete) {
-                  metricsHandler.onOperationComplete({
-                    status: finalOperationStatus.toString(),
-                    streaming: this.streamingOperation,
-                    metricsCollectorData: this.getMetricsCollectorData(),
-                    client_name: `nodejs-bigtable/${version}`,
-                    projectId,
-                    operationLatency: totalTime,
-                    retryCount: this.attemptCount - 1,
-                    firstResponseLatency:
-                      this.firstResponseLatency ?? undefined,
-                  });
+              OperationMetricsCollector.metricsHandlers.forEach(
+                metricsHandler => {
+                  if (metricsHandler.onOperationComplete) {
+                    metricsHandler.onOperationComplete({
+                      status: finalOperationStatus.toString(),
+                      streaming: this.streamingOperation,
+                      metricsCollectorData: this.getMetricsCollectorData(),
+                      client_name: `nodejs-bigtable/${version}`,
+                      projectId,
+                      operationLatency: totalTime,
+                      retryCount: this.attemptCount - 1,
+                      firstResponseLatency:
+                        this.firstResponseLatency ?? undefined,
+                    });
+                  }
                 }
-              });
+              );
             }
           } else {
             console.warn(

@@ -44,6 +44,8 @@ import {
   MethodName,
   StreamingState,
 } from './client-side-metrics/client-side-metrics-attributes';
+import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
+import {CloudMonitoringExporter} from './client-side-metrics/exporter';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -340,7 +342,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const metricsCollector = this.bigtable.metricsEnabled
       ? new OperationMetricsCollector(
           this,
-          this.bigtable.metricsHandlers,
           MethodName.READ_ROWS,
           StreamingState.STREAMING
         )

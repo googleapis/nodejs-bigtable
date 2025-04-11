@@ -24,6 +24,7 @@ import {
 import {grpc} from 'google-gax';
 import {expectedRequestsHandled} from '../../test-common/metrics-handler-fixture';
 import * as gax from 'google-gax';
+import {GCPMetricsHandler} from '../../src/client-side-metrics/gcp-metrics-handler';
 const root = gax.protobuf.loadSync(
   './protos/google/bigtable/v2/response_params.proto'
 );
@@ -94,7 +95,6 @@ describe('Bigtable/MetricsCollector', () => {
 
   it('should record the right metrics with a typical method call', async () => {
     const testHandler = new TestMetricsHandler(logger);
-    const metricsHandlers = [testHandler];
     class FakeTable {
       id = 'fakeTableId';
       instance = new FakeInstance();
@@ -128,10 +128,12 @@ describe('Bigtable/MetricsCollector', () => {
           };
           const metricsCollector = new OperationMetricsCollector(
             this,
-            metricsHandlers,
             MethodName.READ_ROWS,
             StreamingState.STREAMING
           );
+          OperationMetricsCollector.metricsHandlers = [
+            testHandler as unknown as GCPMetricsHandler,
+          ];
           // In this method we simulate a series of events that might happen
           // when a user calls one of the Table methods.
           // Here is an example of what might happen in a method call:
