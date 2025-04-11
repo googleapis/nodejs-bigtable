@@ -40,7 +40,7 @@
     "presystem-test": "npm run compile",
     "system-test": "mocha build/system-test --timeout 600000",
     "pretest": "npm run compile",
-    "test": "METRICS_DEBUG=true c8 mocha build/test",
+    "test": "c8 mocha build/test",
     "test:snap": "SNAPSHOT_UPDATE=1 npm test",
     "testproxy": "npm run compile && node testproxy/index.js",
     "clean": "gts clean",
