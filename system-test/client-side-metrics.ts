@@ -64,7 +64,7 @@ describe('Bigtable/ClientSideMetrics', () => {
     }
   });
 
-  describe('Bigtable/ClientSideMetricsToGCM', () => {
+  describe.only('Bigtable/ClientSideMetricsToGCM', () => {
     // This test suite ensures that for each test all the export calls are
     // successful even when multiple instances and tables are created.
     async function mockBigtable(done: mocha.Done) {
@@ -94,6 +94,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void
         ): void {
+          console.trace('call exporter');
           try {
             super.export(metrics, (result: ExportResult) => {
               if (!exported) {
@@ -121,7 +122,9 @@ describe('Bigtable/ClientSideMetrics', () => {
       }
 
       class TestGCPMetricsHandler extends GCPMetricsHandler {
+        static value = 'value';
         constructor() {
+          console.trace('initialize handler');
           super(new TestExporter());
         }
       }
@@ -132,12 +135,41 @@ describe('Bigtable/ClientSideMetrics', () => {
       ensure the export was successful and pass the test with code 0 if it is
       successful.
        */
+      const FakeOperationMetricsCollector = proxyquire(
+        '../src/client-side-metrics/operation-metrics-collector',
+        {
+          './gcp-metrics-handler': {GCPMetricsHandler: TestGCPMetricsHandler},
+        }
+      ).OperationMetricsCollector;
+      const FakeTabularApiSurface = proxyquire(
+        '../src/tabular-api-surface.js',
+        {
+          './client-side-metrics/operation-metrics-collector': {
+            OperationMetricsCollector: FakeOperationMetricsCollector,
+          },
+        }
+      ).TabularApiSurface;
+      // FakeTabularApiSurface.surfaceName = 'fake-surface';
+      const FakeTable = proxyquire('../src/table.js', {
+        './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
+      }).Table;
+      const FakeInstance = proxyquire('../src/instance.js', {
+        './table': {Table: FakeTable},
+      }).Instance;
+      FakeInstance.instanceName = 'fakeInstance';
       const FakeBigtable = proxyquire('../src/index.js', {
-        './client-side-metrics/gcp-metrics-handler': {
-          GCPMetricsHandler: TestGCPMetricsHandler,
-        },
+        './instance': {Instance: FakeInstance},
       }).Bigtable;
-      return new FakeBigtable();
+      // FakeBigtable.client_name = 'fakeClient';
+      /*
+      const FakeBigtable = class FakeBigtable {
+        constructor() {
+          console.log('creating experimental fake bigtable');
+        }
+      };
+       */
+      const fakeBigtable = new FakeBigtable();
+      return fakeBigtable;
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
