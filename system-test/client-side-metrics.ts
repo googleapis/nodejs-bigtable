@@ -94,7 +94,6 @@ describe('Bigtable/ClientSideMetrics', () => {
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void
         ): void {
-          console.trace('call exporter');
           try {
             super.export(metrics, (result: ExportResult) => {
               if (!exported) {
@@ -124,7 +123,6 @@ describe('Bigtable/ClientSideMetrics', () => {
       class TestGCPMetricsHandler extends GCPMetricsHandler {
         static value = 'value';
         constructor() {
-          console.trace('initialize handler');
           super(new TestExporter());
         }
       }
@@ -149,7 +147,6 @@ describe('Bigtable/ClientSideMetrics', () => {
           },
         }
       ).TabularApiSurface;
-      // FakeTabularApiSurface.surfaceName = 'fake-surface';
       const FakeTable = proxyquire('../src/table.js', {
         './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
       }).Table;
@@ -160,14 +157,6 @@ describe('Bigtable/ClientSideMetrics', () => {
       const FakeBigtable = proxyquire('../src/index.js', {
         './instance': {Instance: FakeInstance},
       }).Bigtable;
-      // FakeBigtable.client_name = 'fakeClient';
-      /*
-      const FakeBigtable = class FakeBigtable {
-        constructor() {
-          console.log('creating experimental fake bigtable');
-        }
-      };
-       */
       const fakeBigtable = new FakeBigtable();
       return fakeBigtable;
     }
