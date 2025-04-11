@@ -88,10 +88,18 @@ describe('Bigtable/ReadRows', () => {
   it.only('should create read stream and read synchronously', function (done) {
     setWindowsTestTimeout(this);
 
+    // keyTo and keyFrom are not provided so they will be determined from
+    // the request that is passed in.
     service.setService({
-      ReadRows: ReadRowsImpl.createService(
-        STANDARD_SERVICE_WITHOUT_ERRORS
-      ) as ServerImplementationInterface,
+      ReadRows: ReadRowsImpl.createService({
+        errorAfterChunkNo: 100, // the server will error after sending this chunk (not row)
+        valueSize: 1,
+        chunkSize: 1,
+        chunksPerResponse: 1,
+        keyFrom: 0,
+        keyTo: 1000,
+        debugLog,
+      }) as ServerImplementationInterface,
     });
 
     let receivedRowCount = 0;
