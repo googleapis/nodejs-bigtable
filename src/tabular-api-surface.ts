@@ -509,6 +509,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream
         .on('error', (error: ServiceError) => {
+          console.log('error row stream happened');
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
@@ -556,6 +557,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           numConsecutiveErrors = 0;
         })
         .on('end', () => {
+          console.log('end row stream called');
           activeRequestStream = null;
         });
       rowStreamPipe(rowStream, userStream);

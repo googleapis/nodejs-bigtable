@@ -437,7 +437,7 @@ export class ReadRowsImpl {
           debugLog(`sending error after chunk #${chunkIdx}`);
           this.errorAfterChunkNo = undefined; // do not send error for the second time
           const error = new GoogleError('Uh oh');
-          error.code = Status.ABORTED;
+          error.code = Status.INVALID_ARGUMENT;
           stream.emit('error', error);
           readRowsRequestHandler.cancelled = true;
           break;
@@ -446,7 +446,7 @@ export class ReadRowsImpl {
         if (deadlineExceededError) {
           debugLog('sending deadline exceeded error');
           const error = new GoogleError('Deadline exceeded');
-          error.code = Status.DEADLINE_EXCEEDED;
+          error.code = Status.INVALID_ARGUMENT;
           stream.emit('error', error);
           readRowsRequestHandler.cancelled = true;
           break;
