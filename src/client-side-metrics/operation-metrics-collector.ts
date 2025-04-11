@@ -156,13 +156,13 @@ export class OperationMetricsCollector {
       this.attemptCount++;
       const endTime = hrtime.bigint();
       if (projectId && this.attemptStartTime) {
-        const totalTime = Number(
+        const totalMilliseconds = Number(
           (endTime - this.attemptStartTime) / BigInt(1000000)
         );
         this.metricsHandlers.forEach(metricsHandler => {
           if (metricsHandler.onAttemptComplete) {
             metricsHandler.onAttemptComplete({
-              attemptLatency: totalTime,
+              attemptLatency: totalMilliseconds,
               serverLatency: this.serverTime ?? undefined,
               connectivityErrorCount: this.connectivityErrorCount,
               streaming: this.streamingOperation,
@@ -213,6 +213,7 @@ export class OperationMetricsCollector {
           MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
         const endTime = hrtime.bigint();
         if (projectId && this.operationStartTime) {
+          // first response latency is measured in total milliseconds.
           this.firstResponseLatency = Number(
             (endTime - this.operationStartTime) / BigInt(1000000)
           );
@@ -235,7 +236,7 @@ export class OperationMetricsCollector {
       this.state = MetricsCollectorState.OPERATION_COMPLETE;
       const endTime = hrtime.bigint();
       if (projectId && this.operationStartTime) {
-        const totalTime = Number(
+        const totalMilliseconds = Number(
           (endTime - this.operationStartTime) / BigInt(1000000)
         );
         {
@@ -247,7 +248,7 @@ export class OperationMetricsCollector {
                 metricsCollectorData: this.getMetricsCollectorData(),
                 client_name: `nodejs-bigtable/${version}`,
                 projectId,
-                operationLatency: totalTime,
+                operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? undefined,
                 applicationLatencies: this.applicationLatencies,
@@ -314,6 +315,7 @@ export class OperationMetricsCollector {
     ) {
       const currentTime = hrtime.bigint();
       if (this.lastRowReceivedTime) {
+        // application latency is measured in total milliseconds.
         const applicationLatency = Number(
           (currentTime - this.lastRowReceivedTime) / BigInt(1000000)
         );
