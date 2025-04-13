@@ -22,7 +22,7 @@ import {Row} from '../src/row';
 const sandbox = sinon.createSandbox();
 
 const FakeMutation = {
-  convertToBytes: sandbox.spy(value => {
+  convertToBytes: sandbox.stub().callsFake(value => {
     return value;
   }),
   createTimeRange: sandbox.stub(),
@@ -531,19 +531,14 @@ describe('Bigtable/Filter', () => {
         .stub(Filter, 'convertToRegExpString')
         .returns(fakeRegExValue);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const bytesSpy = ((FakeMutation as any).convertToBytes = sandbox.spy(
-        () => {
-          return fakeConvertedValue;
-        }
-      ));
+      FakeMutation.convertToBytes.resetBehavior();
+      FakeMutation.convertToBytes.callsFake(() => fakeConvertedValue);
 
       filter.set = (filterName, val) => {
         assert.strictEqual(filterName, 'valueRegexFilter');
         assert.strictEqual(fakeConvertedValue, val);
         assert(regSpy.calledWithExactly(value.value));
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        assert((bytesSpy as any).calledWithExactly(fakeRegExValue));
+        assert(FakeMutation.convertToBytes.calledWithExactly(fakeRegExValue));
         regSpy.restore();
         done();
       };
@@ -561,19 +556,14 @@ describe('Bigtable/Filter', () => {
         .stub(Filter, 'convertToRegExpString')
         .returns(fakeRegExValue);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const bytesSpy = ((FakeMutation.convertToBytes as any) = sandbox.spy(
-        () => {
-          return fakeConvertedValue;
-        }
-      ));
+      FakeMutation.convertToBytes.resetBehavior();
+      FakeMutation.convertToBytes.callsFake(() => fakeConvertedValue);
 
       filter.set = (filterName, val) => {
         assert.strictEqual(filterName, 'valueRegexFilter');
         assert.strictEqual(fakeConvertedValue, val);
         assert(regSpy.calledWithExactly(value));
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        assert((bytesSpy as any).calledWithExactly(fakeRegExValue));
+        assert(FakeMutation.convertToBytes.calledWithExactly(fakeRegExValue));
         regSpy.restore();
         done();
       };
@@ -599,6 +589,63 @@ describe('Bigtable/Filter', () => {
         done();
       };
       filter.value(value);
+    });
+
+    it('should accept value filters that test against 0', done => {
+      const value = {
+        value: '0',
+      };
+      const fakeRegExValue = '000';
+      const fakeConvertedValue = '111';
+
+      const regSpy = sandbox
+        .stub(Filter, 'convertToRegExpString')
+        .returns(fakeRegExValue);
+
+      FakeMutation.convertToBytes.resetBehavior();
+      FakeMutation.convertToBytes.callsFake(() => fakeConvertedValue);
+
+      filter.set = (filterName, val) => {
+        assert.strictEqual(filterName, 'valueRegexFilter');
+        assert.strictEqual(fakeConvertedValue, val);
+        assert(regSpy.calledWithExactly(value.value));
+        assert(FakeMutation.convertToBytes.calledWithExactly(fakeRegExValue));
+        regSpy.restore();
+        done();
+      };
+
+      filter.value(value);
+    });
+
+    it('should accept value filters that test against a range starting with a falsey value like 0', done => {
+      sandbox.restore();
+      FakeMutation.convertToBytes.resetBehavior();
+      FakeMutation.convertToBytes.callsFake(value => value);
+
+      const filter = Filter.parse({value: {start: 0}});
+      assert.deepStrictEqual(filter, {valueRangeFilter: {startValueClosed: 0}});
+
+      const filter2 = Filter.parse({
+        value: {start: {value: 0, inclusive: false}},
+      });
+      assert.deepStrictEqual(filter2, {valueRangeFilter: {startValueOpen: 0}});
+
+      done();
+    });
+
+    it('should accept value filters that test against a range ending with a falsey value like 0', done => {
+      sandbox.restore();
+      FakeMutation.convertToBytes.resetBehavior();
+      FakeMutation.convertToBytes.callsFake(value => value);
+
+      const filter = Filter.parse({value: {end: 0}});
+      assert.deepStrictEqual(filter, {valueRangeFilter: {endValueClosed: 0}});
+
+      const filter2 = Filter.parse({
+        value: {end: {value: 0, inclusive: false}},
+      });
+      assert.deepStrictEqual(filter2, {valueRangeFilter: {endValueOpen: 0}});
+      done();
     });
 
     it('should apply the strip label transformer', done => {

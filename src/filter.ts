@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 // Copyright 2016 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -213,17 +214,17 @@ export class Filter {
    * ```
    */
   static createRange(
-    start: BoundData | null,
-    end: BoundData | null,
+    start: BoundData | null | undefined,
+    end: BoundData | null | undefined,
     key: string
   ) {
     const range = {};
 
-    if (start) {
+    if (start != null) {
       Object.assign(range, createBound('start', start, key));
     }
 
-    if (end) {
+    if (end != null) {
       Object.assign(range, createBound('end', end, key));
     }
 
@@ -233,7 +234,8 @@ export class Filter {
       const isInclusive = boundData.inclusive !== false;
       const boundKey = boundName + key + (isInclusive ? 'Closed' : 'Open');
       const bound = {} as {[index: string]: {}};
-      bound[boundKey] = Mutation.convertToBytes(boundData.value || boundData);
+      const value = boundData.value != null ? boundData.value : boundData;
+      bound[boundKey] = Mutation.convertToBytes(value);
       return bound;
     }
   }
@@ -994,14 +996,14 @@ export class Filter {
       v = value as ValueFilter;
     }
 
-    if (v.value) {
+    if (v.value != null) {
       const valueReg = Mutation.convertToBytes(
         Filter.convertToRegExpString(v.value)
       );
       this.set('valueRegexFilter', valueReg);
     }
 
-    if (v.start || v.end) {
+    if (v.start != null || v.end != null) {
       const range = Filter.createRange(v.start!, v.end!, 'Value');
       this.set('valueRangeFilter', range);
     }
