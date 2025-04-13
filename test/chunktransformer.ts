@@ -39,6 +39,7 @@ const FakeMutation = {
   }),
 };
 
+// Some-comment
 describe('Bigtable/ChunkTransformer', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let ChunkTransformer: any;
