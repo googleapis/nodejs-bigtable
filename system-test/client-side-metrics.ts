@@ -430,13 +430,17 @@ describe('Bigtable/ClientSideMetrics', () => {
     it.only('should pass the projectId to the metrics handler properly', done => {
       bigtable = new Bigtable({projectId: 'cfdb-sdk-node-tests'});
       (async () => {
-        const projectId = 'cfdb-sdk-node-tests';
-        await mockBigtable(projectId, done);
-        const instance = bigtable.instance(instanceId1);
-        const table = instance.table(tableId1);
-        await table.getRows();
-        const table2 = instance.table(tableId2);
-        await table2.getRows();
+        try {
+          const projectId = 'cfdb-sdk-node-tests';
+          await mockBigtable(projectId, done);
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          await table.getRows();
+          const table2 = instance.table(tableId2);
+          await table2.getRows();
+        } catch (e) {
+          done(e);
+        }
       })();
     });
   });
