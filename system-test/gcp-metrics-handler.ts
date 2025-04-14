@@ -277,7 +277,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
               );
               assert.deepStrictEqual(
                 parsedExportInput.scopeMetrics[0].metrics.length,
-                expectedOtelHundredExportInputs.scopeMetrics[0].metrics.length
+                expectedOtelHundredExportInputs.scopeMetrics[0].metrics.length,
               );
               for (
                 let index = 0;
@@ -287,7 +287,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
                 // We need to compare pointwise because mocha truncates to an 8192 character limit.
                 assert.deepStrictEqual(
                   parsedExportInput.scopeMetrics[0].metrics[index],
-                  expectedOtelHundredExportInputs.scopeMetrics[0].metrics[index]
+                  expectedOtelHundredExportInputs.scopeMetrics[0].metrics[
+                    index
+                  ],
                 );
               }
             } catch (e) {

@@ -325,13 +325,13 @@ export class CloudMonitoringExporter extends MetricExporter {
             initialRetryDelayMillis: 5000,
             retryDelayMultiplier: 2,
             maxRetryDelayMillis: 50000,
-          }
+          },
         );
         await this.monitoringClient.createTimeSeries(
           request as ICreateTimeSeriesRequest,
           {
             retry,
-          }
+          },
         );
         // The resultCallback typically accepts a value equal to {code: x}
         // for some value x along with other info. When the code is equal to 0
