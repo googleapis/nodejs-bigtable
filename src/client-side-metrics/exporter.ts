@@ -19,10 +19,11 @@ import {
   Histogram,
   ResourceMetrics,
 } from '@opentelemetry/sdk-metrics';
-import {ServiceError} from 'google-gax';
+import {grpc, ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
+import {RetryOptions} from 'google-gax';
 
 export interface ExportResult {
   code: number;
@@ -55,9 +56,11 @@ function getInterval(
   return {
     endTime: {
       seconds: dataPoint.endTime[0],
+      nanos: dataPoint.endTime[1],
     },
     startTime: {
       seconds: dataPoint.startTime[0],
+      nanos: dataPoint.startTime[1],
     },
   };
 }
@@ -302,8 +305,33 @@ export class CloudMonitoringExporter extends MetricExporter {
     (async () => {
       try {
         const request = metricsToRequest(metrics);
+        // In order to manage the "One or more points were written more
+        // frequently than the maximum sampling period configured for the
+        // metric." error we should have the metric service client retry a few
+        // times to ensure the metrics do get written.
+        //
+        // We use all the usual retry codes plus INVALID_ARGUMENT (code 3)
+        // because INVALID ARGUMENT (code 3) corresponds to the maximum
+        // sampling error.
+        const retry = new RetryOptions(
+          [
+            grpc.status.INVALID_ARGUMENT,
+            grpc.status.DEADLINE_EXCEEDED,
+            grpc.status.RESOURCE_EXHAUSTED,
+            grpc.status.ABORTED,
+            grpc.status.UNAVAILABLE,
+          ],
+          {
+            initialRetryDelayMillis: 5000,
+            retryDelayMultiplier: 2,
+            maxRetryDelayMillis: 50000,
+          }
+        );
         await this.monitoringClient.createTimeSeries(
           request as ICreateTimeSeriesRequest,
+          {
+            retry,
+          }
         );
         // The resultCallback typically accepts a value equal to {code: x}
         // for some value x along with other info. When the code is equal to 0
