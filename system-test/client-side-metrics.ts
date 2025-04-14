@@ -28,6 +28,7 @@ import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
 
 function getFakeBigtable(
+  projectId: string,
   metricsHandlerClass: typeof GCPMetricsHandler | typeof TestMetricsHandler
 ) {
   /*
@@ -56,7 +57,7 @@ function getFakeBigtable(
   const FakeBigtable = proxyquire('../src/index.js', {
     './instance': {Instance: FakeInstance},
   }).Bigtable;
-  return new FakeBigtable();
+  return new FakeBigtable({projectId});
 }
 
 describe('Bigtable/ClientSideMetrics', () => {
@@ -99,7 +100,7 @@ describe('Bigtable/ClientSideMetrics', () => {
   describe('Bigtable/ClientSideMetricsToGCM', () => {
     // This test suite ensures that for each test all the export calls are
     // successful even when multiple instances and tables are created.
-    async function mockBigtable(done: mocha.Done) {
+    async function mockBigtable(projectId: string, done: mocha.Done) {
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
@@ -159,13 +160,22 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      return getFakeBigtable(TestGCPMetricsHandler);
+      return getFakeBigtable(projectId, TestGCPMetricsHandler);
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
       (async () => {
         try {
-          const bigtable = await mockBigtable(done);
+          const projectId: string = await new Promise((resolve, reject) => {
+            bigtable.getProjectId_((err: any, projectId: string) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(projectId as string);
+              }
+            });
+          });
+          const bigtable = await mockBigtable(projectId, done);
           for (const instanceId of [instanceId1, instanceId2]) {
             await setupBigtable(bigtable, columnFamilyId, instanceId, [
               tableId1,
@@ -188,7 +198,7 @@ describe('Bigtable/ClientSideMetrics', () => {
     // This test suite simulates a situation where the user creates multiple
     // clients and ensures that the exporter doesn't produce any errors even
     // when multiple clients are attempting an export.
-    async function mockBigtable(done: mocha.Done) {
+    async function mockBigtable(projectId: string, done: mocha.Done) {
       class TestExporter extends CloudMonitoringExporter {
         export(
           metrics: ResourceMetrics,
@@ -228,7 +238,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       ensure the export was successful and pass the test with code 0 if it is
       successful.
        */
-      return getFakeBigtable(TestGCPMetricsHandler);
+      return getFakeBigtable(projectId, TestGCPMetricsHandler);
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
@@ -245,8 +255,17 @@ describe('Bigtable/ClientSideMetrics', () => {
       }, 120000);
       (async () => {
         try {
-          const bigtable1 = await mockBigtable(done);
-          const bigtable2 = await mockBigtable(done);
+          const projectId: string = await new Promise((resolve, reject) => {
+            bigtable.getProjectId_((err, projectId) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(projectId as string);
+              }
+            });
+          });
+          const bigtable1 = await mockBigtable(projectId, done);
+          const bigtable2 = await mockBigtable(projectId, done);
           for (const bigtable of [bigtable1, bigtable2]) {
             for (const instanceId of [instanceId1, instanceId2]) {
               await setupBigtable(bigtable, columnFamilyId, instanceId, [
@@ -381,7 +400,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      bigtable = getFakeBigtable(TestGCPMetricsHandler);
+      bigtable = getFakeBigtable(projectId, TestGCPMetricsHandler);
       await setupBigtable(bigtable, columnFamilyId, instanceId1, [
         tableId1,
         tableId2,
@@ -400,6 +419,18 @@ describe('Bigtable/ClientSideMetrics', () => {
             }
           });
         });
+        await mockBigtable(projectId, done);
+        const instance = bigtable.instance(instanceId1);
+        const table = instance.table(tableId1);
+        await table.getRows();
+        const table2 = instance.table(tableId2);
+        await table2.getRows();
+      })();
+    });
+    it.only('should pass the projectId to the metrics handler properly', done => {
+      bigtable = new Bigtable({projectId: 'cfdb-sdk-node-tests'});
+      (async () => {
+        const projectId = 'cfdb-sdk-node-tests';
         await mockBigtable(projectId, done);
         const instance = bigtable.instance(instanceId1);
         const table = instance.table(tableId1);
