@@ -193,6 +193,28 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       })();
     });
+    it.only('should send the metrics to Google Cloud Monitoring for a ReadRows call with a second project', done => {
+      (async () => {
+        try {
+          const projectId = 'cfdb-sdk-node-tests';
+          const bigtable = await mockBigtable(projectId, done);
+          for (const instanceId of [instanceId1, instanceId2]) {
+            await setupBigtable(bigtable, columnFamilyId, instanceId, [
+              tableId1,
+              tableId2,
+            ]);
+            const instance = bigtable.instance(instanceId);
+            const table = instance.table(tableId1);
+            await table.getRows();
+            const table2 = instance.table(tableId2);
+            await table2.getRows();
+          }
+        } catch (e) {
+          done(new Error('An error occurred while running the script'));
+          done(e);
+        }
+      })();
+    });
   });
   describe('Bigtable/ClientSideMetricsToGCMTimeout', () => {
     // This test suite simulates a situation where the user creates multiple
@@ -427,7 +449,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         await table2.getRows();
       })();
     });
-    it.only('should pass the projectId to the metrics handler properly', done => {
+    it('should pass the projectId to the metrics handler properly', done => {
       bigtable = new Bigtable({projectId: 'cfdb-sdk-node-tests'});
       (async () => {
         try {
