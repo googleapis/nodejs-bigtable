@@ -78,7 +78,6 @@
     "@types/extend": "^3.0.4",
     "@types/is": "^0.0.25",
     "@types/lodash.snakecase": "^4.1.9",
-    "@types/long": "4.0.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.14.0",
     "@types/p-queue": "^3.2.1",
