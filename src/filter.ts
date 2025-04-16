@@ -147,7 +147,7 @@ export class Filter {
       | Buffer
       | Buffer[]
       | number
-      | number[]
+      | number[],
   ): string | Buffer {
     if (is.regexp(regex)) {
       return regex.toString().replace(/^\/|\/$/g, '');
@@ -215,7 +215,7 @@ export class Filter {
   static createRange(
     start: BoundData | null,
     end: BoundData | null,
-    key: string
+    key: string,
   ) {
     const range = {};
 
@@ -449,7 +449,7 @@ export class Filter {
 
     if (col.name) {
       const name = Mutation.convertToBytes(
-        Filter.convertToRegExpString(col.name)
+        Filter.convertToRegExpString(col.name),
       );
       this.set('columnQualifierRegexFilter', name);
     }
@@ -557,7 +557,7 @@ export class Filter {
       | RegExp[]
       | string[]
       | number[]
-      | Buffer[]
+      | Buffer[],
   ): void {
     const f = Filter.convertToRegExpString(family);
     this.set('familyNameRegexFilter', f);
@@ -996,7 +996,7 @@ export class Filter {
 
     if (v.value) {
       const valueReg = Mutation.convertToBytes(
-        Filter.convertToRegExpString(v.value)
+        Filter.convertToRegExpString(v.value),
       );
       this.set('valueRegexFilter', valueReg);
     }

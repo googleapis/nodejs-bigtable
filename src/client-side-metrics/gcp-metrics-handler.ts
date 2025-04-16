@@ -74,7 +74,7 @@ function createInstruments(projectId: string, exporter: PushMetricExporter) {
         aggregation: name.endsWith('latencies')
           ? Aggregation.Sum()
           : new ExplicitBucketHistogramAggregation(latencyBuckets),
-      })
+      }),
   );
   const meterProvider = new MeterProvider({
     views: viewList,
@@ -102,7 +102,7 @@ function createInstruments(projectId: string, exporter: PushMetricExporter) {
         advice: {
           explicitBucketBoundaries: latencyBuckets,
         },
-      }
+      },
     ),
     attemptLatencies: meter.createHistogram(
       'bigtable.googleapis.com/internal/client/attempt_latencies',
@@ -113,14 +113,14 @@ function createInstruments(projectId: string, exporter: PushMetricExporter) {
         advice: {
           explicitBucketBoundaries: latencyBuckets,
         },
-      }
+      },
     ),
     retryCount: meter.createCounter(
       'bigtable.googleapis.com/internal/client/retry_count',
       {
         description:
           'A counter that records the number of attempts that an operation required to complete. Under normal circumstances, this value is empty.',
-      }
+      },
     ),
     applicationBlockingLatencies: meter.createHistogram(
       'bigtable.googleapis.com/internal/client/application_latencies',
@@ -131,7 +131,7 @@ function createInstruments(projectId: string, exporter: PushMetricExporter) {
         advice: {
           explicitBucketBoundaries: latencyBuckets,
         },
-      }
+      },
     ),
     firstResponseLatencies: meter.createHistogram(
       'bigtable.googleapis.com/internal/client/first_response_latencies',
@@ -142,7 +142,7 @@ function createInstruments(projectId: string, exporter: PushMetricExporter) {
         advice: {
           explicitBucketBoundaries: latencyBuckets,
         },
-      }
+      },
     ),
     serverLatencies: meter.createHistogram(
       'bigtable.googleapis.com/internal/client/server_latencies',
@@ -154,14 +154,14 @@ function createInstruments(projectId: string, exporter: PushMetricExporter) {
         advice: {
           explicitBucketBoundaries: latencyBuckets,
         },
-      }
+      },
     ),
     connectivityErrorCount: meter.createCounter(
       'bigtable.googleapis.com/internal/client/connectivity_error_count',
       {
         description:
           "The number of requests that failed to reach Google's network. In normal cases, this number is 0. When the number is not 0, it can indicate connectivity issues between the application and the Google network.",
-      }
+      },
     ),
     clientBlockingLatencies: meter.createHistogram(
       'bigtable.googleapis.com/internal/client/throttling_latencies',
@@ -172,7 +172,7 @@ function createInstruments(projectId: string, exporter: PushMetricExporter) {
         advice: {
           explicitBucketBoundaries: latencyBuckets,
         },
-      }
+      },
     ),
   };
 }
@@ -219,7 +219,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
     if (!GCPMetricsHandler.instrumentsForProject[projectId]) {
       GCPMetricsHandler.instrumentsForProject[projectId] = createInstruments(
         projectId,
-        this.exporter
+        this.exporter,
       );
     }
     return GCPMetricsHandler.instrumentsForProject[projectId];
@@ -250,7 +250,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
     otelInstruments.retryCount.add(data.retryCount, commonAttributes);
     otelInstruments?.firstResponseLatencies.record(
       data.firstResponseLatency,
-      commonAttributes
+      commonAttributes,
     );
   }
 
@@ -279,7 +279,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
     });
     otelInstruments.connectivityErrorCount.add(
       data.connectivityErrorCount,
-      commonAttributes
+      commonAttributes,
     );
     otelInstruments.serverLatencies.record(data.serverLatency, {
       streaming: data.streaming,

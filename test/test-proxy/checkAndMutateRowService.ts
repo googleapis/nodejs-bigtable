@@ -114,14 +114,14 @@ describe('TestProxy/CheckAndMutateRow', () => {
                   reject(error);
                 }
                 resolve(response);
-              }
+              },
             );
           });
           {
             // Mock out the Gapic layer so we can see requests coming into it
             const bigtable = clientMap.get(clientId);
             const bigtableClient = new BigtableClient(
-              bigtable.options.BigtableClient
+              bigtable.options.BigtableClient,
             );
             bigtable.api['BigtableClient'] = bigtableClient;
             bigtableClient.checkAndMutateRow = (
@@ -141,7 +141,7 @@ describe('TestProxy/CheckAndMutateRow', () => {
                 | null
                 | undefined,
                 {} | null | undefined
-              >
+              >,
             ) => {
               try {
                 // If the Gapic request is correct then the test passes.
@@ -173,11 +173,13 @@ describe('TestProxy/CheckAndMutateRow', () => {
                   reject(error);
                 }
                 resolve(response);
-              }
+              },
             );
           });
           done();
-        })();
+        })().catch(err => {
+          throw err;
+        });
       });
     });
   });

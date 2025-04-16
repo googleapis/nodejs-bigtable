@@ -42,7 +42,7 @@ function isCounterValue(
   dataPoint:
     | DataPoint<number>
     | DataPoint<Histogram>
-    | DataPoint<ExponentialHistogram>
+    | DataPoint<ExponentialHistogram>,
 ): dataPoint is DataPoint<number> {
   return typeof dataPoint.value === 'number';
 }
@@ -51,7 +51,7 @@ function getInterval(
   dataPoint:
     | DataPoint<number>
     | DataPoint<Histogram>
-    | DataPoint<ExponentialHistogram>
+    | DataPoint<ExponentialHistogram>,
 ) {
   return {
     endTime: {
@@ -74,7 +74,7 @@ function getInterval(
  * send to the Google Cloud Monitoring dashboard
  */
 function getDistributionPoints(
-  dataPoint: DataPoint<Histogram> | DataPoint<ExponentialHistogram>
+  dataPoint: DataPoint<Histogram> | DataPoint<ExponentialHistogram>,
 ) {
   const value = dataPoint.value;
   return [
@@ -128,7 +128,7 @@ function getResource(
   dataPoint:
     | DataPoint<number>
     | DataPoint<Histogram>
-    | DataPoint<ExponentialHistogram>
+    | DataPoint<ExponentialHistogram>,
 ) {
   const resourceLabels = {
     cluster: dataPoint.attributes.cluster,
@@ -156,7 +156,7 @@ function getMetric(
   dataPoint:
     | DataPoint<number>
     | DataPoint<Histogram>
-    | DataPoint<ExponentialHistogram>
+    | DataPoint<ExponentialHistogram>,
 ) {
   const streaming = dataPoint.attributes.streaming;
   const app_profile = dataPoint.attributes.app_profile;
@@ -170,7 +170,7 @@ function getMetric(
         client_name: dataPoint.attributes.client_name,
       },
       streaming ? {streaming} : null,
-      app_profile ? {app_profile} : null
+      app_profile ? {app_profile} : null,
     ),
   };
 }
@@ -300,7 +300,7 @@ export class CloudMonitoringExporter extends MetricExporter {
 
   export(
     metrics: ResourceMetrics,
-    resultCallback: (result: ExportResult) => void
+    resultCallback: (result: ExportResult) => void,
   ): void {
     (async () => {
       try {
@@ -325,13 +325,13 @@ export class CloudMonitoringExporter extends MetricExporter {
             initialRetryDelayMillis: 5000,
             retryDelayMultiplier: 2,
             maxRetryDelayMillis: 50000,
-          }
+          },
         );
         await this.monitoringClient.createTimeSeries(
           request as ICreateTimeSeriesRequest,
           {
             retry,
-          }
+          },
         );
         // The resultCallback typically accepts a value equal to {code: x}
         // for some value x along with other info. When the code is equal to 0
@@ -343,6 +343,8 @@ export class CloudMonitoringExporter extends MetricExporter {
       } catch (error) {
         resultCallback(error as ServiceError);
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   }
 }

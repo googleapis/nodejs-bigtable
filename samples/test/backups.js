@@ -75,7 +75,7 @@ describe('backups', async () => {
       return Promise.all(
         backups.map(backup => {
           return backup.delete({timeout: 50 * 1000});
-        })
+        }),
       );
     }
 
@@ -86,7 +86,7 @@ describe('backups', async () => {
   it('should create a backup', () => {
     const backupId = generateId();
     const stdout = execSync(
-      `node ./backups.create.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID} ${backupId}`
+      `node ./backups.create.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID} ${backupId}`,
     );
     assert.include(stdout, 'Started a table backup operation.');
     assert.include(stdout, `Backup "${backupId}" is now ready for use.`);
@@ -97,7 +97,7 @@ describe('backups', async () => {
     await createTestBackup(backupId);
 
     const stdout = execSync(
-      `node ./backups.delete.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID} ${backupId}`
+      `node ./backups.delete.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID} ${backupId}`,
     );
     assert.include(stdout, `Backup ${backupId} was deleted successfully.`);
   });
@@ -107,16 +107,16 @@ describe('backups', async () => {
     const [metadata] = await backup.getMetadata();
 
     const stdout = execSync(
-      `node ./backups.get.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID} ${BACKUP_ID}`
+      `node ./backups.get.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID} ${BACKUP_ID}`,
     );
     assert.include(stdout, `The backup is ${metadata.sizeBytes} bytes.`);
     assert.include(
       stdout,
-      `The backup will auto-delete at ${metadata.expireDate.toISOString()}`
+      `The backup will auto-delete at ${metadata.expireDate.toISOString()}`,
     );
     assert.include(
       stdout,
-      `The backup finished being created at ${metadata.endTime.toISOString()}`
+      `The backup finished being created at ${metadata.endTime.toISOString()}`,
     );
   });
 
@@ -125,22 +125,22 @@ describe('backups', async () => {
     const [backupsFromCluster] = await cluster.listBackups();
 
     const stdout = execSync(
-      `node ./backups.list.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID}`
+      `node ./backups.list.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID}`,
     );
     assert.include(
       stdout,
-      `${backupsFromInstance.length} backups returned from the instance.`
+      `${backupsFromInstance.length} backups returned from the instance.`,
     );
     assert.include(
       stdout,
-      `${backupsFromCluster.length} backups returned from the cluster.`
+      `${backupsFromCluster.length} backups returned from the cluster.`,
     );
   });
 
   it('should restore a backup', () => {
     const newTableId = generateId();
     const stdout = execSync(
-      `node ./backups.list.js ${INSTANCE_ID} ${newTableId} ${BACKUP_ID}`
+      `node ./backups.list.js ${INSTANCE_ID} ${newTableId} ${BACKUP_ID}`,
     );
     assert.include(stdout, `Table restored to ${newTableId} successfully.`);
   });
@@ -152,7 +152,7 @@ describe('backups', async () => {
     const oldExpireTime = backup.expireTime.toISOString();
 
     const stdout = execSync(
-      `node ./backups.update.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID} ${backupId}`
+      `node ./backups.update.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID} ${backupId}`,
     );
 
     const newExpireTime = backup.expireTime.toISOString();
@@ -160,7 +160,7 @@ describe('backups', async () => {
 
     assert.include(
       stdout,
-      `The backup will now auto-delete at ${backup.metadata.expireDate}.`
+      `The backup will now auto-delete at ${backup.metadata.expireDate}.`,
     );
   });
 });

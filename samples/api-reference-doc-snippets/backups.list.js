@@ -15,7 +15,7 @@
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
-  clusterId = 'YOUR_CLUSTER_ID'
+  clusterId = 'YOUR_CLUSTER_ID',
 ) {
   // [START bigtable_api_list_backups]
   const {Bigtable} = require('@google-cloud/bigtable');
@@ -34,12 +34,12 @@ async function main(
 
     const [backupsFromInstance] = await instance.listBackups();
     console.log(
-      `${backupsFromInstance.length} backups returned from the instance.`
+      `${backupsFromInstance.length} backups returned from the instance.`,
     );
 
     const [backupsFromCluster] = await cluster.listBackups();
     console.log(
-      `${backupsFromCluster.length} backups returned from the cluster.`
+      `${backupsFromCluster.length} backups returned from the cluster.`,
     );
   }
 
