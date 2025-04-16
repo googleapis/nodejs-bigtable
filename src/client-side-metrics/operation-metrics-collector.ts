@@ -226,7 +226,7 @@ export class OperationMetricsCollector {
           }
         });
       } else {
-        console.warn('ProjectId and start time should always be provided');
+        throw new Error('ProjectId and start time should always be provided');
       }
     });
   }
@@ -264,7 +264,7 @@ export class OperationMetricsCollector {
           this.firstResponseLatency =
             endTime.getTime() - this.operationStartTime.getTime();
         } else {
-          console.warn(
+          throw new Error(
             'ProjectId and operationStartTime should always be provided'
           );
         }
