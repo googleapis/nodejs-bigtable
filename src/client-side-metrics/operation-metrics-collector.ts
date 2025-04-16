@@ -88,17 +88,13 @@ function withMetricsDebug<T>(fn: () => T): T | undefined {
 // Checks that the state transition is valid and if not it throws a warning.
 function checkState<T>(
   currentState: MetricsCollectorState,
-  allowedStates: MetricsCollectorState[],
-  fn: () => T
+  allowedStates: MetricsCollectorState[]
 ): T | undefined {
   if (allowedStates.includes(currentState)) {
-    return fn();
+    return;
   } else {
-    if (METRICS_DEBUG) {
-      throw Error('Invalid state transition');
-    }
+    throw Error('Invalid state transition');
   }
-  return;
 }
 
 /**
@@ -190,16 +186,11 @@ export class OperationMetricsCollector {
    */
   onOperationStart() {
     withMetricsDebug(() => {
-      checkState(
-        this.state,
-        [MetricsCollectorState.OPERATION_NOT_STARTED],
-        () => {
-          this.operationStartTime = new Date();
-          this.firstResponseLatency = null;
-          this.state =
-            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
-        }
-      );
+      checkState(this.state, [MetricsCollectorState.OPERATION_NOT_STARTED]);
+      this.operationStartTime = new Date();
+      this.firstResponseLatency = null;
+      this.state =
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
     });
   }
 
@@ -210,41 +201,33 @@ export class OperationMetricsCollector {
    */
   onAttemptComplete(projectId: string, attemptStatus: grpc.status) {
     withMetricsDebug(() => {
-      checkState(
-        this.state,
-        [
-          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
-          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED,
-        ],
-        () => {
-          this.state =
-            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
-          this.attemptCount++;
-          const endTime = new Date();
-          if (projectId && this.attemptStartTime) {
-            const totalTime =
-              endTime.getTime() - this.attemptStartTime.getTime();
-            OperationMetricsCollector.metricsHandlers.forEach(
-              metricsHandler => {
-                if (metricsHandler.onAttemptComplete) {
-                  metricsHandler.onAttemptComplete({
-                    attemptLatency: totalTime,
-                    serverLatency: this.serverTime ?? undefined,
-                    connectivityErrorCount: this.connectivityErrorCount,
-                    streaming: this.streamingOperation,
-                    status: attemptStatus.toString(),
-                    client_name: `nodejs-bigtable/${version}`,
-                    metricsCollectorData: this.getMetricsCollectorData(),
-                    projectId,
-                  });
-                }
-              }
-            );
-          } else {
-            console.warn('ProjectId and start time should always be provided');
+      checkState(this.state, [
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED,
+      ]);
+      this.state =
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
+      this.attemptCount++;
+      const endTime = new Date();
+      if (projectId && this.attemptStartTime) {
+        const totalTime = endTime.getTime() - this.attemptStartTime.getTime();
+        OperationMetricsCollector.metricsHandlers.forEach(metricsHandler => {
+          if (metricsHandler.onAttemptComplete) {
+            metricsHandler.onAttemptComplete({
+              attemptLatency: totalTime,
+              serverLatency: this.serverTime ?? undefined,
+              connectivityErrorCount: this.connectivityErrorCount,
+              streaming: this.streamingOperation,
+              status: attemptStatus.toString(),
+              client_name: `nodejs-bigtable/${version}`,
+              metricsCollectorData: this.getMetricsCollectorData(),
+              projectId,
+            });
           }
-        }
-      );
+        });
+      } else {
+        console.warn('ProjectId and start time should always be provided');
+      }
     });
   }
 
@@ -253,18 +236,15 @@ export class OperationMetricsCollector {
    */
   onAttemptStart() {
     withMetricsDebug(() => {
-      checkState(
-        this.state,
-        [MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS],
-        () => {
-          this.state =
-            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET;
-          this.attemptStartTime = new Date();
-          this.serverTime = null;
-          this.serverTimeRead = false;
-          this.connectivityErrorCount = 0;
-        }
-      );
+      checkState(this.state, [
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS,
+      ]);
+      this.state =
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET;
+      this.attemptStartTime = new Date();
+      this.serverTime = null;
+      this.serverTimeRead = false;
+      this.connectivityErrorCount = 0;
     });
   }
 
@@ -274,25 +254,20 @@ export class OperationMetricsCollector {
   onResponse(projectId: string) {
     withMetricsDebug(() => {
       if (!this.firstResponseLatency) {
-        checkState(
-          this.state,
-          [
-            MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
-          ],
-          () => {
-            this.state =
-              MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
-            const endTime = new Date();
-            if (projectId && this.operationStartTime) {
-              this.firstResponseLatency =
-                endTime.getTime() - this.operationStartTime.getTime();
-            } else {
-              console.warn(
-                'ProjectId and operationStartTime should always be provided'
-              );
-            }
-          }
-        );
+        checkState(this.state, [
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
+        ]);
+        this.state =
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
+        const endTime = new Date();
+        if (projectId && this.operationStartTime) {
+          this.firstResponseLatency =
+            endTime.getTime() - this.operationStartTime.getTime();
+        } else {
+          console.warn(
+            'ProjectId and operationStartTime should always be provided'
+          );
+        }
       }
     });
   }
@@ -306,41 +281,34 @@ export class OperationMetricsCollector {
   onOperationComplete(projectId: string, finalOperationStatus: grpc.status) {
     this.onAttemptComplete(projectId, finalOperationStatus);
     withMetricsDebug(() => {
-      checkState(
-        this.state,
-        [MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS],
-        () => {
-          this.state = MetricsCollectorState.OPERATION_COMPLETE;
-          const endTime = new Date();
-          if (projectId && this.operationStartTime) {
-            const totalTime =
-              endTime.getTime() - this.operationStartTime.getTime();
-            {
-              OperationMetricsCollector.metricsHandlers.forEach(
-                metricsHandler => {
-                  if (metricsHandler.onOperationComplete) {
-                    metricsHandler.onOperationComplete({
-                      status: finalOperationStatus.toString(),
-                      streaming: this.streamingOperation,
-                      metricsCollectorData: this.getMetricsCollectorData(),
-                      client_name: `nodejs-bigtable/${version}`,
-                      projectId,
-                      operationLatency: totalTime,
-                      retryCount: this.attemptCount - 1,
-                      firstResponseLatency:
-                        this.firstResponseLatency ?? undefined,
-                    });
-                  }
-                }
-              );
+      checkState(this.state, [
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS,
+      ]);
+      this.state = MetricsCollectorState.OPERATION_COMPLETE;
+      const endTime = new Date();
+      if (projectId && this.operationStartTime) {
+        const totalTime = endTime.getTime() - this.operationStartTime.getTime();
+        {
+          OperationMetricsCollector.metricsHandlers.forEach(metricsHandler => {
+            if (metricsHandler.onOperationComplete) {
+              metricsHandler.onOperationComplete({
+                status: finalOperationStatus.toString(),
+                streaming: this.streamingOperation,
+                metricsCollectorData: this.getMetricsCollectorData(),
+                client_name: `nodejs-bigtable/${version}`,
+                projectId,
+                operationLatency: totalTime,
+                retryCount: this.attemptCount - 1,
+                firstResponseLatency: this.firstResponseLatency ?? undefined,
+              });
             }
-          } else {
-            console.warn(
-              'projectId and operation start time should always be available here'
-            );
-          }
+          });
         }
-      );
+      } else {
+        console.warn(
+          'projectId and operation start time should always be available here'
+        );
+      }
     });
   }
 
