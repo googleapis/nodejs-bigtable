@@ -27,6 +27,8 @@ import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
 
+const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
+
 function getFakeBigtable(
   projectId: string,
   metricsHandlerClass: typeof GCPMetricsHandler | typeof TestMetricsHandler
@@ -193,10 +195,11 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       })();
     });
-    it.only('should send the metrics to Google Cloud Monitoring for a ReadRows call with a second project', done => {
+    it('should send the metrics to Google Cloud Monitoring for a ReadRows call with a second project', done => {
       (async () => {
         try {
-          const projectId = 'cfdb-sdk-node-tests';
+          // This is the second project the test is configured to work with:
+          const projectId = SECOND_PROJECT_ID;
           const bigtable = await mockBigtable(projectId, done);
           for (const instanceId of [instanceId1, instanceId2]) {
             await setupBigtable(bigtable, columnFamilyId, instanceId, [
@@ -450,10 +453,10 @@ describe('Bigtable/ClientSideMetrics', () => {
       })();
     });
     it('should pass the projectId to the metrics handler properly', done => {
-      bigtable = new Bigtable({projectId: 'cfdb-sdk-node-tests'});
+      bigtable = new Bigtable({projectId: SECOND_PROJECT_ID});
       (async () => {
         try {
-          const projectId = 'cfdb-sdk-node-tests';
+          const projectId = SECOND_PROJECT_ID;
           await mockBigtable(projectId, done);
           const instance = bigtable.instance(instanceId1);
           const table = instance.table(tableId1);
