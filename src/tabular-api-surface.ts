@@ -61,12 +61,12 @@ export const DEFAULT_BACKOFF_SETTINGS: BackoffSettings = {
 
 export type InsertRowsCallback = (
   err: ServiceError | PartialFailureError | null,
-  apiResponse?: google.protobuf.Empty
+  apiResponse?: google.protobuf.Empty,
 ) => void;
 export type InsertRowsResponse = [google.protobuf.Empty];
 export type MutateCallback = (
   err: ServiceError | PartialFailureError | null,
-  apiResponse?: google.protobuf.Empty
+  apiResponse?: google.protobuf.Empty,
 ) => void;
 export type MutateResponse = [google.protobuf.Empty];
 
@@ -130,7 +130,7 @@ export interface GetRowsOptions {
 export type GetRowsCallback = (
   err: ServiceError | null,
   rows?: Row[],
-  apiResponse?: google.bigtable.v2.ReadRowsResponse
+  apiResponse?: google.bigtable.v2.ReadRowsResponse,
 ) => void;
 export type GetRowsResponse = [Row[], google.bigtable.v2.ReadRowsResponse];
 
@@ -398,7 +398,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             !startValue ||
             TableUtils.lessThanOrEqualTo(
               startValue as string,
-              lastRowKey as string
+              lastRowKey as string,
             );
           const endKeyIsNotRead =
             !endValue ||
@@ -420,7 +420,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
         // Remove rowKeys already read.
         rowKeys = rowKeys.filter(rowKey =>
-          TableUtils.greaterThan(rowKey, lastRowKey as string)
+          TableUtils.greaterThan(rowKey, lastRowKey as string),
         );
 
         // If there was a row limit in the original request and
@@ -443,15 +443,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       // TODO: preprocess all the keys and ranges to Bytes
       reqOpts.rows.rowKeys = rowKeys.map(
-        Mutation.convertToBytes
+        Mutation.convertToBytes,
       ) as {} as Uint8Array[];
 
       reqOpts.rows.rowRanges = ranges.map(range =>
         Filter.createRange(
           range.start as BoundData,
           range.end as BoundData,
-          'Key'
-        )
+          'Key',
+        ),
       );
 
       if (filter) {
@@ -464,7 +464,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       const gaxOpts = populateAttemptHeader(
         numRequestsMade,
-        options.gaxOptions
+        options.gaxOptions,
       );
 
       const requestStream = this.bigtable.request({
@@ -553,7 +553,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               DEFAULT_BACKOFF_SETTINGS;
             const nextRetryDelay = getNextDelay(
               numConsecutiveErrors,
-              backOffSettings
+              backOffSettings,
             );
             metricsCollector?.onAttemptComplete(
               this.bigtable.projectId,
@@ -623,7 +623,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    */
   getRows(
     optionsOrCallback?: GetRowsOptions | GetRowsCallback,
-    cb?: GetRowsCallback
+    cb?: GetRowsCallback,
   ): void | Promise<GetRowsResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -634,18 +634,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       .pipe(
         concat((rows: Row[]) => {
           callback(null, rows);
-        })
+        }),
       );
   }
 
   insert(
     entries: Entry | Entry[],
-    gaxOptions?: CallOptions
+    gaxOptions?: CallOptions,
   ): Promise<InsertRowsResponse>;
   insert(
     entries: Entry | Entry[],
     gaxOptions: CallOptions,
-    callback: InsertRowsCallback
+    callback: InsertRowsCallback,
   ): void;
   insert(entries: Entry | Entry[], callback: InsertRowsCallback): void;
   /**
@@ -669,7 +669,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
   insert(
     entries: Entry | Entry[],
     optionsOrCallback?: CallOptions | InsertRowsCallback,
-    cb?: InsertRowsCallback
+    cb?: InsertRowsCallback,
   ): void | Promise<InsertRowsResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -684,12 +684,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
   mutate(
     entries: Entry | Entry[],
-    options?: MutateOptions
+    options?: MutateOptions,
   ): Promise<MutateResponse>;
   mutate(
     entries: Entry | Entry[],
     options: MutateOptions,
-    callback: MutateCallback
+    callback: MutateCallback,
   ): void;
   mutate(entries: Entry | Entry[], callback: MutateCallback): void;
   /**
@@ -716,7 +716,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
   mutate(
     entriesRaw: Entry | Entry[],
     optionsOrCallback?: MutateOptions | MutateCallback,
-    cb?: MutateCallback
+    cb?: MutateCallback,
   ): void | Promise<MutateResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -724,7 +724,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const entries: Entry[] = (arrify(entriesRaw) as Entry[]).reduce(
       (a, b) => a.concat(b),
-      []
+      [],
     );
 
     /*
@@ -744,16 +744,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
     const pendingEntryIndices = new Set(
-      entries.map((entry: Entry, index: number) => index)
+      entries.map((entry: Entry, index: number) => index),
     );
     const entryToIndex = new Map(
-      entries.map((entry: Entry, index: number) => [entry, index])
+      entries.map((entry: Entry, index: number) => [entry, index]),
     );
     const mutationErrorsByEntryIndex = new Map();
 
     const isRetryable = (
       err: ServiceError | null,
-      timeoutExceeded: boolean
+      timeoutExceeded: boolean,
     ) => {
       if (timeoutExceeded) {
         // If the timeout has been exceeded then do not retry.
@@ -808,7 +808,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           mutationErrors.concat(
             [...pendingEntryIndices]
               .filter(index => !mutationErrorsByEntryIndex.has(index))
-              .map(() => err)
+              .map(() => err),
           );
         callback(err);
         return;
@@ -851,7 +851,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       options.gaxOptions = populateAttemptHeader(
         numRequestsMade,
-        options.gaxOptions
+        options.gaxOptions,
       );
 
       this.bigtable
@@ -931,7 +931,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    */
   sampleRowKeys(
     optionsOrCallback?: CallOptions | SampleRowKeysCallback,
-    cb?: SampleRowKeysCallback
+    cb?: SampleRowKeysCallback,
   ): void | Promise<SampleRowsKeysResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -957,7 +957,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       .pipe(
         concat((keys: string[]) => {
           callback(null, keys);
-        })
+        }),
       );
   }
 
@@ -1027,7 +1027,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
 export function getNextDelay(
   numConsecutiveErrors: number,
-  config: BackoffSettings
+  config: BackoffSettings,
 ) {
   // 0 - 100 ms jitter
   const jitter = Math.floor(Math.random() * 100);
@@ -1066,7 +1066,7 @@ export class PartialFailureError extends Error {
     if (messages.length > 1) {
       messages = messages.map((message, i) => `    ${i + 1}. ${message}`);
       messages.unshift(
-        'Multiple errors occurred during the request. Please see the `errors` array for complete details.\n'
+        'Multiple errors occurred during the request. Please see the `errors` array for complete details.\n',
       );
       messages.push('\n');
     }

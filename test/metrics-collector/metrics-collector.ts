@@ -27,7 +27,7 @@ import * as gax from 'google-gax';
 import * as proxyquire from 'proxyquire';
 import {GCPMetricsHandler} from '../../src/client-side-metrics/gcp-metrics-handler';
 const root = gax.protobuf.loadSync(
-  './protos/google/bigtable/v2/response_params.proto'
+  './protos/google/bigtable/v2/response_params.proto',
 );
 const ResponseParams = root.lookupType('ResponseParams');
 
@@ -109,7 +109,7 @@ describe('Bigtable/MetricsCollector', () => {
           const metricsCollector = new FakeOperationsMetricsCollector(
             this,
             MethodName.READ_ROWS,
-            StreamingState.STREAMING
+            StreamingState.STREAMING,
           );
           OperationMetricsCollector.metricsHandlers = [
             testHandler as unknown as GCPMetricsHandler,
@@ -134,7 +134,7 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '8. A transient error occurs.\n';
           metricsCollector.onAttemptComplete(
             this.bigtable.projectId,
-            grpc.status.DEADLINE_EXCEEDED
+            grpc.status.DEADLINE_EXCEEDED,
           );
           logger.value += '9. After a timeout, the second attempt is made.\n';
           metricsCollector.onAttemptStart();
@@ -152,7 +152,7 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '16. Stream ends, operation completes\n';
           metricsCollector.onOperationComplete(
             this.bigtable.projectId,
-            grpc.status.OK
+            grpc.status.OK,
           );
         }
       }
@@ -161,13 +161,13 @@ describe('Bigtable/MetricsCollector', () => {
     await table.fakeMethod();
     const expectedOutput = fs.readFileSync(
       './test/metrics-collector/typical-method-call.txt',
-      'utf8'
+      'utf8',
     );
     // Ensure events occurred in the right order here:
     assert.strictEqual(logger.value, expectedOutput.replace(/\r/g, ''));
     assert.deepStrictEqual(
       testHandler.requestsHandled,
-      expectedRequestsHandled
+      expectedRequestsHandled,
     );
   });
 });

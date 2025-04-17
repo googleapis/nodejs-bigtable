@@ -29,6 +29,7 @@ import {
   CreateInstanceCallback,
   CreateInstanceResponse,
   IInstance,
+  ClusterInfo,
 } from './instance';
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
@@ -58,7 +59,7 @@ export interface GetInstancesCallback {
     err: ServiceError | null,
     result?: Instance[],
     failedLocations?: string[],
-    response?: google.bigtable.admin.v2.IListInstancesResponse
+    response?: google.bigtable.admin.v2.IListInstancesResponse,
   ): void;
 }
 export type GetInstancesResponse = [
@@ -502,7 +503,7 @@ export class Bigtable {
           },
         }),
       },
-      options
+      options,
     ) as gax.ClientOptions;
 
     const adminOptions = Object.assign(
@@ -513,7 +514,7 @@ export class Bigtable {
           customEndpointBaseUrl ||
           getDomain('bigtableadmin', options.BigtableClient),
       },
-      options
+      options,
     );
     const instanceAdminOptions = Object.assign(
       {},
@@ -523,7 +524,7 @@ export class Bigtable {
           customEndpointBaseUrl ||
           getDomain('bigtableadmin', options.BigtableClient),
       },
-      options
+      options,
     );
 
     this.options = {
@@ -548,12 +549,12 @@ export class Bigtable {
 
   createInstance(
     id: string,
-    options: InstanceOptions
+    options: InstanceOptions,
   ): Promise<CreateInstanceResponse>;
   createInstance(
     id: string,
     options: InstanceOptions,
-    callback: CreateInstanceCallback
+    callback: CreateInstanceCallback,
   ): void;
   /**
    * Create a Cloud Bigtable instance.
@@ -634,16 +635,16 @@ export class Bigtable {
   createInstance(
     id: string,
     options: InstanceOptions,
-    callback?: CreateInstanceCallback
+    callback?: CreateInstanceCallback,
   ): void | Promise<CreateInstanceResponse> {
     if (typeof options !== 'object') {
       throw new Error(
-        'A configuration object is required to create an instance.'
+        'A configuration object is required to create an instance.',
       );
     }
     if (!options.clusters) {
       throw new Error(
-        'At least one cluster configuration object is required to create an instance.'
+        'At least one cluster configuration object is required to create an instance.',
       );
     }
     const reqOpts = {
@@ -661,44 +662,49 @@ export class Bigtable {
 
     reqOpts.clusters = arrify(options.clusters).reduce(
       (clusters, cluster) => {
-        if (!cluster.id) {
+        // TOD: Find a way to eliminate all ClusterInfo casts in this file.
+        if (!(cluster as ClusterInfo).id) {
           throw new Error(
-            'A cluster was provided without an `id` property defined.'
+            'A cluster was provided without an `id` property defined.',
           );
         }
 
         if (
-          typeof cluster.key !== 'undefined' &&
-          typeof cluster.encryption !== 'undefined'
+          typeof (cluster as ClusterInfo).key !== 'undefined' &&
+          typeof (cluster as ClusterInfo).encryption !== 'undefined'
         ) {
           throw new Error(
-            'A cluster was provided with both `encryption` and `key` defined.'
+            'A cluster was provided with both `encryption` and `key` defined.',
           );
         }
-        ClusterUtils.validateClusterMetadata(cluster);
-        clusters[cluster.id!] =
+        ClusterUtils.validateClusterMetadata(cluster as ClusterInfo);
+        clusters[(cluster as ClusterInfo).id!] =
           ClusterUtils.getClusterBaseConfigWithFullLocation(
-            cluster,
+            cluster as ClusterInfo,
             this.projectId,
-            undefined
+            undefined,
           );
-        Object.assign(clusters[cluster.id!], {
-          defaultStorageType: Cluster.getStorageType_(cluster.storage!),
+        Object.assign(clusters[(cluster as ClusterInfo).id!], {
+          defaultStorageType: Cluster.getStorageType_(
+            (cluster as ClusterInfo).storage!,
+          ),
         });
 
-        if (cluster.key) {
-          clusters[cluster.id!].encryptionConfig = {
-            kmsKeyName: cluster.key,
+        if ((cluster as ClusterInfo).key) {
+          clusters[(cluster as ClusterInfo).id!].encryptionConfig = {
+            kmsKeyName: (cluster as ClusterInfo).key,
           };
         }
 
-        if (cluster.encryption) {
-          clusters[cluster.id!].encryptionConfig = cluster.encryption;
+        if ((cluster as ClusterInfo).encryption) {
+          clusters[(cluster as ClusterInfo).id!].encryptionConfig = (
+            cluster as ClusterInfo
+          ).encryption;
         }
 
         return clusters;
       },
-      {} as {[index: string]: google.bigtable.admin.v2.ICluster}
+      {} as {[index: string]: google.bigtable.admin.v2.ICluster},
     );
 
     this.request(
@@ -714,7 +720,7 @@ export class Bigtable {
           args.splice(1, 0, this.instance(id));
         }
         callback!(...args);
-      }
+      },
     );
   }
 
@@ -778,7 +784,7 @@ export class Bigtable {
    */
   getInstances(
     gaxOptionsOrCallback?: CallOptions | GetInstancesCallback,
-    callback?: GetInstancesCallback
+    callback?: GetInstancesCallback,
   ): void | Promise<GetInstancesResponse> {
     const gaxOptions =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
@@ -809,7 +815,7 @@ export class Bigtable {
           return instance;
         });
         callback!(null, instances, resp.failedLocations, resp);
-      }
+      },
     );
   }
 
@@ -839,7 +845,7 @@ export class Bigtable {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   request<T = any>(
     config: RequestOptions,
-    callback?: (err: ServiceError | null, resp?: T) => void
+    callback?: (err: ServiceError | null, resp?: T) => void,
   ): void | AbortableDuplex {
     const isStreamMode = !callback;
 
@@ -847,7 +853,7 @@ export class Bigtable {
     let stream: AbortableDuplex;
 
     const prepareGaxRequest = (
-      callback: (err: Error | null, fn?: Function) => void
+      callback: (err: Error | null, fn?: Function) => void,
     ) => {
       this.getProjectId_((err, projectId) => {
         if (err) {
@@ -869,7 +875,7 @@ export class Bigtable {
         const requestFn = (gaxClient as any)[config.method!].bind(
           gaxClient,
           reqOpts,
-          config.gaxOpts
+          config.gaxOpts,
         );
         callback(null, requestFn);
       });
@@ -915,7 +921,7 @@ export class Bigtable {
           noResponseRetries: 0,
           objectMode: true,
         },
-        config.retryOpts
+        config.retryOpts,
       );
 
       config.gaxOpts = Object.assign(config.gaxOpts || {}, {
@@ -965,7 +971,7 @@ export class Bigtable {
    */
   close(): Promise<void[]> {
     const combined = Object.keys(this.api).map(clientType =>
-      this.api[clientType].close()
+      this.api[clientType].close(),
     );
     return Promise.all(combined);
   }

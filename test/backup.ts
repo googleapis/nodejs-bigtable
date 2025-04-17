@@ -214,7 +214,7 @@ describe('Bigtable/Backup', () => {
       backup.cluster.createBackup = (
         id: string,
         _config: {},
-        callback: Function
+        callback: Function,
       ) => {
         assert.strictEqual(id, backup.id);
         assert.strictEqual(_config, config);
@@ -229,7 +229,7 @@ describe('Bigtable/Backup', () => {
     beforeEach(() => {
       backup.bigtable.request = (
         config: RequestOptions,
-        callback: (err: ServiceError | null, res: RequestOptions) => void
+        callback: (err: ServiceError | null, res: RequestOptions) => void,
       ) => {
         callback(null, config);
       };
@@ -259,11 +259,11 @@ describe('Bigtable/Backup', () => {
         (
           err?: ServiceError | Error | null,
           backup?: Backup | null,
-          config?: any
+          config?: any,
         ) => {
           assert.strictEqual(
             backup?.name,
-            `projects/${destinationProjectId}/instances/${destinationInstanceId}/clusters/${destinationClusterId}/backups/${newBackupId}`
+            `projects/${destinationProjectId}/instances/${destinationInstanceId}/clusters/${destinationClusterId}/backups/${newBackupId}`,
           );
           assert.strictEqual(config?.client, 'BigtableTableAdminClient');
           assert.strictEqual(config?.method, 'copyBackup');
@@ -280,7 +280,7 @@ describe('Bigtable/Backup', () => {
             timeout: 139,
           });
           done();
-        }
+        },
       );
     });
   });
@@ -485,7 +485,7 @@ describe('Bigtable/Backup', () => {
 
       backup.restoreTo = (
         config: backupTypes.RestoreTableConfig,
-        cb: backupTypes.RestoreTableCallback
+        cb: backupTypes.RestoreTableCallback,
       ) => {
         assert.strictEqual(config.tableId, tableId);
         assert.strictEqual(config.instance, backup.cluster.instance);
@@ -540,7 +540,7 @@ describe('Bigtable/Backup', () => {
       backup.bigtable.request = (config: any) => {
         assert.deepStrictEqual(
           config.reqOpts.parent.match(/instances\/([^/]+)/)![1],
-          instance
+          instance,
         );
         done();
       };
@@ -550,7 +550,7 @@ describe('Bigtable/Backup', () => {
 
       (backup as backupTypes.Backup).restoreTo(
         {tableId, instance},
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -569,7 +569,7 @@ describe('Bigtable/Backup', () => {
 
       (backup as backupTypes.Backup).restoreTo(
         {tableId, instance},
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -598,7 +598,7 @@ describe('Bigtable/Backup', () => {
 
       (backup as backupTypes.Backup).restoreTo(
         {tableId, gaxOptions},
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -619,7 +619,7 @@ describe('Bigtable/Backup', () => {
           assert.strictEqual(table, undefined);
           assert.deepStrictEqual(_args, args);
           done();
-        }
+        },
       );
     });
 
@@ -647,7 +647,7 @@ describe('Bigtable/Backup', () => {
           assert.strictEqual(table, tableInstance);
           assert.deepStrictEqual(_args, args);
           done();
-        }
+        },
       );
     });
   });
@@ -695,14 +695,14 @@ describe('Bigtable/Backup', () => {
         expireTime: new Date(),
       };
       const expectedExpireTime = new PreciseDate(
-        metadata.expireTime
+        metadata.expireTime,
       ).toStruct();
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       backup.bigtable.request = (config: any) => {
         assert.deepStrictEqual(
           config.reqOpts.backup.expireTime,
-          expectedExpireTime
+          expectedExpireTime,
         );
         done();
       };
@@ -726,7 +726,7 @@ describe('Bigtable/Backup', () => {
           assert.strictEqual(backup.metadata, response);
           assert.strictEqual(apiResponse, response);
           done();
-        }
+        },
       );
     });
   });

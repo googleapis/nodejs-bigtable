@@ -68,7 +68,7 @@ export interface DeleteAppProfileOptions {
 export type CreateAppProfileCallback = (
   err: ServiceError | null,
   appProfile?: AppProfile,
-  apiResponse?: google.bigtable.admin.v2.IAppProfile
+  apiResponse?: google.bigtable.admin.v2.IAppProfile,
 ) => void;
 export type CreateAppProfileResponse = [
   AppProfile,
@@ -76,18 +76,18 @@ export type CreateAppProfileResponse = [
 ];
 export type DeleteAppProfileCallback = (
   err: ServiceError | null,
-  apiResponse?: google.protobuf.Empty
+  apiResponse?: google.protobuf.Empty,
 ) => void;
 export type DeleteAppProfileResponse = [google.protobuf.Empty];
 export type AppProfileExistsCallback = (
   err: ServiceError | null,
-  exists?: boolean
+  exists?: boolean,
 ) => void;
 export type AppProfileExistsResponse = [boolean];
 export type GetAppProfileMetadataCallback = (
   err: ServiceError | null,
   metadata?: google.bigtable.admin.v2.IAppProfile,
-  apiResponse?: google.bigtable.admin.v2.IAppProfile
+  apiResponse?: google.bigtable.admin.v2.IAppProfile,
 ) => void;
 export type GetAppProfileMetadataResponse = [
   google.bigtable.admin.v2.IAppProfile,
@@ -96,7 +96,7 @@ export type GetAppProfileMetadataResponse = [
 export type GetAppProfileCallback = (
   err: ServiceError | null,
   appProfile?: AppProfile,
-  apiResponse?: google.bigtable.admin.v2.IAppProfile
+  apiResponse?: google.bigtable.admin.v2.IAppProfile,
 ) => void;
 export type GetAppProfileResponse = [
   AppProfile,
@@ -105,7 +105,7 @@ export type GetAppProfileResponse = [
 export type GetAppProfilesCallback = (
   err: ServiceError | null,
   appProfiles?: AppProfile[],
-  apiResponse?: google.bigtable.admin.v2.IAppProfile[]
+  apiResponse?: google.bigtable.admin.v2.IAppProfile[],
 ) => void;
 export type GetAppProfilesResponse = [
   AppProfile[],
@@ -113,7 +113,7 @@ export type GetAppProfilesResponse = [
 ];
 export type SetAppProfileMetadataCallback = (
   err: ServiceError | null,
-  apiResponse?: google.protobuf.Empty
+  apiResponse?: google.protobuf.Empty,
 ) => void;
 export type SetAppProfileMetadataResponse = [google.protobuf.Empty];
 
@@ -196,7 +196,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * ```
    */
   static formatAppProfile_(
-    options: AppProfileOptions
+    options: AppProfileOptions,
   ): google.bigtable.admin.v2.IAppProfile {
     const appProfile: google.bigtable.admin.v2.IAppProfile = {};
 
@@ -256,7 +256,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    */
   create(
     optionsOrCallback?: AppProfileOptions | CreateAppProfileCallback,
-    cb?: CreateAppProfileCallback
+    cb?: CreateAppProfileCallback,
   ): void | Promise<CreateAppProfileResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -268,7 +268,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
   delete(options?: DeleteAppProfileOptions): Promise<DeleteAppProfileResponse>;
   delete(
     options: DeleteAppProfileOptions,
-    callback: DeleteAppProfileCallback
+    callback: DeleteAppProfileCallback,
   ): void;
   delete(callback: DeleteAppProfileCallback): void;
   /**
@@ -292,7 +292,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    */
   delete(
     optionsOrCallback?: DeleteAppProfileOptions | DeleteAppProfileCallback,
-    cb?: DeleteAppProfileCallback
+    cb?: DeleteAppProfileCallback,
   ): void | Promise<DeleteAppProfileResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -314,7 +314,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      callback
+      callback,
     );
   }
 
@@ -339,7 +339,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    */
   exists(
     optionsOrCallback?: CallOptions | AppProfileExistsCallback,
-    cb?: AppProfileExistsCallback
+    cb?: AppProfileExistsCallback,
   ): void | Promise<AppProfileExistsResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -375,7 +375,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    */
   get(
     optionsOrCallback?: CallOptions | GetAppProfileCallback,
-    cb?: GetAppProfileCallback
+    cb?: GetAppProfileCallback,
   ): void | Promise<GetAppProfileResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -393,7 +393,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
   getMetadata(options?: CallOptions): Promise<GetAppProfileMetadataResponse>;
   getMetadata(
     options: CallOptions,
-    callback: GetAppProfileMetadataCallback
+    callback: GetAppProfileMetadataCallback,
   ): void;
   getMetadata(callback: GetAppProfileMetadataCallback): void;
   /**
@@ -415,7 +415,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    */
   getMetadata(
     optionsOrCallback?: CallOptions | GetAppProfileMetadataCallback,
-    cb?: GetAppProfileMetadataCallback
+    cb?: GetAppProfileMetadataCallback,
   ): void | Promise<GetAppProfileMetadataResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -435,22 +435,22 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
           this.metadata = resp;
         }
         callback(err, resp, resp);
-      }
+      },
     );
   }
 
   setMetadata(
     metadata: AppProfileOptions,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<SetAppProfileMetadataResponse>;
   setMetadata(
     metadata: AppProfileOptions,
     options: CallOptions,
-    callback: SetAppProfileMetadataCallback
+    callback: SetAppProfileMetadataCallback,
   ): void;
   setMetadata(
     metadata: AppProfileOptions,
-    callback: SetAppProfileMetadataCallback
+    callback: SetAppProfileMetadataCallback,
   ): void;
   /**
    * Set the app profile metadata.
@@ -472,7 +472,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
   setMetadata(
     metadata: AppProfileOptions,
     optionsOrCallback?: CallOptions | SetAppProfileMetadataCallback,
-    cb?: SetAppProfileMetadataCallback
+    cb?: SetAppProfileMetadataCallback,
   ): void | Promise<SetAppProfileMetadataResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -508,7 +508,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
         reqOpts,
         gaxOpts: gaxOptions,
       },
-      callback
+      callback,
     );
   }
 }

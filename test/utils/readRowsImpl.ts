@@ -30,7 +30,7 @@ import IRowRange = google.bigtable.v2.IRowRange;
  */
 function prettyPrintRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest,
-  debugLog: DebugLog
+  debugLog: DebugLog,
 ) {
   // pretty-printing important parts of the request.
   // doing it field by field because we want to apply .toString() to all key fields
@@ -54,7 +54,7 @@ function prettyPrintRequest(
         }
         if (range.startKeyClosed) {
           debugLog(
-            `        startKeyClosed: "${range.startKeyClosed.toString()}",`
+            `        startKeyClosed: "${range.startKeyClosed.toString()}",`,
           );
         }
         if (range.endKeyOpen) {
@@ -81,7 +81,7 @@ function prettyPrintRequest(
  */
 function generateChunks(
   chunkGeneratorParameters: ChunkGeneratorParameters,
-  debugLog: DebugLog
+  debugLog: DebugLog,
 ): protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] {
   const keyFrom = chunkGeneratorParameters.keyFrom;
   const keyTo = chunkGeneratorParameters.keyTo;
@@ -110,7 +110,7 @@ function generateChunks(
       }
       const thisChunkSize = Math.min(
         chunkGeneratorParameters.chunkSize,
-        remainingBytes
+        remainingBytes,
       );
       remainingBytes -= thisChunkSize;
       const value = Buffer.from('a'.repeat(remainingBytes)).toString('base64');
@@ -134,7 +134,7 @@ function generateChunks(
  */
 function isKeyInRowSet(
   stringKey: string,
-  rowSet?: protos.google.bigtable.v2.IRowSet | null
+  rowSet?: protos.google.bigtable.v2.IRowSet | null,
 ): boolean {
   if (!rowSet) {
     return true;
@@ -177,7 +177,7 @@ function isKeyInRowSet(
  */
 function getKeyValue(
   request: protos.google.bigtable.v2.IReadRowsRequest,
-  property: keyof IRowRange
+  property: keyof IRowRange,
 ) {
   if (
     request?.rows?.rowRanges &&
@@ -200,15 +200,15 @@ function getSelectedKey(
     keyOpenProperty: keyof IRowRange;
     keyClosedProperty: keyof IRowRange;
     defaultKey?: number;
-  }
+  },
 ) {
   const keyRequestOpen = getKeyValue(
     request,
-    keySelectionParameters.keyOpenProperty
+    keySelectionParameters.keyOpenProperty,
   );
   const keyRequestClosed = getKeyValue(
     request,
-    keySelectionParameters.keyClosedProperty
+    keySelectionParameters.keyClosedProperty,
   );
   const defaultKey = keySelectionParameters.defaultKey;
   return defaultKey === undefined
@@ -228,7 +228,7 @@ function getSelectedKey(
  */
 function generateChunksFromRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest,
-  serviceParameters: ReadRowsServiceParameters
+  serviceParameters: ReadRowsServiceParameters,
 ) {
   return generateChunks(
     {
@@ -245,7 +245,7 @@ function generateChunksFromRequest(
       chunkSize: serviceParameters.chunkSize,
       valueSize: serviceParameters.valueSize,
     },
-    serviceParameters.debugLog
+    serviceParameters.debugLog,
   );
 }
 
@@ -258,7 +258,7 @@ class ReadRowsRequestHandler {
   public stopWaiting: () => void;
   constructor(
     readonly stream: ReadRowsWritableStream,
-    readonly debugLog: DebugLog
+    readonly debugLog: DebugLog,
   ) {
     this.cancelled = false;
     this.stopWaiting = () => {};
@@ -268,7 +268,7 @@ class ReadRowsRequestHandler {
    * @param response The response object to send.
    */
   async sendResponse(
-    response: protos.google.bigtable.v2.IReadRowsResponse
+    response: protos.google.bigtable.v2.IReadRowsResponse,
   ): Promise<void> {
     // an asynchronous function to write a response object to stream, reused several times below.
     // captures `cancelled` variable
@@ -288,7 +288,7 @@ class ReadRowsRequestHandler {
         if (response.lastScannedRowKey) {
           const binaryKey = Buffer.from(
             response.lastScannedRowKey as string,
-            'base64'
+            'base64',
           );
           const stringKey = binaryKey.toString();
           debugLog(`sent lastScannedRowKey = ${stringKey}`);
@@ -364,7 +364,7 @@ export class ReadRowsImpl {
     });
     const chunks = generateChunksFromRequest(
       stream.request,
-      this.serviceParameters
+      this.serviceParameters,
     );
     await this.sendAllChunks(readRowsRequestHandler, chunks);
   }
@@ -375,7 +375,7 @@ export class ReadRowsImpl {
    */
   private async sendAllChunks(
     readRowsRequestHandler: ReadRowsRequestHandler,
-    chunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]
+    chunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[],
   ) {
     const stream = readRowsRequestHandler.stream;
     const debugLog = readRowsRequestHandler.debugLog;
@@ -402,7 +402,7 @@ export class ReadRowsImpl {
           skipThisRow = false;
         } else {
           debugLog(
-            `skipping row with key ${stringKey} because it's out of requested range or keys`
+            `skipping row with key ${stringKey} because it's out of requested range or keys`,
           );
           skipThisRow = true;
           lastScannedRowKey = chunk.rowKey as string;

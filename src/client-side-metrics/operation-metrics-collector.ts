@@ -32,7 +32,7 @@ const METRICS_DEBUG = process.env.METRICS_DEBUG;
  * unblock the CI pipeline.
  */
 const root = gax.protobuf.loadSync(
-  './protos/google/bigtable/v2/response_params.proto'
+  './protos/google/bigtable/v2/response_params.proto',
 );
 const ResponseParams = root.lookupType('ResponseParams');
 const {hrtime} = require('node:process');
@@ -127,7 +127,7 @@ export class OperationMetricsCollector {
   constructor(
     tabularApiSurface: ITabularApiSurface,
     methodName: MethodName,
-    streamingOperation: StreamingState
+    streamingOperation: StreamingState,
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
@@ -154,7 +154,7 @@ export class OperationMetricsCollector {
         method: this.methodName,
         client_uid: this.tabularApiSurface.bigtable.clientUid,
       },
-      appProfileId ? {app_profile: appProfileId} : {}
+      appProfileId ? {app_profile: appProfileId} : {},
     );
   }
 
@@ -326,33 +326,29 @@ export class OperationMetricsCollector {
     internalRepr: Map<string, string[]>;
     options: {};
   }) {
-    withMetricsDebug(() => {
-      if (!this.serverTimeRead && this.connectivityErrorCount < 1) {
-        // Check serverTimeRead, connectivityErrorCount here to reduce latency.
-        const mappedEntries = new Map(
-          Array.from(metadata.internalRepr.entries(), ([key, value]) => [
-            key,
-            value.toString(),
-          ])
-        );
-        const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
-        const SERVER_TIMING_KEY = 'server-timing';
-        const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
-        if (durationValues) {
-          const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
-          if (matchedDuration && matchedDuration[1]) {
-            if (!this.serverTimeRead) {
-              this.serverTimeRead = true;
-              this.serverTime = isNaN(parseInt(matchedDuration[1]))
-                ? null
-                : parseInt(matchedDuration[1]);
-            }
-          } else {
-            this.connectivityErrorCount = 1;
-          }
+    if (!this.serverTimeRead && this.connectivityErrorCount < 1) {
+      // Check serverTimeRead, connectivityErrorCount here to reduce latency.
+      const mappedEntries = new Map(
+        Array.from(metadata.internalRepr.entries(), ([key, value]) => [
+          key,
+          value.toString(),
+        ])
+      );
+      const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
+      const SERVER_TIMING_KEY = 'server-timing';
+      const durationValues = mappedEntries.get(SERVER_TIMING_KEY);
+      const matchedDuration = durationValues?.match(SERVER_TIMING_REGEX);
+      if (matchedDuration && matchedDuration[1]) {
+        if (!this.serverTimeRead) {
+          this.serverTimeRead = true;
+          this.serverTime = isNaN(parseInt(matchedDuration[1]))
+            ? null
+            : parseInt(matchedDuration[1]);
         }
+      } else {
+        this.connectivityErrorCount = 1;
       }
-    });
+    }
   }
 
   /**
