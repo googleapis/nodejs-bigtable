@@ -205,7 +205,7 @@ describe('Bigtable/Family', () => {
       (family as any).table.createFamily = (
         id: string,
         options_: {},
-        callback: Function
+        callback: Function,
       ) => {
         assert.strictEqual(id, family.id);
         assert.strictEqual(options_, options);
@@ -219,7 +219,7 @@ describe('Bigtable/Family', () => {
       (family as any).table.createFamily = (
         name: string,
         options: {},
-        callback: Function
+        callback: Function,
       ) => {
         assert.deepStrictEqual(options, {});
         callback(); // done()
@@ -539,7 +539,7 @@ describe('Bigtable/Family', () => {
       assert.strictEqual(err.code, 404);
       assert.strictEqual(
         err.message,
-        'Column family not found: ' + FAMILY_NAME + '.'
+        'Column family not found: ' + FAMILY_NAME + '.',
       );
     });
   });

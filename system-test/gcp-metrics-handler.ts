@@ -26,7 +26,7 @@ import {
 import {Bigtable} from '../src';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
-import {expectedOtelExportInput} from '../test-common/expected-otel-export-input';
+import {expectedOtelHundredExportInputs} from '../test-common/expected-otel-export-input';
 import {replaceTimestamps} from '../test-common/replace-timestamps';
 
 describe('Bigtable/GCPMetricsHandler', () => {
@@ -37,7 +37,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
       the test as it is sleeping before the GCPMetricsHandler has a chance to
       export the data.
        */
-      const timeout = setTimeout(() => {}, 120000);
+      const timeout = setTimeout(() => {
+        done(new Error('The export never happened'));
+      }, 120000);
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
@@ -45,7 +47,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       */
       let exported = false;
       function getTestResultCallback(
-        resultCallback: (result: ExportResult) => void
+        resultCallback: (result: ExportResult) => void,
       ) {
         return (result: ExportResult) => {
           exported = true;
@@ -64,7 +66,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       class MockExporter extends CloudMonitoringExporter {
         export(
           metrics: ResourceMetrics,
-          resultCallback: (result: ExportResult) => void
+          resultCallback: (result: ExportResult) => void,
         ): void {
           const testResultCallback = getTestResultCallback(resultCallback);
           if (!exported) {
@@ -85,12 +87,15 @@ describe('Bigtable/GCPMetricsHandler', () => {
           }
         });
       });
+      // projectToInstruments argument is set to {} because we want a fresh
+      // instrument stack each time this test is run.
+      GCPMetricsHandler.instrumentsForProject = {};
       const handler = new GCPMetricsHandler(new MockExporter({projectId}));
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
-          projectId
-        )
+          projectId,
+        ),
       );
       for (const request of transformedRequestsHandled) {
         if (request.attemptLatency) {
@@ -99,7 +104,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
           handler.onOperationComplete(request as OnOperationCompleteData);
         }
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
   it('Should export a value to two GCPMetricsHandlers', done => {
     // This test ensures that when we create two GCPMetricsHandlers much like
@@ -112,7 +119,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
       the test as it is sleeping before the GCPMetricsHandler has a chance to
       export the data.
        */
-      const timeout = setTimeout(() => {}, 120000);
+      const timeout = setTimeout(() => {
+        done(new Error('The export never happened'));
+      }, 120000);
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
@@ -120,7 +129,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       */
       let exportedCount = 0;
       function getTestResultCallback(
-        resultCallback: (result: ExportResult) => void
+        resultCallback: (result: ExportResult) => void,
       ) {
         return (result: ExportResult) => {
           exportedCount++;
@@ -131,7 +140,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
             done(result);
             done(error);
           }
-          if (exportedCount === 2) {
+          if (exportedCount === 1) {
             // We are expecting two calls to an exporter. One for each
             // metrics handler.
             clearTimeout(timeout);
@@ -145,47 +154,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
       class MockExporter extends CloudMonitoringExporter {
         export(
           metrics: ResourceMetrics,
-          resultCallback: (result: ExportResult) => void
+          resultCallback: (result: ExportResult) => void,
         ): void {
-          if (exportedCount < 2) {
-            try {
-              // This code block ensures the metrics are correct. Mainly, the metrics
-              // shouldn't contain two copies of the data. It should only contain
-              // one.
-              //
-              // For this test since we are still writing a time series with
-              // metrics variable we don't want to modify the metrics variable
-              // to have artificial times because then sending the data to the
-              // metric service client will fail. Therefore, we must make a copy
-              // of the metrics and use that.
-              const parsedExportInput: ResourceMetrics = JSON.parse(
-                JSON.stringify(metrics)
-              );
-              replaceTimestamps(
-                parsedExportInput as unknown as typeof expectedOtelExportInput,
-                [123, 789],
-                [456, 789]
-              );
-              assert.deepStrictEqual(
-                parsedExportInput.scopeMetrics[0].metrics.length,
-                expectedOtelExportInput.scopeMetrics[0].metrics.length
-              );
-              for (
-                let index = 0;
-                index < parsedExportInput.scopeMetrics[0].metrics.length;
-                index++
-              ) {
-                // We need to compare pointwise because mocha truncates to an 8192 character limit.
-                assert.deepStrictEqual(
-                  parsedExportInput.scopeMetrics[0].metrics[index],
-                  expectedOtelExportInput.scopeMetrics[0].metrics[index]
-                );
-              }
-            } catch (e) {
-              // The error needs to be caught so it can be reported to the mocha
-              // test runner.
-              done(e);
-            }
+          if (exportedCount < 1) {
             // The code below uses the test callback to ensure the export was successful.
             const testResultCallback = getTestResultCallback(resultCallback);
             super.export(metrics, testResultCallback);
@@ -209,13 +180,16 @@ describe('Bigtable/GCPMetricsHandler', () => {
           }
         });
       });
+      // projectToInstruments argument is set to {} because we want a fresh
+      // instrument stack each time this test is run.
+      GCPMetricsHandler.instrumentsForProject = {};
       const handler = new GCPMetricsHandler(new MockExporter({projectId}));
       const handler2 = new GCPMetricsHandler(new MockExporter({projectId}));
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
-          projectId
-        )
+          projectId,
+        ),
       );
       for (const request of transformedRequestsHandled) {
         if (request.attemptLatency) {
@@ -231,11 +205,13 @@ describe('Bigtable/GCPMetricsHandler', () => {
           handler2.onOperationComplete(request as OnOperationCompleteData);
         }
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
-  it('Should export a value to ten GCPMetricsHandlers', done => {
-    // This test ensures that when we create two GCPMetricsHandlers much like
-    // what we would be doing when calling readRows on two separate tables that
+  it('Should export a value to a hundred GCPMetricsHandlers', done => {
+    // This test ensures that when we create multiple GCPMetricsHandlers much like
+    // what we would be doing when calling readRows on separate tables that
     // the data doesn't store duplicates in the same place and export twice as
     // much data as it should.
     (async () => {
@@ -244,7 +220,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
       the test as it is sleeping before the GCPMetricsHandler has a chance to
       export the data.
        */
-      const timeout = setTimeout(() => {}, 120000);
+      const timeout = setTimeout(() => {
+        done(new Error('The export never happened'));
+      }, 120000);
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
@@ -252,7 +230,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       */
       let exportedCount = 0;
       function getTestResultCallback(
-        resultCallback: (result: ExportResult) => void
+        resultCallback: (result: ExportResult) => void,
       ) {
         return (result: ExportResult) => {
           exportedCount++;
@@ -263,9 +241,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
             done(result);
             done(error);
           }
-          if (exportedCount === 10) {
-            // We are expecting ten calls to an exporter. One for each
-            // metrics handler.
+          if (exportedCount === 1) {
+            // We are expecting one call to an exporter.
             clearTimeout(timeout);
             done();
           }
@@ -277,9 +254,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
       class MockExporter extends CloudMonitoringExporter {
         export(
           metrics: ResourceMetrics,
-          resultCallback: (result: ExportResult) => void
+          resultCallback: (result: ExportResult) => void,
         ): void {
-          if (exportedCount < 10) {
+          if (exportedCount < 1) {
             try {
               // This code block ensures the metrics are correct. Mainly, the metrics
               // shouldn't contain two copies of the data. It should only contain
@@ -291,16 +268,16 @@ describe('Bigtable/GCPMetricsHandler', () => {
               // metric service client will fail. Therefore, we must make a copy
               // of the metrics and use that.
               const parsedExportInput: ResourceMetrics = JSON.parse(
-                JSON.stringify(metrics)
+                JSON.stringify(metrics),
               );
               replaceTimestamps(
-                parsedExportInput as unknown as typeof expectedOtelExportInput,
+                parsedExportInput as unknown as typeof expectedOtelHundredExportInputs,
                 [123, 789],
-                [456, 789]
+                [456, 789],
               );
               assert.deepStrictEqual(
                 parsedExportInput.scopeMetrics[0].metrics.length,
-                expectedOtelExportInput.scopeMetrics[0].metrics.length
+                expectedOtelHundredExportInputs.scopeMetrics[0].metrics.length,
               );
               for (
                 let index = 0;
@@ -310,7 +287,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
                 // We need to compare pointwise because mocha truncates to an 8192 character limit.
                 assert.deepStrictEqual(
                   parsedExportInput.scopeMetrics[0].metrics[index],
-                  expectedOtelExportInput.scopeMetrics[0].metrics[index]
+                  expectedOtelHundredExportInputs.scopeMetrics[0].metrics[
+                    index
+                  ],
                 );
               }
             } catch (e) {
@@ -344,11 +323,14 @@ describe('Bigtable/GCPMetricsHandler', () => {
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
-          projectId
-        )
+          projectId,
+        ),
       );
       const handlers = [];
-      for (let i = 0; i < 10; i++) {
+      // projectToInstruments argument is set to {} because we want a fresh
+      // instrument stack each time this test is run.
+      GCPMetricsHandler.instrumentsForProject = {};
+      for (let i = 0; i < 100; i++) {
         handlers.push(new GCPMetricsHandler(new MockExporter({projectId})));
         for (const request of transformedRequestsHandled) {
           if (request.attemptLatency) {
@@ -358,7 +340,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
           }
         }
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
   it('Should write two duplicate points inserted into the metrics handler', done => {
     (async () => {
@@ -367,7 +351,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
       the test as it is sleeping before the GCPMetricsHandler has a chance to
       export the data.
        */
-      const timeout = setTimeout(() => {}, 120000);
+      const timeout = setTimeout(() => {
+        done(new Error('The export never happened'));
+      }, 120000);
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
@@ -375,7 +361,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       */
       let exported = false;
       function getTestResultCallback(
-        resultCallback: (result: ExportResult) => void
+        resultCallback: (result: ExportResult) => void,
       ) {
         return (result: ExportResult) => {
           exported = true;
@@ -394,7 +380,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       class MockExporter extends CloudMonitoringExporter {
         export(
           metrics: ResourceMetrics,
-          resultCallback: (result: ExportResult) => void
+          resultCallback: (result: ExportResult) => void,
         ): void {
           const testResultCallback = getTestResultCallback(resultCallback);
           if (!exported) {
@@ -415,12 +401,15 @@ describe('Bigtable/GCPMetricsHandler', () => {
           }
         });
       });
+      // projectToInstruments argument is set to {} because we want a fresh
+      // instrument stack each time this test is run.
+      GCPMetricsHandler.instrumentsForProject = {};
       const handler = new GCPMetricsHandler(new MockExporter({projectId}));
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
-          projectId
-        )
+          projectId,
+        ),
       );
       for (let i = 0; i < 2; i++) {
         for (const request of transformedRequestsHandled) {
@@ -431,6 +420,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
           }
         }
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   });
 });

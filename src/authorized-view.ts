@@ -64,16 +64,16 @@ export class AuthorizedView extends TabularApiSurface {
 
   createRules(
     createRulesInfo: CreateRulesInformation,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<CreateRulesResponse>;
   createRules(
     createRulesInfo: CreateRulesInformation,
     options: CallOptions,
-    callback: CreateRulesCallback
+    callback: CreateRulesCallback,
   ): void;
   createRules(
     createRulesInfo: CreateRulesInformation,
-    callback: CreateRulesCallback
+    callback: CreateRulesCallback,
   ): void;
   /**
    * Update a row with rules specifying how the row's contents are to be
@@ -97,14 +97,14 @@ export class AuthorizedView extends TabularApiSurface {
   createRules(
     createRulesInfo: CreateRulesInformation,
     optionsOrCallback?: CallOptions | CreateRulesCallback,
-    cb?: CreateRulesCallback
+    cb?: CreateRulesCallback,
   ): void | Promise<CreateRulesResponse> {
     this.initializeRow(createRulesInfo.rowId);
     RowDataUtils.createRulesUtil(
       createRulesInfo.rules,
       this.generateProperties(createRulesInfo.rowId),
       optionsOrCallback,
-      cb
+      cb,
     );
   }
 
@@ -132,25 +132,25 @@ export class AuthorizedView extends TabularApiSurface {
    */
   filter(
     filterInfo: FilterInformation,
-    config?: FilterConfig
+    config?: FilterConfig,
   ): Promise<FilterResponse>;
   filter(
     filterInfo: FilterInformation,
     config: FilterConfig,
-    callback: FilterCallback
+    callback: FilterCallback,
   ): void;
   filter(filterInfo: FilterInformation, callback: FilterCallback): void;
   filter(
     filterInfo: FilterInformation,
     configOrCallback?: FilterConfig | FilterCallback,
-    cb?: FilterCallback
+    cb?: FilterCallback,
   ): void | Promise<FilterResponse> {
     this.initializeRow(filterInfo.rowId);
     RowDataUtils.filterUtil(
       filterInfo.filter,
       this.generateProperties(filterInfo.rowId),
       configOrCallback,
-      cb
+      cb,
     );
   }
 
@@ -177,36 +177,36 @@ export class AuthorizedView extends TabularApiSurface {
 
   increment(
     columnInfo: IncrementInformation,
-    value?: number
+    value?: number,
   ): Promise<IncrementResponse>;
   increment(
     columnInfo: IncrementInformation,
     value: number,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<IncrementResponse>;
   increment(
     columnInfo: IncrementInformation,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<IncrementResponse>;
   increment(
     columnInfo: IncrementInformation,
     value: number,
     options: CallOptions,
-    callback: IncrementCallback
+    callback: IncrementCallback,
   ): void;
   increment(
     columnInfo: IncrementInformation,
     value: number,
-    callback: IncrementCallback
+    callback: IncrementCallback,
   ): void;
   increment(
     columnInfo: IncrementInformation,
     options: CallOptions,
-    callback: IncrementCallback
+    callback: IncrementCallback,
   ): void;
   increment(
     columnInfo: IncrementInformation,
-    callback: IncrementCallback
+    callback: IncrementCallback,
   ): void;
   /**
    * Increment a specific column within the row. If the column does not
@@ -230,7 +230,7 @@ export class AuthorizedView extends TabularApiSurface {
     columnInfo: IncrementInformation,
     valueOrOptionsOrCallback?: number | CallOptions | IncrementCallback,
     optionsOrCallback?: CallOptions | IncrementCallback,
-    cb?: IncrementCallback
+    cb?: IncrementCallback,
   ): void | Promise<IncrementResponse> {
     this.initializeRow(columnInfo.rowId);
     RowDataUtils.incrementUtils(
@@ -238,7 +238,7 @@ export class AuthorizedView extends TabularApiSurface {
       this.generateProperties(columnInfo.rowId),
       valueOrOptionsOrCallback,
       optionsOrCallback,
-      cb
+      cb,
     );
   }
 

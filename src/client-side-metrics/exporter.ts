@@ -19,10 +19,11 @@ import {
   Histogram,
   ResourceMetrics,
 } from '@opentelemetry/sdk-metrics';
-import {ServiceError} from 'google-gax';
+import {grpc, ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
+import {RetryOptions} from 'google-gax';
 
 export interface ExportResult {
   code: number;
@@ -41,7 +42,7 @@ function isCounterValue(
   dataPoint:
     | DataPoint<number>
     | DataPoint<Histogram>
-    | DataPoint<ExponentialHistogram>
+    | DataPoint<ExponentialHistogram>,
 ): dataPoint is DataPoint<number> {
   return typeof dataPoint.value === 'number';
 }
@@ -50,14 +51,16 @@ function getInterval(
   dataPoint:
     | DataPoint<number>
     | DataPoint<Histogram>
-    | DataPoint<ExponentialHistogram>
+    | DataPoint<ExponentialHistogram>,
 ) {
   return {
     endTime: {
       seconds: dataPoint.endTime[0],
+      nanos: dataPoint.endTime[1],
     },
     startTime: {
       seconds: dataPoint.startTime[0],
+      nanos: dataPoint.startTime[1],
     },
   };
 }
@@ -71,7 +74,7 @@ function getInterval(
  * send to the Google Cloud Monitoring dashboard
  */
 function getDistributionPoints(
-  dataPoint: DataPoint<Histogram> | DataPoint<ExponentialHistogram>
+  dataPoint: DataPoint<Histogram> | DataPoint<ExponentialHistogram>,
 ) {
   const value = dataPoint.value;
   return [
@@ -125,7 +128,7 @@ function getResource(
   dataPoint:
     | DataPoint<number>
     | DataPoint<Histogram>
-    | DataPoint<ExponentialHistogram>
+    | DataPoint<ExponentialHistogram>,
 ) {
   const resourceLabels = {
     cluster: dataPoint.attributes.cluster,
@@ -153,7 +156,7 @@ function getMetric(
   dataPoint:
     | DataPoint<number>
     | DataPoint<Histogram>
-    | DataPoint<ExponentialHistogram>
+    | DataPoint<ExponentialHistogram>,
 ) {
   const streaming = dataPoint.attributes.streaming;
   const app_profile = dataPoint.attributes.app_profile;
@@ -168,7 +171,7 @@ function getMetric(
       },
       status ? {status} : null,
       streaming ? {streaming} : null,
-      app_profile ? {app_profile} : null
+      app_profile ? {app_profile} : null,
     ),
   };
 }
@@ -298,13 +301,38 @@ export class CloudMonitoringExporter extends MetricExporter {
 
   export(
     metrics: ResourceMetrics,
-    resultCallback: (result: ExportResult) => void
+    resultCallback: (result: ExportResult) => void,
   ): void {
     (async () => {
       try {
         const request = metricsToRequest(metrics);
+        // In order to manage the "One or more points were written more
+        // frequently than the maximum sampling period configured for the
+        // metric." error we should have the metric service client retry a few
+        // times to ensure the metrics do get written.
+        //
+        // We use all the usual retry codes plus INVALID_ARGUMENT (code 3)
+        // because INVALID ARGUMENT (code 3) corresponds to the maximum
+        // sampling error.
+        const retry = new RetryOptions(
+          [
+            grpc.status.INVALID_ARGUMENT,
+            grpc.status.DEADLINE_EXCEEDED,
+            grpc.status.RESOURCE_EXHAUSTED,
+            grpc.status.ABORTED,
+            grpc.status.UNAVAILABLE,
+          ],
+          {
+            initialRetryDelayMillis: 5000,
+            retryDelayMultiplier: 2,
+            maxRetryDelayMillis: 50000,
+          },
+        );
         await this.monitoringClient.createTimeSeries(
-          request as ICreateTimeSeriesRequest
+          request as ICreateTimeSeriesRequest,
+          {
+            retry,
+          },
         );
         // The resultCallback typically accepts a value equal to {code: x}
         // for some value x along with other info. When the code is equal to 0
@@ -316,6 +344,8 @@ export class CloudMonitoringExporter extends MetricExporter {
       } catch (error) {
         resultCallback(error as ServiceError);
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   }
 }

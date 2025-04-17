@@ -16,7 +16,7 @@ async function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
   clusterId = 'YOUR_CLUSTER_ID',
-  backupId = 'YOUR_BACKUP_ID'
+  backupId = 'YOUR_BACKUP_ID',
 ) {
   // [START bigtable_api_get_backup]
   const {Bigtable} = require('@google-cloud/bigtable');
@@ -44,10 +44,10 @@ async function main(
 
     // Time properties have Date helpers to convert to a `PreciseDate`.
     console.log(
-      `The backup will auto-delete at ${metadata.expireDate.toISOString()}`
+      `The backup will auto-delete at ${metadata.expireDate.toISOString()}`,
     );
     console.log(
-      `The backup finished being created at ${metadata.endTime.toISOString()}`
+      `The backup finished being created at ${metadata.endTime.toISOString()}`,
     );
   }
 

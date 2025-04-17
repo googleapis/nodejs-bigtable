@@ -18,7 +18,7 @@ import {MethodName, StreamingState} from './client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 import * as gax from 'google-gax';
 const root = gax.protobuf.loadSync(
-  './protos/google/bigtable/v2/response_params.proto'
+  './protos/google/bigtable/v2/response_params.proto',
 );
 const ResponseParams = root.lookupType('ResponseParams');
 const {hrtime} = require('node:process');
@@ -90,7 +90,7 @@ export class OperationMetricsCollector {
     tabularApiSurface: ITabularApiSurface,
     metricsHandlers: IMetricsHandler[],
     methodName: MethodName,
-    streamingOperation: StreamingState
+    streamingOperation: StreamingState,
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
@@ -120,7 +120,7 @@ export class OperationMetricsCollector {
         method: this.methodName,
         client_uid: this.tabularApiSurface.bigtable.clientUid,
       },
-      appProfileId ? {app_profile: appProfileId} : {}
+      appProfileId ? {app_profile: appProfileId} : {},
     );
   }
 
@@ -276,7 +276,7 @@ export class OperationMetricsCollector {
         Array.from(metadata.internalRepr.entries(), ([key, value]) => [
           key,
           value.toString(),
-        ])
+        ]),
       );
       const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
       const SERVER_TIMING_KEY = 'server-timing';
@@ -337,11 +337,11 @@ export class OperationMetricsCollector {
     if (!this.zone || !this.cluster) {
       const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
       const mappedValue = status.metadata.internalRepr.get(
-        INSTANCE_INFORMATION_KEY
+        INSTANCE_INFORMATION_KEY,
       ) as Buffer[];
       const decodedValue = ResponseParams.decode(
         mappedValue[0],
-        mappedValue[0].length
+        mappedValue[0].length,
       );
       if (
         decodedValue &&

@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 'use strict';
 
-function main(displayName, createTime, satisfiesPzs) {
+function main(displayName, state, createTime, satisfiesPzs, satisfiesPzi) {
   // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateInstance_async]
   /**
    * This snippet has been automatically generated and should be regarded as a code template only.
@@ -40,8 +40,7 @@ function main(displayName, createTime, satisfiesPzs) {
    */
   // const displayName = 'abc123'
   /**
-   *  (`OutputOnly`)
-   *  The current state of the instance.
+   *  Output only. The current state of the instance.
    */
   // const state = {}
   /**
@@ -62,15 +61,19 @@ function main(displayName, createTime, satisfiesPzs) {
    */
   // const labels = [1,2,3,4]
   /**
-   *  Output only. A server-assigned timestamp representing when this Instance
-   *  was created. For instances created before this field was added (August
-   *  2021), this value is `seconds: 0, nanos: 1`.
+   *  Output only. A commit timestamp representing when this Instance was
+   *  created. For instances created before this field was added (August 2021),
+   *  this value is `seconds: 0, nanos: 1`.
    */
   // const createTime = {}
   /**
    *  Output only. Reserved for future use.
    */
   // const satisfiesPzs = true
+  /**
+   *  Output only. Reserved for future use.
+   */
+  // const satisfiesPzi = true
 
   // Imports the Admin library
   const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
@@ -82,8 +85,10 @@ function main(displayName, createTime, satisfiesPzs) {
     // Construct request
     const request = {
       displayName,
+      state,
       createTime,
       satisfiesPzs,
+      satisfiesPzi,
     };
 
     // Run request

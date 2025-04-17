@@ -28,11 +28,11 @@ import {Bigtable, AbortableDuplex} from '../src';
 
 const protosJson = path.resolve(__dirname, '../protos/protos.json');
 const root = protobuf.Root.fromJSON(
-  JSON.parse(fs.readFileSync(protosJson).toString())
+  JSON.parse(fs.readFileSync(protosJson).toString()),
 );
 const ReadRowsResponse = root.lookupType('google.bigtable.v2.ReadRowsResponse');
 const CellChunk = root.lookupType(
-  'google.bigtable.v2.ReadRowsResponse.CellChunk'
+  'google.bigtable.v2.ReadRowsResponse.CellChunk',
 );
 describe('Read Row Acceptance tests', () => {
   testcases.forEach(test => {
@@ -79,7 +79,7 @@ describe('Read Row Acceptance tests', () => {
           test.chunks_base64
             .map(chunk => {
               const cellChunk = CellChunk.decode(
-                Buffer.from(chunk as string, 'base64')
+                Buffer.from(chunk as string, 'base64'),
               ); //.decode64(chunk);
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               let readRowsResponse: any = {chunks: [cellChunk]};

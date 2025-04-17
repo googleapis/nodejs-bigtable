@@ -71,7 +71,7 @@ function main(instanceId = 'YOUR_INSTANCE_ID', tableId = 'YOUR_TABLE_ID') {
     await table.insert(rowsToInsert);
 
     console.log(
-      `Successfully wrote 2 rows: ${rowsToInsert[0].key} and ${rowsToInsert[1].key}`
+      `Successfully wrote 2 rows: ${rowsToInsert[0].key} and ${rowsToInsert[1].key}`,
     );
   }
 
