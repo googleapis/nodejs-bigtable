@@ -111,7 +111,7 @@ describe('Bigtable/MetricsCollector', () => {
             MethodName.READ_ROWS,
             StreamingState.STREAMING,
           );
-          OperationMetricsCollector.metricsHandlers = [
+          FakeOperationsMetricsCollector.metricsHandlers = [
             testHandler as unknown as GCPMetricsHandler,
           ];
           // In this method we simulate a series of events that might happen
