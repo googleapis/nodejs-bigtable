@@ -390,9 +390,11 @@ export const expectedOtelExportConvertedValue = {
           interval: {
             endTime: {
               seconds: 456,
+              nanos: 789,
             },
             startTime: {
               seconds: 123,
+              nanos: 789,
             },
           },
           value: {
