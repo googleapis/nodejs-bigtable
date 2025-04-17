@@ -37,8 +37,8 @@ export const expectedOtelExportConvertedValue = {
         labels: {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
-          status: '0',
           client_name: 'nodejs-bigtable',
+          status: '0',
           streaming: 'true',
         },
       },
@@ -135,8 +135,8 @@ export const expectedOtelExportConvertedValue = {
         labels: {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
-          status: '4',
           client_name: 'nodejs-bigtable',
+          status: '4',
           streaming: 'true',
         },
       },
@@ -233,8 +233,8 @@ export const expectedOtelExportConvertedValue = {
         labels: {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
-          status: '0',
           client_name: 'nodejs-bigtable',
+          status: '0',
           streaming: 'true',
         },
       },
@@ -331,7 +331,45 @@ export const expectedOtelExportConvertedValue = {
         labels: {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
+          client_name: 'nodejs-bigtable',
           status: '0',
+        },
+      },
+      resource: {
+        type: 'bigtable_client_raw',
+        labels: {
+          cluster: 'fake-cluster3',
+          instance: 'fakeInstanceId',
+          project_id: 'my-project',
+          table: 'fakeTableId',
+          zone: 'us-west1-c',
+        },
+      },
+      valueType: 'INT64',
+      points: [
+        {
+          interval: {
+            endTime: {
+              seconds: 456,
+              nanos: 789,
+            },
+            startTime: {
+              seconds: 123,
+              nanos: 789,
+            },
+          },
+          value: {
+            int64Value: 1,
+          },
+        },
+      ],
+    },
+    {
+      metric: {
+        type: 'bigtable.googleapis.com/internal/client/retry_count',
+        labels: {
+          method: 'Bigtable.ReadRows',
+          client_uid: 'fake-uuid',
           client_name: 'nodejs-bigtable',
         },
       },
@@ -466,8 +504,8 @@ export const expectedOtelExportConvertedValue = {
         labels: {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
-          status: '0',
           client_name: 'nodejs-bigtable',
+          status: '0',
         },
       },
       resource: {
@@ -563,8 +601,8 @@ export const expectedOtelExportConvertedValue = {
         labels: {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
-          status: '4',
           client_name: 'nodejs-bigtable',
+          status: '4',
           streaming: 'true',
         },
       },
@@ -661,8 +699,8 @@ export const expectedOtelExportConvertedValue = {
         labels: {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
-          status: '0',
           client_name: 'nodejs-bigtable',
+          status: '0',
           streaming: 'true',
         },
       },
@@ -759,8 +797,8 @@ export const expectedOtelExportConvertedValue = {
         labels: {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
-          status: '4',
           client_name: 'nodejs-bigtable',
+          status: '4',
         },
       },
       resource: {
@@ -798,8 +836,8 @@ export const expectedOtelExportConvertedValue = {
         labels: {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
-          status: '0',
           client_name: 'nodejs-bigtable',
+          status: '0',
         },
       },
       resource: {
