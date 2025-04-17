@@ -193,7 +193,9 @@ describe('Bigtable/ClientSideMetrics', () => {
           done(new Error('An error occurred while running the script'));
           done(e);
         }
-      })();
+      })().catch(err => {
+        throw err;
+      });
     });
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call with a second project', done => {
       (async () => {
@@ -216,7 +218,9 @@ describe('Bigtable/ClientSideMetrics', () => {
           done(new Error('An error occurred while running the script'));
           done(e);
         }
-      })();
+      })().catch(err => {
+        throw err;
+      });
     });
   });
   describe('Bigtable/ClientSideMetricsToGCMTimeout', () => {
@@ -308,7 +312,9 @@ describe('Bigtable/ClientSideMetrics', () => {
           done(new Error('An error occurred while running the script'));
           done(e);
         }
-      })();
+      })().catch(err => {
+        throw err;
+      });
     });
   });
   describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
@@ -450,7 +456,9 @@ describe('Bigtable/ClientSideMetrics', () => {
         await table.getRows();
         const table2 = instance.table(tableId2);
         await table2.getRows();
-      })();
+      })().catch(err => {
+        throw err;
+      });
     });
     it('should pass the projectId to the metrics handler properly', done => {
       bigtable = new Bigtable({projectId: SECOND_PROJECT_ID});
@@ -466,7 +474,9 @@ describe('Bigtable/ClientSideMetrics', () => {
         } catch (e) {
           done(e);
         }
-      })();
+      })().catch(err => {
+        throw err;
+      });
     });
   });
 });
