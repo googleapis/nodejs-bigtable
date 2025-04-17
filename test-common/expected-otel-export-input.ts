@@ -1404,9 +1404,9 @@ export const expectedOtelHundredExportInputs = {
             {
               attributes: {
                 streaming: 'true',
+                status: '0',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '0',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -1416,9 +1416,9 @@ export const expectedOtelHundredExportInputs = {
               startTime: [123, 789],
               endTime: [456, 789],
               value: {
-                min: 6000,
-                max: 6000,
-                sum: 600000,
+                min: 10000,
+                max: 10000,
+                sum: 1000000,
                 buckets: {
                   boundaries: [
                     0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65,
@@ -1472,9 +1472,9 @@ export const expectedOtelHundredExportInputs = {
               startTime: [123, 789],
               endTime: [456, 789],
               value: {
-                min: 2000,
-                max: 2000,
-                sum: 200000,
+                min: 4000,
+                max: 4000,
+                sum: 400000,
                 buckets: {
                   boundaries: [
                     0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65,
@@ -1484,7 +1484,7 @@ export const expectedOtelHundredExportInputs = {
                   ],
                   counts: [
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0,
                   ],
                 },
@@ -1506,9 +1506,9 @@ export const expectedOtelHundredExportInputs = {
               startTime: [123, 789],
               endTime: [456, 789],
               value: {
-                min: 1000,
-                max: 1000,
-                sum: 100000,
+                min: 3000,
+                max: 3000,
+                sum: 300000,
                 buckets: {
                   boundaries: [
                     0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65,
@@ -1518,7 +1518,7 @@ export const expectedOtelHundredExportInputs = {
                   ],
                   counts: [
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0,
                   ],
                 },
@@ -1542,9 +1542,23 @@ export const expectedOtelHundredExportInputs = {
           dataPoints: [
             {
               attributes: {
+                status: '0',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '0',
+                client_name: 'nodejs-bigtable',
+                instanceId: 'fakeInstanceId',
+                table: 'fakeTableId',
+                cluster: 'fake-cluster3',
+                zone: 'us-west1-c',
+              },
+              startTime: [123, 789],
+              endTime: [456, 789],
+              value: 100,
+            },
+            {
+              attributes: {
+                method: 'Bigtable.ReadRows',
+                client_uid: 'fake-uuid',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -1557,6 +1571,60 @@ export const expectedOtelHundredExportInputs = {
             },
           ],
           isMonotonic: true,
+        },
+        {
+          descriptor: {
+            name: 'bigtable.googleapis.com/internal/client/application_latencies',
+            type: 'HISTOGRAM',
+            description:
+              'The time from when the client receives the response to a request until the application reads the response. This metric is most relevant for ReadRows requests. The start and stop times for this metric depend on the way that you send the read request; see Application blocking latencies timer examples for details.',
+            unit: 'ms',
+            valueType: 1,
+            advice: {
+              explicitBucketBoundaries: [
+                0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65, 80,
+                100, 130, 160, 200, 250, 300, 400, 500, 650, 800, 1000, 2000,
+                5000, 10000, 20000, 50000, 100000, 200000, 400000, 800000,
+                1600000, 3200000,
+              ],
+            },
+          },
+          aggregationTemporality: 1,
+          dataPointType: 0,
+          dataPoints: [
+            {
+              attributes: {
+                method: 'Bigtable.ReadRows',
+                client_uid: 'fake-uuid',
+                client_name: 'nodejs-bigtable',
+                instanceId: 'fakeInstanceId',
+                table: 'fakeTableId',
+                cluster: 'fake-cluster3',
+                zone: 'us-west1-c',
+              },
+              startTime: [123, 789],
+              endTime: [456, 789],
+              value: {
+                min: 1000,
+                max: 1000,
+                sum: 200000,
+                buckets: {
+                  boundaries: [
+                    0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65,
+                    80, 100, 130, 160, 200, 250, 300, 400, 500, 650, 800, 1000,
+                    2000, 5000, 10000, 20000, 50000, 100000, 200000, 400000,
+                    800000, 1600000, 3200000,
+                  ],
+                  counts: [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0,
+                  ],
+                },
+                count: 200,
+              },
+            },
+          ],
         },
         {
           descriptor: {
@@ -1580,9 +1648,9 @@ export const expectedOtelHundredExportInputs = {
           dataPoints: [
             {
               attributes: {
+                status: '0',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '0',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
