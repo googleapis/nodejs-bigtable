@@ -224,7 +224,7 @@ describe('Bigtable/Table', () => {
         TABLE.maxRetries = test.max_retries;
         TABLE.createReadStream(test.createReadStream_options)
           .on('data', (row: Row) =>
-            rowKeysRead[rowKeysRead.length - 1].push(row.id)
+            rowKeysRead[rowKeysRead.length - 1].push(row.id),
           )
           .on('end', () => (endCalled = true))
           .on('error', (err: ServiceError) => (error = err as ServiceError));

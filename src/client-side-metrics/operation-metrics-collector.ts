@@ -89,7 +89,7 @@ function withMetricsDebug<T>(fn: () => T): T | undefined {
 // Checks that the state transition is valid and if not it throws a warning.
 function checkState<T>(
   currentState: MetricsCollectorState,
-  allowedStates: MetricsCollectorState[]
+  allowedStates: MetricsCollectorState[],
 ): T | undefined {
   if (allowedStates.includes(currentState)) {
     return;
@@ -170,7 +170,7 @@ export class OperationMetricsCollector {
         'metadata',
         (metadata: {internalRepr: Map<string, string[]>; options: {}}) => {
           this.onMetadataReceived(metadata);
-        }
+        },
       )
       .on(
         'status',
@@ -178,7 +178,7 @@ export class OperationMetricsCollector {
           metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
         }) => {
           this.onStatusMetadataReceived(status);
-        }
+        },
       );
   }
 
@@ -212,7 +212,7 @@ export class OperationMetricsCollector {
       const endTime = hrtime.bigint();
       if (projectId && this.attemptStartTime) {
         const totalTime = Number(
-          (endTime - this.attemptStartTime) / BigInt(1000000)
+          (endTime - this.attemptStartTime) / BigInt(1000000),
         );
         OperationMetricsCollector.metricsHandlers.forEach(metricsHandler => {
           if (metricsHandler.onAttemptComplete) {
@@ -265,11 +265,11 @@ export class OperationMetricsCollector {
         const endTime = hrtime.bigint();
         if (projectId && this.operationStartTime) {
           this.firstResponseLatency = Number(
-            (endTime - this.operationStartTime) / BigInt(1000000)
+            (endTime - this.operationStartTime) / BigInt(1000000),
           );
         } else {
           throw new Error(
-            'ProjectId and operationStartTime should always be provided'
+            'ProjectId and operationStartTime should always be provided',
           );
         }
       }
@@ -292,7 +292,7 @@ export class OperationMetricsCollector {
       const endTime = hrtime.bigint();
       if (projectId && this.operationStartTime) {
         const totalTime = Number(
-          (endTime - this.operationStartTime) / BigInt(1000000)
+          (endTime - this.operationStartTime) / BigInt(1000000),
         );
         {
           OperationMetricsCollector.metricsHandlers.forEach(metricsHandler => {
@@ -312,7 +312,7 @@ export class OperationMetricsCollector {
         }
       } else {
         console.warn(
-          'projectId and operation start time should always be available here'
+          'projectId and operation start time should always be available here',
         );
       }
     });
@@ -332,7 +332,7 @@ export class OperationMetricsCollector {
         Array.from(metadata.internalRepr.entries(), ([key, value]) => [
           key,
           value.toString(),
-        ])
+        ]),
       );
       const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
       const SERVER_TIMING_KEY = 'server-timing';
@@ -362,12 +362,12 @@ export class OperationMetricsCollector {
       if (!this.zone || !this.cluster) {
         const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
         const mappedValue = status.metadata.internalRepr.get(
-          INSTANCE_INFORMATION_KEY
+          INSTANCE_INFORMATION_KEY,
         ) as Buffer[];
         if (mappedValue && mappedValue[0] && ResponseParams) {
           const decodedValue = ResponseParams.decode(
             mappedValue[0],
-            mappedValue[0].length
+            mappedValue[0].length,
           );
           if (
             decodedValue &&

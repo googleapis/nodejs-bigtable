@@ -68,7 +68,7 @@ describe('Bigtable/MetricsCollector', () => {
   };
   const FakeOperationsMetricsCollector = proxyquire(
     '../../src/client-side-metrics/operation-metrics-collector.js',
-    stubs
+    stubs,
   ).OperationMetricsCollector;
 
   const logger = {value: ''};

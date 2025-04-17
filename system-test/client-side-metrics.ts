@@ -31,7 +31,7 @@ const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
 function getFakeBigtable(
   projectId: string,
-  metricsHandlerClass: typeof GCPMetricsHandler | typeof TestMetricsHandler
+  metricsHandlerClass: typeof GCPMetricsHandler | typeof TestMetricsHandler,
 ) {
   /*
   Below we mock out the table so that it sends the metrics to a test exporter
@@ -43,7 +43,7 @@ function getFakeBigtable(
     '../src/client-side-metrics/operation-metrics-collector',
     {
       './gcp-metrics-handler': {GCPMetricsHandler: metricsHandlerClass},
-    }
+    },
   ).OperationMetricsCollector;
   const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
     './client-side-metrics/operation-metrics-collector': {
@@ -118,8 +118,8 @@ describe('Bigtable/ClientSideMetrics', () => {
         if (!exported) {
           done(
             new Error(
-              'The exporters have not completed yet and the timeout is over'
-            )
+              'The exporters have not completed yet and the timeout is over',
+            ),
           );
         }
       }, 120000);
@@ -127,7 +127,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       class TestExporter extends CloudMonitoringExporter {
         export(
           metrics: ResourceMetrics,
-          resultCallback: (result: ExportResult) => void
+          resultCallback: (result: ExportResult) => void,
         ): void {
           try {
             super.export(metrics, (result: ExportResult) => {
@@ -227,7 +227,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       class TestExporter extends CloudMonitoringExporter {
         export(
           metrics: ResourceMetrics,
-          resultCallback: (result: ExportResult) => void
+          resultCallback: (result: ExportResult) => void,
         ): void {
           try {
             super.export(metrics, (result: ExportResult) => {

@@ -343,7 +343,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       ? new OperationMetricsCollector(
           this,
           MethodName.READ_ROWS,
-          StreamingState.STREAMING
+          StreamingState.STREAMING,
         )
       : null;
     metricsCollector?.onOperationStart();
@@ -536,7 +536,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             userStream.end();
             metricsCollector?.onOperationComplete(
               this.bigtable.projectId,
-              error.code
+              error.code,
             );
             return;
           }
@@ -557,7 +557,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             );
             metricsCollector?.onAttemptComplete(
               this.bigtable.projectId,
-              error.code
+              error.code,
             );
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
@@ -575,7 +575,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             }
             metricsCollector?.onOperationComplete(
               this.bigtable.projectId,
-              error.code
+              error.code,
             );
             userStream.emit('error', error);
           }
@@ -590,7 +590,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           activeRequestStream = null;
           metricsCollector?.onOperationComplete(
             this.bigtable.projectId,
-            grpc.status.OK
+            grpc.status.OK,
           );
         });
       rowStreamPipe(rowStream, userStream);

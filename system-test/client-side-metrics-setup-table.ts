@@ -17,7 +17,7 @@ export async function setupBigtable(
   bigtable: Bigtable,
   columnFamilyId: string,
   instanceId: string,
-  tableIds: string[]
+  tableIds: string[],
 ) {
   const instance = bigtable.instance(instanceId);
   const [instanceInfo] = await instance.exists();
