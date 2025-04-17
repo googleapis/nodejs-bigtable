@@ -157,7 +157,7 @@ export class OperationMetricsCollector {
       const endTime = hrtime.bigint();
       if (projectId && this.attemptStartTime) {
         const totalMilliseconds = Number(
-          (endTime - this.attemptStartTime) / BigInt(1000000)
+          (endTime - this.attemptStartTime) / BigInt(1000000),
         );
         this.metricsHandlers.forEach(metricsHandler => {
           if (metricsHandler.onAttemptComplete) {
@@ -215,7 +215,7 @@ export class OperationMetricsCollector {
         if (projectId && this.operationStartTime) {
           // first response latency is measured in total milliseconds.
           this.firstResponseLatency = Number(
-            (endTime - this.operationStartTime) / BigInt(1000000)
+            (endTime - this.operationStartTime) / BigInt(1000000),
           );
         }
       }
@@ -237,7 +237,7 @@ export class OperationMetricsCollector {
       const endTime = hrtime.bigint();
       if (projectId && this.operationStartTime) {
         const totalMilliseconds = Number(
-          (endTime - this.operationStartTime) / BigInt(1000000)
+          (endTime - this.operationStartTime) / BigInt(1000000),
         );
         {
           this.metricsHandlers.forEach(metricsHandler => {
@@ -317,7 +317,7 @@ export class OperationMetricsCollector {
       if (this.lastRowReceivedTime) {
         // application latency is measured in total milliseconds.
         const applicationLatency = Number(
-          (currentTime - this.lastRowReceivedTime) / BigInt(1000000)
+          (currentTime - this.lastRowReceivedTime) / BigInt(1000000),
         );
         this.applicationLatencies.push(applicationLatency);
       }
