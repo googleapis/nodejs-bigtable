@@ -19,21 +19,17 @@ import * as gax from 'google-gax';
 import {GCPMetricsHandler} from './gcp-metrics-handler';
 import {CloudMonitoringExporter} from './exporter';
 import {AbortableDuplex} from '../index';
+import * as path from 'path';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
 const METRICS_DEBUG = process.env.METRICS_DEBUG;
 
-/*
- * The samples tests are failing with the
- * error UnhandledPromiseRejectionWarning: Error: ENOENT: no such file or
- * directory, open 'protos/google/bigtable/v2/response_params.proto'. Since
- * these tests don't use this module we can suppress the error for now to
- * unblock the CI pipeline.
- */
-const root = gax.protobuf.loadSync(
-  './protos/google/bigtable/v2/response_params.proto',
+const protoPath = path.join(
+  __dirname,
+  '../../protos/google/bigtable/v2/response_params.proto',
 );
+const root = gax.protobuf.loadSync(protoPath);
 const ResponseParams = root.lookupType('ResponseParams');
 const {hrtime} = require('node:process');
 
