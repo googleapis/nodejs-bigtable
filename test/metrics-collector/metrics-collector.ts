@@ -16,7 +16,6 @@ import {describe} from 'mocha';
 import * as assert from 'assert';
 import * as fs from 'fs';
 import {TestMetricsHandler} from '../../test-common/test-metrics-handler';
-import {OperationMetricsCollector} from '../../src/client-side-metrics/operation-metrics-collector';
 import {
   MethodName,
   StreamingState,
