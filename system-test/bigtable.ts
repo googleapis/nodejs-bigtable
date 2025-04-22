@@ -69,20 +69,20 @@ describe('Bigtable', () => {
         const oneHourAgo = new Date(Date.now() - 3600000);
         return !timeCreated || timeCreated <= oneHourAgo;
       });
-    const q = [];
     // need to delete backups first due to instance deletion precondition
-    await Promise.all(testInstances.map(instance => reapBackups(instance)));
-    await Promise.all(
-      testInstances.map(instance => {
-        q.push(async () => {
-          try {
-            await instance.delete();
-          } catch (e) {
-            console.log(`Error deleting instance: ${instance.id}`);
-          }
-        });
-      }),
+    const deleteBackupPromises = testInstances.map(instance =>
+      reapBackups(instance),
     );
+    for (const backupPromise of deleteBackupPromises) {
+      await backupPromise;
+    }
+    for (const instance of testInstances) {
+      try {
+        await instance.delete();
+      } catch (e) {
+        console.log(`Error deleting instance: ${instance.id}`);
+      }
+    }
   }
 
   before(async () => {
