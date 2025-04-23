@@ -6885,6 +6885,9 @@ export namespace google {
 
                     /** LogicalView etag */
                     etag?: (string|null);
+
+                    /** LogicalView deletionProtection */
+                    deletionProtection?: (boolean|null);
                 }
 
                 /** Represents a LogicalView. */
@@ -6904,6 +6907,9 @@ export namespace google {
 
                     /** LogicalView etag. */
                     public etag: string;
+
+                    /** LogicalView deletionProtection. */
+                    public deletionProtection: boolean;
 
                     /**
                      * Creates a new LogicalView instance using the specified properties.

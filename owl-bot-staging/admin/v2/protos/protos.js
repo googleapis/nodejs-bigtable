@@ -15998,6 +15998,7 @@
                          * @property {string|null} [name] LogicalView name
                          * @property {string|null} [query] LogicalView query
                          * @property {string|null} [etag] LogicalView etag
+                         * @property {boolean|null} [deletionProtection] LogicalView deletionProtection
                          */
     
                         /**
@@ -16040,6 +16041,14 @@
                         LogicalView.prototype.etag = "";
     
                         /**
+                         * LogicalView deletionProtection.
+                         * @member {boolean} deletionProtection
+                         * @memberof google.bigtable.admin.v2.LogicalView
+                         * @instance
+                         */
+                        LogicalView.prototype.deletionProtection = false;
+    
+                        /**
                          * Creates a new LogicalView instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.admin.v2.LogicalView
@@ -16069,6 +16078,8 @@
                                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.query);
                             if (message.etag != null && Object.hasOwnProperty.call(message, "etag"))
                                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.etag);
+                            if (message.deletionProtection != null && Object.hasOwnProperty.call(message, "deletionProtection"))
+                                writer.uint32(/* id 6, wireType 0 =*/48).bool(message.deletionProtection);
                             return writer;
                         };
     
@@ -16115,6 +16126,10 @@
                                         message.etag = reader.string();
                                         break;
                                     }
+                                case 6: {
+                                        message.deletionProtection = reader.bool();
+                                        break;
+                                    }
                                 default:
                                     reader.skipType(tag & 7);
                                     break;
@@ -16159,6 +16174,9 @@
                             if (message.etag != null && message.hasOwnProperty("etag"))
                                 if (!$util.isString(message.etag))
                                     return "etag: string expected";
+                            if (message.deletionProtection != null && message.hasOwnProperty("deletionProtection"))
+                                if (typeof message.deletionProtection !== "boolean")
+                                    return "deletionProtection: boolean expected";
                             return null;
                         };
     
@@ -16180,6 +16198,8 @@
                                 message.query = String(object.query);
                             if (object.etag != null)
                                 message.etag = String(object.etag);
+                            if (object.deletionProtection != null)
+                                message.deletionProtection = Boolean(object.deletionProtection);
                             return message;
                         };
     
@@ -16200,6 +16220,7 @@
                                 object.name = "";
                                 object.query = "";
                                 object.etag = "";
+                                object.deletionProtection = false;
                             }
                             if (message.name != null && message.hasOwnProperty("name"))
                                 object.name = message.name;
@@ -16207,6 +16228,8 @@
                                 object.query = message.query;
                             if (message.etag != null && message.hasOwnProperty("etag"))
                                 object.etag = message.etag;
+                            if (message.deletionProtection != null && message.hasOwnProperty("deletionProtection"))
+                                object.deletionProtection = message.deletionProtection;
                             return object;
                         };
     
