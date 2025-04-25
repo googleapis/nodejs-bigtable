@@ -5320,6 +5320,12 @@ export namespace google {
                     /** Instance satisfiesPzi. */
                     public satisfiesPzi?: (boolean|null);
 
+                    /** Instance _satisfiesPzs. */
+                    public _satisfiesPzs?: "satisfiesPzs";
+
+                    /** Instance _satisfiesPzi. */
+                    public _satisfiesPzi?: "satisfiesPzi";
+
                     /**
                      * Creates a new Instance instance using the specified properties.
                      * @param [properties] Properties to set
@@ -6652,6 +6658,9 @@ export namespace google {
 
                         /** DataBoostIsolationReadOnly computeBillingOwner. */
                         public computeBillingOwner?: (google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner|keyof typeof google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner|null);
+
+                        /** DataBoostIsolationReadOnly _computeBillingOwner. */
+                        public _computeBillingOwner?: "computeBillingOwner";
 
                         /**
                          * Creates a new DataBoostIsolationReadOnly instance using the specified properties.
@@ -8334,7 +8343,7 @@ export namespace google {
                     interface ISplit {
 
                         /** Split key */
-                        key?: (Uint8Array|string|null);
+                        key?: (Uint8Array|Buffer|string|null);
                     }
 
                     /** Represents a Split. */
@@ -8347,7 +8356,7 @@ export namespace google {
                         constructor(properties?: google.bigtable.admin.v2.CreateTableRequest.ISplit);
 
                         /** Split key. */
-                        public key: (Uint8Array|string);
+                        public key: (Uint8Array|Buffer|string);
 
                         /**
                          * Creates a new Split instance using the specified properties.
@@ -8544,7 +8553,7 @@ export namespace google {
                     name?: (string|null);
 
                     /** DropRowRangeRequest rowKeyPrefix */
-                    rowKeyPrefix?: (Uint8Array|string|null);
+                    rowKeyPrefix?: (Uint8Array|Buffer|string|null);
 
                     /** DropRowRangeRequest deleteAllDataFromTable */
                     deleteAllDataFromTable?: (boolean|null);
@@ -8563,7 +8572,7 @@ export namespace google {
                     public name: string;
 
                     /** DropRowRangeRequest rowKeyPrefix. */
-                    public rowKeyPrefix?: (Uint8Array|string|null);
+                    public rowKeyPrefix?: (Uint8Array|Buffer|string|null);
 
                     /** DropRowRangeRequest deleteAllDataFromTable. */
                     public deleteAllDataFromTable?: (boolean|null);
@@ -17028,7 +17037,7 @@ export namespace google {
                             interface IDelimitedBytes {
 
                                 /** DelimitedBytes delimiter */
-                                delimiter?: (Uint8Array|string|null);
+                                delimiter?: (Uint8Array|Buffer|string|null);
                             }
 
                             /** Represents a DelimitedBytes. */
@@ -17041,7 +17050,7 @@ export namespace google {
                                 constructor(properties?: google.bigtable.admin.v2.Type.Struct.Encoding.IDelimitedBytes);
 
                                 /** DelimitedBytes delimiter. */
-                                public delimiter: (Uint8Array|string);
+                                public delimiter: (Uint8Array|Buffer|string);
 
                                 /**
                                  * Creates a new DelimitedBytes instance using the specified properties.
@@ -23088,7 +23097,7 @@ export namespace google {
             doubleValue?: (number|null);
 
             /** UninterpretedOption stringValue */
-            stringValue?: (Uint8Array|string|null);
+            stringValue?: (Uint8Array|Buffer|string|null);
 
             /** UninterpretedOption aggregateValue */
             aggregateValue?: (string|null);
@@ -23119,7 +23128,7 @@ export namespace google {
             public doubleValue: number;
 
             /** UninterpretedOption stringValue. */
-            public stringValue: (Uint8Array|string);
+            public stringValue: (Uint8Array|Buffer|string);
 
             /** UninterpretedOption aggregateValue. */
             public aggregateValue: string;
@@ -24458,7 +24467,7 @@ export namespace google {
             type_url?: (string|null);
 
             /** Any value */
-            value?: (Uint8Array|string|null);
+            value?: (Uint8Array|Buffer|string|null);
         }
 
         /** Represents an Any. */
@@ -24474,7 +24483,7 @@ export namespace google {
             public type_url: string;
 
             /** Any value. */
-            public value: (Uint8Array|string);
+            public value: (Uint8Array|Buffer|string);
 
             /**
              * Creates a new Any instance using the specified properties.
@@ -25261,7 +25270,7 @@ export namespace google {
                 auditConfigs?: (google.iam.v1.IAuditConfig[]|null);
 
                 /** Policy etag */
-                etag?: (Uint8Array|string|null);
+                etag?: (Uint8Array|Buffer|string|null);
             }
 
             /** Represents a Policy. */
@@ -25283,7 +25292,7 @@ export namespace google {
                 public auditConfigs: google.iam.v1.IAuditConfig[];
 
                 /** Policy etag. */
-                public etag: (Uint8Array|string);
+                public etag: (Uint8Array|Buffer|string);
 
                 /**
                  * Creates a new Policy instance using the specified properties.

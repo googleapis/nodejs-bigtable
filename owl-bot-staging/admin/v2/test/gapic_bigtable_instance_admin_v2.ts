@@ -228,7 +228,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             assert(client.bigtableInstanceAdminStub);
             client.close().then(() => {
                 done();
-            });
+            }).catch(err => {throw err});
         });
 
         it('has close method for the non-initialized client', done => {
@@ -239,7 +239,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
             assert.strictEqual(client.bigtableInstanceAdminStub, undefined);
             client.close().then(() => {
                 done();
-            });
+            }).catch(err => {throw err});
         });
 
         it('has getProjectId method', async () => {
@@ -378,7 +378,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.GetInstanceRequest', ['name']);
             request.name = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.getInstance(request), expectedError);
         });
     });
@@ -486,7 +486,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.ListInstancesRequest', ['parent']);
             request.parent = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.listInstances(request), expectedError);
         });
     });
@@ -594,7 +594,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.Instance', ['name']);
             request.name = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.updateInstance(request), expectedError);
         });
     });
@@ -702,7 +702,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteInstanceRequest', ['name']);
             request.name = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.deleteInstance(request), expectedError);
         });
     });
@@ -810,7 +810,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.GetClusterRequest', ['name']);
             request.name = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.getCluster(request), expectedError);
         });
     });
@@ -918,7 +918,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.ListClustersRequest', ['parent']);
             request.parent = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.listClusters(request), expectedError);
         });
     });
@@ -1026,7 +1026,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteClusterRequest', ['name']);
             request.name = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.deleteCluster(request), expectedError);
         });
     });
@@ -1134,7 +1134,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.CreateAppProfileRequest', ['parent']);
             request.parent = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.createAppProfile(request), expectedError);
         });
     });
@@ -1242,7 +1242,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.GetAppProfileRequest', ['name']);
             request.name = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.getAppProfile(request), expectedError);
         });
     });
@@ -1350,7 +1350,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteAppProfileRequest', ['name']);
             request.name = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.deleteAppProfile(request), expectedError);
         });
     });
@@ -1458,7 +1458,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.iam.v1.GetIamPolicyRequest', ['resource']);
             request.resource = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.getIamPolicy(request), expectedError);
         });
     });
@@ -1566,7 +1566,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.iam.v1.SetIamPolicyRequest', ['resource']);
             request.resource = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.setIamPolicy(request), expectedError);
         });
     });
@@ -1674,7 +1674,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.iam.v1.TestIamPermissionsRequest', ['resource']);
             request.resource = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.testIamPermissions(request), expectedError);
         });
     });
@@ -1782,7 +1782,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.GetLogicalViewRequest', ['name']);
             request.name = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.getLogicalView(request), expectedError);
         });
     });
@@ -1890,7 +1890,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteLogicalViewRequest', ['name']);
             request.name = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.deleteLogicalView(request), expectedError);
         });
     });
@@ -1998,7 +1998,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.GetMaterializedViewRequest', ['name']);
             request.name = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.getMaterializedView(request), expectedError);
         });
     });
@@ -2106,7 +2106,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
               getTypeDefaultValue('.google.bigtable.admin.v2.DeleteMaterializedViewRequest', ['name']);
             request.name = defaultValue1;
             const expectedError = new Error('The client has already been closed.');
-            client.close();
+            client.close().catch(err => {throw err});
             await assert.rejects(client.deleteMaterializedView(request), expectedError);
         });
     });
