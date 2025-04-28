@@ -111,6 +111,8 @@ export class OperationMetricsCollector {
   private serverTime: number | null;
   private connectivityErrorCount: number;
   private streamingOperation: StreamingState;
+  private applicationLatencies: number[];
+  private lastRowReceivedTime: bigint | null;
   static metricsHandlers = [
     new GCPMetricsHandler(new CloudMonitoringExporter()),
   ];
@@ -137,6 +139,8 @@ export class OperationMetricsCollector {
     this.serverTime = null;
     this.connectivityErrorCount = 0;
     this.streamingOperation = streamingOperation;
+    this.lastRowReceivedTime = null;
+    this.applicationLatencies = [];
   }
 
   private getMetricsCollectorData() {
@@ -186,6 +190,7 @@ export class OperationMetricsCollector {
       checkState(this.state, [MetricsCollectorState.OPERATION_NOT_STARTED]);
       this.operationStartTime = hrtime.bigint();
       this.firstResponseLatency = null;
+      this.applicationLatencies = [];
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
     });
@@ -207,13 +212,13 @@ export class OperationMetricsCollector {
       this.attemptCount++;
       const endTime = hrtime.bigint();
       if (projectId && this.attemptStartTime) {
-        const totalTime = Number(
+        const totalMilliseconds = Number(
           (endTime - this.attemptStartTime) / BigInt(1000000),
         );
         OperationMetricsCollector.metricsHandlers.forEach(metricsHandler => {
           if (metricsHandler.onAttemptComplete) {
             metricsHandler.onAttemptComplete({
-              attemptLatency: totalTime,
+              attemptLatency: totalMilliseconds,
               serverLatency: this.serverTime ?? undefined,
               connectivityErrorCount: this.connectivityErrorCount,
               streaming: this.streamingOperation,
@@ -244,6 +249,7 @@ export class OperationMetricsCollector {
       this.serverTime = null;
       this.serverTimeRead = false;
       this.connectivityErrorCount = 0;
+      this.lastRowReceivedTime = null;
     });
   }
 
@@ -287,7 +293,7 @@ export class OperationMetricsCollector {
       this.state = MetricsCollectorState.OPERATION_COMPLETE;
       const endTime = hrtime.bigint();
       if (projectId && this.operationStartTime) {
-        const totalTime = Number(
+        const totalMilliseconds = Number(
           (endTime - this.operationStartTime) / BigInt(1000000),
         );
         {
@@ -299,9 +305,10 @@ export class OperationMetricsCollector {
                 metricsCollectorData: this.getMetricsCollectorData(),
                 client_name: `nodejs-bigtable/${version}`,
                 projectId,
-                operationLatency: totalTime,
+                operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? undefined,
+                applicationLatencies: this.applicationLatencies,
               });
             }
           });
@@ -344,6 +351,38 @@ export class OperationMetricsCollector {
       } else {
         this.connectivityErrorCount = 1;
       }
+    }
+  }
+
+  /**
+   * Called when a row from the Bigtable stream reaches the application user.
+   *
+   * This method is used to calculate the latency experienced by the application
+   * when reading rows from a Bigtable stream. It records the time between the
+   * previous row being received and the current row reaching the user. These
+   * latencies are then collected and reported as `applicationBlockingLatencies`
+   * when the operation completes.
+   */
+  onRowReachesUser() {
+    if (
+      this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
+      this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED ||
+      this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
+    ) {
+      const currentTime = hrtime.bigint();
+      if (this.lastRowReceivedTime) {
+        // application latency is measured in total milliseconds.
+        const applicationLatency = Number(
+          (currentTime - this.lastRowReceivedTime) / BigInt(1000000),
+        );
+        this.applicationLatencies.push(applicationLatency);
+      }
+      this.lastRowReceivedTime = currentTime;
+    } else {
+      console.warn('Invalid state transition attempted');
     }
   }
 

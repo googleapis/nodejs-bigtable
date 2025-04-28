@@ -181,15 +181,16 @@ function getMetric(
 ) {
   const streaming = dataPoint.attributes.streaming;
   const app_profile = dataPoint.attributes.app_profile;
+  const status = dataPoint.attributes.status;
   return {
     type: metricName,
     labels: Object.assign(
       {
         method: dataPoint.attributes.method,
         client_uid: dataPoint.attributes.client_uid,
-        status: dataPoint.attributes.status,
         client_name: dataPoint.attributes.client_name,
       },
+      status ? {status} : null,
       streaming ? {streaming} : null,
       app_profile ? {app_profile} : null,
     ),
