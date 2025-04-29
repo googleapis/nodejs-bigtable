@@ -356,9 +356,11 @@ describe('Bigtable/ClientSideMetrics', () => {
               // them from the comparison after checking they exist.
               assert(secondRequest.operationLatency);
               assert(secondRequest.firstResponseLatency);
+              assert(secondRequest.applicationLatencies);
               assert(secondRequest.metricsCollectorData.client_uid);
               delete secondRequest.operationLatency;
               delete secondRequest.firstResponseLatency;
+              delete secondRequest.applicationLatencies;
               delete secondRequest.metricsCollectorData.client_uid;
               delete secondRequest.metricsCollectorData.appProfileId;
               assert.deepStrictEqual(secondRequest, {
@@ -404,9 +406,11 @@ describe('Bigtable/ClientSideMetrics', () => {
               // them from the comparison after checking they exist.
               assert(fourthRequest.operationLatency);
               assert(fourthRequest.firstResponseLatency);
+              assert(fourthRequest.applicationLatencies);
               assert(fourthRequest.metricsCollectorData.client_uid);
               delete fourthRequest.operationLatency;
               delete fourthRequest.firstResponseLatency;
+              delete fourthRequest.applicationLatencies;
               delete fourthRequest.metricsCollectorData.client_uid;
               delete fourthRequest.metricsCollectorData.appProfileId;
               assert.deepStrictEqual(fourthRequest, {
