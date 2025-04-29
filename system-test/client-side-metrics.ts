@@ -68,19 +68,29 @@ describe('Bigtable/ClientSideMetrics', () => {
   const tableId1 = 'my-table';
   const tableId2 = 'my-table2';
   const columnFamilyId = 'cf1';
-  let bigtable: Bigtable;
+  let projectId: string;
 
   before(async () => {
+    const bigtable = new Bigtable();
     for (const instanceId of [instanceId1, instanceId2]) {
-      bigtable = new Bigtable();
       await setupBigtable(bigtable, columnFamilyId, instanceId, [
         tableId1,
         tableId2,
       ]);
     }
+    projectId = await new Promise((resolve, reject) => {
+      bigtable.getProjectId_((err: Error | null, projectId?: string) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(projectId as string);
+        }
+      });
+    });
   });
 
   after(async () => {
+    const bigtable = new Bigtable();
     try {
       // If the instance has been deleted already by another source, we don't
       // want this after hook to block the continuous integration pipeline.
@@ -168,15 +178,6 @@ describe('Bigtable/ClientSideMetrics', () => {
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
       (async () => {
         try {
-          const projectId: string = await new Promise((resolve, reject) => {
-            bigtable.getProjectId_((err: any, projectId: string) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(projectId as string);
-              }
-            });
-          });
           const bigtable = await mockBigtable(projectId, done);
           for (const instanceId of [instanceId1, instanceId2]) {
             await setupBigtable(bigtable, columnFamilyId, instanceId, [
@@ -284,15 +285,6 @@ describe('Bigtable/ClientSideMetrics', () => {
       }, 120000);
       (async () => {
         try {
-          const projectId: string = await new Promise((resolve, reject) => {
-            bigtable.getProjectId_((err, projectId) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(projectId as string);
-              }
-            });
-          });
           const bigtable1 = await mockBigtable(projectId, done);
           const bigtable2 = await mockBigtable(projectId, done);
           for (const bigtable of [bigtable1, bigtable2]) {
@@ -435,26 +427,17 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      bigtable = getFakeBigtable(projectId, TestGCPMetricsHandler);
+      const bigtable = getFakeBigtable(projectId, TestGCPMetricsHandler);
       await setupBigtable(bigtable, columnFamilyId, instanceId1, [
         tableId1,
         tableId2,
       ]);
+      return bigtable;
     }
 
     it('should send the metrics to the metrics handler for a ReadRows call', done => {
-      bigtable = new Bigtable();
       (async () => {
-        const projectId: string = await new Promise((resolve, reject) => {
-          bigtable.getProjectId_((err, projectId) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(projectId as string);
-            }
-          });
-        });
-        await mockBigtable(projectId, done);
+        const bigtable = await mockBigtable(projectId, done);
         const instance = bigtable.instance(instanceId1);
         const table = instance.table(tableId1);
         await table.getRows();
@@ -465,11 +448,10 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
     it('should pass the projectId to the metrics handler properly', done => {
-      bigtable = new Bigtable({projectId: SECOND_PROJECT_ID});
       (async () => {
         try {
           const projectId = SECOND_PROJECT_ID;
-          await mockBigtable(projectId, done);
+          const bigtable = await mockBigtable(projectId, done);
           const instance = bigtable.instance(instanceId1);
           const table = instance.table(tableId1);
           await table.getRows();
