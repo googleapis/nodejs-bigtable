@@ -22,11 +22,15 @@ import {
 } from '../../src/client-side-metrics/client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 import {expectedRequestsHandled} from '../../test-common/metrics-handler-fixture';
+import * as path from 'path'; // Import the 'path' module
 import * as gax from 'google-gax';
 import * as proxyquire from 'proxyquire';
-const root = gax.protobuf.loadSync(
-  './protos/google/bigtable/v2/response_params.proto',
+import {GCPMetricsHandler} from '../../src/client-side-metrics/gcp-metrics-handler';
+const protoPath = path.join(
+  __dirname,
+  '../../protos/google/bigtable/v2/response_params.proto',
 );
+const root = gax.protobuf.loadSync(protoPath);
 const ResponseParams = root.lookupType('ResponseParams');
 
 /**
@@ -73,7 +77,6 @@ describe('Bigtable/MetricsCollector', () => {
 
   it('should record the right metrics with a typical method call', async () => {
     const testHandler = new TestMetricsHandler(logger);
-    const metricsHandlers = [testHandler];
     class FakeTable {
       id = 'fakeTableId';
       instance = new FakeInstance();
@@ -107,10 +110,12 @@ describe('Bigtable/MetricsCollector', () => {
           };
           const metricsCollector = new FakeOperationsMetricsCollector(
             this,
-            metricsHandlers,
             MethodName.READ_ROWS,
             StreamingState.STREAMING,
           );
+          FakeOperationsMetricsCollector.metricsHandlers = [
+            testHandler as unknown as GCPMetricsHandler,
+          ];
           // In this method we simulate a series of events that might happen
           // when a user calls one of the Table methods.
           // Here is an example of what might happen in a method call:
@@ -155,10 +160,6 @@ describe('Bigtable/MetricsCollector', () => {
           metricsCollector.onRowReachesUser();
           logger.value += '19. User reads row 1\n';
           logger.value += '20. Stream ends, operation completes\n';
-          metricsCollector.onAttemptComplete(
-            this.bigtable.projectId,
-            grpc.status.OK,
-          );
           metricsCollector.onOperationComplete(
             this.bigtable.projectId,
             grpc.status.OK,
