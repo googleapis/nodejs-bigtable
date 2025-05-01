@@ -23,7 +23,8 @@ import {grpc, ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
-import {RetryOptions} from 'google-gax';
+import {RetryOptions, ClientOptions} from 'google-gax';
+import {GCPMetricsHandler} from './gcp-metrics-handler';
 
 export interface ExportResult {
   code: number;
@@ -342,7 +343,12 @@ export class CloudMonitoringExporter extends MetricExporter {
             maxRetryDelayMillis: 50000,
           },
         );
-        const monitoringClient = new MetricServiceClient({projectId});
+        type AuthClientType = ClientOptions['authClient'];
+        const authClient = GCPMetricsHandler.authForProject[projectId];
+        const monitoringClient = new MetricServiceClient({
+          projectId,
+          authClient: authClient as unknown as AuthClientType,
+        });
         await monitoringClient.createTimeSeries(
           request as ICreateTimeSeriesRequest,
           {
