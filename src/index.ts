@@ -101,6 +101,8 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
    * Internal only.
    */
   BigtableTableAdminClient?: gax.ClientOptions;
+
+  universeDomain?: string;
 }
 
 /**
@@ -112,7 +114,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * @param {gax.ClientOptions} [opts] The gax client options
  * @returns {string} The universe domain.
  */
-function getDomain(prefix: string, opts?: gax.ClientOptions) {
+function getDomain(prefix: string, options: BigtableOptions, opts?: gax.ClientOptions) {
   // From https://github.com/googleapis/nodejs-bigtable/blob/589540475b0b2a055018a1cb6e475800fdd46a37/src/v2/bigtable_client.ts#L120-L128.
   // This code for universe domain was taken from the Gapic Layer.
   // It is reused here to build the service path.
@@ -121,6 +123,7 @@ function getDomain(prefix: string, opts?: gax.ClientOptions) {
       ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
       : undefined;
   return `${prefix}.${
+    options?.universeDomain ??
     opts?.universeDomain ??
     opts?.universe_domain ??
     universeDomainEnvVar ??
@@ -470,7 +473,7 @@ export class Bigtable {
       {
         servicePath:
           customEndpointBaseUrl ||
-          getDomain('bigtable', options.BigtableClient),
+          getDomain('bigtable', options, options.BigtableClient),
         'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
         'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
         'grpc.gcpApiConfig': grpcGcp.createGcpApiConfig({
@@ -491,7 +494,7 @@ export class Bigtable {
       {
         servicePath:
           customEndpointBaseUrl ||
-          getDomain('bigtableadmin', options.BigtableClient),
+          getDomain('bigtableadmin', options, options.BigtableClient),
       },
       options,
     );
@@ -501,7 +504,7 @@ export class Bigtable {
       {
         servicePath:
           customEndpointBaseUrl ||
-          getDomain('bigtableadmin', options.BigtableClient),
+          getDomain('bigtableadmin', options, options.BigtableClient),
       },
       options,
     );
