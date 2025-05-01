@@ -61,6 +61,8 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     const options = {
       universeDomain,
     };
+    process.env.GOOGLE_APPLICATION_CREDENTIALS =
+      '/Users/djbruce/Documents/Programming/keys/tpc_sa_key.json';
     bigtable = new Bigtable(options);
   });
 
