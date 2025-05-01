@@ -79,7 +79,7 @@ function createInstruments(exporter: PushMetricExporter) {
     views: viewList,
     resource: new Resources.Resource({
       'service.name': 'Cloud Bigtable Table',
-    }).merge(new ResourceUtil.GcpDetectorSyn().detect()),
+    }).merge(new ResourceUtil.GcpDetectorSync().detect()),
     readers: [
       // Register the exporter
       new PeriodicExportingMetricReader({
