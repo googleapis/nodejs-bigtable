@@ -342,9 +342,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const metricsCollector = this.bigtable.metricsConfigManager.createOperation(
       this, MethodName.READ_ROWS, StreamingState.STREAMING,
     )
-    metricsCollector?.onOperationStart();
+    metricsCollector.onOperationStart();
     const makeNewRequest = () => {
-      metricsCollector?.onAttemptStart();
+      metricsCollector.onAttemptStart();
 
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
@@ -521,17 +521,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return false;
       };
 
-      metricsCollector?.handleStatusAndMetadata(requestStream);
+      metricsCollector.handleStatusAndMetadata(requestStream);
       rowStream
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
-          metricsCollector?.setProjectId(this.bigtable.projectId)
           if (IGNORED_STATUS_CODES.has(error.code)) {
             // We ignore the `cancelled` "error", since we are the ones who cause
             // it when the user calls `.abort()`.
             userStream.end();
-            metricsCollector?.onOperationComplete(error.code);
+            metricsCollector.onOperationComplete(error.code);
             return;
           }
           numConsecutiveErrors++;
@@ -549,7 +548,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               numConsecutiveErrors,
               backOffSettings,
             );
-            metricsCollector?.onAttemptComplete(error.code);
+            metricsCollector.onAttemptComplete(error.code);
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
             if (
@@ -564,7 +563,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               //
               error.code = grpc.status.CANCELLED;
             }
-            metricsCollector?.onOperationComplete(error.code);
+            metricsCollector.onOperationComplete(error.code);
             userStream.emit('error', error);
           }
         })
@@ -572,11 +571,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
-          metricsCollector?.onResponse();
+          metricsCollector.onResponse();
         })
         .on('end', () => {
           activeRequestStream = null;
-          metricsCollector?.onOperationComplete(grpc.status.OK);
+          metricsCollector.onOperationComplete(grpc.status.OK);
         });
       rowStreamPipe(rowStream, userStream);
     };

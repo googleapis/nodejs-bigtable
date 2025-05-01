@@ -32,7 +32,6 @@ type IMetricsCollectorData = {
 };
 
 interface StandardData {
-  projectId: string;
   metricsCollectorData: IMetricsCollectorData;
   client_name: string;
   streaming: StreamingState;

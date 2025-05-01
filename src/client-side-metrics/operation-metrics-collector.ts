@@ -21,6 +21,7 @@ import {CloudMonitoringExporter} from './exporter';
 import {AbortableDuplex} from '../index';
 import * as path from 'path';
 import { IMetricsHandler } from './metrics-handler';
+import { ClientSideMetricsConfigManager } from './metrics-config-manager';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
@@ -104,7 +105,6 @@ export class OperationMetricsCollector {
   private attemptStartTime: bigint | null;
   private zone: string | undefined;
   private cluster: string | undefined;
-  private projectId: string | undefined;
   private tabularApiSurface: ITabularApiSurface;
   private methodName: MethodName;
   private attemptCount = 0;
@@ -115,7 +115,7 @@ export class OperationMetricsCollector {
   private streamingOperation: StreamingState;
   private applicationLatencies: number[];
   private lastRowReceivedTime: bigint | null;
-  private metricsHandlers: IMetricsHandler[];
+  private configManager: ClientSideMetricsConfigManager
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -124,15 +124,13 @@ export class OperationMetricsCollector {
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
-    projectId: string | undefined,
     methodName: MethodName,
     streamingOperation: StreamingState,
-    handlers: IMetricsHandler[],
+    configManager: ClientSideMetricsConfigManager,
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
     this.cluster = undefined;
-    this.projectId = projectId;
     this.tabularApiSurface = tabularApiSurface;
     this.methodName = methodName;
     this.operationStartTime = null;
@@ -144,7 +142,7 @@ export class OperationMetricsCollector {
     this.streamingOperation = streamingOperation;
     this.lastRowReceivedTime = null;
     this.applicationLatencies = [];
-    this.metricsHandlers = handlers;
+    this.configManager = configManager
   }
 
   private getMetricsCollectorData() {
@@ -214,11 +212,11 @@ export class OperationMetricsCollector {
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
       this.attemptCount++;
       const endTime = hrtime.bigint();
-      if (this.projectId && this.attemptStartTime) {
+      if (this.attemptStartTime) {
         const totalMilliseconds = Number(
           (endTime - this.attemptStartTime) / BigInt(1000000),
         );
-        this.metricsHandlers.forEach(metricsHandler => {
+        this.configManager.metricsHandlers.forEach(metricsHandler => {
           if (metricsHandler.onAttemptComplete) {
             metricsHandler.onAttemptComplete({
               attemptLatency: totalMilliseconds,
@@ -228,12 +226,11 @@ export class OperationMetricsCollector {
               status: attemptStatus.toString(),
               client_name: `nodejs-bigtable/${version}`,
               metricsCollectorData: this.getMetricsCollectorData(),
-              projectId: this.projectId,
             });
           }
         });
       } else {
-        throw new Error('ProjectId and start time should always be provided');
+        throw new Error('Start time should always be provided');
       }
     });
   }
@@ -268,7 +265,7 @@ export class OperationMetricsCollector {
         this.state =
           MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
         const endTime = hrtime.bigint();
-        if (this.projectId && this.operationStartTime) {
+        if (this.operationStartTime) {
           this.firstResponseLatency = Number(
             (endTime - this.operationStartTime) / BigInt(1000000),
           );
@@ -294,19 +291,18 @@ export class OperationMetricsCollector {
       ]);
       this.state = MetricsCollectorState.OPERATION_COMPLETE;
       const endTime = hrtime.bigint();
-      if (this.projectId && this.operationStartTime) {
+      if (this.operationStartTime) {
         const totalMilliseconds = Number(
           (endTime - this.operationStartTime) / BigInt(1000000),
         );
         {
-          this.metricsHandlers.forEach(metricsHandler => {
+          this.configManager.metricsHandlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
               metricsHandler.onOperationComplete({
                 status: finalOperationStatus.toString(),
                 streaming: this.streamingOperation,
                 metricsCollectorData: this.getMetricsCollectorData(),
                 client_name: `nodejs-bigtable/${version}`,
-                projectId: this.projectId,
                 operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? undefined,
@@ -317,7 +313,7 @@ export class OperationMetricsCollector {
         }
       } else {
         console.warn(
-          'projectId and operation start time should always be available here',
+          'operation start time should always be available here',
         );
       }
     });

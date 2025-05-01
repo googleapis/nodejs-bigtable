@@ -14,15 +14,8 @@ export class ClientSideMetricsConfigManager {
         this.metricsHandlers = handlers
     }
 
-    createOperation(methodName, streaming, table): OperationMetricsCollector | null{
-        if (this.metricsHandlers.length == 0) {
-            // I see your current code passes null OperationMetricsCollectors if csm is disabled, so I followed suit here.
-            // But it might be better to keep the whole stack the same even with no handlers at the end? That would keep the code simpler and avoid optionals
-            return null
-        } else {
-            const projectId = table.bigtable.projectId === "{{projectId}}" ? undefined : table.bigtable.projectId
-            return new OperationMetricsCollector(table, projectId, methodName, streaming, this.metricsHandlers)
-        }
+    createOperation(methodName, streaming, table): OperationMetricsCollector {
+        return new OperationMetricsCollector(table, methodName, streaming, this)
     }
 
     static getGcpHandlerForProject(projectId, options): GCPMetricsHandler {
