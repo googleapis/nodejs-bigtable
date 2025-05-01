@@ -299,7 +299,7 @@ export class OperationMetricsCollector {
           (endTime - this.operationStartTime) / BigInt(1000000),
         );
         {
-          this..metricsHandlers.forEach(metricsHandler => {
+          this.metricsHandlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
               metricsHandler.onOperationComplete({
                 status: finalOperationStatus.toString(),
