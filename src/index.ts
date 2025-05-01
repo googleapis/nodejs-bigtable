@@ -104,6 +104,26 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
   universeDomain?: string;
 }
 
+function getUniverseDomainOnly(
+  options: BigtableOptions,
+  opts?: gax.ClientOptions
+) {
+  // From https://github.com/googleapis/nodejs-bigtable/blob/589540475b0b2a055018a1cb6e475800fdd46a37/src/v2/bigtable_client.ts#L120-L128.
+  // This code for universe domain was taken from the Gapic Layer.
+  // It is reused here to build the service path.
+  const universeDomainEnvVar =
+    typeof process === 'object' && typeof process.env === 'object'
+      ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
+      : undefined;
+  return (
+    options?.universeDomain ??
+    opts?.universeDomain ??
+    opts?.universe_domain ??
+    universeDomainEnvVar ??
+    'googleapis.com'
+  );
+}
+
 /**
  * Retrieves the domain to be used for the service path.
  *
@@ -118,20 +138,7 @@ function getDomain(
   options: BigtableOptions,
   opts?: gax.ClientOptions
 ) {
-  // From https://github.com/googleapis/nodejs-bigtable/blob/589540475b0b2a055018a1cb6e475800fdd46a37/src/v2/bigtable_client.ts#L120-L128.
-  // This code for universe domain was taken from the Gapic Layer.
-  // It is reused here to build the service path.
-  const universeDomainEnvVar =
-    typeof process === 'object' && typeof process.env === 'object'
-      ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
-      : undefined;
-  return `${prefix}.${
-    options?.universeDomain ??
-    opts?.universeDomain ??
-    opts?.universe_domain ??
-    universeDomainEnvVar ??
-    'googleapis.com'
-  }`;
+  return `${prefix}.${getUniverseDomainOnly(options, opts)}`;
 }
 
 /**
@@ -519,7 +526,18 @@ export class Bigtable {
     };
 
     this.api = {};
-    this.auth = new GoogleAuth(Object.assign({}, baseOptions, options));
+    this.auth = new GoogleAuth(
+      Object.assign(
+        {
+          universeDomain: getUniverseDomainOnly(
+            options,
+            options.BigtableClient
+          ),
+        },
+        baseOptions,
+        options
+      )
+    );
     this.projectId = options.projectId || '{{projectId}}';
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
