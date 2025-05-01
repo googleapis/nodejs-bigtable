@@ -57,6 +57,8 @@ describe.only('TPC using the option in the Gapic client', () => {
   before(async () => {
     // This line is added just to make sure the bigtable variable is assigned.
     // It is needed to solve a compile time error in the after hook.
+    process.env.GOOGLE_APPLICATION_CREDENTIALS =
+      '/Users/djbruce/Documents/Programming/keys/tpc_sa_key.json';
     const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
     const options = {
       BigtableClient: {universeDomain},
