@@ -65,6 +65,7 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
      */
     process.env.GOOGLE_APPLICATION_CREDENTIALS =
       '/Users/djbruce/Documents/Programming/keys/tpc_sa_key.json';
+    process.env.GOOGLE_CLOUD_UNIVERSE_DOMAIN = 'apis-tpczero.goog';
     bigtable = new Bigtable();
   });
 
