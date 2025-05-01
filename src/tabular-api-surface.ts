@@ -344,6 +344,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           this,
           MethodName.READ_ROWS,
           StreamingState.STREAMING,
+          this.bigtable.auth,
         )
       : null;
     metricsCollector?.onOperationStart();
