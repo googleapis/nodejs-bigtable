@@ -175,7 +175,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       return getFakeBigtable(projectId, TestGCPMetricsHandler);
     }
 
-    it.only('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
+    it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
       (async () => {
         try {
           const bigtable = await mockBigtable(projectId, done);
