@@ -113,7 +113,11 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * @param {gax.ClientOptions} [opts] The gax client options
  * @returns {string} The universe domain.
  */
-function getDomain(prefix: string, options: BigtableOptions, opts?: gax.ClientOptions) {
+function getDomain(
+  prefix: string,
+  options: BigtableOptions,
+  opts?: gax.ClientOptions
+) {
   // From https://github.com/googleapis/nodejs-bigtable/blob/589540475b0b2a055018a1cb6e475800fdd46a37/src/v2/bigtable_client.ts#L120-L128.
   // This code for universe domain was taken from the Gapic Layer.
   // It is reused here to build the service path.
