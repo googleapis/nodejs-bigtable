@@ -20,6 +20,7 @@ import {
 import * as Resources from '@opentelemetry/resources';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
 import {PushMetricExporter, View} from '@opentelemetry/sdk-metrics';
+import * as gax from 'google-gax';
 const {
   Aggregation,
   ExplicitBucketHistogramAggregation,
@@ -188,6 +189,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
   // which exists so that we only create one instrument stack per project. This
   // will eliminate errors due to the maximum sampling period.
   static instrumentsForProject: {[projectId: string]: MetricsInstruments} = {};
+  static authForProject: {[projectId: string]: gax.GoogleAuth | undefined} = {};
 
   /**
    * The `GCPMetricsHandler` is responsible for managing and recording
@@ -212,11 +214,15 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * which will be provided to the exporter in every export call.
    *
    */
-  private getInstruments(projectId: string): MetricsInstruments {
+  private getInstruments(
+    projectId: string,
+    authClient?: gax.GoogleAuth,
+  ): MetricsInstruments {
     // The projectId is needed per metrics handler because when the exporter is
     // used it provides the project id for the name of the time series exported.
     // ie. name: `projects/${....['monitored_resource.project_id']}`,
     if (!GCPMetricsHandler.instrumentsForProject[projectId]) {
+      GCPMetricsHandler.authForProject[projectId] = authClient;
       GCPMetricsHandler.instrumentsForProject[projectId] = createInstruments(
         projectId,
         this.exporter,
@@ -231,7 +237,10 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    const otelInstruments = this.getInstruments(data.projectId);
+    const otelInstruments = this.getInstruments(
+      data.projectId,
+      data.authClient,
+    );
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
@@ -271,7 +280,10 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    const otelInstruments = this.getInstruments(data.projectId);
+    const otelInstruments = this.getInstruments(
+      data.projectId,
+      data.authClient,
+    );
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
-import {grpc} from 'google-gax';
+import {grpc, GoogleAuth} from 'google-gax';
 
 /**
  * The interfaces below use undefined instead of null to indicate a metric is
@@ -37,6 +37,7 @@ interface StandardData {
   client_name: string;
   streaming: StreamingState;
   status: string;
+  authClient?: GoogleAuth;
 }
 
 export interface OnOperationCompleteData extends StandardData {

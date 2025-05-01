@@ -14,7 +14,7 @@
 
 import * as fs from 'fs';
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
-import {grpc} from 'google-gax';
+import {GoogleAuth, grpc} from 'google-gax';
 import * as gax from 'google-gax';
 import {GCPMetricsHandler} from './gcp-metrics-handler';
 import {CloudMonitoringExporter} from './exporter';
@@ -113,6 +113,7 @@ export class OperationMetricsCollector {
   private streamingOperation: StreamingState;
   private applicationLatencies: number[];
   private lastRowReceivedTime: bigint | null;
+  private authClient: GoogleAuth;
   static metricsHandlers = [
     new GCPMetricsHandler(new CloudMonitoringExporter()),
   ];
@@ -121,11 +122,13 @@ export class OperationMetricsCollector {
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
    * @param {MethodName} methodName The name of the method being traced.
    * @param {StreamingState} streamingOperation Whether or not the call is a streaming operation.
+   * @param {GoogleAuth} authClient The auth client
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
     methodName: MethodName,
     streamingOperation: StreamingState,
+    authClient: GoogleAuth,
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
@@ -141,6 +144,7 @@ export class OperationMetricsCollector {
     this.streamingOperation = streamingOperation;
     this.lastRowReceivedTime = null;
     this.applicationLatencies = [];
+    this.authClient = authClient;
   }
 
   private getMetricsCollectorData() {
