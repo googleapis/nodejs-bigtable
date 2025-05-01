@@ -504,7 +504,7 @@ export class Bigtable {
       {
         servicePath:
           customEndpointBaseUrl ||
-          getDomain('bigtableadmin', options, options.BigtableClient),
+          getDomain('bigtableadmin', options, options.BigtableTableAdminClient),
       },
       options
     );
@@ -514,7 +514,7 @@ export class Bigtable {
       {
         servicePath:
           customEndpointBaseUrl ||
-          getDomain('bigtableadmin', options, options.BigtableClient),
+          getDomain('bigtableadmin', options, options.BigtableInstanceAdminClient),
       },
       options
     );
