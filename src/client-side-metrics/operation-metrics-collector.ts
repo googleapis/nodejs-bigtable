@@ -20,6 +20,7 @@ import {GCPMetricsHandler} from './gcp-metrics-handler';
 import {CloudMonitoringExporter} from './exporter';
 import {AbortableDuplex} from '../index';
 import * as path from 'path';
+import { IMetricsHandler } from './metrics-handler';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
@@ -103,6 +104,7 @@ export class OperationMetricsCollector {
   private attemptStartTime: bigint | null;
   private zone: string | undefined;
   private cluster: string | undefined;
+  private projectId: string;
   private tabularApiSurface: ITabularApiSurface;
   private methodName: MethodName;
   private attemptCount = 0;
@@ -113,9 +115,7 @@ export class OperationMetricsCollector {
   private streamingOperation: StreamingState;
   private applicationLatencies: number[];
   private lastRowReceivedTime: bigint | null;
-  static metricsHandlers = [
-    new GCPMetricsHandler(new CloudMonitoringExporter()),
-  ];
+  private metricsHandlers: IMetricsHandler[];
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -124,12 +124,15 @@ export class OperationMetricsCollector {
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
+    projectId: string,
     methodName: MethodName,
     streamingOperation: StreamingState,
+    handlers: IMetricsHandler[],
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
     this.cluster = undefined;
+    this.projectId = projectId;
     this.tabularApiSurface = tabularApiSurface;
     this.methodName = methodName;
     this.operationStartTime = null;
@@ -141,6 +144,7 @@ export class OperationMetricsCollector {
     this.streamingOperation = streamingOperation;
     this.lastRowReceivedTime = null;
     this.applicationLatencies = [];
+    this.metricsHandlers = handlers;
   }
 
   private getMetricsCollectorData() {
@@ -198,10 +202,9 @@ export class OperationMetricsCollector {
 
   /**
    * Called when an attempt (e.g., an RPC attempt) completes. Records attempt latencies.
-   * @param {string} projectId The id of the project.
    * @param {grpc.status} attemptStatus The grpc status for the attempt.
    */
-  onAttemptComplete(projectId: string, attemptStatus: grpc.status) {
+  onAttemptComplete(attemptStatus: grpc.status) {
     withMetricsDebug(() => {
       checkState(this.state, [
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
@@ -211,11 +214,11 @@ export class OperationMetricsCollector {
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
       this.attemptCount++;
       const endTime = hrtime.bigint();
-      if (projectId && this.attemptStartTime) {
+      if (this.projectId && this.attemptStartTime) {
         const totalMilliseconds = Number(
           (endTime - this.attemptStartTime) / BigInt(1000000),
         );
-        OperationMetricsCollector.metricsHandlers.forEach(metricsHandler => {
+        this.metricsHandlers.forEach(metricsHandler => {
           if (metricsHandler.onAttemptComplete) {
             metricsHandler.onAttemptComplete({
               attemptLatency: totalMilliseconds,
@@ -225,7 +228,7 @@ export class OperationMetricsCollector {
               status: attemptStatus.toString(),
               client_name: `nodejs-bigtable/${version}`,
               metricsCollectorData: this.getMetricsCollectorData(),
-              projectId,
+              projectId: this.projectId,
             });
           }
         });
@@ -256,7 +259,7 @@ export class OperationMetricsCollector {
   /**
    * Called when the first response is received. Records first response latencies.
    */
-  onResponse(projectId: string) {
+  onResponse() {
     withMetricsDebug(() => {
       if (!this.firstResponseLatency) {
         checkState(this.state, [
@@ -265,7 +268,7 @@ export class OperationMetricsCollector {
         this.state =
           MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
         const endTime = hrtime.bigint();
-        if (projectId && this.operationStartTime) {
+        if (this.projectId && this.operationStartTime) {
           this.firstResponseLatency = Number(
             (endTime - this.operationStartTime) / BigInt(1000000),
           );
@@ -281,30 +284,29 @@ export class OperationMetricsCollector {
   /**
    * Called when an operation completes (successfully or unsuccessfully).
    * Records operation latencies, retry counts, and connectivity error counts.
-   * @param {string} projectId The id of the project.
    * @param {grpc.status} finalOperationStatus Information about the completed operation.
    */
-  onOperationComplete(projectId: string, finalOperationStatus: grpc.status) {
-    this.onAttemptComplete(projectId, finalOperationStatus);
+  onOperationComplete(finalOperationStatus: grpc.status) {
+    this.onAttemptComplete(finalOperationStatus);
     withMetricsDebug(() => {
       checkState(this.state, [
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS,
       ]);
       this.state = MetricsCollectorState.OPERATION_COMPLETE;
       const endTime = hrtime.bigint();
-      if (projectId && this.operationStartTime) {
+      if (this.projectId && this.operationStartTime) {
         const totalMilliseconds = Number(
           (endTime - this.operationStartTime) / BigInt(1000000),
         );
         {
-          OperationMetricsCollector.metricsHandlers.forEach(metricsHandler => {
+          this..metricsHandlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
               metricsHandler.onOperationComplete({
                 status: finalOperationStatus.toString(),
                 streaming: this.streamingOperation,
                 metricsCollectorData: this.getMetricsCollectorData(),
                 client_name: `nodejs-bigtable/${version}`,
-                projectId,
+                projectId: this.projectId,
                 operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? undefined,

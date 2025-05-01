@@ -37,6 +37,7 @@ import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
+import { ClientSideMetricsController } from './client-side-metrics/metrics-controller';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -434,11 +435,7 @@ export class Bigtable {
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
-  // metricsEnabled is a member variable that is used to ensure that if the
-  // user provides a `false` value and opts out of metrics collection that
-  // the metrics collector is ignored altogether to reduce latency in the
-  // client.
-  metricsEnabled: boolean;
+  metricsController: ClientSideMetricsController;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -538,9 +535,9 @@ export class Bigtable {
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
 
     if (options.metricsEnabled === false) {
-      this.metricsEnabled = false;
+      this.metricsController = null;
     } else {
-      this.metricsEnabled = true;
+      this.metricsController = ClientSideMetricsController(this.projectId, this.auth)
     }
   }
 

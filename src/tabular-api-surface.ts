@@ -339,8 +339,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
-    const metricsCollector = this.bigtable.metricsEnabled
-      ? new OperationMetricsCollector(
+    const metricsCollector = this.bigtable.metricsController
+      ? this.bigtable.metricsController.createOperation(
           this,
           MethodName.READ_ROWS,
           StreamingState.STREAMING,

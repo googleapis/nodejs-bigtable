@@ -312,6 +312,14 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
  * @beta
  */
 export class CloudMonitoringExporter extends MetricExporter {
+
+  private client: MetricServiceClient;
+
+  constructor(project_id, auth) {
+    super()
+    this.client = new MetricServiceClient(project_id, auth)
+  }
+
   export(
     metrics: ResourceMetrics,
     resultCallback: (result: ExportResult) => void,
@@ -342,8 +350,7 @@ export class CloudMonitoringExporter extends MetricExporter {
             maxRetryDelayMillis: 50000,
           },
         );
-        const monitoringClient = new MetricServiceClient({projectId});
-        await monitoringClient.createTimeSeries(
+        await this.client.createTimeSeries(
           request as ICreateTimeSeriesRequest,
           {
             retry,

@@ -47,10 +47,9 @@ interface MetricsInstruments {
  * This method gets the open telemetry instruments that will store GCP metrics
  * for a particular project.
  *
- * @param projectId The project for which the instruments will be stored.
  * @param exporter The exporter the metrics will be sent to.
  */
-function createInstruments(projectId: string, exporter: PushMetricExporter) {
+function createInstruments(exporter: PushMetricExporter) {
   const latencyBuckets = [
     0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0, 16.0, 20.0, 25.0, 30.0,
     40.0, 50.0, 65.0, 80.0, 100.0, 130.0, 160.0, 200.0, 250.0, 300.0, 400.0,
@@ -80,8 +79,7 @@ function createInstruments(projectId: string, exporter: PushMetricExporter) {
     views: viewList,
     resource: new Resources.Resource({
       'service.name': 'Cloud Bigtable Table',
-      'monitored_resource.project_id': projectId,
-    }).merge(new ResourceUtil.GcpDetectorSync().detect()),
+    }).merge(new ResourceUtil.GcpDetectorSyn().detect()),
     readers: [
       // Register the exporter
       new PeriodicExportingMetricReader({
@@ -184,10 +182,7 @@ function createInstruments(projectId: string, exporter: PushMetricExporter) {
  */
 export class GCPMetricsHandler implements IMetricsHandler {
   private exporter: PushMetricExporter;
-  // The variable below is the singleton map from projects to instrument stacks
-  // which exists so that we only create one instrument stack per project. This
-  // will eliminate errors due to the maximum sampling period.
-  static instrumentsForProject: {[projectId: string]: MetricsInstruments} = {};
+  private otelInstruments;
 
   /**
    * The `GCPMetricsHandler` is responsible for managing and recording
@@ -196,34 +191,12 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * (histograms and counters) and exports them to Google Cloud Monitoring
    * through the provided `PushMetricExporter`.
    *
-   * @param exporter - The `PushMetricExporter` instance to use for exporting
-   *   metrics to Google Cloud Monitoring. This exporter is responsible for
-   *   sending the collected metrics data to the monitoring backend. The provided exporter must be fully configured, for example the projectId must have been set.
    */
-  constructor(exporter: PushMetricExporter) {
-    this.exporter = exporter;
+  constructor(project_id, auth) {
+    this.exporter = new CloudMonitoringExporter(project_id, auth);
+    this.otelInstruments = createInstruments(this.exporter);
   }
 
-  /**
-   * Initializes the OpenTelemetry metrics instruments if they haven't been already.
-   * Creates and registers metric instruments (histograms and counters) for various Bigtable client metrics.
-   * Sets up a MeterProvider and configures a PeriodicExportingMetricReader for exporting metrics to Cloud Monitoring.
-   *
-   * which will be provided to the exporter in every export call.
-   *
-   */
-  private getInstruments(projectId: string): MetricsInstruments {
-    // The projectId is needed per metrics handler because when the exporter is
-    // used it provides the project id for the name of the time series exported.
-    // ie. name: `projects/${....['monitored_resource.project_id']}`,
-    if (!GCPMetricsHandler.instrumentsForProject[projectId]) {
-      GCPMetricsHandler.instrumentsForProject[projectId] = createInstruments(
-        projectId,
-        this.exporter,
-      );
-    }
-    return GCPMetricsHandler.instrumentsForProject[projectId];
-  }
 
   /**
    * Records metrics for a completed Bigtable operation.
@@ -231,7 +204,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    const otelInstruments = this.getInstruments(data.projectId);
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
@@ -242,26 +214,26 @@ export class GCPMetricsHandler implements IMetricsHandler {
       cluster: data.metricsCollectorData.cluster,
       zone: data.metricsCollectorData.zone,
     };
-    otelInstruments.operationLatencies.record(data.operationLatency, {
+    this.otelInstruments.operationLatencies.record(data.operationLatency, {
       streaming: data.streaming,
       status: data.status,
       ...commonAttributes,
     });
-    otelInstruments.retryCount.add(data.retryCount, {
+    this.otelInstruments.retryCount.add(data.retryCount, {
       status: data.status,
       ...commonAttributes,
     });
-    otelInstruments.firstResponseLatencies.record(data.firstResponseLatency, {
+    this.otelInstruments.firstResponseLatencies.record(data.firstResponseLatency, {
       status: data.status,
       ...commonAttributes,
     });
     for (const applicationLatency of data.applicationLatencies) {
-      otelInstruments.applicationBlockingLatencies.record(
+      this.otelInstruments.applicationBlockingLatencies.record(
         applicationLatency,
         commonAttributes,
       );
     }
-    otelInstruments.retryCount.add(data.retryCount, commonAttributes);
+    this.otelInstruments.retryCount.add(data.retryCount, commonAttributes);
   }
 
   /**
@@ -271,7 +243,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    const otelInstruments = this.getInstruments(data.projectId);
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
@@ -283,15 +254,15 @@ export class GCPMetricsHandler implements IMetricsHandler {
       cluster: data.metricsCollectorData.cluster,
       zone: data.metricsCollectorData.zone,
     };
-    otelInstruments.attemptLatencies.record(data.attemptLatency, {
+    this.otelInstruments.attemptLatencies.record(data.attemptLatency, {
       streaming: data.streaming,
       ...commonAttributes,
     });
-    otelInstruments.connectivityErrorCount.add(
+    this.otelInstruments.connectivityErrorCount.add(
       data.connectivityErrorCount,
       commonAttributes,
     );
-    otelInstruments.serverLatencies.record(data.serverLatency, {
+    this.otelInstruments.serverLatencies.record(data.serverLatency, {
       streaming: data.streaming,
       ...commonAttributes,
     });
