@@ -26,7 +26,7 @@ describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
       const [, operation] = await instance.create({
         clusters: {
           id: 'fake-cluster3',
-          location: 'us-west1-c',
+          location: 'u-us-prp1-a',
           nodes: 1,
         },
       });
