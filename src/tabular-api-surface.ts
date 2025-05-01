@@ -526,14 +526,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
+          metricsCollector?.setProjectId(this.bigtable.projectId)
           if (IGNORED_STATUS_CODES.has(error.code)) {
             // We ignore the `cancelled` "error", since we are the ones who cause
             // it when the user calls `.abort()`.
             userStream.end();
-            metricsCollector?.onOperationComplete(
-              this.bigtable.projectId,
-              error.code,
-            );
+            metricsCollector?.onOperationComplete(error.code);
             return;
           }
           numConsecutiveErrors++;
@@ -551,10 +549,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               numConsecutiveErrors,
               backOffSettings,
             );
-            metricsCollector?.onAttemptComplete(
-              this.bigtable.projectId,
-              error.code,
-            );
+            metricsCollector?.onAttemptComplete(error.code);
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
             if (
@@ -569,10 +564,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               //
               error.code = grpc.status.CANCELLED;
             }
-            metricsCollector?.onOperationComplete(
-              this.bigtable.projectId,
-              error.code,
-            );
+            metricsCollector?.onOperationComplete(error.code);
             userStream.emit('error', error);
           }
         })
@@ -580,14 +572,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
-          metricsCollector?.onResponse(this.bigtable.projectId);
+          metricsCollector?.onResponse();
         })
         .on('end', () => {
           activeRequestStream = null;
-          metricsCollector?.onOperationComplete(
-            this.bigtable.projectId,
-            grpc.status.OK,
-          );
+          metricsCollector?.onOperationComplete(grpc.status.OK);
         });
       rowStreamPipe(rowStream, userStream);
     };
