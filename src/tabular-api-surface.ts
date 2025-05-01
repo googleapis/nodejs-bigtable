@@ -339,6 +339,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
+    console.log('Printing the project');
+    console.log(this.bigtable.projectId);
     const metricsCollector = this.bigtable.metricsEnabled
       ? new OperationMetricsCollector(
           this,
