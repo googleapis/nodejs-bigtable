@@ -222,6 +222,7 @@ export class OperationMetricsCollector {
         OperationMetricsCollector.metricsHandlers.forEach(metricsHandler => {
           if (metricsHandler.onAttemptComplete) {
             metricsHandler.onAttemptComplete({
+              authClient: this.authClient,
               attemptLatency: totalMilliseconds,
               serverLatency: this.serverTime ?? undefined,
               connectivityErrorCount: this.connectivityErrorCount,
@@ -304,6 +305,7 @@ export class OperationMetricsCollector {
           OperationMetricsCollector.metricsHandlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
               metricsHandler.onOperationComplete({
+                authClient: this.authClient,
                 status: finalOperationStatus.toString(),
                 streaming: this.streamingOperation,
                 metricsCollectorData: this.getMetricsCollectorData(),
