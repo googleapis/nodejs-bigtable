@@ -116,27 +116,6 @@ function getIntegerPoints(dataPoint: DataPoint<number>) {
 }
 
 /**
- * Extracts the project ID from a `ResourceMetrics` object.
- *
- * This function retrieves the Google Cloud project ID from the resource
- * attributes of a `ResourceMetrics` object, which is the standard data
- * structure used by OpenTelemetry for representing metrics data. The project ID
- * is typically stored under the `monitored_resource.project_id` key within the
- * resource's attributes.
- *
- */
-function getProject(exportArgs: ResourceMetrics) {
-  type WithSyncAttributes = {_syncAttributes: {[index: string]: string}};
-  const resourcesWithSyncAttributes =
-    exportArgs.resource as unknown as WithSyncAttributes;
-  const projectId =
-    resourcesWithSyncAttributes._syncAttributes[
-      'monitored_resource.project_id'
-    ];
-  return projectId;
-}
-
-/**
  * getResource gets the resource object which is used for building the timeseries
  * object that will be sent to Google Cloud Monitoring dashboard
  *
@@ -232,8 +211,7 @@ function getMetric(
  *
  *
  */
-export function metricsToRequest(exportArgs: ResourceMetrics) {
-  const projectId = getProject(exportArgs);
+export function metricsToRequest(projectId:string, exportArgs: ResourceMetrics) {
   const timeSeriesArray = [];
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
@@ -315,9 +293,9 @@ export class CloudMonitoringExporter extends MetricExporter {
 
   private client: MetricServiceClient;
 
-  constructor(project_id, auth) {
+  constructor(options) {
     super()
-    this.client = new MetricServiceClient(project_id, auth)
+    this.client = new MetricServiceClient(options)
   }
 
   export(
@@ -326,8 +304,7 @@ export class CloudMonitoringExporter extends MetricExporter {
   ): void {
     (async () => {
       try {
-        const projectId = getProject(metrics);
-        const request = metricsToRequest(metrics);
+        const request = metricsToRequest(this.client.projectId, metrics);
         // In order to manage the "One or more points were written more
         // frequently than the maximum sampling period configured for the
         // metric." error we should have the metric service client retry a few

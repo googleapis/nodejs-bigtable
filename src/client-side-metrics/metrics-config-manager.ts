@@ -20,7 +20,8 @@ export class ClientSideMetricsConfigManager {
             // But it might be better to keep the whole stack the same even with no handlers at the end? That would keep the code simpler and avoid optionals
             return null
         } else {
-            return new OperationMetricsCollector(table, table.bigtable.projectId, methodName, streaming, this.metricsHandlers)
+            const projectId = table.bigtable.projectId === "{{projectId}}" ? undefined : table.bigtable.projectId
+            return new OperationMetricsCollector(table, projectId, methodName, streaming, this.metricsHandlers)
         }
     }
 

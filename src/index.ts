@@ -534,14 +534,18 @@ export class Bigtable {
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
 
-    const handlerList = []
+    this.metricsConfigManager = new ClientSideMetricsConfigManager([])
     if (options.metricsEnabled === true) {
       // only add a handler if metrics is enabled
-      handlerList.push(
-        ClientSideMetricsConfigManager.getGcpHandlerForProject(this.projectId, options)
-      )
+      // need to unwrap placeholder {{projectId}} values first
+      this.getProjectId_((error, projectId) => {
+        if (!error) {
+          const handlerOptions = Object.assign({}, options, {projectId: projectId})
+          const gcpHandler = ClientSideMetricsConfigManager.getGcpHandlerForProject(projectId, handlerOptions)
+          this.metricsConfigManager.metricsHandlers = [gcpHandler]
+        }
+      })
     }
-    this.metricsConfigManager = new ClientSideMetricsConfigManager(handlerList)
   }
 
   createInstance(

@@ -104,7 +104,7 @@ export class OperationMetricsCollector {
   private attemptStartTime: bigint | null;
   private zone: string | undefined;
   private cluster: string | undefined;
-  private projectId: string;
+  private projectId: string | undefined;
   private tabularApiSurface: ITabularApiSurface;
   private methodName: MethodName;
   private attemptCount = 0;
@@ -124,7 +124,7 @@ export class OperationMetricsCollector {
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
-    projectId: string,
+    projectId: string | undefined,
     methodName: MethodName,
     streamingOperation: StreamingState,
     handlers: IMetricsHandler[],
