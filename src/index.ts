@@ -511,8 +511,19 @@ export class Bigtable {
       BigtableTableAdminClient: adminOptions,
     };
 
+    const universeDomainEnvVar =
+      typeof process === 'object' && typeof process.env === 'object'
+        ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
+        : undefined;
+    const uD =
+      options?.universeDomain ??
+      (options as any)?.universe_domain ??
+      universeDomainEnvVar ??
+      'googleapis.com';
     this.api = {};
-    this.auth = new GoogleAuth(Object.assign({}, baseOptions, options));
+    this.auth = new GoogleAuth(
+      Object.assign({universeDomain: uD}, baseOptions, options)
+    );
     this.projectId = options.projectId || '{{projectId}}';
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
