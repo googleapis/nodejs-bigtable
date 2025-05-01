@@ -24,12 +24,12 @@ export class ClientSideMetricsConfigManager {
         }
     }
 
-    static getGcpHandlerForProject(projectId, auth): GCPMetricsHandler {
+    static getGcpHandlerForProject(projectId, options): GCPMetricsHandler {
         // share a single GCPMetricsHandler for each project, to avoid sampling errors
         if (this.gcpHandlerStore.has(projectId)){
             return this.gcpHandlerStore[projectId]
         } else {
-            const newHandler = new GCPMetricsHandler(projectId, auth)
+            const newHandler = new GCPMetricsHandler(options)
             this.gcpHandlerStore[projectId] = newHandler
             return newHandler
         }

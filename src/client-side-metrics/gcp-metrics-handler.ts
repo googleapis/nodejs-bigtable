@@ -192,9 +192,9 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * through the provided `PushMetricExporter`.
    *
    */
-  constructor(project_id, auth) {
-    this.exporter = new CloudMonitoringExporter(project_id, auth);
-    this.otelInstruments = createInstruments(this.exporter);
+  constructor(project_id, options) {
+    this.exporter = new CloudMonitoringExporter(options)
+    this.otelInstruments = createInstruments(this.exporter)
   }
 
 

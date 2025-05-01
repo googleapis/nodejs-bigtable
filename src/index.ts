@@ -538,7 +538,7 @@ export class Bigtable {
     if (options.metricsEnabled === true) {
       // only add a handler if metrics is enabled
       handlerList.push(
-        ClientSideMetricsConfigManager.getGcpHandlerForProject(this.projectId, this.auth)
+        ClientSideMetricsConfigManager.getGcpHandlerForProject(this.projectId, options)
       )
     }
     this.metricsConfigManager = new ClientSideMetricsConfigManager(handlerList)
