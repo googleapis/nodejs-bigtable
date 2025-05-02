@@ -124,7 +124,7 @@ describe('Service Path', () => {
       await table.getRows({gaxOptions: {timeout: 1000}});
     } catch (e) {
       assert.strictEqual(
-        (e as ServiceError).message.slice(0, 226),
+        (e as ServiceError).message,
         '14 UNAVAILABLE: Name resolution failed for target dns:someApiEndpoint:443',
       );
     } finally {
