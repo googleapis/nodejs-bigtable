@@ -1,12 +1,14 @@
 import {after, describe, it} from 'mocha';
 import {Bigtable} from '../src';
 
-describe.skip('TPC tests', () => {
+describe.only('TPC tests', () => {
   // These tests are only designed to pass when using the service account
   // credentials for the TPC environment so we skip them in the CI pipeline.
   //
   // To see successful tests, uncomment the following line:
   // process.env.GOOGLE_APPLICATION_CREDENTIALS = '/path-to/tpc_sa_key.json';
+  process.env.GOOGLE_APPLICATION_CREDENTIALS =
+    '/Users/djbruce/Documents/Programming/keys/tpc_sa_key.json';
 
   function runTest(done: Mocha.Done, bigtable: Bigtable) {
     (async () => {
