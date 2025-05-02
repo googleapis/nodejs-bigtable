@@ -105,7 +105,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
 
 function getUniverseDomainOnly(
   options: BigtableOptions,
-  opts?: gax.ClientOptions
+  opts?: gax.ClientOptions,
 ) {
   // From https://github.com/googleapis/nodejs-bigtable/blob/589540475b0b2a055018a1cb6e475800fdd46a37/src/v2/bigtable_client.ts#L120-L128.
   // This code for universe domain was taken from the Gapic Layer.
@@ -134,7 +134,7 @@ function getUniverseDomainOnly(
 function getDomain(
   prefix: string,
   options: BigtableOptions,
-  opts?: gax.ClientOptions
+  opts?: gax.ClientOptions,
 ) {
   const universeDomainOnly = getUniverseDomainOnly(options, opts);
   const suffix = universeDomainOnly ? universeDomainOnly : 'googleapis.com';
@@ -470,15 +470,15 @@ export class Bigtable {
     // Get the universe domain setting for each Gapic client:
     const universeDomainBigtable = getUniverseDomainOnly(
       options,
-      options.BigtableClient
+      options.BigtableClient,
     );
     const universeDomainTableAdmin = getUniverseDomainOnly(
       options,
-      options.BigtableTableAdminClient
+      options.BigtableTableAdminClient,
     );
     const universeDomainInstanceAdmin = getUniverseDomainOnly(
       options,
-      options.BigtableInstanceAdminClient
+      options.BigtableInstanceAdminClient,
     );
 
     const baseOptions = Object.assign({
@@ -538,7 +538,7 @@ export class Bigtable {
           getDomain(
             'bigtableadmin',
             options,
-            options.BigtableInstanceAdminClient
+            options.BigtableInstanceAdminClient,
           ),
       },
       options,

@@ -53,7 +53,7 @@ describe.skip('TPC tests', () => {
 
           if (
             !families.some(
-              (family: {id: string}) => family.id === columnFamilyId
+              (family: {id: string}) => family.id === columnFamilyId,
             )
           ) {
             await table.createFamily(columnFamilyId);
@@ -79,7 +79,6 @@ describe.skip('TPC tests', () => {
     // time then tests can fail. This shouldn't happen because if the create
     // instance long running operation completes then the instance should be
     // ready and shouldn't produce the `Error: 5 NOT_FOUND` error.
-
     // Uncomment the code below when the task above is addressed:
     // const instance = bigtable.instance(instanceId);
     // await instance.delete({});
