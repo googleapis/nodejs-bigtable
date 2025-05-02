@@ -468,29 +468,34 @@ export class Bigtable {
       sslCreds = grpc.credentials.createInsecure();
     }
 
-    const universeDomainOnly = getUniverseDomainOnly(
+    // Get the universe domain setting for each Gapic client:
+    const universeDomainBigtable = getUniverseDomainOnly(
       options,
       options.BigtableClient
     );
-    const universeDomainObject = universeDomainOnly
-      ? {universeDomain: universeDomainOnly}
-      : null;
-    const baseOptions = Object.assign(
-      {
-        libName: 'gccl',
-        libVersion: PKG.version,
-        port: customEndpointPort || 443,
-        sslCreds,
-        scopes,
-        'grpc.keepalive_time_ms': 30000,
-        'grpc.keepalive_timeout_ms': 10000,
-      },
-      universeDomainObject
-    ) as gax.ClientOptions;
+    const universeDomainTableAdmin = getUniverseDomainOnly(
+      options,
+      options.BigtableTableAdminClient
+    );
+    const universeDomainInstanceAdmin = getUniverseDomainOnly(
+      options,
+      options.BigtableInstanceAdminClient
+    );
+
+    const baseOptions = Object.assign({
+      libName: 'gccl',
+      libVersion: PKG.version,
+      port: customEndpointPort || 443,
+      sslCreds,
+      scopes,
+      'grpc.keepalive_time_ms': 30000,
+      'grpc.keepalive_timeout_ms': 10000,
+    }) as gax.ClientOptions;
 
     const dataOptions = Object.assign(
       {},
       baseOptions,
+      universeDomainBigtable ? {universeDomain: universeDomainBigtable} : null,
       {
         servicePath:
           customEndpointBaseUrl ||
@@ -512,6 +517,9 @@ export class Bigtable {
     const adminOptions = Object.assign(
       {},
       baseOptions,
+      universeDomainTableAdmin
+        ? {universeDomain: universeDomainTableAdmin}
+        : null,
       {
         servicePath:
           customEndpointBaseUrl ||
@@ -522,6 +530,9 @@ export class Bigtable {
     const instanceAdminOptions = Object.assign(
       {},
       baseOptions,
+      universeDomainInstanceAdmin
+        ? {universeDomain: universeDomainInstanceAdmin}
+        : null,
       {
         servicePath:
           customEndpointBaseUrl ||
