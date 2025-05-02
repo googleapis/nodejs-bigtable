@@ -104,6 +104,64 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
 }
 
 /**
+ * Retrieves the universe domain, if configured.
+ *
+ * This function checks for a universe domain in the following order:
+ * 1. The `universeDomain` property within the provided options.
+ * 2. The `universeDomain` or `universe_domain` property within the `opts` object.
+ * 3. The `GOOGLE_CLOUD_UNIVERSE_DOMAIN` environment variable.
+ *
+ * If a universe domain is found in any of these locations, it is returned.
+ * Otherwise, the function returns `undefined`.
+ *
+ * @param {BigtableOptions} options - The Bigtable client options.
+ * @param {gax.ClientOptions} [opts] - Optional gax client options.
+ * @returns {string | undefined} The universe domain, or `undefined` if not found.
+ */
+function getUniverseDomainOnly(
+  options: BigtableOptions,
+  opts?: gax.ClientOptions,
+) {
+  // From https://github.com/googleapis/nodejs-bigtable/blob/589540475b0b2a055018a1cb6e475800fdd46a37/src/v2/bigtable_client.ts#L120-L128.
+  // This code for universe domain was taken from the Gapic Layer.
+  // It is reused here to build the service path.
+  const universeDomainEnvVar =
+    typeof process === 'object' && typeof process.env === 'object'
+      ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
+      : undefined;
+  return (
+    options?.universeDomain ??
+    opts?.universeDomain ??
+    opts?.universe_domain ??
+    universeDomainEnvVar
+  );
+}
+
+/**
+ * Retrieves the universe domain options from the provided options.
+ *
+ * This function examines the provided BigtableOptions and an optional
+ * gax.ClientOptions object to determine the universe domain to be used.
+ * It prioritizes the `universeDomain` property in the options, then checks
+ * for `universeDomain` or `universe_domain` in the gax options, and finally
+ * falls back to the `GOOGLE_CLOUD_UNIVERSE_DOMAIN` environment variable.
+ * If a universe domain is found, it returns an object containing the
+ * `universeDomain` property; otherwise, it returns `null`.
+ *
+ * @param {BigtableOptions} options - The Bigtable client options.
+ * @param {gax.ClientOptions} [opts] - Optional gax client options.
+ * @returns {object | null} An object containing the `universeDomain` property if found,
+ *   otherwise `null`.
+ */
+function getUniverseDomainOptions(
+  options: BigtableOptions,
+  opts?: gax.ClientOptions,
+) {
+  const universeDomainOnly = getUniverseDomainOnly(options, opts);
+  return universeDomainOnly ? {universeDomain: universeDomainOnly} : null;
+}
+
+/**
  * Retrieves the domain to be used for the service path.
  *
  * This function retrieves the domain from gax.ClientOptions passed in or via an environment variable.
@@ -112,20 +170,14 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * @param {gax.ClientOptions} [opts] The gax client options
  * @returns {string} The universe domain.
  */
-function getDomain(prefix: string, opts?: gax.ClientOptions) {
-  // From https://github.com/googleapis/nodejs-bigtable/blob/589540475b0b2a055018a1cb6e475800fdd46a37/src/v2/bigtable_client.ts#L120-L128.
-  // This code for universe domain was taken from the Gapic Layer.
-  // It is reused here to build the service path.
-  const universeDomainEnvVar =
-    typeof process === 'object' && typeof process.env === 'object'
-      ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
-      : undefined;
-  return `${prefix}.${
-    opts?.universeDomain ??
-    opts?.universe_domain ??
-    universeDomainEnvVar ??
-    'googleapis.com'
-  }`;
+function getDomain(
+  prefix: string,
+  options: BigtableOptions,
+  opts?: gax.ClientOptions,
+) {
+  const universeDomainOnly = getUniverseDomainOnly(options, opts);
+  const suffix = universeDomainOnly ? universeDomainOnly : 'googleapis.com';
+  return `${prefix}.${suffix}`;
 }
 
 /**
@@ -467,10 +519,11 @@ export class Bigtable {
     const dataOptions = Object.assign(
       {},
       baseOptions,
+      getUniverseDomainOptions(options, options.BigtableClient),
       {
         servicePath:
           customEndpointBaseUrl ||
-          getDomain('bigtable', options.BigtableClient),
+          getDomain('bigtable', options, options.BigtableClient),
         'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
         'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
         'grpc.gcpApiConfig': grpcGcp.createGcpApiConfig({
@@ -488,20 +541,26 @@ export class Bigtable {
     const adminOptions = Object.assign(
       {},
       baseOptions,
+      getUniverseDomainOptions(options, options.BigtableTableAdminClient),
       {
         servicePath:
           customEndpointBaseUrl ||
-          getDomain('bigtableadmin', options.BigtableClient),
+          getDomain('bigtableadmin', options, options.BigtableTableAdminClient),
       },
       options,
     );
     const instanceAdminOptions = Object.assign(
       {},
       baseOptions,
+      getUniverseDomainOptions(options, options.BigtableInstanceAdminClient),
       {
         servicePath:
           customEndpointBaseUrl ||
-          getDomain('bigtableadmin', options.BigtableClient),
+          getDomain(
+            'bigtableadmin',
+            options,
+            options.BigtableInstanceAdminClient,
+          ),
       },
       options,
     );
