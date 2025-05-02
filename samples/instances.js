@@ -108,7 +108,7 @@ async function createDevInstance(instanceID, clusterID) {
   // Create development instance with given options
   const [instance, operation] = await bigtable.createInstance(
     instanceID,
-    options
+    options,
   );
   await operation.promise();
   console.log(`Created development instance: ${instance.id}`);
@@ -148,7 +148,7 @@ async function addCluster(instanceID, clusterID) {
 
     const [cluster, operation] = await instance.createCluster(
       clusterID,
-      clusterOptions
+      clusterOptions,
     );
     await operation.promise();
     console.log(`Cluster created: ${cluster.id}`);
@@ -176,39 +176,39 @@ require('yargs')
     'run',
     'Creates an Instance(type: PRODUCTION) and run basic instance-operations',
     {},
-    argv => runInstanceOperations(argv.instance, argv.cluster)
+    argv => runInstanceOperations(argv.instance, argv.cluster),
   )
   .example(
     'node $0 run --instance [instanceID] --cluster [clusterID]',
-    'Run instance operations'
+    'Run instance operations',
   )
   .command('dev-instance', 'Create Development Instance', {}, argv =>
-    createDevInstance(argv.instance, argv.cluster)
+    createDevInstance(argv.instance, argv.cluster),
   )
   .example(
     'node $0 dev-instance --instance [instanceID]',
-    'Create Development Instance'
+    'Create Development Instance',
   )
   .command('del-instance', 'Delete the Instance', {}, argv =>
-    deleteInstance(argv.instance)
+    deleteInstance(argv.instance),
   )
   .example(
     'node $0 del-instance --instance [instanceID]',
-    'Delete the Instance.'
+    'Delete the Instance.',
   )
   .command('add-cluster', 'Add Cluster', {}, argv =>
-    addCluster(argv.instance, argv.cluster)
+    addCluster(argv.instance, argv.cluster),
   )
   .example(
     'node $0 add-cluster --instance [instanceID] --cluster [clusterID]',
-    'Add Cluster'
+    'Add Cluster',
   )
   .command('del-cluster', 'Delete the Cluster', {}, argv =>
-    deleteCluster(argv.instance, argv.cluster)
+    deleteCluster(argv.instance, argv.cluster),
   )
   .example(
     'node $0 del-cluster --instance [instanceID] --cluster [clusterID]',
-    'Delete the Cluster'
+    'Delete the Cluster',
   )
   .wrap(120)
   .nargs('instance', 1)

@@ -73,27 +73,27 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.deepStrictEqual(
         chunkTransformer.lastRowKey,
         undefined,
-        'invalid initial state'
+        'invalid initial state',
       );
       assert.deepStrictEqual(
         chunkTransformer.family,
         {},
-        'invalid initial state'
+        'invalid initial state',
       );
       assert.deepStrictEqual(
         chunkTransformer.qualifiers,
         [],
-        'invalid initial state'
+        'invalid initial state',
       );
       assert.deepStrictEqual(
         chunkTransformer.qualifier,
         {},
-        'invalid initial state'
+        'invalid initial state',
       );
       assert.deepStrictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
-        'invalid initial state'
+        'invalid initial state',
       );
     });
   });
@@ -199,7 +199,7 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.strictEqual(
         chunkTransformer.lastRowKey,
         chunk.rowKey,
-        'wrong state lastRowKey'
+        'wrong state lastRowKey',
       );
       const expectedRow = {
         key: chunk.rowKey,
@@ -250,7 +250,7 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.ROW_IN_PROGRESS,
-        'wrong state'
+        'wrong state',
       );
     });
     it('partial cell  ', () => {
@@ -286,7 +286,7 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.CELL_IN_PROGRESS,
-        'wrong state'
+        'wrong state',
       );
     });
   });
@@ -298,7 +298,7 @@ describe('Bigtable/ChunkTransformer', () => {
     beforeEach(() => {
       processRowInProgressSpy = sinon.spy(
         chunkTransformer,
-        'processRowInProgress'
+        'processRowInProgress',
       );
       resetSpy = sinon.spy(chunkTransformer, 'reset');
       commitSpy = sinon.spy(chunkTransformer, 'commit');
@@ -422,7 +422,7 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
-        'state mismatch'
+        'state mismatch',
       );
     });
     it('chunk with qualifier and commit should produce row ', () => {
@@ -468,7 +468,7 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
-        'state mismatch'
+        'state mismatch',
       );
     });
     it('chunk with familyName and empty qualifier should produce row', () => {
@@ -515,7 +515,7 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
-        'state mismatch'
+        'state mismatch',
       );
     });
     it('chunk with new family and commitRow should produce row', () => {
@@ -564,7 +564,7 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
-        'state mismatch'
+        'state mismatch',
       );
     });
     it('partial cell ', () => {
@@ -605,12 +605,12 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.deepStrictEqual(
         chunkTransformer.row,
         expectedState,
-        'row state mismatch'
+        'row state mismatch',
       );
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.CELL_IN_PROGRESS,
-        'state mismatch'
+        'state mismatch',
       );
     });
     it('should decode numbers', () => {
@@ -658,12 +658,12 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.deepStrictEqual(
         chunkTransformer.row,
         expectedState,
-        'row mismatch'
+        'row mismatch',
       );
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.ROW_IN_PROGRESS,
-        'state mismatch'
+        'state mismatch',
       );
     });
   });
@@ -675,7 +675,7 @@ describe('Bigtable/ChunkTransformer', () => {
     beforeEach(() => {
       processCellInProgressSpy = sinon.spy(
         chunkTransformer,
-        'processCellInProgress'
+        'processCellInProgress',
       );
       resetSpy = sinon.spy(chunkTransformer, 'reset');
       commitSpy = sinon.spy(chunkTransformer, 'commit');
@@ -794,7 +794,7 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
-        'state mismatch'
+        'state mismatch',
       );
     });
     it('without commitRow should change state to processRowInProgress', () => {
@@ -841,19 +841,19 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.deepStrictEqual(
         chunkTransformer.row,
         expectedState,
-        'row mismatch'
+        'row mismatch',
       );
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.ROW_IN_PROGRESS,
-        'state mismatch'
+        'state mismatch',
       );
     });
     it('should concat buffer when decode option is false', () => {
       chunkTransformer = new ChunkTransformer({decode: false});
       processCellInProgressSpy = sinon.spy(
         chunkTransformer,
-        'processCellInProgress'
+        'processCellInProgress',
       );
       resetSpy = sinon.spy(chunkTransformer, 'reset');
       commitSpy = sinon.spy(chunkTransformer, 'commit');
@@ -904,12 +904,12 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.deepStrictEqual(
         chunkTransformer.row,
         expectedState,
-        'row mismatch'
+        'row mismatch',
       );
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.ROW_IN_PROGRESS,
-        'state mismatch'
+        'state mismatch',
       );
     });
   });
@@ -948,11 +948,11 @@ describe('Bigtable/ChunkTransformer', () => {
       processNewRowSpy = sinon.spy(chunkTransformer, 'processNewRow');
       processRowInProgressSpy = sinon.spy(
         chunkTransformer,
-        'processRowInProgress'
+        'processRowInProgress',
       );
       processCellInProgressSpy = sinon.spy(
         chunkTransformer,
-        'processCellInProgress'
+        'processCellInProgress',
       );
     });
     it('when current state is NEW_ROW should call processNewRow', () => {
@@ -980,7 +980,7 @@ describe('Bigtable/ChunkTransformer', () => {
       chunkTransformer._transform({chunks}, {}, callback);
       assert(
         processRowInProgressSpy.called,
-        'did not call processRowInProgress'
+        'did not call processRowInProgress',
       );
       const err = callback.getCall(0).args[0];
       assert(!err, 'did not expect error');
@@ -992,7 +992,7 @@ describe('Bigtable/ChunkTransformer', () => {
       chunkTransformer._transform({chunks}, {}, callback);
       assert(
         processCellInProgressSpy.called,
-        'did not call processCellInProgress'
+        'did not call processCellInProgress',
       );
       const err = callback.getCall(0).args[0];
       assert(!err, 'did not expect error');
@@ -1001,7 +1001,7 @@ describe('Bigtable/ChunkTransformer', () => {
       chunkTransformer._transform(
         {chunks: [], lastScannedRowKey: 'foo'},
         {},
-        callback
+        callback,
       );
       assert.deepStrictEqual(chunkTransformer.lastRowKey, 'foo');
     });
@@ -1031,27 +1031,27 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.deepStrictEqual(
         chunkTransformer.lastRowKey,
         'prevkey',
-        'invalid initial state'
+        'invalid initial state',
       );
       assert.deepStrictEqual(
         chunkTransformer.family,
         {},
-        'invalid initial state'
+        'invalid initial state',
       );
       assert.deepStrictEqual(
         chunkTransformer.qualifiers,
         [],
-        'invalid initial state'
+        'invalid initial state',
       );
       assert.deepStrictEqual(
         chunkTransformer.qualifier,
         {},
-        'invalid initial state'
+        'invalid initial state',
       );
       assert.deepStrictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
-        'invalid initial state'
+        'invalid initial state',
       );
     });
   });
@@ -1085,27 +1085,27 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.deepStrictEqual(
         chunkTransformer.lastRowKey,
         'key',
-        'invalid initial state'
+        'invalid initial state',
       );
       assert.deepStrictEqual(
         chunkTransformer.family,
         {},
-        'invalid initial state'
+        'invalid initial state',
       );
       assert.deepStrictEqual(
         chunkTransformer.qualifiers,
         [],
-        'invalid initial state'
+        'invalid initial state',
       );
       assert.deepStrictEqual(
         chunkTransformer.qualifier,
         {},
-        'invalid initial state'
+        'invalid initial state',
       );
       assert.deepStrictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
-        'invalid initial state'
+        'invalid initial state',
       );
     });
   });
@@ -1157,7 +1157,7 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
-        'state mismatch'
+        'state mismatch',
       );
     });
     it('chunk without commitRow and value size>0 should move to CELL_IN_PROGRESS', () => {
@@ -1172,7 +1172,7 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.CELL_IN_PROGRESS,
-        'wrong state'
+        'wrong state',
       );
     });
     it('chunk without commitRow and value size==0 should move to ROW_IN_PROGRESS', () => {
@@ -1187,7 +1187,7 @@ describe('Bigtable/ChunkTransformer', () => {
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.ROW_IN_PROGRESS,
-        'wrong state'
+        'wrong state',
       );
     });
   });

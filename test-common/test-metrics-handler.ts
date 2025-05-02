@@ -35,7 +35,7 @@ export class TestMetricsHandler implements IMetricsHandler {
    */
   onOperationComplete(data: OnOperationCompleteData) {
     this.requestsHandled.push(data);
-    data.clientName = 'nodejs-bigtable';
+    data.client_name = 'nodejs-bigtable';
     this.messages.value += 'Recording parameters for onOperationComplete:\n';
     this.messages.value += `${JSON.stringify(data)}\n`;
   }
@@ -46,7 +46,7 @@ export class TestMetricsHandler implements IMetricsHandler {
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
     this.requestsHandled.push(data);
-    data.clientName = 'nodejs-bigtable';
+    data.client_name = 'nodejs-bigtable';
     this.messages.value += 'Recording parameters for onAttemptComplete:\n';
     this.messages.value += `${JSON.stringify(data)}\n`;
   }

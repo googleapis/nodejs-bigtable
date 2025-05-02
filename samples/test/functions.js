@@ -150,7 +150,7 @@ describe('functions', async () => {
     // Workaround: include "& sleep <TIMEOUT>; kill $!" in executed command
     ffProc = execSync(
       `functions-framework --target=readRows --signature-type=http --port ${PORT} & sleep 2; kill $!`,
-      {shell: true, cwd}
+      {shell: true, cwd},
     );
   });
 
@@ -179,7 +179,7 @@ rowkey: phone#4c410523#20190502, os_build: PQ2A.190405.004
 rowkey: phone#4c410523#20190505, os_build: PQ2A.190406.000
 rowkey: phone#5c10102#20190501, os_build: PQ2A.190401.002
 rowkey: phone#5c10102#20190502, os_build: PQ2A.190406.000
-`
+`,
     );
   });
 });

@@ -107,7 +107,7 @@ describe('Bigtable/Table', () => {
           // };
           mutationBatchesInvoked.push(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            reqOpts!.entries!.map(entry => (entry.rowKey as any).asciiSlice())
+            reqOpts!.entries!.map(entry => (entry.rowKey as any).asciiSlice()),
           );
           // assert.deepStrictEqual(
           //   options!.retryRequestOptions,
@@ -133,7 +133,7 @@ describe('Bigtable/Table', () => {
         TABLE.mutate(test.mutations_request, error => {
           assert.deepStrictEqual(
             mutationBatchesInvoked,
-            test.mutation_batches_invoked
+            test.mutation_batches_invoked,
           );
           if (test.errors) {
             const expectedIndices = test.errors.map(error => {
@@ -143,9 +143,9 @@ describe('Bigtable/Table', () => {
             const actualIndices = (error as PartialFailureError).errors!.map(
               error => {
                 return test.mutations_request.indexOf(
-                  (error as {entry: Entry}).entry
+                  (error as {entry: Entry}).entry,
                 );
-              }
+              },
             );
             assert.deepStrictEqual(expectedIndices, actualIndices);
           } else {

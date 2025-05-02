@@ -16,7 +16,6 @@ import {describe} from 'mocha';
 import * as assert from 'assert';
 import * as fs from 'fs';
 import {TestMetricsHandler} from '../../test-common/test-metrics-handler';
-import {OperationMetricsCollector} from '../../src/client-side-metrics/operation-metrics-collector';
 import {
   MethodName,
   StreamingState,
@@ -24,8 +23,9 @@ import {
 import {grpc} from 'google-gax';
 import {expectedRequestsHandled} from '../../test-common/metrics-handler-fixture';
 import * as gax from 'google-gax';
+import * as proxyquire from 'proxyquire';
 const root = gax.protobuf.loadSync(
-  './protos/google/bigtable/v2/response_params.proto'
+  './protos/google/bigtable/v2/response_params.proto',
 );
 const ResponseParams = root.lookupType('ResponseParams');
 
@@ -50,47 +50,26 @@ class FakeInstance {
 }
 
 describe('Bigtable/MetricsCollector', () => {
+  class FakeHRTime {
+    startTime = BigInt(0);
+    bigint() {
+      this.startTime += BigInt(1000000000);
+      logger.value += `getDate call returns ${Number(this.startTime / BigInt(1000000))} ms\n`;
+      return this.startTime;
+    }
+  }
+
+  const stubs = {
+    'node:process': {
+      hrtime: new FakeHRTime(),
+    },
+  };
+  const FakeOperationsMetricsCollector = proxyquire(
+    '../../src/client-side-metrics/operation-metrics-collector.js',
+    stubs,
+  ).OperationMetricsCollector;
+
   const logger = {value: ''};
-  const originalDate = global.Date;
-
-  before(() => {
-    let mockTime = new Date('1970-01-01T00:00:01.000Z').getTime();
-
-    (global as any).Date = class extends originalDate {
-      constructor(...args: any[]) {
-        // Using a rest parameter
-        if (args.length === 0) {
-          super(mockTime);
-          logger.value += `getDate call returns ${mockTime.toString()} ms\n`;
-          mockTime += 1000;
-        }
-      }
-
-      static now(): number {
-        return mockTime;
-      }
-
-      static parse(dateString: string): number {
-        return originalDate.parse(dateString);
-      }
-
-      static UTC(
-        year: number,
-        month: number,
-        date?: number,
-        hours?: number,
-        minutes?: number,
-        seconds?: number,
-        ms?: number
-      ): number {
-        return originalDate.UTC(year, month, date, hours, minutes, seconds, ms);
-      }
-    };
-  });
-
-  after(() => {
-    (global as any).Date = originalDate;
-  });
 
   it('should record the right metrics with a typical method call', async () => {
     const testHandler = new TestMetricsHandler(logger);
@@ -126,11 +105,11 @@ describe('Bigtable/MetricsCollector', () => {
               options: {},
             },
           };
-          const metricsCollector = new OperationMetricsCollector(
+          const metricsCollector = new FakeOperationsMetricsCollector(
             this,
             metricsHandlers,
             MethodName.READ_ROWS,
-            StreamingState.STREAMING
+            StreamingState.STREAMING,
           );
           // In this method we simulate a series of events that might happen
           // when a user calls one of the Table methods.
@@ -145,36 +124,44 @@ describe('Bigtable/MetricsCollector', () => {
           metricsCollector.onMetadataReceived(createMetadata('101'));
           logger.value += '5. Client receives first row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
-          logger.value += '6. Client receives metadata.\n';
+          logger.value += '6. User receives first row.\n';
+          metricsCollector.onRowReachesUser();
+          logger.value += '7. Client receives metadata.\n';
           metricsCollector.onMetadataReceived(createMetadata('102'));
-          logger.value += '7. Client receives second row.\n';
+          logger.value += '8. Client receives second row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
-          logger.value += '8. A transient error occurs.\n';
+          logger.value += '9. User receives second row.\n';
+          metricsCollector.onRowReachesUser();
+          logger.value += '10. A transient error occurs.\n';
           metricsCollector.onAttemptComplete(
             this.bigtable.projectId,
-            grpc.status.DEADLINE_EXCEEDED
+            grpc.status.DEADLINE_EXCEEDED,
           );
-          logger.value += '9. After a timeout, the second attempt is made.\n';
+          logger.value += '11. After a timeout, the second attempt is made.\n';
           metricsCollector.onAttemptStart();
-          logger.value += '10. Client receives status information.\n';
+          logger.value += '12. Client receives status information.\n';
           metricsCollector.onStatusMetadataReceived(status);
-          logger.value += '11. Client receives metadata.\n';
-          metricsCollector.onMetadataReceived(createMetadata('103'));
-          logger.value += '12. Client receives third row.\n';
-          metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '13. Client receives metadata.\n';
-          metricsCollector.onMetadataReceived(createMetadata('104'));
-          logger.value += '14. Client receives fourth row.\n';
+          metricsCollector.onMetadataReceived(createMetadata('103'));
+          logger.value += '14. Client receives third row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
-          logger.value += '15. User reads row 1\n';
-          logger.value += '16. Stream ends, operation completes\n';
+          logger.value += '15. User receives third row.\n';
+          metricsCollector.onRowReachesUser();
+          logger.value += '16. Client receives metadata.\n';
+          metricsCollector.onMetadataReceived(createMetadata('104'));
+          logger.value += '17. Client receives fourth row.\n';
+          metricsCollector.onResponse(this.bigtable.projectId);
+          logger.value += '18. User receives fourth row.\n';
+          metricsCollector.onRowReachesUser();
+          logger.value += '19. User reads row 1\n';
+          logger.value += '20. Stream ends, operation completes\n';
           metricsCollector.onAttemptComplete(
             this.bigtable.projectId,
-            grpc.status.OK
+            grpc.status.OK,
           );
           metricsCollector.onOperationComplete(
             this.bigtable.projectId,
-            grpc.status.OK
+            grpc.status.OK,
           );
         }
       }
@@ -183,13 +170,13 @@ describe('Bigtable/MetricsCollector', () => {
     await table.fakeMethod();
     const expectedOutput = fs.readFileSync(
       './test/metrics-collector/typical-method-call.txt',
-      'utf8'
+      'utf8',
     );
     // Ensure events occurred in the right order here:
     assert.strictEqual(logger.value, expectedOutput.replace(/\r/g, ''));
     assert.deepStrictEqual(
       testHandler.requestsHandled,
-      expectedRequestsHandled
+      expectedRequestsHandled,
     );
   });
 });

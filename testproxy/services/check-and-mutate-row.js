@@ -43,8 +43,8 @@ function handwrittenLayerMutations(gapicLayerMutations) {
           },
         ],
         mutationParseInverse,
-        1
-      )
+        1,
+      ),
     )
     .flat();
 }
