@@ -122,6 +122,14 @@ function getUniverseDomainOnly(
   );
 }
 
+function getUniverseDomainOptions(
+  options: BigtableOptions,
+  opts?: gax.ClientOptions,
+) {
+  const universeDomainOnly = getUniverseDomainOnly(options, opts);
+  return universeDomainOnly ? {universeDomain: universeDomainOnly} : null;
+}
+
 /**
  * Retrieves the domain to be used for the service path.
  *
@@ -467,20 +475,6 @@ export class Bigtable {
       sslCreds = grpc.credentials.createInsecure();
     }
 
-    // Get the universe domain setting for each Gapic client:
-    const universeDomainBigtable = getUniverseDomainOnly(
-      options,
-      options.BigtableClient,
-    );
-    const universeDomainTableAdmin = getUniverseDomainOnly(
-      options,
-      options.BigtableTableAdminClient,
-    );
-    const universeDomainInstanceAdmin = getUniverseDomainOnly(
-      options,
-      options.BigtableInstanceAdminClient,
-    );
-
     const baseOptions = Object.assign({
       libName: 'gccl',
       libVersion: PKG.version,
@@ -494,7 +488,7 @@ export class Bigtable {
     const dataOptions = Object.assign(
       {},
       baseOptions,
-      universeDomainBigtable ? {universeDomain: universeDomainBigtable} : null,
+      getUniverseDomainOptions(options, options.BigtableClient),
       {
         servicePath:
           customEndpointBaseUrl ||
@@ -516,9 +510,7 @@ export class Bigtable {
     const adminOptions = Object.assign(
       {},
       baseOptions,
-      universeDomainTableAdmin
-        ? {universeDomain: universeDomainTableAdmin}
-        : null,
+      getUniverseDomainOptions(options, options.BigtableTableAdminClient),
       {
         servicePath:
           customEndpointBaseUrl ||
@@ -529,9 +521,7 @@ export class Bigtable {
     const instanceAdminOptions = Object.assign(
       {},
       baseOptions,
-      universeDomainInstanceAdmin
-        ? {universeDomain: universeDomainInstanceAdmin}
-        : null,
+      getUniverseDomainOptions(options, options.BigtableInstanceAdminClient),
       {
         servicePath:
           customEndpointBaseUrl ||
