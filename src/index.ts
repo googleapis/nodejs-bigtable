@@ -119,8 +119,7 @@ function getUniverseDomainOnly(
     options?.universeDomain ??
     opts?.universeDomain ??
     opts?.universe_domain ??
-    universeDomainEnvVar ??
-    'googleapis.com'
+    universeDomainEnvVar
   );
 }
 
@@ -138,7 +137,9 @@ function getDomain(
   options: BigtableOptions,
   opts?: gax.ClientOptions
 ) {
-  return `${prefix}.${getUniverseDomainOnly(options, opts)}`;
+  const universeDomainOnly = getUniverseDomainOnly(options, opts);
+  const suffix = universeDomainOnly ? universeDomainOnly : 'googleapis.com';
+  return `${prefix}.${suffix}`;
 }
 
 /**
@@ -471,10 +472,9 @@ export class Bigtable {
       options,
       options.BigtableClient
     );
-    const universeDomainObject =
-      universeDomainOnly !== 'googleapis.com'
-        ? {universeDomain: universeDomainOnly}
-        : null;
+    const universeDomainObject = universeDomainOnly
+      ? {universeDomain: universeDomainOnly}
+      : null;
     const baseOptions = Object.assign(
       {
         libName: 'gccl',
