@@ -54,20 +54,6 @@ describe.only('TPC using the option in the Gapic client', () => {
   const columnFamilyId = 'cf1';
   let bigtable: Bigtable;
 
-  before(async () => {
-    // This line is added just to make sure the bigtable variable is assigned.
-    // It is needed to solve a compile time error in the after hook.
-    process.env.GOOGLE_APPLICATION_CREDENTIALS =
-      '/Users/djbruce/Documents/Programming/keys/tpc_sa_key.json';
-    const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
-    const options = {
-      BigtableClient: {universeDomain},
-      BigtableInstanceAdminClient: {universeDomain},
-      BigtableTableAdminClient: {universeDomain},
-    };
-    bigtable = new Bigtable(options);
-  });
-
   after(async () => {
     try {
       // If the instance has been deleted already by another source, we don't
@@ -80,6 +66,17 @@ describe.only('TPC using the option in the Gapic client', () => {
   });
 
   it('should send the metrics to the metrics handler for a ReadRows call', done => {
+    // This line is added just to make sure the bigtable variable is assigned.
+    // It is needed to solve a compile time error in the after hook.
+    process.env.GOOGLE_APPLICATION_CREDENTIALS =
+      '/Users/djbruce/Documents/Programming/keys/tpc_sa_key.json';
+    const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
+    const options = {
+      BigtableClient: {universeDomain},
+      BigtableInstanceAdminClient: {universeDomain},
+      BigtableTableAdminClient: {universeDomain},
+    };
+    bigtable = new Bigtable(options);
     (async () => {
       try {
         const instance = bigtable.instance(instanceId);
