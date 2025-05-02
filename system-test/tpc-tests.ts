@@ -21,8 +21,6 @@ describe.skip('TPC tests', () => {
   //
   // To see successful tests, uncomment the following line:
   // process.env.GOOGLE_APPLICATION_CREDENTIALS = '/path-to/tpc_sa_key.json';
-  process.env.GOOGLE_APPLICATION_CREDENTIALS =
-    '/Users/djbruce/Documents/Programming/keys/tpc_sa_key.json';
 
   function runTest(done: Mocha.Done, bigtable: Bigtable) {
     (async () => {
