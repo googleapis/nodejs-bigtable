@@ -5,7 +5,6 @@ describe.only('TPC tests', () => {
   async function mockBigtable(bigtable: Bigtable) {
     const instance = bigtable.instance(instanceId);
     const [instanceInfo] = await instance.exists();
-    console.log('after exists');
     if (!instanceInfo) {
       const [, operation] = await instance.create({
         clusters: {
@@ -16,7 +15,6 @@ describe.only('TPC tests', () => {
       });
       await operation.promise();
     }
-    console.log('after created');
 
     const table = instance.table(tableId);
     const [tableExists] = await table.exists();
