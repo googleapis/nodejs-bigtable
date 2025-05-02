@@ -103,6 +103,21 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
   BigtableTableAdminClient?: gax.ClientOptions;
 }
 
+/**
+ * Retrieves the universe domain, if configured.
+ *
+ * This function checks for a universe domain in the following order:
+ * 1. The `universeDomain` property within the provided options.
+ * 2. The `universeDomain` or `universe_domain` property within the `opts` object.
+ * 3. The `GOOGLE_CLOUD_UNIVERSE_DOMAIN` environment variable.
+ *
+ * If a universe domain is found in any of these locations, it is returned.
+ * Otherwise, the function returns `undefined`.
+ *
+ * @param {BigtableOptions} options - The Bigtable client options.
+ * @param {gax.ClientOptions} [opts] - Optional gax client options.
+ * @returns {string | undefined} The universe domain, or `undefined` if not found.
+ */
 function getUniverseDomainOnly(
   options: BigtableOptions,
   opts?: gax.ClientOptions,
@@ -122,6 +137,22 @@ function getUniverseDomainOnly(
   );
 }
 
+/**
+ * Retrieves the universe domain options from the provided options.
+ *
+ * This function examines the provided BigtableOptions and an optional
+ * gax.ClientOptions object to determine the universe domain to be used.
+ * It prioritizes the `universeDomain` property in the options, then checks
+ * for `universeDomain` or `universe_domain` in the gax options, and finally
+ * falls back to the `GOOGLE_CLOUD_UNIVERSE_DOMAIN` environment variable.
+ * If a universe domain is found, it returns an object containing the
+ * `universeDomain` property; otherwise, it returns `null`.
+ *
+ * @param {BigtableOptions} options - The Bigtable client options.
+ * @param {gax.ClientOptions} [opts] - Optional gax client options.
+ * @returns {object | null} An object containing the `universeDomain` property if found,
+ *   otherwise `null`.
+ */
 function getUniverseDomainOptions(
   options: BigtableOptions,
   opts?: gax.ClientOptions,
