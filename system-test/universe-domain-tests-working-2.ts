@@ -42,7 +42,7 @@ describe.only('TPC with an environment variable', () => {
       const [families] = await table.getFamilies();
 
       if (
-          !families.some((family: {id: string}) => family.id === columnFamilyId)
+        !families.some((family: {id: string}) => family.id === columnFamilyId)
       ) {
         await table.createFamily(columnFamilyId);
       }

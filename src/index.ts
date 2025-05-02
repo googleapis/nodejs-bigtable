@@ -467,15 +467,26 @@ export class Bigtable {
       sslCreds = grpc.credentials.createInsecure();
     }
 
-    const baseOptions = Object.assign({
-      libName: 'gccl',
-      libVersion: PKG.version,
-      port: customEndpointPort || 443,
-      sslCreds,
-      scopes,
-      'grpc.keepalive_time_ms': 30000,
-      'grpc.keepalive_timeout_ms': 10000,
-    }) as gax.ClientOptions;
+    const universeDomainOnly = getUniverseDomainOnly(
+      options,
+      options.BigtableClient
+    );
+    const universeDomainObject =
+      universeDomainOnly !== 'googleapis.com'
+        ? {universeDomain: universeDomainOnly}
+        : null;
+    const baseOptions = Object.assign(
+      {
+        libName: 'gccl',
+        libVersion: PKG.version,
+        port: customEndpointPort || 443,
+        sslCreds,
+        scopes,
+        'grpc.keepalive_time_ms': 30000,
+        'grpc.keepalive_timeout_ms': 10000,
+      },
+      universeDomainObject
+    ) as gax.ClientOptions;
 
     const dataOptions = Object.assign(
       {},
@@ -514,7 +525,11 @@ export class Bigtable {
       {
         servicePath:
           customEndpointBaseUrl ||
-          getDomain('bigtableadmin', options, options.BigtableInstanceAdminClient),
+          getDomain(
+            'bigtableadmin',
+            options,
+            options.BigtableInstanceAdminClient
+          ),
       },
       options
     );
@@ -526,18 +541,7 @@ export class Bigtable {
     };
 
     this.api = {};
-    this.auth = new GoogleAuth(
-      Object.assign(
-        {
-          universeDomain: getUniverseDomainOnly(
-            options,
-            options.BigtableClient
-          ),
-        },
-        baseOptions,
-        options
-      )
-    );
+    this.auth = new GoogleAuth(Object.assign({}, baseOptions, options));
     this.projectId = options.projectId || '{{projectId}}';
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
