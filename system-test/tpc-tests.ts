@@ -64,7 +64,9 @@ describe.skip('TPC tests', () => {
       } catch (e) {
         done(e);
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   }
 
   const instanceId = 'emulator-test-instance';
