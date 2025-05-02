@@ -490,11 +490,10 @@ export class Bigtable {
 
     const dataOptions = Object.assign(
       {},
+      customEndpointBaseUrl ? {servicePath: customEndpointBaseUrl} : null,
       baseOptions,
       {
-        servicePath:
-          customEndpointBaseUrl ||
-          getDomain('bigtable', options, options.BigtableClient),
+        servicePath: customEndpointBaseUrl,
         'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
         'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
         'grpc.gcpApiConfig': grpcGcp.createGcpApiConfig({
@@ -511,26 +510,14 @@ export class Bigtable {
 
     const adminOptions = Object.assign(
       {},
+      customEndpointBaseUrl ? {servicePath: customEndpointBaseUrl} : null,
       baseOptions,
-      {
-        servicePath:
-          customEndpointBaseUrl ||
-          getDomain('bigtableadmin', options, options.BigtableTableAdminClient),
-      },
       options
     );
     const instanceAdminOptions = Object.assign(
       {},
+      customEndpointBaseUrl ? {servicePath: customEndpointBaseUrl} : null,
       baseOptions,
-      {
-        servicePath:
-          customEndpointBaseUrl ||
-          getDomain(
-            'bigtableadmin',
-            options,
-            options.BigtableInstanceAdminClient
-          ),
-      },
       options
     );
 
