@@ -1,7 +1,7 @@
 import {after, describe, it} from 'mocha';
 import {Bigtable} from '../src';
 
-describe.only('TPC tests', () => {
+describe.skip('TPC tests', () => {
   // These tests are only designed to pass when using the service account
   // credentials for the TPC environment so we skip them in the CI pipeline.
   //
