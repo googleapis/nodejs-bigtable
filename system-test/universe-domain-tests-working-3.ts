@@ -17,7 +17,7 @@ import {Bigtable} from '../src';
 import * as proxyquire from 'proxyquire';
 import * as mocha from 'mocha';
 
-describe.only('TPC using the option in the Gapic client', () => {
+describe('TPC using the option in the Gapic client', () => {
   async function mockBigtable() {
     const instance = bigtable.instance(instanceId);
     const [instanceInfo] = await instance.exists();

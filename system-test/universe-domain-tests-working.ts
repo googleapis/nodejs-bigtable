@@ -17,7 +17,7 @@ import {Bigtable} from '../src';
 import * as proxyquire from 'proxyquire';
 import * as mocha from 'mocha';
 
-describe.only('TPC using the client option', () => {
+describe('TPC using the client option', () => {
   async function mockBigtable() {
     const instance = bigtable.instance(instanceId);
     const [instanceInfo] = await instance.exists();
