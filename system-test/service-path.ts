@@ -18,7 +18,7 @@ import {ServiceError} from 'google-gax';
 import {Bigtable} from '../src';
 import {BigtableClient, BigtableInstanceAdminClient} from '../src/v2';
 
-describe.only('Service Path', () => {
+describe('Service Path', () => {
   it('Setting universe domain should set the service path', async () => {
     // Set the environment variable
     process.env.GOOGLE_CLOUD_UNIVERSE_DOMAIN = 'otherDomain';
