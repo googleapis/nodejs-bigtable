@@ -518,6 +518,10 @@ export class Bigtable {
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
+    this.getProjectId_((error, projectId) => {
+      console.log('fetched project');
+    });
+    console.log('request finished');
   }
 
   createInstance(
