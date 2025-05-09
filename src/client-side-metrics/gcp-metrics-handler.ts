@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CloudMonitoringExporter } from './exporter'; // Added import
 import {
   IMetricsHandler,
   OnAttemptCompleteData,
@@ -192,7 +193,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * through the provided `PushMetricExporter`.
    *
    */
-  constructor(options) {
+  constructor(options: any) { // Added any type for options
     this.exporter = new CloudMonitoringExporter(options)
     this.otelInstruments = createInstruments(this.exporter)
   }

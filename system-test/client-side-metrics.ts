@@ -135,12 +135,16 @@ describe('Bigtable/ClientSideMetrics', () => {
       }, 120000);
 
       class TestExporter extends CloudMonitoringExporter {
-        export(
+        constructor(options: any) { // Added constructor with options
+          super(options);
+        }
+
+        async export( // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
-        ): void {
+        ): Promise<void> { // Added Promise<void>
           try {
-            super.export(metrics, (result: ExportResult) => {
+            await super.export(metrics, (result: ExportResult) => { // Added await
               if (!exported) {
                 exported = true;
                 try {
@@ -168,7 +172,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       class TestGCPMetricsHandler extends GCPMetricsHandler {
         static value = 'value';
         constructor() {
-          super(new TestExporter());
+          super({exporter: new TestExporter({})}); // Pass options with exporter
         }
       }
 
@@ -230,12 +234,16 @@ describe('Bigtable/ClientSideMetrics', () => {
     // when multiple clients are attempting an export.
     async function mockBigtable(projectId: string, done: mocha.Done) {
       class TestExporter extends CloudMonitoringExporter {
-        export(
+        constructor(options: any) { // Added constructor with options
+          super(options);
+        }
+
+        async export( // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
-        ): void {
+        ): Promise<void> { // Added Promise<void>
           try {
-            super.export(metrics, (result: ExportResult) => {
+            await super.export(metrics, (result: ExportResult) => { // Added await
               try {
                 // The code is expected to be 0 because the
                 // result from calling export was successful.
@@ -258,7 +266,7 @@ describe('Bigtable/ClientSideMetrics', () => {
 
       class TestGCPMetricsHandler extends GCPMetricsHandler {
         constructor() {
-          super(new TestExporter());
+          super({exporter: new TestExporter({})}); // Pass options with exporter
         }
       }
 

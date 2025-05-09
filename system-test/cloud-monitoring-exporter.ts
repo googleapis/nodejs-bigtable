@@ -70,7 +70,7 @@ describe('Bigtable/CloudMonitoringExporter', () => {
           });
         });
       }
-      const exporter = new CloudMonitoringExporter();
+      const exporter = new CloudMonitoringExporter({}); // Pass empty object as options
       exporter.export(
         transformedExportInput as unknown as ResourceMetrics,
         resultCallback,

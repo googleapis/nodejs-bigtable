@@ -64,13 +64,17 @@ describe('Bigtable/GCPMetricsHandler', () => {
         };
       }
       class MockExporter extends CloudMonitoringExporter {
-        export(
+        constructor(options: any) { // Added constructor with options
+          super(options);
+        }
+
+        async export( // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
-        ): void {
+        ): Promise<void> { // Added Promise<void>
           const testResultCallback = getTestResultCallback(resultCallback);
           if (!exported) {
-            super.export(metrics, testResultCallback);
+            await super.export(metrics, testResultCallback); // Added await
           } else {
             resultCallback({code: 0});
           }
@@ -89,8 +93,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
       });
       // projectToInstruments argument is set to {} because we want a fresh
       // instrument stack each time this test is run.
-      GCPMetricsHandler.instrumentsForProject = {};
-      const handler = new GCPMetricsHandler(new MockExporter({projectId}));
+      // GCPMetricsHandler.instrumentsForProject = {}; // Removed line
+      const handler = new GCPMetricsHandler({exporter: new MockExporter({projectId})}); // Pass options with exporter
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
@@ -152,14 +156,18 @@ describe('Bigtable/GCPMetricsHandler', () => {
         };
       }
       class MockExporter extends CloudMonitoringExporter {
-        export(
+        constructor(options: any) { // Added constructor with options
+          super(options);
+        }
+
+        async export( // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
-        ): void {
+        ): Promise<void> { // Added Promise<void>
           if (exportedCount < 1) {
             // The code below uses the test callback to ensure the export was successful.
             const testResultCallback = getTestResultCallback(resultCallback);
-            super.export(metrics, testResultCallback);
+            await super.export(metrics, testResultCallback); // Added await
           } else {
             // After the test is complete the periodic exporter may still be
             // running in which case we don't want to do any checks. We just
@@ -182,9 +190,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
       });
       // projectToInstruments argument is set to {} because we want a fresh
       // instrument stack each time this test is run.
-      GCPMetricsHandler.instrumentsForProject = {};
-      const handler = new GCPMetricsHandler(new MockExporter({projectId}));
-      const handler2 = new GCPMetricsHandler(new MockExporter({projectId}));
+      // GCPMetricsHandler.instrumentsForProject = {}; // Removed line
+      const handler = new GCPMetricsHandler({exporter: new MockExporter({projectId})}); // Pass options with exporter
+      const handler2 = new GCPMetricsHandler({exporter: new MockExporter({projectId})}); // Pass options with exporter
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
@@ -252,10 +260,14 @@ describe('Bigtable/GCPMetricsHandler', () => {
         };
       }
       class MockExporter extends CloudMonitoringExporter {
-        export(
+        constructor(options: any) { // Added constructor with options
+          super(options);
+        }
+
+        async export( // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
-        ): void {
+        ): Promise<void> { // Added Promise<void>
           if (exportedCount < 1) {
             try {
               // This code block ensures the metrics are correct. Mainly, the metrics
@@ -299,7 +311,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
             }
             // The code below uses the test callback to ensure the export was successful.
             const testResultCallback = getTestResultCallback(resultCallback);
-            super.export(metrics, testResultCallback);
+            await super.export(metrics, testResultCallback); // Added await
           } else {
             // After the test is complete the periodic exporter may still be
             // running in which case we don't want to do any checks. We just
@@ -329,9 +341,9 @@ describe('Bigtable/GCPMetricsHandler', () => {
       const handlers = [];
       // projectToInstruments argument is set to {} because we want a fresh
       // instrument stack each time this test is run.
-      GCPMetricsHandler.instrumentsForProject = {};
+      // GCPMetricsHandler.instrumentsForProject = {}; // Removed line
       for (let i = 0; i < 100; i++) {
-        handlers.push(new GCPMetricsHandler(new MockExporter({projectId})));
+        handlers.push(new GCPMetricsHandler({exporter: new MockExporter({projectId})})); // Pass options with exporter
         for (const request of transformedRequestsHandled) {
           if (request.attemptLatency) {
             handlers[i].onAttemptComplete(request as OnAttemptCompleteData);
@@ -378,13 +390,17 @@ describe('Bigtable/GCPMetricsHandler', () => {
         };
       }
       class MockExporter extends CloudMonitoringExporter {
-        export(
+        constructor(options: any) { // Added constructor with options
+          super(options);
+        }
+
+        async export( // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
-        ): void {
+        ): Promise<void> { // Added Promise<void>
           const testResultCallback = getTestResultCallback(resultCallback);
           if (!exported) {
-            super.export(metrics, testResultCallback);
+            await super.export(metrics, testResultCallback); // Added await
           } else {
             resultCallback({code: 0});
           }
@@ -403,8 +419,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
       });
       // projectToInstruments argument is set to {} because we want a fresh
       // instrument stack each time this test is run.
-      GCPMetricsHandler.instrumentsForProject = {};
-      const handler = new GCPMetricsHandler(new MockExporter({projectId}));
+      // GCPMetricsHandler.instrumentsForProject = {}; // Removed line
+      const handler = new GCPMetricsHandler({exporter: new MockExporter({projectId})}); // Pass options with exporter
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
