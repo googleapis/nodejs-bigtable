@@ -135,16 +135,20 @@ describe('Bigtable/ClientSideMetrics', () => {
       }, 120000);
 
       class TestExporter extends CloudMonitoringExporter {
-        constructor(options: any) { // Added constructor with options
+        constructor(options: any) {
+          // Added constructor with options
           super(options);
         }
 
-        async export( // Added async
+        async export(
+          // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
-        ): Promise<void> { // Added Promise<void>
+        ): Promise<void> {
+          // Added Promise<void>
           try {
-            await super.export(metrics, (result: ExportResult) => { // Added await
+            await super.export(metrics, (result: ExportResult) => {
+              // Added await
               if (!exported) {
                 exported = true;
                 try {
@@ -234,16 +238,20 @@ describe('Bigtable/ClientSideMetrics', () => {
     // when multiple clients are attempting an export.
     async function mockBigtable(projectId: string, done: mocha.Done) {
       class TestExporter extends CloudMonitoringExporter {
-        constructor(options: any) { // Added constructor with options
+        constructor(options: any) {
+          // Added constructor with options
           super(options);
         }
 
-        async export( // Added async
+        async export(
+          // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
-        ): Promise<void> { // Added Promise<void>
+        ): Promise<void> {
+          // Added Promise<void>
           try {
-            await super.export(metrics, (result: ExportResult) => { // Added await
+            await super.export(metrics, (result: ExportResult) => {
+              // Added await
               try {
                 // The code is expected to be 0 because the
                 // result from calling export was successful.

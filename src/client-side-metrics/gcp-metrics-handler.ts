@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CloudMonitoringExporter } from './exporter'; // Added import
+import {CloudMonitoringExporter} from './exporter'; // Added import
 import {
   IMetricsHandler,
   OnAttemptCompleteData,
@@ -193,11 +193,11 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * through the provided `PushMetricExporter`.
    *
    */
-  constructor(options: any) { // Added any type for options
-    this.exporter = new CloudMonitoringExporter(options)
-    this.otelInstruments = createInstruments(this.exporter)
+  constructor(options: any) {
+    // Added any type for options
+    this.exporter = new CloudMonitoringExporter(options);
+    this.otelInstruments = createInstruments(this.exporter);
   }
-
 
   /**
    * Records metrics for a completed Bigtable operation.
@@ -224,10 +224,13 @@ export class GCPMetricsHandler implements IMetricsHandler {
       status: data.status,
       ...commonAttributes,
     });
-    this.otelInstruments.firstResponseLatencies.record(data.firstResponseLatency, {
-      status: data.status,
-      ...commonAttributes,
-    });
+    this.otelInstruments.firstResponseLatencies.record(
+      data.firstResponseLatency,
+      {
+        status: data.status,
+        ...commonAttributes,
+      },
+    );
     for (const applicationLatency of data.applicationLatencies) {
       this.otelInstruments.applicationBlockingLatencies.record(
         applicationLatency,

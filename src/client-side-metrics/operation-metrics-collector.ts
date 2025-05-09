@@ -20,8 +20,8 @@ import {GCPMetricsHandler} from './gcp-metrics-handler';
 import {CloudMonitoringExporter} from './exporter';
 import {AbortableDuplex} from '../index';
 import * as path from 'path';
-import { IMetricsHandler } from './metrics-handler';
-import { ClientSideMetricsConfigManager } from './metrics-config-manager';
+import {IMetricsHandler} from './metrics-handler';
+import {ClientSideMetricsConfigManager} from './metrics-config-manager';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
@@ -115,7 +115,7 @@ export class OperationMetricsCollector {
   private streamingOperation: StreamingState;
   private applicationLatencies: number[];
   private lastRowReceivedTime: bigint | null;
-  private configManager: ClientSideMetricsConfigManager
+  private configManager: ClientSideMetricsConfigManager;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -142,7 +142,7 @@ export class OperationMetricsCollector {
     this.streamingOperation = streamingOperation;
     this.lastRowReceivedTime = null;
     this.applicationLatencies = [];
-    this.configManager = configManager
+    this.configManager = configManager;
   }
 
   private getMetricsCollectorData() {
@@ -312,9 +312,7 @@ export class OperationMetricsCollector {
           });
         }
       } else {
-        console.warn(
-          'operation start time should always be available here',
-        );
+        console.warn('operation start time should always be available here');
       }
     });
   }

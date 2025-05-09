@@ -211,7 +211,10 @@ function getMetric(
  *
  *
  */
-export function metricsToRequest(projectId:string, exportArgs: ResourceMetrics) {
+export function metricsToRequest(
+  projectId: string,
+  exportArgs: ResourceMetrics,
+) {
   const timeSeriesArray = [];
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
@@ -290,19 +293,21 @@ export function metricsToRequest(projectId:string, exportArgs: ResourceMetrics) 
  * @beta
  */
 export class CloudMonitoringExporter extends MetricExporter {
-
   private client: MetricServiceClient;
   private projectId?: string;
 
-  constructor(options: any) { // Added any type for options
-    super()
-    this.client = new MetricServiceClient(options)
+  constructor(options: any) {
+    // Added any type for options
+    super();
+    this.client = new MetricServiceClient(options);
   }
 
-  async export( // Added async
+  async export(
+    // Added async
     metrics: ResourceMetrics,
     resultCallback: (result: ExportResult) => void,
-  ): Promise<void> { // Added Promise<void>
+  ): Promise<void> {
+    // Added Promise<void>
     (async () => {
       try {
         if (!this.projectId) {

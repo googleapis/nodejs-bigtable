@@ -340,8 +340,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       return originalEnd(chunk, encoding, cb);
     };
     const metricsCollector = this.bigtable.metricsConfigManager.createOperation(
-      this, MethodName.READ_ROWS, StreamingState.STREAMING,
-    )
+      this,
+      MethodName.READ_ROWS,
+      StreamingState.STREAMING,
+    );
     metricsCollector.onOperationStart();
     const makeNewRequest = () => {
       metricsCollector.onAttemptStart();
