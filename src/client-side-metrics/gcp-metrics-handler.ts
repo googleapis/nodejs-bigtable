@@ -21,6 +21,7 @@ import {
 import * as Resources from '@opentelemetry/resources';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
 import {PushMetricExporter, View} from '@opentelemetry/sdk-metrics';
+import {ClientOptions} from 'google-gax';
 const {
   Aggregation,
   ExplicitBucketHistogramAggregation,
@@ -193,10 +194,28 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * through the provided `PushMetricExporter`.
    *
    */
-  constructor(options: any) {
+  constructor(options: ClientOptions) {
     // Added any type for options
     this.exporter = new CloudMonitoringExporter(options);
     this.otelInstruments = createInstruments(this.exporter);
+  }
+
+  /**
+   * Initializes the OpenTelemetry metrics instruments if they haven't been already.
+   * Creates and registers metric instruments (histograms and counters) for various Bigtable client metrics.
+   * Sets up a MeterProvider and configures a PeriodicExportingMetricReader for exporting metrics to Cloud Monitoring.
+   *
+   * which will be provided to the exporter in every export call.
+   *
+   */
+  private getInstruments(projectId: string): MetricsInstruments {
+    // The projectId is needed per metrics handler because when the exporter is
+    // used it provides the project id for the name of the time series exported.
+    // ie. name: `projects/${....['monitored_resource.project_id']}`,
+    if (!this.otelInstruments) {
+      this.otelInstruments = createInstruments(this.exporter);
+    }
+    return this.otelInstruments;
   }
 
   /**
@@ -205,6 +224,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
+    const otelInstruments = this.getInstruments(data.projectId);
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,

@@ -44,6 +44,7 @@ export interface ITabularApiSurface {
   };
   id: string;
   bigtable: {
+    projectId?: string;
     appProfileId?: string;
     clientUid: string;
   };
