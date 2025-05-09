@@ -19,7 +19,7 @@ import {
   Histogram,
   ResourceMetrics,
 } from '@opentelemetry/sdk-metrics';
-import {grpc, ServiceError} from 'google-gax';
+import {ClientOptions, grpc, ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
@@ -113,6 +113,27 @@ function getIntegerPoints(dataPoint: DataPoint<number>) {
       },
     },
   ];
+}
+
+/**
+ * Extracts the project ID from a `ResourceMetrics` object.
+ *
+ * This function retrieves the Google Cloud project ID from the resource
+ * attributes of a `ResourceMetrics` object, which is the standard data
+ * structure used by OpenTelemetry for representing metrics data. The project ID
+ * is typically stored under the `monitored_resource.project_id` key within the
+ * resource's attributes.
+ *
+ */
+function getProject(exportArgs: ResourceMetrics) {
+  type WithSyncAttributes = {_syncAttributes: {[index: string]: string}};
+  const resourcesWithSyncAttributes =
+    exportArgs.resource as unknown as WithSyncAttributes;
+  const projectId =
+    resourcesWithSyncAttributes._syncAttributes[
+      'monitored_resource.project_id'
+    ];
+  return projectId;
 }
 
 /**
@@ -211,10 +232,8 @@ function getMetric(
  *
  *
  */
-export function metricsToRequest(
-  projectId: string,
-  exportArgs: ResourceMetrics,
-) {
+export function metricsToRequest(exportArgs: ResourceMetrics) {
+  const projectId = getProject(exportArgs);
   const timeSeriesArray = [];
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
@@ -294,9 +313,8 @@ export function metricsToRequest(
  */
 export class CloudMonitoringExporter extends MetricExporter {
   private client: MetricServiceClient;
-  private projectId?: string;
 
-  constructor(options: any) {
+  constructor(options: ClientOptions) {
     // Added any type for options
     super();
     this.client = new MetricServiceClient(options);
@@ -310,10 +328,7 @@ export class CloudMonitoringExporter extends MetricExporter {
     // Added Promise<void>
     (async () => {
       try {
-        if (!this.projectId) {
-          this.projectId = await this.client.getProjectId();
-        }
-        const request = metricsToRequest(this.projectId!, metrics);
+        const request = metricsToRequest(metrics);
         // In order to manage the "One or more points were written more
         // frequently than the maximum sampling period configured for the
         // metric." error we should have the metric service client retry a few

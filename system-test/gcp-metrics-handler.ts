@@ -28,6 +28,7 @@ import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import {expectedOtelHundredExportInputs} from '../test-common/expected-otel-export-input';
 import {replaceTimestamps} from '../test-common/replace-timestamps';
+import {ClientOptions} from 'google-gax';
 
 describe('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value to the GCPMetricsHandler', done => {
@@ -64,7 +65,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
         };
       }
       class MockExporter extends CloudMonitoringExporter {
-        constructor(options: any) {
+        constructor(options: ClientOptions) {
           // Added constructor with options
           super(options);
         }

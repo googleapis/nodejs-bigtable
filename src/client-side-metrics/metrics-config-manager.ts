@@ -1,29 +1,30 @@
 import {GCPMetricsHandler} from './gcp-metrics-handler';
 import {IMetricsHandler} from './metrics-handler';
-import {OperationMetricsCollector} from './operation-metrics-collector';
+import {
+  ITabularApiSurface,
+  OperationMetricsCollector,
+} from './operation-metrics-collector';
+import {MethodName, StreamingState} from './client-side-metrics-attributes';
+import {ClientOptions} from 'google-gax';
 
 /**
  * A class for tracing and recording client-side metrics related to Bigtable operations.
  */
 export class ClientSideMetricsConfigManager {
   private static gcpHandlerStore = new Map();
-  metricsHandlers: IMetricsHandler[];
-
-  constructor(handlers: IMetricsHandler[]) {
-    this.metricsHandlers = handlers;
-  }
 
   createOperation(
-    methodName: any,
-    streaming: any,
-    table: any,
+    methodName: MethodName,
+    streaming: StreamingState,
+    table: ITabularApiSurface,
   ): OperationMetricsCollector {
+    const projectId = table.bigtable.projectId;
     return new OperationMetricsCollector(table, methodName, streaming, this);
   }
 
   static getGcpHandlerForProject(
-    projectId: any,
-    options: any,
+    projectId: string,
+    options: ClientOptions,
   ): GCPMetricsHandler {
     // share a single GCPMetricsHandler for each project, to avoid sampling errors
     if (this.gcpHandlerStore.has(projectId)) {
