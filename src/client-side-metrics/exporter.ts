@@ -140,7 +140,7 @@ function getProject(exportArgs: ResourceMetrics) {
  * getResource gets the resource object which is used for building the timeseries
  * object that will be sent to Google Cloud Monitoring dashboard
  *
- * @param {string} metricName The backend name of the metric that we want to record
+ * @param {string} projectId The name of the project
  * @param {DataPoint} dataPoint The datapoint containing the data we wish to
  * send to the Google Cloud Monitoring dashboard
  */
