@@ -40,12 +40,12 @@ function getFakeBigtable(
   ensure the export was successful and pass the test with code 0 if it is
   successful.
    */
+  const metricHandler = new metricsHandlerClass(
+    {} as unknown as ClientOptions & {value: string},
+  );
   class FakeMetricsConfigManager {
     static getGcpHandlerForProject() {
-      console.trace('called getGcpHandlerForProject');
-      return new metricsHandlerClass(
-        {} as unknown as ClientOptions & {value: string},
-      );
+      return metricHandler;
     }
   }
   const FakeOperationMetricsCollector = proxyquire(
@@ -154,8 +154,9 @@ describe('Bigtable/ClientSideMetrics', () => {
       }, 120000);
 
       class TestExporter extends CloudMonitoringExporter {
-        constructor(options: any) {
+        constructor(options: ClientOptions) {
           // Added constructor with options
+          console.trace('Created test exporter');
           super(options);
         }
 
@@ -192,12 +193,14 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      class TestGCPMetricsHandler extends GCPMetricsHandler {
-        static value = 'value';
-        constructor() {
-          super({exporter: new TestExporter({})}); // Pass options with exporter
-        }
-      }
+      const TestGCPMetricsHandler = proxyquire(
+        '../src/client-side-metrics/gcp-metrics-handler.js',
+        {
+          './exporter': {
+            CloudMonitoringExporter: TestExporter,
+          },
+        },
+      ).GCPMetricsHandler;
 
       return getFakeBigtable(projectId, TestGCPMetricsHandler);
     }
