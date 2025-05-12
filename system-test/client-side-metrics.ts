@@ -156,7 +156,6 @@ describe('Bigtable/ClientSideMetrics', () => {
       class TestExporter extends CloudMonitoringExporter {
         constructor(options: ClientOptions) {
           // Added constructor with options
-          console.trace('Created test exporter');
           super(options);
         }
 
