@@ -31,8 +31,9 @@ import {
 } from '../../test-common/expected-otel-export-input';
 import * as assert from 'assert';
 import {replaceTimestamps} from '../../test-common/replace-timestamps';
+import * as proxyquire from 'proxyquire';
 
-describe.skip('Bigtable/GCPMetricsHandler', () => {
+describe.only('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value ready for sending to the CloudMonitoringExporter', function (done) {
     this.timeout(600000);
     (async () => {
@@ -50,6 +51,10 @@ describe.skip('Bigtable/GCPMetricsHandler', () => {
       let exported = false;
 
       class TestExporter extends MetricExporter {
+        constructor() {
+          super();
+        }
+
         export(
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
@@ -114,8 +119,18 @@ describe.skip('Bigtable/GCPMetricsHandler', () => {
         }
       }
 
+      const stubs = {
+        './exporter': {
+          CloudMonitoringExporter: TestExporter,
+        },
+      };
+      const FakeMetricsHandler = proxyquire(
+        '../../src/client-side-metrics/gcp-metrics-handler.js',
+        stubs,
+      ).GCPMetricsHandler;
+
       // TODO: Mock out the test exporter
-      const handler = new GCPMetricsHandler({});
+      const handler = new FakeMetricsHandler({});
 
       for (const request of expectedRequestsHandled) {
         if (request.attemptLatency) {
