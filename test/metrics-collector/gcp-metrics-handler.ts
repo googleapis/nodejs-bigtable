@@ -33,7 +33,7 @@ import * as assert from 'assert';
 import {replaceTimestamps} from '../../test-common/replace-timestamps';
 import * as proxyquire from 'proxyquire';
 
-describe.only('Bigtable/GCPMetricsHandler', () => {
+describe('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value ready for sending to the CloudMonitoringExporter', function (done) {
     this.timeout(600000);
     (async () => {
