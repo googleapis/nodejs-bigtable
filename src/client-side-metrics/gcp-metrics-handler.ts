@@ -49,9 +49,10 @@ interface MetricsInstruments {
  * This method gets the open telemetry instruments that will store GCP metrics
  * for a particular project.
  *
+ * @param projectId The project id
  * @param exporter The exporter the metrics will be sent to.
  */
-function createInstruments(exporter: PushMetricExporter): MetricsInstruments {
+function createInstruments(projectId: string, exporter: PushMetricExporter): MetricsInstruments {
   const latencyBuckets = [
     0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0, 16.0, 20.0, 25.0, 30.0,
     40.0, 50.0, 65.0, 80.0, 100.0, 130.0, 160.0, 200.0, 250.0, 300.0, 400.0,
@@ -81,6 +82,7 @@ function createInstruments(exporter: PushMetricExporter): MetricsInstruments {
     views: viewList,
     resource: new Resources.Resource({
       'service.name': 'Cloud Bigtable Table',
+      'monitored_resource.project_id': projectId,
     }).merge(new ResourceUtil.GcpDetectorSync().detect()),
     readers: [
       // Register the exporter
@@ -207,12 +209,12 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * which will be provided to the exporter in every export call.
    *
    */
-  private getInstruments(): MetricsInstruments {
+  private getInstruments(projectId: string): MetricsInstruments {
     // The projectId is needed per metrics handler because when the exporter is
     // used it provides the project id for the name of the time series exported.
     // ie. name: `projects/${....['monitored_resource.project_id']}`,
     if (!this.otelInstruments) {
-      this.otelInstruments = createInstruments(this.exporter);
+      this.otelInstruments = createInstruments(projectId, this.exporter);
     }
     return this.otelInstruments;
   }
@@ -223,7 +225,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    const otelInstruments = this.getInstruments();
+    const otelInstruments = this.getInstruments(data.projectId);
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
@@ -263,7 +265,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    const otelInstruments = this.getInstruments();
+    const otelInstruments = this.getInstruments(data.projectId);
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
