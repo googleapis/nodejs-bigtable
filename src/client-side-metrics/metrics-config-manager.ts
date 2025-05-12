@@ -17,7 +17,6 @@ export class ClientSideMetricsConfigManager {
     projectId: string,
     options: ClientOptions,
   ): GCPMetricsHandler {
-    console.trace('called real getGcpHandlerForProject');
     // share a single GCPMetricsHandler for each project, to avoid sampling errors
     if (this.gcpHandlerStore.has(projectId)) {
       return this.gcpHandlerStore.get(projectId)!;

@@ -56,11 +56,6 @@ function getFakeBigtable(
       },
     },
   ).OperationMetricsCollector;
-  class FakeOperationMetricsCollector2 {
-    constructor() {
-      console.log('Fake operations collector 2');
-    }
-  }
   const FakeFactory = proxyquire(
     '../src/client-side-metrics/operation-metrics-collector-factory.js',
     {
@@ -162,7 +157,6 @@ describe('Bigtable/ClientSideMetrics', () => {
         constructor(options: any) {
           // Added constructor with options
           super(options);
-          console.log('constructor called');
         }
 
         async export(
