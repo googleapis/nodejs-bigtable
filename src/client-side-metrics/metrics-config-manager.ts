@@ -17,9 +17,12 @@ export class ClientSideMetricsConfigManager {
     methodName: MethodName,
     streaming: StreamingState,
     table: ITabularApiSurface,
-    options: ClientOptions,
-  ): OperationMetricsCollector {
-    return new OperationMetricsCollector(table, methodName, streaming, options);
+  ): OperationMetricsCollector | undefined {
+    if (table.bigtable.metricsEnabled) {
+      return new OperationMetricsCollector(table, methodName, streaming);
+    } else {
+      return;
+    }
   }
 
   static getGcpHandlerForProject(

@@ -16,11 +16,8 @@ import * as fs from 'fs';
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
 import {ClientOptions, grpc} from 'google-gax';
 import * as gax from 'google-gax';
-import {GCPMetricsHandler} from './gcp-metrics-handler';
-import {CloudMonitoringExporter} from './exporter';
-import {AbortableDuplex} from '../index';
+import {AbortableDuplex, BigtableOptions} from '../index';
 import * as path from 'path';
-import {IMetricsHandler} from './metrics-handler';
 import {ClientSideMetricsConfigManager} from './metrics-config-manager';
 
 // When this environment variable is set then print any errors associated
@@ -44,9 +41,11 @@ export interface ITabularApiSurface {
   };
   id: string;
   bigtable: {
+    metricsEnabled?: boolean;
     projectId?: string;
     appProfileId?: string;
     clientUid: string;
+    options: BigtableOptions;
   };
 }
 
@@ -128,7 +127,6 @@ export class OperationMetricsCollector {
     tabularApiSurface: ITabularApiSurface,
     methodName: MethodName,
     streamingOperation: StreamingState,
-    options: ClientOptions,
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
@@ -144,7 +142,7 @@ export class OperationMetricsCollector {
     this.streamingOperation = streamingOperation;
     this.lastRowReceivedTime = null;
     this.applicationLatencies = [];
-    this.options = options;
+    this.options = tabularApiSurface.bigtable.options as ClientOptions;
   }
 
   private getMetricsCollectorData() {

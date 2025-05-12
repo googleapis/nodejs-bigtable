@@ -435,6 +435,11 @@ export class Bigtable {
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
+  // metricsEnabled is a member variable that is used to ensure that if the
+  // user provides a `false` value and opts out of metrics collection that
+  // the metrics collector is ignored altogether to reduce latency in the
+  // client.
+  metricsEnabled: boolean;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -532,6 +537,12 @@ export class Bigtable {
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
+
+    if (options.metricsEnabled === false) {
+      this.metricsEnabled = false;
+    } else {
+      this.metricsEnabled = true;
+    }
   }
 
   createInstance(

@@ -347,11 +347,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       MethodName.READ_ROWS,
       StreamingState.STREAMING,
       this,
-      this.bigtable.options as ClientOptions,
     );
-    metricsCollector.onOperationStart();
+    metricsCollector?.onOperationStart();
     const makeNewRequest = () => {
-      metricsCollector.onAttemptStart();
+      metricsCollector?.onAttemptStart();
 
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
@@ -528,7 +527,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return false;
       };
 
-      metricsCollector.handleStatusAndMetadata(requestStream);
+      metricsCollector?.handleStatusAndMetadata(requestStream);
       rowStream
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
@@ -537,7 +536,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             // We ignore the `cancelled` "error", since we are the ones who cause
             // it when the user calls `.abort()`.
             userStream.end();
-            metricsCollector.onOperationComplete(
+            metricsCollector?.onOperationComplete(
               this.bigtable.projectId,
               error.code,
             );
@@ -558,7 +557,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               numConsecutiveErrors,
               backOffSettings,
             );
-            metricsCollector.onAttemptComplete(
+            metricsCollector?.onAttemptComplete(
               this.bigtable.projectId,
               error.code,
             );
@@ -576,7 +575,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               //
               error.code = grpc.status.CANCELLED;
             }
-            metricsCollector.onOperationComplete(
+            metricsCollector?.onOperationComplete(
               this.bigtable.projectId,
               error.code,
             );
@@ -587,11 +586,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
-          metricsCollector.onResponse();
+          metricsCollector?.onResponse();
         })
         .on('end', () => {
           activeRequestStream = null;
-          metricsCollector.onOperationComplete(
+          metricsCollector?.onOperationComplete(
             this.bigtable.projectId,
             grpc.status.OK,
           );
