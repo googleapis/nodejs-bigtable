@@ -115,7 +115,6 @@ export class OperationMetricsCollector {
   private streamingOperation: StreamingState;
   private applicationLatencies: number[];
   private lastRowReceivedTime: bigint | null;
-  private options: ClientOptions;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -220,7 +219,7 @@ export class OperationMetricsCollector {
         const metricsHandler =
           ClientSideMetricsConfigManager.getGcpHandlerForProject(
             projectId,
-            this.options,
+            this.tabularApiSurface.bigtable.options as ClientOptions,
           );
         if (metricsHandler.onAttemptComplete) {
           metricsHandler.onAttemptComplete({
@@ -305,7 +304,7 @@ export class OperationMetricsCollector {
           const metricsHandler =
             ClientSideMetricsConfigManager.getGcpHandlerForProject(
               projectId,
-              this.options,
+              this.tabularApiSurface.bigtable.options as ClientOptions,
             );
           if (metricsHandler.onOperationComplete) {
             metricsHandler.onOperationComplete({
