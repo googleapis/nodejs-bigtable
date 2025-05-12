@@ -81,6 +81,14 @@ function getFakeBigtable(
   return new FakeBigtable({projectId});
 }
 
+function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
+  return proxyquire('../src/client-side-metrics/gcp-metrics-handler.js', {
+    './exporter': {
+      CloudMonitoringExporter: Exporter,
+    },
+  }).GCPMetricsHandler;
+}
+
 describe('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
@@ -192,16 +200,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      const TestGCPMetricsHandler = proxyquire(
-        '../src/client-side-metrics/gcp-metrics-handler.js',
-        {
-          './exporter': {
-            CloudMonitoringExporter: TestExporter,
-          },
-        },
-      ).GCPMetricsHandler;
-
-      return getFakeBigtable(projectId, TestGCPMetricsHandler);
+      return getFakeBigtable(projectId, getHandlerFromExporter(TestExporter));
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
@@ -253,7 +252,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe('Bigtable/ClientSideMetricsToGCMTimeout', () => {
+  describe.only('Bigtable/ClientSideMetricsToGCMTimeout', () => {
     // This test suite simulates a situation where the user creates multiple
     // clients and ensures that the exporter doesn't produce any errors even
     // when multiple clients are attempting an export.
@@ -293,19 +292,13 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      class TestGCPMetricsHandler extends GCPMetricsHandler {
-        constructor() {
-          super({exporter: new TestExporter({})}); // Pass options with exporter
-        }
-      }
-
       /*
       Below we mock out the table so that it sends the metrics to a test exporter
       that will still send the metrics to Google Cloud Monitoring, but then also
       ensure the export was successful and pass the test with code 0 if it is
       successful.
        */
-      return getFakeBigtable(projectId, TestGCPMetricsHandler);
+      return getFakeBigtable(projectId, getHandlerFromExporter(TestExporter));
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
