@@ -18,7 +18,6 @@ import {
   ExportResult,
   metricsToRequest,
 } from '../../src/client-side-metrics/exporter';
-import {GCPMetricsHandler} from '../../src/client-side-metrics/gcp-metrics-handler';
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import {expectedRequestsHandled} from '../../test-common/metrics-handler-fixture';
 import {

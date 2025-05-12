@@ -13,22 +13,11 @@ import {ClientOptions} from 'google-gax';
 export class ClientSideMetricsConfigManager {
   private static gcpHandlerStore = new Map();
 
-  static createOperation(
-    methodName: MethodName,
-    streaming: StreamingState,
-    table: ITabularApiSurface,
-  ): OperationMetricsCollector | undefined {
-    if (table.bigtable.metricsEnabled) {
-      return new OperationMetricsCollector(table, methodName, streaming);
-    } else {
-      return;
-    }
-  }
-
   static getGcpHandlerForProject(
     projectId: string,
     options: ClientOptions,
   ): GCPMetricsHandler {
+    console.trace('called real getGcpHandlerForProject');
     // share a single GCPMetricsHandler for each project, to avoid sampling errors
     if (this.gcpHandlerStore.has(projectId)) {
       return this.gcpHandlerStore.get(projectId)!;

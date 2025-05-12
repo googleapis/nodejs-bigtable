@@ -26,6 +26,7 @@ import {Bigtable} from '../src';
 import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
+import {ClientOptions} from 'google-gax';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
@@ -39,15 +40,38 @@ function getFakeBigtable(
   ensure the export was successful and pass the test with code 0 if it is
   successful.
    */
+  class FakeMetricsConfigManager {
+    static getGcpHandlerForProject() {
+      console.trace('called getGcpHandlerForProject');
+      return new metricsHandlerClass(
+        {} as unknown as ClientOptions & {value: string},
+      );
+    }
+  }
   const FakeOperationMetricsCollector = proxyquire(
-    '../src/client-side-metrics/operation-metrics-collector',
+    '../src/client-side-metrics/operation-metrics-collector.js',
     {
-      './gcp-metrics-handler': {GCPMetricsHandler: metricsHandlerClass},
+      './metrics-config-manager': {
+        ClientSideMetricsConfigManager: FakeMetricsConfigManager,
+      },
     },
   ).OperationMetricsCollector;
+  class FakeOperationMetricsCollector2 {
+    constructor() {
+      console.log('Fake operations collector 2');
+    }
+  }
+  const FakeFactory = proxyquire(
+    '../src/client-side-metrics/operation-metrics-collector-factory.js',
+    {
+      './operation-metrics-collector': {
+        OperationMetricsCollector: FakeOperationMetricsCollector,
+      },
+    },
+  ).OperationMetricsCollectorFactory;
   const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
-    './client-side-metrics/operation-metrics-collector': {
-      OperationMetricsCollector: FakeOperationMetricsCollector,
+    './client-side-metrics/operation-metrics-collector-factory': {
+      OperationMetricsCollectorFactory: FakeFactory,
     },
   }).TabularApiSurface;
   const FakeTable = proxyquire('../src/table.js', {
@@ -62,7 +86,7 @@ function getFakeBigtable(
   return new FakeBigtable({projectId});
 }
 
-describe.only('Bigtable/ClientSideMetrics', () => {
+describe('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -109,7 +133,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
     }
   });
 
-  describe('Bigtable/ClientSideMetricsToGCM', () => {
+  describe.only('Bigtable/ClientSideMetricsToGCM', () => {
     // This test suite ensures that for each test all the export calls are
     // successful even when multiple instances and tables are created.
     async function mockBigtable(projectId: string, done: mocha.Done) {
@@ -138,6 +162,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
         constructor(options: any) {
           // Added constructor with options
           super(options);
+          console.log('constructor called');
         }
 
         async export(

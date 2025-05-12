@@ -47,9 +47,7 @@ import {
   MethodName,
   StreamingState,
 } from './client-side-metrics/client-side-metrics-attributes';
-import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
-import {CloudMonitoringExporter} from './client-side-metrics/exporter';
-import {ClientSideMetricsConfigManager} from './client-side-metrics/metrics-config-manager';
+import {OperationMetricsCollectorFactory} from './client-side-metrics/operation-metrics-collector-factory';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -343,7 +341,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
-    const metricsCollector = ClientSideMetricsConfigManager.createOperation(
+    const metricsCollector = OperationMetricsCollectorFactory.createOperation(
       MethodName.READ_ROWS,
       StreamingState.STREAMING,
       this,
