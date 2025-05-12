@@ -141,7 +141,6 @@ export class OperationMetricsCollector {
     this.streamingOperation = streamingOperation;
     this.lastRowReceivedTime = null;
     this.applicationLatencies = [];
-    this.options = tabularApiSurface.bigtable.options as ClientOptions;
   }
 
   private getMetricsCollectorData() {
