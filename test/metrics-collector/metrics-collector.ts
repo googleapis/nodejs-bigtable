@@ -53,6 +53,15 @@ class FakeInstance {
   id = 'fakeInstanceId';
 }
 
+const logger = {value: ''};
+const testHandler = new TestMetricsHandler(logger);
+
+class FakeClientSideMetricsConfigManager {
+  static getGcpHandlerForProject() {
+    return testHandler;
+  }
+}
+
 describe('Bigtable/MetricsCollector', () => {
   class FakeHRTime {
     startTime = BigInt(0);
@@ -67,16 +76,16 @@ describe('Bigtable/MetricsCollector', () => {
     'node:process': {
       hrtime: new FakeHRTime(),
     },
+    './metrics-config-manager': {
+      ClientSideMetricsConfigManager: FakeClientSideMetricsConfigManager,
+    },
   };
   const FakeOperationsMetricsCollector = proxyquire(
     '../../src/client-side-metrics/operation-metrics-collector.js',
     stubs,
   ).OperationMetricsCollector;
 
-  const logger = {value: ''};
-
   it('should record the right metrics with a typical method call', async () => {
-    const testHandler = new TestMetricsHandler(logger);
     class FakeTable {
       id = 'fakeTableId';
       instance = new FakeInstance();

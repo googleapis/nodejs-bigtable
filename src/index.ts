@@ -435,7 +435,6 @@ export class Bigtable {
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
-  metricsConfigManager: ClientSideMetricsConfigManager;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -533,25 +532,6 @@ export class Bigtable {
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
-
-    this.metricsConfigManager = new ClientSideMetricsConfigManager([]);
-    if (options.metricsEnabled === true) {
-      // only add a handler if metrics is enabled
-      // need to unwrap placeholder {{projectId}} values first
-      this.getProjectId_((error, projectId) => {
-        if (!error) {
-          const handlerOptions = Object.assign({}, options, {
-            projectId: projectId,
-          });
-          const gcpHandler =
-            ClientSideMetricsConfigManager.getGcpHandlerForProject(
-              projectId,
-              handlerOptions,
-            );
-          this.metricsConfigManager.metricsHandlers = [gcpHandler];
-        }
-      });
-    }
   }
 
   createInstance(

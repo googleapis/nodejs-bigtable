@@ -122,6 +122,7 @@ export class OperationMetricsCollector {
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
    * @param {MethodName} methodName The name of the method being traced.
    * @param {StreamingState} streamingOperation Whether or not the call is a streaming operation.
+   * @param {ClientOptions} options The options for the MetricServiceClient
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
@@ -225,7 +226,6 @@ export class OperationMetricsCollector {
           );
         if (metricsHandler.onAttemptComplete) {
           metricsHandler.onAttemptComplete({
-            projectId,
             attemptLatency: totalMilliseconds,
             serverLatency: this.serverTime ?? undefined,
             connectivityErrorCount: this.connectivityErrorCount,
@@ -233,6 +233,7 @@ export class OperationMetricsCollector {
             status: attemptStatus.toString(),
             client_name: `nodejs-bigtable/${version}`,
             metricsCollectorData: this.getMetricsCollectorData(),
+            projectId,
           });
         }
       } else {
@@ -310,11 +311,11 @@ export class OperationMetricsCollector {
             );
           if (metricsHandler.onOperationComplete) {
             metricsHandler.onOperationComplete({
-              projectId,
               status: finalOperationStatus.toString(),
               streaming: this.streamingOperation,
               metricsCollectorData: this.getMetricsCollectorData(),
               client_name: `nodejs-bigtable/${version}`,
+              projectId,
               operationLatency: totalMilliseconds,
               retryCount: this.attemptCount - 1,
               firstResponseLatency: this.firstResponseLatency ?? undefined,

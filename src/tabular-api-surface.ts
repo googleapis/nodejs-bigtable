@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
+import {ITabularApiSurface, OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {Instance} from './instance';
@@ -35,7 +35,7 @@ import {
 } from './chunktransformer';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {google} from '../protos/protos';
-import {CallOptions, grpc, ServiceError} from 'google-gax';
+import {CallOptions, ClientOptions, grpc, ServiceError} from 'google-gax';
 import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
@@ -46,6 +46,7 @@ import {
 } from './client-side-metrics/client-side-metrics-attributes';
 import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
 import {CloudMonitoringExporter} from './client-side-metrics/exporter';
+import {ClientSideMetricsConfigManager} from './client-side-metrics/metrics-config-manager';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -339,10 +340,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
-    const metricsCollector = this.bigtable.metricsConfigManager.createOperation(
+    const metricsCollector = ClientSideMetricsConfigManager.createOperation(
       MethodName.READ_ROWS,
       StreamingState.STREAMING,
       this,
+      this.bigtable.options as ClientOptions,
     );
     metricsCollector.onOperationStart();
     const makeNewRequest = () => {
@@ -532,7 +534,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             // We ignore the `cancelled` "error", since we are the ones who cause
             // it when the user calls `.abort()`.
             userStream.end();
-            metricsCollector.onOperationComplete(error.code);
+            metricsCollector.onOperationComplete(
+              this.bigtable.projectId,
+              error.code,
+            );
             return;
           }
           numConsecutiveErrors++;
@@ -550,7 +555,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               numConsecutiveErrors,
               backOffSettings,
             );
-            metricsCollector.onAttemptComplete(error.code);
+            metricsCollector.onAttemptComplete(
+              this.bigtable.projectId,
+              error.code,
+            );
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
             if (
@@ -565,7 +573,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               //
               error.code = grpc.status.CANCELLED;
             }
-            metricsCollector.onOperationComplete(error.code);
+            metricsCollector.onOperationComplete(
+              this.bigtable.projectId,
+              error.code,
+            );
             userStream.emit('error', error);
           }
         })
@@ -577,7 +588,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         })
         .on('end', () => {
           activeRequestStream = null;
-          metricsCollector.onOperationComplete(grpc.status.OK);
+          metricsCollector.onOperationComplete(
+            this.bigtable.projectId,
+            grpc.status.OK,
+          );
         });
       rowStreamPipe(rowStream, userStream);
     };
