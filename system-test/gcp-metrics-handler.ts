@@ -78,16 +78,13 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
       }
       class MockExporter extends CloudMonitoringExporter {
         constructor(options: ClientOptions) {
-          // Added constructor with options
           super(options);
         }
 
         async export(
-          // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
         ): Promise<void> {
-          // Added Promise<void>
           const testResultCallback = getTestResultCallback(resultCallback);
           if (!exported) {
             await super.export(metrics, testResultCallback); // Added await
@@ -172,17 +169,14 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
         };
       }
       class MockExporter extends CloudMonitoringExporter {
-        constructor(options: any) {
-          // Added constructor with options
+        constructor(options: ClientOptions) {
           super(options);
         }
 
         async export(
-          // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
         ): Promise<void> {
-          // Added Promise<void>
           if (exportedCount < 1) {
             // The code below uses the test callback to ensure the export was successful.
             const testResultCallback = getTestResultCallback(resultCallback);
@@ -276,17 +270,14 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
         };
       }
       class MockExporter extends CloudMonitoringExporter {
-        constructor(options: any) {
-          // Added constructor with options
+        constructor(options: ClientOptions) {
           super(options);
         }
 
         async export(
-          // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
         ): Promise<void> {
-          // Added Promise<void>
           if (exportedCount < 1) {
             try {
               // This code block ensures the metrics are correct. Mainly, the metrics
@@ -407,17 +398,14 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
         };
       }
       class MockExporter extends CloudMonitoringExporter {
-        constructor(options: any) {
-          // Added constructor with options
+        constructor(options: ClientOptions) {
           super(options);
         }
 
         async export(
-          // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
         ): Promise<void> {
-          // Added Promise<void>
           const testResultCallback = getTestResultCallback(resultCallback);
           if (!exported) {
             await super.export(metrics, testResultCallback); // Added await

@@ -200,7 +200,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
    *
    */
   constructor(options: ClientOptions) {
-    // Added any type for options
     this.exporter = new CloudMonitoringExporter(options);
   }
 

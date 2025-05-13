@@ -320,11 +320,9 @@ export class CloudMonitoringExporter extends MetricExporter {
   }
 
   async export(
-    // Added async
     metrics: ResourceMetrics,
     resultCallback: (result: ExportResult) => void,
   ): Promise<void> {
-    // Added Promise<void>
     (async () => {
       try {
         const request = metricsToRequest(metrics);

@@ -89,7 +89,7 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
   }).GCPMetricsHandler;
 }
 
-describe('Bigtable/ClientSideMetrics', () => {
+describe.only('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -163,19 +163,15 @@ describe('Bigtable/ClientSideMetrics', () => {
 
       class TestExporter extends CloudMonitoringExporter {
         constructor(options: ClientOptions) {
-          // Added constructor with options
           super(options);
         }
 
         async export(
-          // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
         ): Promise<void> {
-          // Added Promise<void>
           try {
             await super.export(metrics, (result: ExportResult) => {
-              // Added await
               if (!exported) {
                 exported = true;
                 try {
@@ -258,20 +254,16 @@ describe('Bigtable/ClientSideMetrics', () => {
     // when multiple clients are attempting an export.
     async function mockBigtable(projectId: string, done: mocha.Done) {
       class TestExporter extends CloudMonitoringExporter {
-        constructor(options: any) {
-          // Added constructor with options
+        constructor(options: ClientOptions) {
           super(options);
         }
 
         async export(
-          // Added async
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
         ): Promise<void> {
-          // Added Promise<void>
           try {
             await super.export(metrics, (result: ExportResult) => {
-              // Added await
               try {
                 // The code is expected to be 0 because the
                 // result from calling export was successful.
