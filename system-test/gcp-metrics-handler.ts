@@ -207,11 +207,8 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
           }
         });
       });
-      // projectToInstruments argument is set to {} because we want a fresh
-      // instrument stack each time this test is run.
-      // GCPMetricsHandler.instrumentsForProject = {}; // Removed line
       const handler = getHandler(MockExporter);
-      const handler2 = getHandler(MockExporter); // Pass options with exporter
+      const handler2 = handler;
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
@@ -361,11 +358,9 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
         ),
       );
       const handlers = [];
-      // projectToInstruments argument is set to {} because we want a fresh
-      // instrument stack each time this test is run.
-      // GCPMetricsHandler.instrumentsForProject = {}; // Removed line
+      const handler = getHandler(MockExporter);
       for (let i = 0; i < 100; i++) {
-        handlers.push(getHandler(MockExporter));
+        handlers.push(handler);
         for (const request of transformedRequestsHandled) {
           if (request.attemptLatency) {
             handlers[i].onAttemptComplete(request as OnAttemptCompleteData);
