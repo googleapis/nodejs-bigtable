@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-  ITabularApiSurface,
-  OperationMetricsCollector,
-} from './client-side-metrics/operation-metrics-collector';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {Instance} from './instance';

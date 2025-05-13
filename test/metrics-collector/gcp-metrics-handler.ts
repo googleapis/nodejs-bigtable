@@ -128,7 +128,6 @@ describe('Bigtable/GCPMetricsHandler', () => {
         stubs,
       ).GCPMetricsHandler;
 
-      // TODO: Mock out the test exporter
       const handler = new FakeMetricsHandler({});
 
       for (const request of expectedRequestsHandled) {
