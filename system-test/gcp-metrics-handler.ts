@@ -42,7 +42,7 @@ function getHandler(Exporter: typeof CloudMonitoringExporter) {
   return new FakeCGPMetricsHandler();
 }
 
-describe.only('Bigtable/GCPMetricsHandler', () => {
+describe('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value to the GCPMetricsHandler', done => {
     (async () => {
       /*
@@ -104,9 +104,6 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
           }
         });
       });
-      // projectToInstruments argument is set to {} because we want a fresh
-      // instrument stack each time this test is run.
-      // GCPMetricsHandler.instrumentsForProject = {}; // Removed line
       const handler = getHandler(MockExporter);
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
@@ -425,9 +422,6 @@ describe.only('Bigtable/GCPMetricsHandler', () => {
           }
         });
       });
-      // projectToInstruments argument is set to {} because we want a fresh
-      // instrument stack each time this test is run.
-      // GCPMetricsHandler.instrumentsForProject = {}; // Removed line
       const handler = getHandler(MockExporter); // Pass options with exporter
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(

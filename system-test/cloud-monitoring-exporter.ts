@@ -22,7 +22,7 @@ import {Bigtable} from '../src';
 import * as assert from 'assert';
 import {expectedOtelExportInput} from '../test-common/expected-otel-export-input';
 
-describe.only('Bigtable/CloudMonitoringExporter', () => {
+describe('Bigtable/CloudMonitoringExporter', () => {
   it('Should send an otel exported value to the CloudMonitoringExporter', done => {
     // When this test is run, metrics should be visible at the following link:
     // https://pantheon.corp.google.com/monitoring/metrics-explorer;duration=PT1H?inv=1&invt=Abo9_A&project={projectId}
