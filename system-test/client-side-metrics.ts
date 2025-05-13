@@ -136,7 +136,7 @@ describe('Bigtable/ClientSideMetrics', () => {
     }
   });
 
-  describe.only('Bigtable/ClientSideMetricsToGCM', () => {
+  describe('Bigtable/ClientSideMetricsToGCM', () => {
     // This test suite ensures that for each test all the export calls are
     // successful even when multiple instances and tables are created.
     async function mockBigtable(projectId: string, done: mocha.Done) {
@@ -252,7 +252,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe.only('Bigtable/ClientSideMetricsToGCMTimeout', () => {
+  describe('Bigtable/ClientSideMetricsToGCMTimeout', () => {
     // This test suite simulates a situation where the user creates multiple
     // clients and ensures that the exporter doesn't produce any errors even
     // when multiple clients are attempting an export.
