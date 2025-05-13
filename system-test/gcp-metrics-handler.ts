@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import {describe} from 'mocha';
-import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 import {expectedRequestsHandled} from '../test-common/metrics-handler-fixture';
 import {
   OnAttemptCompleteData,
@@ -29,8 +28,21 @@ import * as assert from 'assert';
 import {expectedOtelHundredExportInputs} from '../test-common/expected-otel-export-input';
 import {replaceTimestamps} from '../test-common/replace-timestamps';
 import {ClientOptions} from 'google-gax';
+import * as proxyquire from 'proxyquire';
 
-describe('Bigtable/GCPMetricsHandler', () => {
+function getHandler(Exporter: typeof CloudMonitoringExporter) {
+  const FakeCGPMetricsHandler = proxyquire(
+    '../src/client-side-metrics/gcp-metrics-handler.js',
+    {
+      './exporter': {
+        CloudMonitoringExporter: Exporter,
+      },
+    },
+  ).GCPMetricsHandler;
+  return new FakeCGPMetricsHandler();
+}
+
+describe.only('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value to the GCPMetricsHandler', done => {
     (async () => {
       /*
@@ -98,9 +110,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       // projectToInstruments argument is set to {} because we want a fresh
       // instrument stack each time this test is run.
       // GCPMetricsHandler.instrumentsForProject = {}; // Removed line
-      const handler = new GCPMetricsHandler({
-        exporter: new MockExporter({projectId}),
-      }); // Pass options with exporter
+      const handler = getHandler(MockExporter);
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
@@ -200,12 +210,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
       // projectToInstruments argument is set to {} because we want a fresh
       // instrument stack each time this test is run.
       // GCPMetricsHandler.instrumentsForProject = {}; // Removed line
-      const handler = new GCPMetricsHandler({
-        exporter: new MockExporter({projectId}),
-      }); // Pass options with exporter
-      const handler2 = new GCPMetricsHandler({
-        exporter: new MockExporter({projectId}),
-      }); // Pass options with exporter
+      const handler = getHandler(MockExporter);
+      const handler2 = getHandler(MockExporter); // Pass options with exporter
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
@@ -359,9 +365,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       // instrument stack each time this test is run.
       // GCPMetricsHandler.instrumentsForProject = {}; // Removed line
       for (let i = 0; i < 100; i++) {
-        handlers.push(
-          new GCPMetricsHandler({exporter: new MockExporter({projectId})}),
-        ); // Pass options with exporter
+        handlers.push(getHandler(MockExporter));
         for (const request of transformedRequestsHandled) {
           if (request.attemptLatency) {
             handlers[i].onAttemptComplete(request as OnAttemptCompleteData);
@@ -441,9 +445,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       // projectToInstruments argument is set to {} because we want a fresh
       // instrument stack each time this test is run.
       // GCPMetricsHandler.instrumentsForProject = {}; // Removed line
-      const handler = new GCPMetricsHandler({
-        exporter: new MockExporter({projectId}),
-      }); // Pass options with exporter
+      const handler = getHandler(MockExporter); // Pass options with exporter
       const transformedRequestsHandled = JSON.parse(
         JSON.stringify(expectedRequestsHandled).replace(
           /my-project/g,
