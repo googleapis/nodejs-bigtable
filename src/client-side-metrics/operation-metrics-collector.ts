@@ -259,7 +259,7 @@ export class OperationMetricsCollector {
   /**
    * Called when the first response is received. Records first response latencies.
    */
-  onResponse() {
+  onResponse(projectId: string) {
     withMetricsDebug(() => {
       if (!this.firstResponseLatency) {
         checkState(this.state, [
@@ -268,7 +268,7 @@ export class OperationMetricsCollector {
         this.state =
           MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
         const endTime = hrtime.bigint();
-        if (this.operationStartTime) {
+        if (projectId && this.operationStartTime) {
           this.firstResponseLatency = Number(
             (endTime - this.operationStartTime) / BigInt(1000000),
           );

@@ -315,7 +315,6 @@ export class CloudMonitoringExporter extends MetricExporter {
   private client: MetricServiceClient;
 
   constructor(options: ClientOptions) {
-    // Added any type for options
     super();
     this.client = new MetricServiceClient(options);
   }
