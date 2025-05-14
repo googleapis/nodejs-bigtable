@@ -115,12 +115,12 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * Otherwise, the function returns `undefined`.
  *
  * @param {BigtableOptions} options - The Bigtable client options.
- * @param {gax.ClientOptions} [opts] - Optional gax client options.
+ * @param {gax.ClientOptions} [gaxOpts] - Optional gax client options.
  * @returns {string | undefined} The universe domain, or `undefined` if not found.
  */
 function getUniverseDomainOnly(
   options: BigtableOptions,
-  opts?: gax.ClientOptions,
+  gaxOpts?: gax.ClientOptions,
 ) {
   // From https://github.com/googleapis/nodejs-bigtable/blob/589540475b0b2a055018a1cb6e475800fdd46a37/src/v2/bigtable_client.ts#L120-L128.
   // This code for universe domain was taken from the Gapic Layer.
@@ -131,8 +131,8 @@ function getUniverseDomainOnly(
       : undefined;
   return (
     options?.universeDomain ??
-    opts?.universeDomain ??
-    opts?.universe_domain ??
+    gaxOpts?.universeDomain ??
+    gaxOpts?.universe_domain ??
     universeDomainEnvVar
   );
 }
@@ -149,15 +149,15 @@ function getUniverseDomainOnly(
  * `universeDomain` property; otherwise, it returns `null`.
  *
  * @param {BigtableOptions} options - The Bigtable client options.
- * @param {gax.ClientOptions} [opts] - Optional gax client options.
+ * @param {gax.ClientOptions} [gaxOpts] - Optional gax client options.
  * @returns {object | null} An object containing the `universeDomain` property if found,
  *   otherwise `null`.
  */
 function getUniverseDomainOptions(
   options: BigtableOptions,
-  opts?: gax.ClientOptions,
+  gaxOpts?: gax.ClientOptions,
 ) {
-  const universeDomainOnly = getUniverseDomainOnly(options, opts);
+  const universeDomainOnly = getUniverseDomainOnly(options, gaxOpts);
   return universeDomainOnly ? {universeDomain: universeDomainOnly} : null;
 }
 
@@ -167,15 +167,16 @@ function getUniverseDomainOptions(
  * This function retrieves the domain from gax.ClientOptions passed in or via an environment variable.
  * It defaults to 'googleapis.com' if none has been set.
  * @param {string} [prefix] The prefix for the domain.
- * @param {gax.ClientOptions} [opts] The gax client options
+ * @param {BigtableOptions} [options] The options passed into the Bigtable client.
+ * @param {gax.ClientOptions} [gaxOpts] The gax client options.
  * @returns {string} The universe domain.
  */
 function getDomain(
   prefix: string,
   options: BigtableOptions,
-  opts?: gax.ClientOptions,
+  gaxOpts?: gax.ClientOptions,
 ) {
-  const universeDomainOnly = getUniverseDomainOnly(options, opts);
+  const universeDomainOnly = getUniverseDomainOnly(options, gaxOpts);
   const suffix = universeDomainOnly ? universeDomainOnly : 'googleapis.com';
   return `${prefix}.${suffix}`;
 }
