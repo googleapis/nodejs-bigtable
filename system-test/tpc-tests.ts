@@ -15,12 +15,14 @@
 import {after, describe, it} from 'mocha';
 import {Bigtable} from '../src';
 
-describe.skip('TPC tests', () => {
+const UNIVERSE_DOMAIN_CONSTANT = 'my-universe-domain';
+
+describe.skip('Universe domain tests', () => {
   // These tests are only designed to pass when using the service account
-  // credentials for the TPC environment so we skip them in the CI pipeline.
+  // credentials for the universe domain environment so we skip them in the CI pipeline.
   //
   // To see successful tests, uncomment the following line:
-  // process.env.GOOGLE_APPLICATION_CREDENTIALS = '/path-to/tpc_sa_key.json';
+  // process.env.GOOGLE_APPLICATION_CREDENTIALS = '/path-to/key.json';
 
   function runTest(done: Mocha.Done, bigtable: Bigtable) {
     (async () => {
@@ -84,8 +86,8 @@ describe.skip('TPC tests', () => {
     // await instance.delete({});
   });
 
-  it('should set the TPC universe with a client option', done => {
-    const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
+  it('should set the universe with a client option', done => {
+    const universeDomain = UNIVERSE_DOMAIN_CONSTANT; // or your universe domain if not using emulator
     const options = {
       universeDomain,
     };
@@ -93,8 +95,8 @@ describe.skip('TPC tests', () => {
     runTest(done, bigtable);
   });
 
-  it('should set the TPC universe with a client option for the gapic clients', done => {
-    const universeDomain = 'apis-tpczero.goog'; // or your universe domain if not using emulator
+  it('should set the universe domain with a client option for the gapic clients', done => {
+    const universeDomain = UNIVERSE_DOMAIN_CONSTANT; // or your universe domain if not using emulator
     const options = {
       BigtableClient: {universeDomain},
       BigtableInstanceAdminClient: {universeDomain},
@@ -104,8 +106,8 @@ describe.skip('TPC tests', () => {
     runTest(done, bigtable);
   });
 
-  it('Should set TPC universe with an environment variable', done => {
-    process.env.GOOGLE_CLOUD_UNIVERSE_DOMAIN = 'apis-tpczero.goog';
+  it('Should set universe domain with an environment variable', done => {
+    process.env.GOOGLE_CLOUD_UNIVERSE_DOMAIN = UNIVERSE_DOMAIN_CONSTANT;
     const bigtable = new Bigtable();
     runTest(done, bigtable);
   });
