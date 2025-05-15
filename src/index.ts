@@ -38,6 +38,7 @@ import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
 import { ClientSideMetricsConfigManager } from './client-side-metrics/metrics-config-manager';
+import { GCPMetricsHandler } from './client-side-metrics/gcp-metrics-handler';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -534,17 +535,12 @@ export class Bigtable {
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
 
-    this.metricsConfigManager = new ClientSideMetricsConfigManager([])
+
+
     if (options.metricsEnabled === true) {
-      // only add a handler if metrics is enabled
-      // need to unwrap placeholder {{projectId}} values first
-      this.getProjectId_((error, projectId) => {
-        if (!error) {
-          const handlerOptions = Object.assign({}, options, {projectId: projectId})
-          const gcpHandler = ClientSideMetricsConfigManager.getGcpHandlerForProject(projectId, handlerOptions)
-          this.metricsConfigManager.metricsHandlers = [gcpHandler]
-        }
-      })
+      this.metricsConfigManager = new ClientSideMetricsConfigManager([new GCPMetricsHandler(self, options)])
+    } else {
+      this.metricsConfigManager = new ClientSideMetricsConfigManager([])
     }
   }
 

@@ -20,6 +20,7 @@ import {
 import * as Resources from '@opentelemetry/resources';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
 import {PushMetricExporter, View} from '@opentelemetry/sdk-metrics';
+import { CloudMonitoringExporter } from './exporter';
 const {
   Aggregation,
   ExplicitBucketHistogramAggregation,
@@ -181,8 +182,12 @@ function createInstruments(exporter: PushMetricExporter) {
  * associating them with relevant attributes for detailed analysis in Cloud Monitoring.
  */
 export class GCPMetricsHandler implements IMetricsHandler {
-  private exporter: PushMetricExporter;
-  private otelInstruments;
+  private client_init_options;
+  private bt_client;
+  // The variable below is the singleton map from projects to instrument stacks
+  // which exists so that we only create one instrument stack per project. This
+  // will eliminate errors due to the maximum sampling period.
+  static instrumentsForProject: {[projectId: string]: MetricsInstruments} = {};
 
   /**
    * The `GCPMetricsHandler` is responsible for managing and recording
@@ -192,11 +197,28 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * through the provided `PushMetricExporter`.
    *
    */
-  constructor(options) {
-    this.exporter = new CloudMonitoringExporter(options)
-    this.otelInstruments = createInstruments(this.exporter)
+  constructor(bt_client, options) {
+    this.client_init_options = options
+    this.bt_client = bt_client
   }
 
+  private getInstruments(): MetricsInstruments {
+    // find existing instruments from global cache if available
+    const projectId = this.bt_client.projectId
+    if (GCPMetricsHandler.instrumentsForProject[this.bt_client.projectId]) {
+      return GCPMetricsHandler.instrumentsForProject[projectId];
+    } else {
+      const exporter = new CloudMonitoringExporter(this.client_init_options)
+      const newInstruments = createInstruments(exporter)
+      if (projectId != "{{projectId}}") {
+        // we shouldn't get a placeholder here, since the client is already in use.
+        // We can handle the placeholder as an error, or just use the exporter
+        //  without committing it to the stack
+        GCPMetricsHandler.instrumentsForProject[projectId] = newInstruments
+      }
+      return newInstruments
+    }
+  }
 
   /**
    * Records metrics for a completed Bigtable operation.
@@ -204,6 +226,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
+    const otelInstruments = this.getInstruments()
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
@@ -214,26 +237,26 @@ export class GCPMetricsHandler implements IMetricsHandler {
       cluster: data.metricsCollectorData.cluster,
       zone: data.metricsCollectorData.zone,
     };
-    this.otelInstruments.operationLatencies.record(data.operationLatency, {
+    otelInstruments.operationLatencies.record(data.operationLatency, {
       streaming: data.streaming,
       status: data.status,
       ...commonAttributes,
     });
-    this.otelInstruments.retryCount.add(data.retryCount, {
+    otelInstruments.retryCount.add(data.retryCount, {
       status: data.status,
       ...commonAttributes,
     });
-    this.otelInstruments.firstResponseLatencies.record(data.firstResponseLatency, {
+    otelInstruments.firstResponseLatencies.record(data.firstResponseLatency, {
       status: data.status,
       ...commonAttributes,
     });
     for (const applicationLatency of data.applicationLatencies) {
-      this.otelInstruments.applicationBlockingLatencies.record(
+      otelInstruments.applicationBlockingLatencies.record(
         applicationLatency,
         commonAttributes,
       );
     }
-    this.otelInstruments.retryCount.add(data.retryCount, commonAttributes);
+    otelInstruments.retryCount.add(data.retryCount, commonAttributes);
   }
 
   /**
@@ -243,6 +266,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
+    const otelInstruments = this.getInstruments()
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
@@ -254,15 +278,15 @@ export class GCPMetricsHandler implements IMetricsHandler {
       cluster: data.metricsCollectorData.cluster,
       zone: data.metricsCollectorData.zone,
     };
-    this.otelInstruments.attemptLatencies.record(data.attemptLatency, {
+    otelInstruments.attemptLatencies.record(data.attemptLatency, {
       streaming: data.streaming,
       ...commonAttributes,
     });
-    this.otelInstruments.connectivityErrorCount.add(
+    otelInstruments.connectivityErrorCount.add(
       data.connectivityErrorCount,
       commonAttributes,
     );
-    this.otelInstruments.serverLatencies.record(data.serverLatency, {
+    otelInstruments.serverLatencies.record(data.serverLatency, {
       streaming: data.streaming,
       ...commonAttributes,
     });

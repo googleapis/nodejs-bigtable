@@ -298,13 +298,14 @@ export class CloudMonitoringExporter extends MetricExporter {
     this.client = new MetricServiceClient(options)
   }
 
-  export(
+  async export(
     metrics: ResourceMetrics,
     resultCallback: (result: ExportResult) => void,
-  ): void {
+  ): Promise<void> {
     (async () => {
       try {
-        const request = metricsToRequest(this.client.projectId, metrics);
+        const projectId = await this.client.getProjectId();
+        const request = metricsToRequest(projectId, metrics);
         // In order to manage the "One or more points were written more
         // frequently than the maximum sampling period configured for the
         // metric." error we should have the metric service client retry a few
