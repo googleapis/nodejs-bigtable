@@ -128,7 +128,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
         stubs,
       ).GCPMetricsHandler;
 
-      const handler = new FakeMetricsHandler({});
+      const handler = new FakeMetricsHandler('my-project');
 
       for (const request of expectedRequestsHandled) {
         if (request.attemptLatency) {
