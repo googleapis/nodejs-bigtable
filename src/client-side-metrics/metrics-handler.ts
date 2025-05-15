@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
-import {grpc} from 'google-gax';
 
 /**
  * The interfaces below use undefined instead of null to indicate a metric is

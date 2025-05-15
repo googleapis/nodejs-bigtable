@@ -18,7 +18,7 @@ import {ClientOptions, grpc} from 'google-gax';
 import * as gax from 'google-gax';
 import {AbortableDuplex, BigtableOptions} from '../index';
 import * as path from 'path';
-import {ClientSideMetricsConfigManager} from './metrics-config-manager';
+import {GCPMetricsHandler} from './gcp-metrics-handler';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
@@ -215,11 +215,10 @@ export class OperationMetricsCollector {
         const totalMilliseconds = Number(
           (endTime - this.attemptStartTime) / BigInt(1000000),
         );
-        const metricsHandler =
-          ClientSideMetricsConfigManager.getGcpHandlerForProject(
-            projectId,
-            this.tabularApiSurface.bigtable.options as ClientOptions,
-          );
+        const projectId = this.tabularApiSurface.bigtable.projectId as string;
+        const options = this.tabularApiSurface.bigtable
+          .options as ClientOptions;
+        const metricsHandler = new GCPMetricsHandler(projectId, options);
         if (metricsHandler.onAttemptComplete) {
           metricsHandler.onAttemptComplete({
             attemptLatency: totalMilliseconds,
@@ -299,11 +298,10 @@ export class OperationMetricsCollector {
           (endTime - this.operationStartTime) / BigInt(1000000),
         );
         {
-          const metricsHandler =
-            ClientSideMetricsConfigManager.getGcpHandlerForProject(
-              projectId,
-              this.tabularApiSurface.bigtable.options as ClientOptions,
-            );
+          const projectId = this.tabularApiSurface.bigtable.projectId as string;
+          const options = this.tabularApiSurface.bigtable
+            .options as ClientOptions;
+          const metricsHandler = new GCPMetricsHandler(projectId, options);
           if (metricsHandler.onOperationComplete) {
             metricsHandler.onOperationComplete({
               status: finalOperationStatus.toString(),

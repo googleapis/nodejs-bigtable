@@ -188,8 +188,9 @@ function createInstruments(
  * associating them with relevant attributes for detailed analysis in Cloud Monitoring.
  */
 export class GCPMetricsHandler implements IMetricsHandler {
-  private exporter: PushMetricExporter;
-  private otelInstruments: MetricsInstruments;
+  private options: ClientOptions;
+  private projectId: string;
+  private static instrumentStackCache: Map<string, MetricsInstruments> = new Map();
 
   /**
    * The `GCPMetricsHandler` is responsible for managing and recording
@@ -200,8 +201,23 @@ export class GCPMetricsHandler implements IMetricsHandler {
    *
    */
   constructor(projectId: string, options: ClientOptions) {
-    this.exporter = new CloudMonitoringExporter(options);
-    this.otelInstruments = createInstruments(projectId, this.exporter);
+    this.options = options;
+    this.projectId = projectId;
+  }
+
+  private static getInstrumentStack(
+    projectId: string,
+    options: ClientOptions,
+  ): MetricsInstruments {
+    // share a single GCPMetricsHandler for each project, to avoid sampling errors
+    if (this.instrumentStackCache.has(projectId)) {
+      return this.instrumentStackCache.get(projectId)!;
+    } else {
+      const exporter = new CloudMonitoringExporter(options);
+      const otelInstruments = createInstruments(projectId, exporter);
+      this.instrumentStackCache.set(projectId, otelInstruments);
+      return otelInstruments;
+    }
   }
 
   /**
@@ -210,7 +226,10 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    const otelInstruments = this.otelInstruments;
+    const otelInstruments = GCPMetricsHandler.getInstrumentStack(
+      this.projectId,
+      this.options,
+    );
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
@@ -250,7 +269,10 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    const otelInstruments = this.otelInstruments;
+    const otelInstruments = GCPMetricsHandler.getInstrumentStack(
+      this.projectId,
+      this.options,
+    );
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
