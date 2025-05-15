@@ -21,7 +21,6 @@ import {CloudMonitoringExporter} from './exporter';
 import {AbortableDuplex} from '../index';
 import * as path from 'path';
 import { IMetricsHandler } from './metrics-handler';
-import { ClientSideMetricsConfigManager } from './metrics-config-manager';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
@@ -115,7 +114,7 @@ export class OperationMetricsCollector {
   private streamingOperation: StreamingState;
   private applicationLatencies: number[];
   private lastRowReceivedTime: bigint | null;
-  private configManager: ClientSideMetricsConfigManager
+  private handlers: IMetricsHandler[];
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -126,7 +125,7 @@ export class OperationMetricsCollector {
     tabularApiSurface: ITabularApiSurface,
     methodName: MethodName,
     streamingOperation: StreamingState,
-    configManager: ClientSideMetricsConfigManager,
+    handlers: IMetricsHandler[],
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
@@ -142,7 +141,7 @@ export class OperationMetricsCollector {
     this.streamingOperation = streamingOperation;
     this.lastRowReceivedTime = null;
     this.applicationLatencies = [];
-    this.configManager = configManager
+    this.handlers = handlers;
   }
 
   private getMetricsCollectorData() {
@@ -216,7 +215,7 @@ export class OperationMetricsCollector {
         const totalMilliseconds = Number(
           (endTime - this.attemptStartTime) / BigInt(1000000),
         );
-        this.configManager.metricsHandlers.forEach(metricsHandler => {
+        this.handlers.forEach(metricsHandler => {
           if (metricsHandler.onAttemptComplete) {
             metricsHandler.onAttemptComplete({
               attemptLatency: totalMilliseconds,
@@ -296,7 +295,7 @@ export class OperationMetricsCollector {
           (endTime - this.operationStartTime) / BigInt(1000000),
         );
         {
-          this.configManager.metricsHandlers.forEach(metricsHandler => {
+          this.handlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
               metricsHandler.onOperationComplete({
                 status: finalOperationStatus.toString(),
