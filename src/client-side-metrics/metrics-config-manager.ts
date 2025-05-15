@@ -29,7 +29,7 @@ export class ClientSideMetricsConfigManager {
     if (this.gcpHandlerStore.has(projectId)) {
       return this.gcpHandlerStore.get(projectId)!;
     } else {
-      const newHandler = new GCPMetricsHandler(options);
+      const newHandler = new GCPMetricsHandler(projectId, options);
       this.gcpHandlerStore.set(projectId, newHandler);
       return newHandler;
     }

@@ -33,6 +33,8 @@ const protoPath = path.join(
 const root = gax.protobuf.loadSync(protoPath);
 const ResponseParams = root.lookupType('ResponseParams');
 
+const projectId = 'my-project';
+
 /**
  * A fake implementation of the Bigtable client for testing purposes.  Provides a
  * metricsTracerFactory and a stubbed projectId method.
@@ -40,7 +42,7 @@ const ResponseParams = root.lookupType('ResponseParams');
 class FakeBigtable {
   clientUid = 'fake-uuid';
   appProfileId?: string;
-  projectId = 'my-project';
+  projectId = projectId;
 }
 
 /**
@@ -54,7 +56,7 @@ class FakeInstance {
 }
 
 const logger = {value: ''};
-const testHandler = new TestMetricsHandler(logger);
+const testHandler = new TestMetricsHandler(projectId, logger);
 
 class FakeClientSideMetricsConfigManager {
   static getGcpHandlerForProject() {

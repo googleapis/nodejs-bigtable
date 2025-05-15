@@ -229,7 +229,6 @@ export class OperationMetricsCollector {
             status: attemptStatus.toString(),
             client_name: `nodejs-bigtable/${version}`,
             metricsCollectorData: this.getMetricsCollectorData(),
-            projectId,
           });
         }
       } else {
@@ -311,7 +310,6 @@ export class OperationMetricsCollector {
               streaming: this.streamingOperation,
               metricsCollectorData: this.getMetricsCollectorData(),
               client_name: `nodejs-bigtable/${version}`,
-              projectId,
               operationLatency: totalMilliseconds,
               retryCount: this.attemptCount - 1,
               firstResponseLatency: this.firstResponseLatency ?? undefined,

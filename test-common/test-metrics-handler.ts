@@ -24,10 +24,12 @@ import {
  */
 export class TestMetricsHandler implements IMetricsHandler {
   private messages: {value: string};
+  private projectId: string;
   requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [];
 
-  constructor(messages: {value: string}) {
+  constructor(projectId: string, messages: {value: string}) {
     this.messages = messages;
+    this.projectId = projectId;
   }
   /**
    * Logs the metrics and attributes received for an operation completion.
@@ -36,8 +38,9 @@ export class TestMetricsHandler implements IMetricsHandler {
   onOperationComplete(data: OnOperationCompleteData) {
     this.requestsHandled.push(data);
     data.client_name = 'nodejs-bigtable';
+    const dataWithProject = Object.assign({projectId: this.projectId}, data);
     this.messages.value += 'Recording parameters for onOperationComplete:\n';
-    this.messages.value += `${JSON.stringify(data)}\n`;
+    this.messages.value += `${JSON.stringify(dataWithProject)}\n`;
   }
 
   /**
@@ -47,7 +50,8 @@ export class TestMetricsHandler implements IMetricsHandler {
   onAttemptComplete(data: OnAttemptCompleteData) {
     this.requestsHandled.push(data);
     data.client_name = 'nodejs-bigtable';
+    const dataWithProject = Object.assign({projectId: this.projectId}, data);
     this.messages.value += 'Recording parameters for onAttemptComplete:\n';
-    this.messages.value += `${JSON.stringify(data)}\n`;
+    this.messages.value += `${JSON.stringify(dataWithProject)}\n`;
   }
 }

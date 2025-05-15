@@ -41,6 +41,7 @@ function getFakeBigtable(
   successful.
    */
   const metricHandler = new metricsHandlerClass(
+    projectId,
     {} as unknown as ClientOptions & {value: string},
   );
   class FakeMetricsConfigManager {
