@@ -38,21 +38,9 @@ describe('Bigtable/MetricServiceClientCredentials', () => {
         },
       },
     ).GCPMetricsHandler;
-    const FakeMetricsConfigManager = proxyquire(
-      '../src/client-side-metrics/metrics-config-manager.js',
-      {
-        './gcp-metrics-handler': {
-          GCPMetricsHandler: FakeCGPMetricsHandler,
-        },
-      },
-    ).ClientSideMetricsConfigManager;
     const FakeOperationMetricsCollector = proxyquire(
       '../src/client-side-metrics/operation-metrics-collector.js',
-      {
-        './metrics-config-manager': {
-          ClientSideMetricsConfigManager: FakeMetricsConfigManager,
-        },
-      },
+      {},
     ).OperationMetricsCollector;
     const FakeFactory = proxyquire(
       '../src/client-side-metrics/operation-metrics-collector-factory.js',

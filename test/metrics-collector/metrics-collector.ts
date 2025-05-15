@@ -78,9 +78,6 @@ describe('Bigtable/MetricsCollector', () => {
     'node:process': {
       hrtime: new FakeHRTime(),
     },
-    './metrics-config-manager': {
-      ClientSideMetricsConfigManager: FakeClientSideMetricsConfigManager,
-    },
   };
   const FakeOperationsMetricsCollector = proxyquire(
     '../../src/client-side-metrics/operation-metrics-collector.js',

@@ -51,11 +51,7 @@ function getFakeBigtable(
   }
   const FakeOperationMetricsCollector = proxyquire(
     '../src/client-side-metrics/operation-metrics-collector.js',
-    {
-      './metrics-config-manager': {
-        ClientSideMetricsConfigManager: FakeMetricsConfigManager,
-      },
-    },
+    {},
   ).OperationMetricsCollector;
   const FakeFactory = proxyquire(
     '../src/client-side-metrics/operation-metrics-collector-factory.js',
