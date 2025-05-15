@@ -182,8 +182,7 @@ function createInstruments(exporter: PushMetricExporter) {
  * associating them with relevant attributes for detailed analysis in Cloud Monitoring.
  */
 export class GCPMetricsHandler implements IMetricsHandler {
-  private client_init_options;
-  private bt_client;
+  private otelInstruments
   // The variable below is the singleton map from projects to instrument stacks
   // which exists so that we only create one instrument stack per project. This
   // will eliminate errors due to the maximum sampling period.
@@ -197,27 +196,9 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * through the provided `PushMetricExporter`.
    *
    */
-  constructor(bt_client, options) {
-    this.client_init_options = options
-    this.bt_client = bt_client
-  }
-
-  private getInstruments(): MetricsInstruments {
-    // find existing instruments from global cache if available
-    const projectId = this.bt_client.projectId
-    if (GCPMetricsHandler.instrumentsForProject[this.bt_client.projectId]) {
-      return GCPMetricsHandler.instrumentsForProject[projectId];
-    } else {
-      const exporter = new CloudMonitoringExporter(this.client_init_options)
-      const newInstruments = createInstruments(exporter)
-      if (projectId != "{{projectId}}") {
-        // we shouldn't get a placeholder here, since the client is already in use.
-        // We can handle the placeholder as an error, or just use the exporter
-        //  without committing it to the stack
-        GCPMetricsHandler.instrumentsForProject[projectId] = newInstruments
-      }
-      return newInstruments
-    }
+  constructor(options) {
+    const exporter = new CloudMonitoringExporter(options)
+    this.otelInstruments = createInstruments(exporter)
   }
 
   /**
@@ -226,7 +207,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    const otelInstruments = this.getInstruments()
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
@@ -237,26 +217,26 @@ export class GCPMetricsHandler implements IMetricsHandler {
       cluster: data.metricsCollectorData.cluster,
       zone: data.metricsCollectorData.zone,
     };
-    otelInstruments.operationLatencies.record(data.operationLatency, {
+    this.otelInstruments.operationLatencies.record(data.operationLatency, {
       streaming: data.streaming,
       status: data.status,
       ...commonAttributes,
     });
-    otelInstruments.retryCount.add(data.retryCount, {
+    this.otelInstruments.retryCount.add(data.retryCount, {
       status: data.status,
       ...commonAttributes,
     });
-    otelInstruments.firstResponseLatencies.record(data.firstResponseLatency, {
+    this.otelInstruments.firstResponseLatencies.record(data.firstResponseLatency, {
       status: data.status,
       ...commonAttributes,
     });
     for (const applicationLatency of data.applicationLatencies) {
-      otelInstruments.applicationBlockingLatencies.record(
+      this.otelInstruments.applicationBlockingLatencies.record(
         applicationLatency,
         commonAttributes,
       );
     }
-    otelInstruments.retryCount.add(data.retryCount, commonAttributes);
+    this.otelInstruments.retryCount.add(data.retryCount, commonAttributes);
   }
 
   /**
@@ -266,7 +246,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    const otelInstruments = this.getInstruments()
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
@@ -278,15 +257,15 @@ export class GCPMetricsHandler implements IMetricsHandler {
       cluster: data.metricsCollectorData.cluster,
       zone: data.metricsCollectorData.zone,
     };
-    otelInstruments.attemptLatencies.record(data.attemptLatency, {
+    this.otelInstruments.attemptLatencies.record(data.attemptLatency, {
       streaming: data.streaming,
       ...commonAttributes,
     });
-    otelInstruments.connectivityErrorCount.add(
+    this.otelInstruments.connectivityErrorCount.add(
       data.connectivityErrorCount,
       commonAttributes,
     );
-    otelInstruments.serverLatencies.record(data.serverLatency, {
+    this.otelInstruments.serverLatencies.record(data.serverLatency, {
       streaming: data.streaming,
       ...commonAttributes,
     });
