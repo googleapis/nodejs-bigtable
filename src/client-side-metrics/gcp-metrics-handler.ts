@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {CloudMonitoringExporter} from './exporter'; // Added import
+import {CloudMonitoringExporter} from './exporter';
 import {
   IMetricsHandler,
   OnAttemptCompleteData,

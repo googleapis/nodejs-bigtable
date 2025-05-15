@@ -87,7 +87,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
         ): Promise<void> {
           const testResultCallback = getTestResultCallback(resultCallback);
           if (!exported) {
-            await super.export(metrics, testResultCallback); // Added await
+            await super.export(metrics, testResultCallback);
           } else {
             resultCallback({code: 0});
           }
@@ -177,7 +177,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
           if (exportedCount < 1) {
             // The code below uses the test callback to ensure the export was successful.
             const testResultCallback = getTestResultCallback(resultCallback);
-            await super.export(metrics, testResultCallback); // Added await
+            await super.export(metrics, testResultCallback);
           } else {
             // After the test is complete the periodic exporter may still be
             // running in which case we don't want to do any checks. We just
@@ -318,7 +318,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
             }
             // The code below uses the test callback to ensure the export was successful.
             const testResultCallback = getTestResultCallback(resultCallback);
-            await super.export(metrics, testResultCallback); // Added await
+            await super.export(metrics, testResultCallback);
           } else {
             // After the test is complete the periodic exporter may still be
             // running in which case we don't want to do any checks. We just
@@ -405,7 +405,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
         ): Promise<void> {
           const testResultCallback = getTestResultCallback(resultCallback);
           if (!exported) {
-            await super.export(metrics, testResultCallback); // Added await
+            await super.export(metrics, testResultCallback);
           } else {
             resultCallback({code: 0});
           }
