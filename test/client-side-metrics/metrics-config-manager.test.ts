@@ -64,7 +64,7 @@ describe('ClientSideMetricsConfigManager', () => {
       'GCPMetricsHandler constructor should be called once',
     );
     assert.deepStrictEqual(
-      gcpMetricsHandlerStub.firstCall.args[0],
+      gcpMetricsHandlerStub.firstCall.args[1],
       fakeOptions,
       'Options should be passed to GCPMetricsHandler constructor',
     );
@@ -102,7 +102,7 @@ describe('ClientSideMetricsConfigManager', () => {
     );
     // Verify it was constructed with the options from the first call.
     assert.deepStrictEqual(
-      gcpMetricsHandlerStub.firstCall.args[0],
+      gcpMetricsHandlerStub.firstCall.args[1],
       fakeOptions1,
     );
   });
@@ -136,12 +136,12 @@ describe('ClientSideMetricsConfigManager', () => {
       'Should return different handler instances for different project IDs',
     );
     assert.deepStrictEqual(
-      gcpMetricsHandlerStub.firstCall.args[0],
+      gcpMetricsHandlerStub.firstCall.args[1],
       fakeOptions1,
       'First call options are correct',
     );
     assert.deepStrictEqual(
-      gcpMetricsHandlerStub.secondCall.args[0],
+      gcpMetricsHandlerStub.secondCall.args[1],
       fakeOptions2,
       'Second call options are correct',
     );
@@ -159,7 +159,7 @@ describe('ClientSideMetricsConfigManager', () => {
       'GCPMetricsHandler constructor should be called',
     );
     assert.deepStrictEqual(
-      gcpMetricsHandlerStub.firstCall.args[0],
+      gcpMetricsHandlerStub.firstCall.args[1],
       specificOptions,
       'The specific options object should be passed',
     );
