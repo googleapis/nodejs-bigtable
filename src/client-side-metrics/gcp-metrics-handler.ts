@@ -29,6 +29,8 @@ const {
   PeriodicExportingMetricReader,
 } = require('@opentelemetry/sdk-metrics');
 
+import * as os from 'os';
+import * as crypto from 'crypto';
 /**
  * A collection of OpenTelemetry metric instruments used to record
  * Bigtable client-side metrics.
@@ -42,6 +44,13 @@ interface MetricsInstruments {
   serverLatencies: typeof Histogram;
   connectivityErrorCount: typeof Histogram;
   clientBlockingLatencies: typeof Histogram;
+}
+
+function generateClientUuid() {
+  const hostname = os.hostname() || 'localhost';
+  const currentPid = process.pid || '';
+  const uuid4 = crypto.randomUUID();
+  return `node-${uuid4}-${currentPid}${hostname}`;
 }
 
 /**
@@ -183,6 +192,7 @@ function createInstruments(exporter: PushMetricExporter) {
  */
 export class GCPMetricsHandler implements IMetricsHandler {
   private otelInstruments
+  private clientUid
   // The variable below is the singleton map from projects to instrument stacks
   // which exists so that we only create one instrument stack per project. This
   // will eliminate errors due to the maximum sampling period.
@@ -199,6 +209,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
   constructor(options) {
     const exporter = new CloudMonitoringExporter(options)
     this.otelInstruments = createInstruments(exporter)
+    this.clientUid = generateClientUuid();
   }
 
   /**
@@ -210,7 +221,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
-      client_uid: data.metricsCollectorData.client_uid,
+      client_uid: this.clientUid,
       client_name: data.client_name,
       instanceId: data.metricsCollectorData.instanceId,
       table: data.metricsCollectorData.table,
@@ -249,7 +260,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
-      client_uid: data.metricsCollectorData.client_uid,
+      client_uid: this.clientUid,
       status: data.status,
       client_name: data.client_name,
       instanceId: data.metricsCollectorData.instanceId,

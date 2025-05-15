@@ -44,7 +44,6 @@ export interface ITabularApiSurface {
   id: string;
   bigtable: {
     appProfileId?: string;
-    clientUid: string;
   };
 }
 
@@ -153,7 +152,6 @@ export class OperationMetricsCollector {
         cluster: this.cluster,
         zone: this.zone,
         method: this.methodName,
-        client_uid: this.tabularApiSurface.bigtable.clientUid,
       },
       appProfileId ? {app_profile: appProfileId} : {},
     );
