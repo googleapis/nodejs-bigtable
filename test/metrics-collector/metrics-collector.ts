@@ -40,7 +40,6 @@ const projectId = 'my-project';
  * metricsTracerFactory and a stubbed projectId method.
  */
 class FakeBigtable {
-  clientUid = 'fake-uuid';
   appProfileId?: string;
   projectId = projectId;
 }
@@ -56,13 +55,9 @@ class FakeInstance {
 }
 
 const logger = {value: ''};
-const testHandler = new TestMetricsHandler(projectId, logger);
-
-class FakeClientSideMetricsConfigManager {
-  static getGcpHandlerForProject() {
-    return testHandler;
-  }
-}
+const testHandler = new TestMetricsHandler();
+testHandler.projectId = projectId;
+testHandler.messages = logger;
 
 describe('Bigtable/MetricsCollector', () => {
   class FakeHRTime {
@@ -80,7 +75,7 @@ describe('Bigtable/MetricsCollector', () => {
     },
     './gcp-metrics-handler': {
       GCPMetricsHandler: testHandler,
-    }
+    },
   };
   const FakeOperationsMetricsCollector = proxyquire(
     '../../src/client-side-metrics/operation-metrics-collector.js',

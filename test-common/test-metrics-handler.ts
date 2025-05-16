@@ -23,6 +23,8 @@ import {
  * It logs the metrics and attributes received by the onOperationComplete and onAttemptComplete methods.
  */
 export class TestMetricsHandler implements IMetricsHandler {
+  messages = {value: ''};
+  projectId = 'projectId';
   requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [];
 
   /**
