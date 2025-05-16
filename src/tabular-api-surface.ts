@@ -34,7 +34,7 @@ import {
 } from './chunktransformer';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {google} from '../protos/protos';
-import {CallOptions, ClientOptions, grpc, ServiceError} from 'google-gax';
+import {CallOptions, grpc, ServiceError} from 'google-gax';
 import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
