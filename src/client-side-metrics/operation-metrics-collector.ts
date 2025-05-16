@@ -14,11 +14,11 @@
 
 import * as fs from 'fs';
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
-import {ClientOptions, grpc} from 'google-gax';
+import {grpc} from 'google-gax';
 import * as gax from 'google-gax';
 import {AbortableDuplex, BigtableOptions} from '../index';
 import * as path from 'path';
-import {GCPMetricsHandler} from './gcp-metrics-handler';
+import {IMetricsHandler} from './metrics-handler';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
@@ -44,7 +44,6 @@ export interface ITabularApiSurface {
     metricsEnabled?: boolean;
     projectId?: string;
     appProfileId?: string;
-    clientUid: string;
     options: BigtableOptions;
   };
 }
@@ -115,17 +114,19 @@ export class OperationMetricsCollector {
   private streamingOperation: StreamingState;
   private applicationLatencies: number[];
   private lastRowReceivedTime: bigint | null;
+  private handlers: IMetricsHandler[];
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
    * @param {MethodName} methodName The name of the method being traced.
    * @param {StreamingState} streamingOperation Whether or not the call is a streaming operation.
-   * @param {ClientOptions} options The options for the MetricServiceClient
+   * @param {IMetricsHandler[]} handlers The metrics handlers used to store the record the metrics.
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
     methodName: MethodName,
     streamingOperation: StreamingState,
+    handlers: IMetricsHandler[],
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
@@ -141,6 +142,7 @@ export class OperationMetricsCollector {
     this.streamingOperation = streamingOperation;
     this.lastRowReceivedTime = null;
     this.applicationLatencies = [];
+    this.handlers = handlers;
   }
 
   private getMetricsCollectorData() {
@@ -152,7 +154,6 @@ export class OperationMetricsCollector {
         cluster: this.cluster,
         zone: this.zone,
         method: this.methodName,
-        client_uid: this.tabularApiSurface.bigtable.clientUid,
       },
       appProfileId ? {app_profile: appProfileId} : {},
     );
@@ -198,10 +199,9 @@ export class OperationMetricsCollector {
 
   /**
    * Called when an attempt (e.g., an RPC attempt) completes. Records attempt latencies.
-   * @param {string} projectId The id for the project
    * @param {grpc.status} attemptStatus The grpc status for the attempt.
    */
-  onAttemptComplete(projectId: string, attemptStatus: grpc.status) {
+  onAttemptComplete(attemptStatus: grpc.status) {
     withMetricsDebug(() => {
       checkState(this.state, [
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
@@ -215,21 +215,19 @@ export class OperationMetricsCollector {
         const totalMilliseconds = Number(
           (endTime - this.attemptStartTime) / BigInt(1000000),
         );
-        const projectId = this.tabularApiSurface.bigtable.projectId as string;
-        const options = this.tabularApiSurface.bigtable
-          .options as ClientOptions;
-        const metricsHandler = new GCPMetricsHandler(projectId, options);
-        if (metricsHandler.onAttemptComplete) {
-          metricsHandler.onAttemptComplete({
-            attemptLatency: totalMilliseconds,
-            serverLatency: this.serverTime ?? undefined,
-            connectivityErrorCount: this.connectivityErrorCount,
-            streaming: this.streamingOperation,
-            status: attemptStatus.toString(),
-            client_name: `nodejs-bigtable/${version}`,
-            metricsCollectorData: this.getMetricsCollectorData(),
-          });
-        }
+        this.handlers.forEach(metricsHandler => {
+          if (metricsHandler.onAttemptComplete) {
+            metricsHandler.onAttemptComplete({
+              attemptLatency: totalMilliseconds,
+              serverLatency: this.serverTime ?? undefined,
+              connectivityErrorCount: this.connectivityErrorCount,
+              streaming: this.streamingOperation,
+              status: attemptStatus.toString(),
+              client_name: `nodejs-bigtable/${version}`,
+              metricsCollectorData: this.getMetricsCollectorData(),
+            });
+          }
+        });
       } else {
         throw new Error('Start time should always be provided');
       }
@@ -257,7 +255,7 @@ export class OperationMetricsCollector {
   /**
    * Called when the first response is received. Records first response latencies.
    */
-  onResponse(projectId: string) {
+  onResponse() {
     withMetricsDebug(() => {
       if (!this.firstResponseLatency) {
         checkState(this.state, [
@@ -266,7 +264,7 @@ export class OperationMetricsCollector {
         this.state =
           MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
         const endTime = hrtime.bigint();
-        if (projectId && this.operationStartTime) {
+        if (this.operationStartTime) {
           this.firstResponseLatency = Number(
             (endTime - this.operationStartTime) / BigInt(1000000),
           );
@@ -282,11 +280,10 @@ export class OperationMetricsCollector {
   /**
    * Called when an operation completes (successfully or unsuccessfully).
    * Records operation latencies, retry counts, and connectivity error counts.
-   * @param {string} projectId The id for the project
    * @param {grpc.status} finalOperationStatus Information about the completed operation.
    */
-  onOperationComplete(projectId: string, finalOperationStatus: grpc.status) {
-    this.onAttemptComplete(projectId, finalOperationStatus);
+  onOperationComplete(finalOperationStatus: grpc.status) {
+    this.onAttemptComplete(finalOperationStatus);
     withMetricsDebug(() => {
       checkState(this.state, [
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS,
@@ -298,22 +295,20 @@ export class OperationMetricsCollector {
           (endTime - this.operationStartTime) / BigInt(1000000),
         );
         {
-          const projectId = this.tabularApiSurface.bigtable.projectId as string;
-          const options = this.tabularApiSurface.bigtable
-            .options as ClientOptions;
-          const metricsHandler = new GCPMetricsHandler(projectId, options);
-          if (metricsHandler.onOperationComplete) {
-            metricsHandler.onOperationComplete({
-              status: finalOperationStatus.toString(),
-              streaming: this.streamingOperation,
-              metricsCollectorData: this.getMetricsCollectorData(),
-              client_name: `nodejs-bigtable/${version}`,
-              operationLatency: totalMilliseconds,
-              retryCount: this.attemptCount - 1,
-              firstResponseLatency: this.firstResponseLatency ?? undefined,
-              applicationLatencies: this.applicationLatencies,
-            });
-          }
+          this.handlers.forEach(metricsHandler => {
+            if (metricsHandler.onOperationComplete) {
+              metricsHandler.onOperationComplete({
+                status: finalOperationStatus.toString(),
+                streaming: this.streamingOperation,
+                metricsCollectorData: this.getMetricsCollectorData(),
+                client_name: `nodejs-bigtable/${version}`,
+                operationLatency: totalMilliseconds,
+                retryCount: this.attemptCount - 1,
+                firstResponseLatency: this.firstResponseLatency ?? undefined,
+                applicationLatencies: this.applicationLatencies,
+              });
+            }
+          });
         }
       } else {
         console.warn('operation start time should always be available here');

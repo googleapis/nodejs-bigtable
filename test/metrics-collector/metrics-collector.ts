@@ -78,6 +78,9 @@ describe('Bigtable/MetricsCollector', () => {
     'node:process': {
       hrtime: new FakeHRTime(),
     },
+    './gcp-metrics-handler': {
+      GCPMetricsHandler: testHandler,
+    }
   };
   const FakeOperationsMetricsCollector = proxyquire(
     '../../src/client-side-metrics/operation-metrics-collector.js',

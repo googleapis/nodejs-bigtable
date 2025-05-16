@@ -19,11 +19,10 @@ import {
   Histogram,
   ResourceMetrics,
 } from '@opentelemetry/sdk-metrics';
-import {ClientOptions, grpc, ServiceError} from 'google-gax';
+import {ClientOptions, ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
-import {RetryOptions} from 'google-gax';
 
 export interface ExportResult {
   code: number;
@@ -116,27 +115,6 @@ function getIntegerPoints(dataPoint: DataPoint<number>) {
 }
 
 /**
- * Extracts the project ID from a `ResourceMetrics` object.
- *
- * This function retrieves the Google Cloud project ID from the resource
- * attributes of a `ResourceMetrics` object, which is the standard data
- * structure used by OpenTelemetry for representing metrics data. The project ID
- * is typically stored under the `monitored_resource.project_id` key within the
- * resource's attributes.
- *
- */
-function getProject(exportArgs: ResourceMetrics) {
-  type WithSyncAttributes = {_syncAttributes: {[index: string]: string}};
-  const resourcesWithSyncAttributes =
-    exportArgs.resource as unknown as WithSyncAttributes;
-  const projectId =
-    resourcesWithSyncAttributes._syncAttributes[
-      'monitored_resource.project_id'
-    ];
-  return projectId;
-}
-
-/**
  * getResource gets the resource object which is used for building the timeseries
  * object that will be sent to Google Cloud Monitoring dashboard
  *
@@ -205,6 +183,7 @@ function getMetric(
  * metric attributes, data points, and aggregation information, into an object
  * that conforms to the expected request format of the Cloud Monitoring API.
  *
+ * @param projectId
  * @param {ResourceMetrics} exportArgs - The OpenTelemetry metrics data to be converted. This
  *   object contains resource attributes, scope information, and a list of
  *   metrics with their associated data points.
@@ -232,8 +211,10 @@ function getMetric(
  *
  *
  */
-export function metricsToRequest(exportArgs: ResourceMetrics) {
-  const projectId = getProject(exportArgs);
+export function metricsToRequest(
+  projectId: string,
+  exportArgs: ResourceMetrics,
+) {
   const timeSeriesArray = [];
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
@@ -325,35 +306,9 @@ export class CloudMonitoringExporter extends MetricExporter {
   ): Promise<void> {
     (async () => {
       try {
-        const request = metricsToRequest(metrics);
-        // In order to manage the "One or more points were written more
-        // frequently than the maximum sampling period configured for the
-        // metric." error we should have the metric service client retry a few
-        // times to ensure the metrics do get written.
-        //
-        // We use all the usual retry codes plus INVALID_ARGUMENT (code 3)
-        // because INVALID ARGUMENT (code 3) corresponds to the maximum
-        // sampling error.
-        const retry = new RetryOptions(
-          [
-            grpc.status.INVALID_ARGUMENT,
-            grpc.status.DEADLINE_EXCEEDED,
-            grpc.status.RESOURCE_EXHAUSTED,
-            grpc.status.ABORTED,
-            grpc.status.UNAVAILABLE,
-          ],
-          {
-            initialRetryDelayMillis: 5000,
-            retryDelayMultiplier: 2,
-            maxRetryDelayMillis: 50000,
-          },
-        );
-        await this.client.createTimeSeries(
-          request as ICreateTimeSeriesRequest,
-          {
-            retry,
-          },
-        );
+        const projectId = await this.client.getProjectId();
+        const request = metricsToRequest(projectId, metrics);
+        await this.client.createTimeSeries(request as ICreateTimeSeriesRequest);
         // The resultCallback typically accepts a value equal to {code: x}
         // for some value x along with other info. When the code is equal to 0
         // then the operation completed successfully. When the code is not equal

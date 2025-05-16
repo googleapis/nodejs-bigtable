@@ -12,22 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {MethodName, StreamingState} from './client-side-metrics-attributes';
+import {IMetricsHandler} from './metrics-handler';
 import {
   ITabularApiSurface,
   OperationMetricsCollector,
 } from './operation-metrics-collector';
+import {MethodName, StreamingState} from './client-side-metrics-attributes';
 
-export class OperationMetricsCollectorFactory {
-  static createOperation(
+/**
+ * A class for tracing and recording client-side metrics related to Bigtable operations.
+ */
+export class ClientSideMetricsConfigManager {
+  private metricsHandlers: IMetricsHandler[];
+
+  constructor(handlers: IMetricsHandler[]) {
+    this.metricsHandlers = handlers;
+  }
+
+  createOperation(
     methodName: MethodName,
     streaming: StreamingState,
     table: ITabularApiSurface,
-  ): OperationMetricsCollector | undefined {
-    if (table.bigtable.metricsEnabled) {
-      return new OperationMetricsCollector(table, methodName, streaming);
-    } else {
-      return;
-    }
+  ): OperationMetricsCollector {
+    return new OperationMetricsCollector(
+      table,
+      methodName,
+      streaming,
+      this.metricsHandlers,
+    );
   }
 }

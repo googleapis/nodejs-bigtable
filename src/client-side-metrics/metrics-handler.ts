@@ -27,7 +27,6 @@ type IMetricsCollectorData = {
   zone?: string;
   app_profile?: string;
   method: MethodName;
-  client_uid: string;
 };
 
 interface StandardData {
