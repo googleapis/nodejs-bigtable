@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {Instance} from './instance';
@@ -44,8 +43,6 @@ import {
   MethodName,
   StreamingState,
 } from './client-side-metrics/client-side-metrics-attributes';
-import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
-import {CloudMonitoringExporter} from './client-side-metrics/exporter';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -339,16 +336,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
-    const metricsCollector = this.bigtable.metricsEnabled
-      ? new OperationMetricsCollector(
-          this,
-          MethodName.READ_ROWS,
-          StreamingState.STREAMING,
-        )
-      : null;
-    metricsCollector?.onOperationStart();
+    const metricsCollector =
+      this.bigtable._metricsConfigManager.createOperation(
+        MethodName.READ_ROWS,
+        StreamingState.STREAMING,
+        this,
+      );
+    metricsCollector.onOperationStart();
     const makeNewRequest = () => {
-      metricsCollector?.onAttemptStart();
+      metricsCollector.onAttemptStart();
 
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
@@ -525,7 +521,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return false;
       };
 
-      metricsCollector?.handleStatusAndMetadata(requestStream);
+      metricsCollector.handleStatusAndMetadata(requestStream);
       rowStream
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
@@ -534,10 +530,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             // We ignore the `cancelled` "error", since we are the ones who cause
             // it when the user calls `.abort()`.
             userStream.end();
-            metricsCollector?.onOperationComplete(
-              this.bigtable.projectId,
-              error.code,
-            );
+            metricsCollector.onOperationComplete(error.code);
             return;
           }
           numConsecutiveErrors++;
@@ -555,10 +548,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               numConsecutiveErrors,
               backOffSettings,
             );
-            metricsCollector?.onAttemptComplete(
-              this.bigtable.projectId,
-              error.code,
-            );
+            metricsCollector.onAttemptComplete(error.code);
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
             if (
@@ -573,10 +563,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               //
               error.code = grpc.status.CANCELLED;
             }
-            metricsCollector?.onOperationComplete(
-              this.bigtable.projectId,
-              error.code,
-            );
+            metricsCollector.onOperationComplete(error.code);
             userStream.emit('error', error);
           }
         })
@@ -584,14 +571,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
           numConsecutiveErrors = 0;
-          metricsCollector?.onResponse(this.bigtable.projectId);
+          metricsCollector.onResponse();
         })
         .on('end', () => {
           activeRequestStream = null;
-          metricsCollector?.onOperationComplete(
-            this.bigtable.projectId,
-            grpc.status.OK,
-          );
+          metricsCollector.onOperationComplete(grpc.status.OK);
         });
       rowStreamPipe(rowStream, userStream);
     };

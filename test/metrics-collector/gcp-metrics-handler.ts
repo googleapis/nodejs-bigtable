@@ -18,7 +18,6 @@ import {
   ExportResult,
   metricsToRequest,
 } from '../../src/client-side-metrics/exporter';
-import {GCPMetricsHandler} from '../../src/client-side-metrics/gcp-metrics-handler';
 import {MetricExporter} from '@google-cloud/opentelemetry-cloud-monitoring-exporter';
 import {expectedRequestsHandled} from '../../test-common/metrics-handler-fixture';
 import {
@@ -31,6 +30,7 @@ import {
 } from '../../test-common/expected-otel-export-input';
 import * as assert from 'assert';
 import {replaceTimestamps} from '../../test-common/replace-timestamps';
+import * as proxyquire from 'proxyquire';
 
 describe('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value ready for sending to the CloudMonitoringExporter', function (done) {
@@ -50,6 +50,10 @@ describe('Bigtable/GCPMetricsHandler', () => {
       let exported = false;
 
       class TestExporter extends MetricExporter {
+        constructor() {
+          super();
+        }
+
         export(
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
@@ -84,7 +88,10 @@ describe('Bigtable/GCPMetricsHandler', () => {
                 JSON.parse(JSON.stringify(metrics)),
                 expectedOtelExportInput,
               );
-              const convertedRequest = metricsToRequest(parsedExportInput);
+              const convertedRequest = metricsToRequest(
+                'my-project',
+                parsedExportInput,
+              );
               assert.deepStrictEqual(
                 convertedRequest.timeSeries.length,
                 expectedOtelExportConvertedValue.timeSeries.length,
@@ -114,9 +121,17 @@ describe('Bigtable/GCPMetricsHandler', () => {
         }
       }
 
-      const handler = new GCPMetricsHandler(
-        new TestExporter({projectId: 'some-project'}),
-      );
+      const stubs = {
+        './exporter': {
+          CloudMonitoringExporter: TestExporter,
+        },
+      };
+      const FakeMetricsHandler = proxyquire(
+        '../../src/client-side-metrics/gcp-metrics-handler.js',
+        stubs,
+      ).GCPMetricsHandler;
+
+      const handler = new FakeMetricsHandler('my-project');
 
       for (const request of expectedRequestsHandled) {
         if (request.attemptLatency) {

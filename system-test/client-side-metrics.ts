@@ -26,6 +26,7 @@ import {Bigtable} from '../src';
 import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
+import {ClientOptions} from 'google-gax';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
@@ -39,15 +40,29 @@ function getFakeBigtable(
   ensure the export was successful and pass the test with code 0 if it is
   successful.
    */
+  const metricHandler = new metricsHandlerClass(
+    {} as unknown as ClientOptions & {value: string},
+  );
+  class FakeMetricsConfigManager {
+    static getGcpHandlerForProject() {
+      return metricHandler;
+    }
+  }
   const FakeOperationMetricsCollector = proxyquire(
-    '../src/client-side-metrics/operation-metrics-collector',
-    {
-      './gcp-metrics-handler': {GCPMetricsHandler: metricsHandlerClass},
-    },
+    '../src/client-side-metrics/operation-metrics-collector.js',
+    {},
   ).OperationMetricsCollector;
+  const FakeFactory = proxyquire(
+    '../src/client-side-metrics/operation-metrics-collector-factory.js',
+    {
+      './operation-metrics-collector': {
+        OperationMetricsCollector: FakeOperationMetricsCollector,
+      },
+    },
+  ).OperationMetricsCollectorFactory;
   const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
-    './client-side-metrics/operation-metrics-collector': {
-      OperationMetricsCollector: FakeOperationMetricsCollector,
+    './client-side-metrics/operation-metrics-collector-factory': {
+      OperationMetricsCollectorFactory: FakeFactory,
     },
   }).TabularApiSurface;
   const FakeTable = proxyquire('../src/table.js', {
@@ -60,6 +75,14 @@ function getFakeBigtable(
     './instance': {Instance: FakeInstance},
   }).Bigtable;
   return new FakeBigtable({projectId});
+}
+
+function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
+  return proxyquire('../src/client-side-metrics/gcp-metrics-handler.js', {
+    './exporter': {
+      CloudMonitoringExporter: Exporter,
+    },
+  }).GCPMetricsHandler;
 }
 
 describe('Bigtable/ClientSideMetrics', () => {
@@ -135,12 +158,16 @@ describe('Bigtable/ClientSideMetrics', () => {
       }, 120000);
 
       class TestExporter extends CloudMonitoringExporter {
-        export(
+        constructor(options: ClientOptions) {
+          super(options);
+        }
+
+        async export(
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
-        ): void {
+        ): Promise<void> {
           try {
-            super.export(metrics, (result: ExportResult) => {
+            await super.export(metrics, (result: ExportResult) => {
               if (!exported) {
                 exported = true;
                 try {
@@ -165,14 +192,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      class TestGCPMetricsHandler extends GCPMetricsHandler {
-        static value = 'value';
-        constructor() {
-          super(new TestExporter());
-        }
-      }
-
-      return getFakeBigtable(projectId, TestGCPMetricsHandler);
+      return getFakeBigtable(projectId, getHandlerFromExporter(TestExporter));
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
@@ -230,12 +250,16 @@ describe('Bigtable/ClientSideMetrics', () => {
     // when multiple clients are attempting an export.
     async function mockBigtable(projectId: string, done: mocha.Done) {
       class TestExporter extends CloudMonitoringExporter {
-        export(
+        constructor(options: ClientOptions) {
+          super(options);
+        }
+
+        async export(
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
-        ): void {
+        ): Promise<void> {
           try {
-            super.export(metrics, (result: ExportResult) => {
+            await super.export(metrics, (result: ExportResult) => {
               try {
                 // The code is expected to be 0 because the
                 // result from calling export was successful.
@@ -256,19 +280,13 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      class TestGCPMetricsHandler extends GCPMetricsHandler {
-        constructor() {
-          super(new TestExporter());
-        }
-      }
-
       /*
       Below we mock out the table so that it sends the metrics to a test exporter
       that will still send the metrics to Google Cloud Monitoring, but then also
       ensure the export was successful and pass the test with code 0 if it is
       successful.
        */
-      return getFakeBigtable(projectId, TestGCPMetricsHandler);
+      return getFakeBigtable(projectId, getHandlerFromExporter(TestExporter));
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
