@@ -22,10 +22,11 @@ import * as assert from 'assert';
 
 import {GoogleError, grpc, ServiceError} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
-import {BigtableAdminClientMockService, BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
+import {
+  BigtableAdminClientMockService,
+  BigtableClientMockService,
+} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
-import {Transform} from 'stream';
-import {Call, UntypedHandleCall} from '@grpc/grpc-js';
 
 function isServiceError(error: any): error is ServiceError {
   return (
