@@ -22,8 +22,10 @@ import * as assert from 'assert';
 
 import {GoogleError, grpc, ServiceError} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
-import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
+import {BigtableAdminClientMockService, BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
+import {Transform} from 'stream';
+import {Call, UntypedHandleCall} from '@grpc/grpc-js';
 
 function isServiceError(error: any): error is ServiceError {
   return (
@@ -141,6 +143,59 @@ describe('Bigtable/Errors', () => {
           assert.fail('An error should have been thrown by the stream');
         });
       });
+    });
+  });
+  after(async () => {
+    server.shutdown(() => {});
+  });
+});
+
+describe('BigtableAdminClient/Errors', () => {
+  let server: MockServer;
+  let bigtable: Bigtable;
+  let service: MockService;
+
+  before(async () => {
+    // make sure we have everything initialized before starting tests
+    const port = await new Promise<string>(resolve => {
+      server = new MockServer(resolve);
+    });
+    bigtable = new Bigtable({
+      apiEndpoint: `localhost:${port}`,
+    });
+    service = new BigtableAdminClientMockService(server);
+  });
+
+  describe('with getInstances', () => {
+    const emitGetInstancesError = (stream: any) => {
+      const metadata = new grpc.Metadata();
+      metadata.set(
+        'grpc-server-stats-bin',
+        Buffer.from([0, 0, 116, 73, 159, 3, 0, 0, 0, 0]),
+      );
+      stream.emit('error', {
+        code: 5,
+        details: 'getInstances error details',
+        metadata,
+      });
+    };
+    before(async () => {
+      service.setService({
+        listInstances: emitGetInstancesError,
+      });
+    });
+    it('should produce human readable error when passing through gax', async () => {
+      try {
+        await bigtable.getInstances();
+        assert.fail(
+          'An error should have been thrown by the getInstances call',
+        );
+      } catch (err) {
+        assert.strictEqual(
+          (err as ServiceError).message,
+          '5 NOT_FOUND: getInstances error details',
+        );
+      }
     });
   });
   after(async () => {
