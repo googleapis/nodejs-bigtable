@@ -151,7 +151,7 @@ describe('Bigtable/Errors', () => {
   });
 });
 
-describe.only('BigtableAdminClient/Errors', () => {
+describe('BigtableAdminClient/Errors', () => {
   let server: MockServer;
   let bigtable: Bigtable;
   let service: MockService;
