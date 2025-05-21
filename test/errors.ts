@@ -151,7 +151,7 @@ describe('Bigtable/Errors', () => {
   });
 });
 
-describe('BigtableAdminClient/Errors', () => {
+describe.only('BigtableAdminClient/Errors', () => {
   let server: MockServer;
   let bigtable: Bigtable;
   let service: MockService;
@@ -170,10 +170,6 @@ describe('BigtableAdminClient/Errors', () => {
   describe('with getInstances', () => {
     const emitGetInstancesError = (stream: any) => {
       const metadata = new grpc.Metadata();
-      metadata.set(
-        'grpc-server-stats-bin',
-        Buffer.from([0, 0, 116, 73, 159, 3, 0, 0, 0, 0]),
-      );
       stream.emit('error', {
         code: 5,
         details: 'getInstances error details',
