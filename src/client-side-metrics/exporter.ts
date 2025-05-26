@@ -19,10 +19,11 @@ import {
   Histogram,
   ResourceMetrics,
 } from '@opentelemetry/sdk-metrics';
-import {ClientOptions, ServiceError} from 'google-gax';
+import {grpc, ClientOptions, ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
+import {RetryOptions} from 'google-gax';
 
 export interface ExportResult {
   code: number;
@@ -308,7 +309,31 @@ export class CloudMonitoringExporter extends MetricExporter {
       try {
         const projectId = await this.client.getProjectId();
         const request = metricsToRequest(projectId, metrics);
-        await this.client.createTimeSeries(request as ICreateTimeSeriesRequest);
+        console.log('writing time series');
+        // We need the client to retry or we get errors:
+        // in addition, done() received error: Error: 4 DEADLINE_EXCEEDED: Deadline exceeded after 12.757s,name resolution: 1.614s,metadata filters: 0.001s,time to current attempt start: 0.029s,Waiting for LB pick
+        const retry = new RetryOptions(
+          [
+            grpc.status.INVALID_ARGUMENT,
+            grpc.status.DEADLINE_EXCEEDED,
+            grpc.status.RESOURCE_EXHAUSTED,
+            grpc.status.ABORTED,
+            grpc.status.UNAVAILABLE,
+          ],
+          {
+            initialRetryDelayMillis: 5000,
+            retryDelayMultiplier: 2,
+            maxRetryDelayMillis: 50000,
+            totalTimeoutMillis: 50000,
+          },
+        );
+
+        await this.client.createTimeSeries(
+          request as ICreateTimeSeriesRequest,
+          {
+            retry,
+          },
+        );
         // The resultCallback typically accepts a value equal to {code: x}
         // for some value x along with other info. When the code is equal to 0
         // then the operation completed successfully. When the code is not equal
@@ -317,6 +342,7 @@ export class CloudMonitoringExporter extends MetricExporter {
         // logs nothing when the code is 0.
         resultCallback({code: 0});
       } catch (error) {
+        console.log('error writing time series');
         resultCallback(error as ServiceError);
       }
     })().catch(err => {
