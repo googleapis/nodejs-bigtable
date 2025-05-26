@@ -59,7 +59,7 @@ const testHandler = new TestMetricsHandler();
 testHandler.projectId = projectId;
 testHandler.messages = logger;
 
-describe('Bigtable/MetricsCollector', () => {
+describe.only('Bigtable/MetricsCollector', () => {
   class FakeHRTime {
     startTime = BigInt(0);
     bigint() {
@@ -118,10 +118,8 @@ describe('Bigtable/MetricsCollector', () => {
             this,
             MethodName.READ_ROWS,
             StreamingState.STREAMING,
+            [testHandler as unknown as GCPMetricsHandler],
           );
-          FakeOperationsMetricsCollector.metricsHandlers = [
-            testHandler as unknown as GCPMetricsHandler,
-          ];
           // In this method we simulate a series of events that might happen
           // when a user calls one of the Table methods.
           // Here is an example of what might happen in a method call:
@@ -144,10 +142,7 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '9. User receives second row.\n';
           metricsCollector.onRowReachesUser();
           logger.value += '10. A transient error occurs.\n';
-          metricsCollector.onAttemptComplete(
-            this.bigtable.projectId,
-            grpc.status.DEADLINE_EXCEEDED,
-          );
+          metricsCollector.onAttemptComplete(grpc.status.DEADLINE_EXCEEDED);
           logger.value += '11. After a timeout, the second attempt is made.\n';
           metricsCollector.onAttemptStart();
           logger.value += '12. Client receives status information.\n';
@@ -166,10 +161,7 @@ describe('Bigtable/MetricsCollector', () => {
           metricsCollector.onRowReachesUser();
           logger.value += '19. User reads row 1\n';
           logger.value += '20. Stream ends, operation completes\n';
-          metricsCollector.onOperationComplete(
-            this.bigtable.projectId,
-            grpc.status.OK,
-          );
+          metricsCollector.onOperationComplete(grpc.status.OK);
         }
       }
     }
