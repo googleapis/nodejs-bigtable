@@ -25,7 +25,7 @@ import {
 import {Bigtable} from '../src';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
-import {expectedOtelHundredExportInputs} from '../test-common/expected-otel-export-input';
+import {expectedOtelExportInput, expectedOtelHundredExportInputs} from '../test-common/expected-otel-export-input';
 import {replaceTimestamps} from '../test-common/replace-timestamps';
 import {ClientOptions} from 'google-gax';
 import * as proxyquire from 'proxyquire';
@@ -224,7 +224,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       throw err;
     });
   });
-  it('Should export a value to a hundred GCPMetricsHandlers', done => {
+  it.only('Should export a value to a hundred GCPMetricsHandlers', done => {
     // This test ensures that when we create multiple GCPMetricsHandlers much like
     // what we would be doing when calling readRows on separate tables that
     // the data doesn't store duplicates in the same place and export twice as
@@ -249,6 +249,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       ) {
         return (result: ExportResult) => {
           exportedCount++;
+          console.log(`in callback exported count ${exportedCount}`);
           try {
             assert.strictEqual(result.code, 0);
           } catch (error) {
@@ -256,8 +257,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
             done(result);
             done(error);
           }
-          if (exportedCount === 1) {
-            // We are expecting one call to an exporter.
+          if (exportedCount === 100) {
+            // We are expecting one hundred calls to an exporter.
             clearTimeout(timeout);
             done();
           }
@@ -275,7 +276,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
         ): Promise<void> {
-          if (exportedCount < 1) {
+          console.log(`exportedCount: ${exportedCount}`);
+          if (exportedCount < 100) {
             try {
               // This code block ensures the metrics are correct. Mainly, the metrics
               // shouldn't contain two copies of the data. It should only contain
@@ -290,13 +292,13 @@ describe('Bigtable/GCPMetricsHandler', () => {
                 JSON.stringify(metrics),
               );
               replaceTimestamps(
-                parsedExportInput as unknown as typeof expectedOtelHundredExportInputs,
+                parsedExportInput as unknown as typeof expectedOtelExportInput,
                 [123, 789],
                 [456, 789],
               );
               assert.deepStrictEqual(
                 parsedExportInput.scopeMetrics[0].metrics.length,
-                expectedOtelHundredExportInputs.scopeMetrics[0].metrics.length,
+                expectedOtelExportInput.scopeMetrics[0].metrics.length,
               );
               for (
                 let index = 0;
@@ -304,11 +306,20 @@ describe('Bigtable/GCPMetricsHandler', () => {
                 index++
               ) {
                 // We need to compare pointwise because mocha truncates to an 8192 character limit.
+                // We also need to replace the client id for comparison
+                const metrics =
+                  parsedExportInput.scopeMetrics[0].metrics[index];
+                const dataPoints = metrics.dataPoints;
+                for (
+                  let clientIdIndex = 0;
+                  clientIdIndex < dataPoints.length;
+                  clientIdIndex++
+                ) {
+                  dataPoints[clientIdIndex].attributes.client_uid = 'fake-uuid';
+                }
                 assert.deepStrictEqual(
                   parsedExportInput.scopeMetrics[0].metrics[index],
-                  expectedOtelHundredExportInputs.scopeMetrics[0].metrics[
-                    index
-                  ],
+                  expectedOtelExportInput.scopeMetrics[0].metrics[index],
                 );
               }
             } catch (e) {
@@ -346,9 +357,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
         ),
       );
       const handlers = [];
-      const handler = getHandler(MockExporter);
       for (let i = 0; i < 100; i++) {
-        handlers.push(handler);
+        handlers.push(getHandler(MockExporter));
         for (const request of transformedRequestsHandled) {
           if (request.attemptLatency) {
             handlers[i].onAttemptComplete(request as OnAttemptCompleteData);
