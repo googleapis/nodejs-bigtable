@@ -295,10 +295,11 @@ describe.only('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     async function mockBigtable(projectId: string, done: mocha.Done) {
       let handlerRequestCount = 0;
       class TestGCPMetricsHandler extends TestMetricsHandler {
+        projectId = projectId;
         onOperationComplete(data: OnOperationCompleteData) {
           handlerRequestCount++;
           try {
