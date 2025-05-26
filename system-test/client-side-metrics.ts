@@ -53,7 +53,7 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
   }).GCPMetricsHandler;
 }
 
-describe('Bigtable/ClientSideMetrics', () => {
+describe.only('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -100,7 +100,7 @@ describe('Bigtable/ClientSideMetrics', () => {
     }
   });
 
-  describe.only('Bigtable/ClientSideMetricsToGCM', () => {
+  describe('Bigtable/ClientSideMetricsToGCM', () => {
     // This test suite ensures that for each test all the export calls are
     // successful even when multiple instances and tables are created.
     async function mockBigtable(projectId: string, done: mocha.Done) {
@@ -310,10 +310,8 @@ describe('Bigtable/ClientSideMetrics', () => {
               // them from the comparison after checking they exist.
               assert(firstRequest.attemptLatency);
               assert(firstRequest.serverLatency);
-              assert(firstRequest.metricsCollectorData.client_uid);
               delete firstRequest.attemptLatency;
               delete firstRequest.serverLatency;
-              delete firstRequest.metricsCollectorData.client_uid;
               delete firstRequest.metricsCollectorData.appProfileId;
               assert.deepStrictEqual(firstRequest, {
                 connectivityErrorCount: 0,
@@ -335,11 +333,9 @@ describe('Bigtable/ClientSideMetrics', () => {
               assert(secondRequest.operationLatency);
               assert(secondRequest.firstResponseLatency);
               assert(secondRequest.applicationLatencies);
-              assert(secondRequest.metricsCollectorData.client_uid);
               delete secondRequest.operationLatency;
               delete secondRequest.firstResponseLatency;
               delete secondRequest.applicationLatencies;
-              delete secondRequest.metricsCollectorData.client_uid;
               delete secondRequest.metricsCollectorData.appProfileId;
               assert.deepStrictEqual(secondRequest, {
                 status: '0',
@@ -360,10 +356,8 @@ describe('Bigtable/ClientSideMetrics', () => {
               const thirdRequest = this.requestsHandled[2] as any;
               assert(thirdRequest.attemptLatency);
               assert(thirdRequest.serverLatency);
-              assert(thirdRequest.metricsCollectorData.client_uid);
               delete thirdRequest.attemptLatency;
               delete thirdRequest.serverLatency;
-              delete thirdRequest.metricsCollectorData.client_uid;
               delete thirdRequest.metricsCollectorData.appProfileId;
               assert.deepStrictEqual(thirdRequest, {
                 connectivityErrorCount: 0,
@@ -385,11 +379,9 @@ describe('Bigtable/ClientSideMetrics', () => {
               assert(fourthRequest.operationLatency);
               assert(fourthRequest.firstResponseLatency);
               assert(fourthRequest.applicationLatencies);
-              assert(fourthRequest.metricsCollectorData.client_uid);
               delete fourthRequest.operationLatency;
               delete fourthRequest.firstResponseLatency;
               delete fourthRequest.applicationLatencies;
-              delete fourthRequest.metricsCollectorData.client_uid;
               delete fourthRequest.metricsCollectorData.appProfileId;
               assert.deepStrictEqual(fourthRequest, {
                 status: '0',
