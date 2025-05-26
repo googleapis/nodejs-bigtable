@@ -895,7 +895,6 @@ export const expectedOtelExportInput = {
       'telemetry.sdk.language': 'nodejs',
       'telemetry.sdk.name': 'opentelemetry',
       'telemetry.sdk.version': '1.30.1',
-      'monitored_resource.project_id': 'my-project',
     },
     asyncAttributesPending: false,
     _syncAttributes: {
@@ -903,7 +902,6 @@ export const expectedOtelExportInput = {
       'telemetry.sdk.language': 'nodejs',
       'telemetry.sdk.name': 'opentelemetry',
       'telemetry.sdk.version': '1.30.1',
-      'monitored_resource.project_id': 'my-project',
     },
     _asyncAttributesPromise: {},
   },

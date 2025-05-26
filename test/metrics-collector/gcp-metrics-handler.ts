@@ -32,7 +32,7 @@ import * as assert from 'assert';
 import {replaceTimestamps} from '../../test-common/replace-timestamps';
 import * as proxyquire from 'proxyquire';
 
-describe('Bigtable/GCPMetricsHandler', () => {
+describe.only('Bigtable/GCPMetricsHandler', () => {
   it('Should export a value ready for sending to the CloudMonitoringExporter', function (done) {
     this.timeout(600000);
     (async () => {
@@ -120,10 +120,12 @@ describe('Bigtable/GCPMetricsHandler', () => {
           }
         }
       }
-
       const stubs = {
         './exporter': {
           CloudMonitoringExporter: TestExporter,
+        },
+        './generate-client-uuid': {
+          generateClientUuid: () => 'fake-uuid',
         },
       };
       const FakeMetricsHandler = proxyquire(
