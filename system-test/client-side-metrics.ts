@@ -216,7 +216,11 @@ describe('Bigtable/ClientSideMetrics', () => {
     // This test suite simulates a situation where the user creates multiple
     // clients and ensures that the exporter doesn't produce any errors even
     // when multiple clients are attempting an export.
-    async function mockBigtable(projectId: string, done: mocha.Done) {
+    async function mockBigtable(
+      projectId: string,
+      done: mocha.Done,
+      onExportSuccess?: () => void,
+    ) {
       class TestExporter extends CloudMonitoringExporter {
         constructor(options: ClientOptions) {
           super(options);
@@ -233,6 +237,9 @@ describe('Bigtable/ClientSideMetrics', () => {
                 // result from calling export was successful.
                 assert.strictEqual(result.code, 0);
                 resultCallback({code: 0});
+                if (onExportSuccess) {
+                  onExportSuccess();
+                }
               } catch (error) {
                 // The code here isn't 0 so we report the original error to the
                 // mocha test runner.
@@ -240,10 +247,12 @@ describe('Bigtable/ClientSideMetrics', () => {
                 // unsuccessful.
                 done(result);
                 done(error);
+                resultCallback({code: 0});
               }
             });
           } catch (error) {
             done(error);
+            resultCallback({code: 0});
           }
         }
       }
@@ -289,6 +298,54 @@ describe('Bigtable/ClientSideMetrics', () => {
         } catch (e) {
           done(new Error('An error occurred while running the script'));
           done(e);
+        }
+      })().catch(err => {
+        throw err;
+      });
+    });
+    it.only('should send the metrics to Google Cloud Monitoring for a ReadRows call with a hundred clients', done => {
+      /*
+      We need to create a timeout here because if we don't then mocha shuts down
+      the test as it is sleeping before the GCPMetricsHandler has a chance to
+      export the data. When the timeout is finished, if there were no export
+      errors then the test passes.
+      */
+      const testTimeout = setTimeout(() => {
+        done(new Error('The test timed out'));
+      }, 120000);
+      (async () => {
+        try {
+          const bigtableList = [];
+          const completedSet = new Set();
+          for (let bigtableCount = 0; bigtableCount < 100; bigtableCount++) {
+            const onExportSuccess = () => {
+              completedSet.add(bigtableCount);
+              if (completedSet.size === 100) {
+                // If every client has completed the export then pass the test.
+                clearTimeout(testTimeout);
+                done();
+              }
+            };
+            bigtableList.push(
+              await mockBigtable(projectId, done, onExportSuccess),
+            );
+          }
+          for (const bigtable of bigtableList) {
+            for (const instanceId of [instanceId1, instanceId2]) {
+              await setupBigtable(bigtable, columnFamilyId, instanceId, [
+                tableId1,
+                tableId2,
+              ]);
+              const instance = bigtable.instance(instanceId);
+              const table = instance.table(tableId1);
+              await table.getRows();
+              const table2 = instance.table(tableId2);
+              await table2.getRows();
+            }
+          }
+        } catch (e) {
+          done(e);
+          done(new Error('An error occurred while running the script'));
         }
       })().catch(err => {
         throw err;
