@@ -17,12 +17,13 @@ import {Bigtable} from '../src';
 
 const UNIVERSE_DOMAIN_CONSTANT = 'my-universe-domain';
 
-describe.skip('Universe domain tests', () => {
+describe.only('Universe domain tests', () => {
   // These tests are only designed to pass when using the service account
   // credentials for the universe domain environment so we skip them in the CI pipeline.
   //
   // To see successful tests, uncomment the following line:
-  // process.env.GOOGLE_APPLICATION_CREDENTIALS = '/path-to/key.json';
+  process.env.GOOGLE_APPLICATION_CREDENTIALS =
+    '/Users/djbruce/Documents/Programming/keys/tpc_sa_key.json';
 
   async function runTest(done: Mocha.Done, bigtable: Bigtable) {
     try {
