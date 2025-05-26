@@ -5320,12 +5320,6 @@ export namespace google {
                     /** Instance satisfiesPzi. */
                     public satisfiesPzi?: (boolean|null);
 
-                    /** Instance _satisfiesPzs. */
-                    public _satisfiesPzs?: "satisfiesPzs";
-
-                    /** Instance _satisfiesPzi. */
-                    public _satisfiesPzi?: "satisfiesPzi";
-
                     /**
                      * Creates a new Instance instance using the specified properties.
                      * @param [properties] Properties to set
@@ -6658,9 +6652,6 @@ export namespace google {
 
                         /** DataBoostIsolationReadOnly computeBillingOwner. */
                         public computeBillingOwner?: (google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner|keyof typeof google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner|null);
-
-                        /** DataBoostIsolationReadOnly _computeBillingOwner. */
-                        public _computeBillingOwner?: "computeBillingOwner";
 
                         /**
                          * Creates a new DataBoostIsolationReadOnly instance using the specified properties.
@@ -19266,9 +19257,6 @@ export namespace google {
                 /** MutateRowsResponse rateLimitInfo. */
                 public rateLimitInfo?: (google.bigtable.v2.IRateLimitInfo|null);
 
-                /** MutateRowsResponse _rateLimitInfo. */
-                public _rateLimitInfo?: "rateLimitInfo";
-
                 /**
                  * Creates a new MutateRowsResponse instance using the specified properties.
                  * @param [properties] Properties to set
@@ -25292,9 +25280,6 @@ export namespace google {
                 /** PartialResultSet partialRows. */
                 public partialRows?: "protoRowsBatch";
 
-                /** PartialResultSet _batchChecksum. */
-                public _batchChecksum?: "batchChecksum";
-
                 /**
                  * Creates a new PartialResultSet instance using the specified properties.
                  * @param [properties] Properties to set
@@ -28466,12 +28451,6 @@ export namespace google {
 
                 /** ResponseParams clusterId. */
                 public clusterId?: (string|null);
-
-                /** ResponseParams _zoneId. */
-                public _zoneId?: "zoneId";
-
-                /** ResponseParams _clusterId. */
-                public _clusterId?: "clusterId";
 
                 /**
                  * Creates a new ResponseParams instance using the specified properties.
