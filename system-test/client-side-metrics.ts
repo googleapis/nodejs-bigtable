@@ -53,7 +53,7 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
   }).GCPMetricsHandler;
 }
 
-describe.only('Bigtable/ClientSideMetrics', () => {
+describe('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -295,7 +295,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     async function mockBigtable(projectId: string, done: mocha.Done) {
       let handlerRequestCount = 0;
       class TestGCPMetricsHandler extends TestMetricsHandler {
