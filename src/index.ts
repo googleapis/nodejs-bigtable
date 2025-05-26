@@ -130,9 +130,9 @@ function getUniverseDomainOnly(
       ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
       : undefined;
   return (
-    options?.universeDomain ??
     gaxOpts?.universeDomain ??
     gaxOpts?.universe_domain ??
+    options?.universeDomain ??
     universeDomainEnvVar
   );
 }
