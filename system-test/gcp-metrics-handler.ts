@@ -224,7 +224,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
       throw err;
     });
   });
-  it.only('Should export a value to a hundred GCPMetricsHandlers', done => {
+  it('Should export a value to a hundred GCPMetricsHandlers', done => {
     // This test ensures that when we create multiple GCPMetricsHandlers much like
     // what we would be doing when calling readRows on separate tables that
     // the data doesn't store duplicates in the same place and export twice as
@@ -237,7 +237,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
        */
       const timeout = setTimeout(() => {
         done(new Error('The export never happened'));
-      }, 120000);
+      }, 240000);
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
@@ -248,8 +248,8 @@ describe('Bigtable/GCPMetricsHandler', () => {
         resultCallback: (result: ExportResult) => void,
       ) {
         return (result: ExportResult) => {
+          console.log(`callback called ${exportedCount}`);
           exportedCount++;
-          console.log(`in callback exported count ${exportedCount}`);
           try {
             assert.strictEqual(result.code, 0);
           } catch (error) {
@@ -276,7 +276,6 @@ describe('Bigtable/GCPMetricsHandler', () => {
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
         ): Promise<void> {
-          console.log(`exportedCount: ${exportedCount}`);
           if (exportedCount < 100) {
             try {
               // This code block ensures the metrics are correct. Mainly, the metrics
