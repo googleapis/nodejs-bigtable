@@ -26,7 +26,7 @@ describe.skip('Universe domain tests', () => {
   // credentials for the universe domain environment so we skip them in the CI pipeline.
   //
   // To see successful tests, uncomment the following line:
-  process.env.GOOGLE_APPLICATION_CREDENTIALS = '/path/to/key.json';
+  // process.env.GOOGLE_APPLICATION_CREDENTIALS = '/path/to/key.json';
   const UNIVERSE_DOMAIN_CONSTANT = 'my-universe-domain';
 
   async function runTest(done: Mocha.Done, bigtable: Bigtable) {
