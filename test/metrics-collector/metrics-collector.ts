@@ -59,7 +59,7 @@ const testHandler = new TestMetricsHandler();
 testHandler.projectId = projectId;
 testHandler.messages = logger;
 
-describe.only('Bigtable/MetricsCollector', () => {
+describe('Bigtable/MetricsCollector', () => {
   class FakeHRTime {
     startTime = BigInt(0);
     bigint() {
