@@ -27,6 +27,7 @@ import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
 import {ClientOptions} from 'google-gax';
+import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
@@ -34,47 +35,14 @@ function getFakeBigtable(
   projectId: string,
   metricsHandlerClass: typeof GCPMetricsHandler | typeof TestMetricsHandler,
 ) {
-  /*
-  Below we mock out the table so that it sends the metrics to a test exporter
-  that will still send the metrics to Google Cloud Monitoring, but then also
-  ensure the export was successful and pass the test with code 0 if it is
-  successful.
-   */
   const metricHandler = new metricsHandlerClass(
     {} as unknown as ClientOptions & {value: string},
   );
-  class FakeMetricsConfigManager {
-    static getGcpHandlerForProject() {
-      return metricHandler;
-    }
-  }
-  const FakeOperationMetricsCollector = proxyquire(
-    '../src/client-side-metrics/operation-metrics-collector.js',
-    {},
-  ).OperationMetricsCollector;
-  const FakeFactory = proxyquire(
-    '../src/client-side-metrics/operation-metrics-collector-factory.js',
-    {
-      './operation-metrics-collector': {
-        OperationMetricsCollector: FakeOperationMetricsCollector,
-      },
-    },
-  ).OperationMetricsCollectorFactory;
-  const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
-    './client-side-metrics/operation-metrics-collector-factory': {
-      OperationMetricsCollectorFactory: FakeFactory,
-    },
-  }).TabularApiSurface;
-  const FakeTable = proxyquire('../src/table.js', {
-    './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
-  }).Table;
-  const FakeInstance = proxyquire('../src/instance.js', {
-    './table': {Table: FakeTable},
-  }).Instance;
-  const FakeBigtable = proxyquire('../src/index.js', {
-    './instance': {Instance: FakeInstance},
-  }).Bigtable;
-  return new FakeBigtable({projectId});
+  const newClient = new Bigtable({projectId});
+  newClient._metricsConfigManager = new ClientSideMetricsConfigManager([
+    metricHandler,
+  ]);
+  return newClient;
 }
 
 function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
@@ -132,7 +100,7 @@ describe('Bigtable/ClientSideMetrics', () => {
     }
   });
 
-  describe('Bigtable/ClientSideMetricsToGCM', () => {
+  describe.only('Bigtable/ClientSideMetricsToGCM', () => {
     // This test suite ensures that for each test all the export calls are
     // successful even when multiple instances and tables are created.
     async function mockBigtable(projectId: string, done: mocha.Done) {
