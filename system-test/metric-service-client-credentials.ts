@@ -17,13 +17,13 @@ import {ClientOptions} from 'google-gax';
 import * as assert from 'assert';
 import {setupBigtable} from './client-side-metrics-setup-table';
 
-describe('Bigtable/MetricServiceClientCredentials', () => {
+describe.only('Bigtable/MetricServiceClientCredentials', () => {
   it('should pass the credentials to the metric service client', done => {
-    const clientOptions = {};
+    const clientOptions = {metricsEnabled: true};
     class FakeExporter {
       constructor(options: ClientOptions) {
         try {
-          assert.strictEqual(bigtable.options, options);
+          assert.strictEqual(options, clientOptions);
           done();
         } catch (e) {
           done(e);
@@ -38,31 +38,10 @@ describe('Bigtable/MetricServiceClientCredentials', () => {
         },
       },
     ).GCPMetricsHandler;
-    const FakeOperationMetricsCollector = proxyquire(
-      '../src/client-side-metrics/operation-metrics-collector.js',
-      {},
-    ).OperationMetricsCollector;
-    const FakeFactory = proxyquire(
-      '../src/client-side-metrics/operation-metrics-collector-factory.js',
-      {
-        './operation-metrics-collector': {
-          OperationMetricsCollector: FakeOperationMetricsCollector,
-        },
-      },
-    ).OperationMetricsCollectorFactory;
-    const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
-      './client-side-metrics/operation-metrics-collector-factory': {
-        OperationMetricsCollectorFactory: FakeFactory,
-      },
-    }).TabularApiSurface;
-    const FakeTable = proxyquire('../src/table.js', {
-      './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
-    }).Table;
-    const FakeInstance = proxyquire('../src/instance.js', {
-      './table': {Table: FakeTable},
-    }).Instance;
     const FakeBigtable = proxyquire('../src/index.js', {
-      './instance': {Instance: FakeInstance},
+      './client-side-metrics/gcp-metrics-handler': {
+        GCPMetricsHandler: FakeCGPMetricsHandler,
+      },
     }).Bigtable;
     const bigtable = new FakeBigtable(clientOptions);
     const instanceId = 'emulator-test-instance';

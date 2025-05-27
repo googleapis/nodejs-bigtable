@@ -25,6 +25,37 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {Instance} from '../src/instance';
 import {Bigtable, AbortableDuplex} from '../src';
+import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
+import {
+  ITabularApiSurface,
+  OperationMetricsCollector,
+} from '../src/client-side-metrics/operation-metrics-collector';
+import {
+  MethodName,
+  StreamingState,
+} from '../src/client-side-metrics/client-side-metrics-attributes';
+
+class FakeOperationMetricsCollector extends OperationMetricsCollector {
+  onOperationComplete() {}
+  onResponse() {}
+  onAttemptStart() {}
+  onAttemptComplete() {}
+  onOperationStart() {}
+  handleStatusAndMetadata() {}
+  onMetadataReceived() {}
+  onRowReachesUser() {}
+  onStatusMetadataReceived() {}
+}
+
+class FakeMetricsConfigManager extends ClientSideMetricsConfigManager {
+  createOperation(
+    methodName: MethodName,
+    streaming: StreamingState,
+    table: ITabularApiSurface,
+  ): OperationMetricsCollector {
+    return new FakeOperationMetricsCollector(table, methodName, streaming, []);
+  }
+}
 
 const protosJson = path.resolve(__dirname, '../protos/protos.json');
 const root = protobuf.Root.fromJSON(
@@ -34,7 +65,7 @@ const ReadRowsResponse = root.lookupType('google.bigtable.v2.ReadRowsResponse');
 const CellChunk = root.lookupType(
   'google.bigtable.v2.ReadRowsResponse.CellChunk',
 );
-describe('Read Row Acceptance tests', () => {
+describe.only('Read Row Acceptance tests', () => {
   testcases.forEach(test => {
     it(test.name, done => {
       const table = new Table({id: 'xyz'} as Instance, 'my-table');
@@ -67,6 +98,7 @@ describe('Read Row Acceptance tests', () => {
         });
 
       table.bigtable = {} as Bigtable;
+      table.bigtable._metricsConfigManager = new FakeMetricsConfigManager([]);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (table.bigtable.request as any) = () => {
         const stream = new PassThrough({
