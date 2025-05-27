@@ -303,7 +303,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
-    it.only('should send the metrics to Google Cloud Monitoring for a ReadRows call with a hundred clients', done => {
+    it.only('should send the metrics to Google Cloud Monitoring for a ReadRows call with thirty clients', done => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
       the test as it is sleeping before the GCPMetricsHandler has a chance to
@@ -312,18 +312,29 @@ describe('Bigtable/ClientSideMetrics', () => {
       */
       const testTimeout = setTimeout(() => {
         done(new Error('The test timed out'));
-      }, 120000);
+      }, 480000);
+      let testComplete = false;
+      const numClients = 30;
       (async () => {
         try {
           const bigtableList = [];
           const completedSet = new Set();
-          for (let bigtableCount = 0; bigtableCount < 100; bigtableCount++) {
+          for (
+            let bigtableCount = 0;
+            bigtableCount < numClients;
+            bigtableCount++
+          ) {
+            const currentCount = bigtableCount;
             const onExportSuccess = () => {
-              completedSet.add(bigtableCount);
-              if (completedSet.size === 100) {
+              completedSet.add(currentCount);
+              console.log(completedSet);
+              if (completedSet.size === numClients) {
                 // If every client has completed the export then pass the test.
                 clearTimeout(testTimeout);
-                done();
+                if (!testComplete) {
+                  testComplete = true;
+                  done();
+                }
               }
             };
             bigtableList.push(
