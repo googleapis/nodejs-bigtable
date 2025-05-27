@@ -309,7 +309,6 @@ export class CloudMonitoringExporter extends MetricExporter {
       try {
         const projectId = await this.client.getProjectId();
         const request = metricsToRequest(projectId, metrics);
-        console.log('writing time series');
         // We need the client to retry or we get errors:
         // in addition, done() received error: Error: 4 DEADLINE_EXCEEDED: Deadline exceeded after 12.757s,name resolution: 1.614s,metadata filters: 0.001s,time to current attempt start: 0.029s,Waiting for LB pick
         const retry = new RetryOptions(
@@ -342,7 +341,6 @@ export class CloudMonitoringExporter extends MetricExporter {
         // logs nothing when the code is 0.
         resultCallback({code: 0});
       } catch (error) {
-        console.log('error writing time series');
         resultCallback(error as ServiceError);
       }
     })().catch(err => {
