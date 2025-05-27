@@ -327,7 +327,6 @@ describe('Bigtable/ClientSideMetrics', () => {
             const currentCount = bigtableCount;
             const onExportSuccess = () => {
               completedSet.add(currentCount);
-              console.log(completedSet);
               if (completedSet.size === numClients) {
                 // If every client has completed the export then pass the test.
                 clearTimeout(testTimeout);
