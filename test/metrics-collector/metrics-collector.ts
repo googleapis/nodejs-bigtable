@@ -33,14 +33,15 @@ const protoPath = path.join(
 const root = gax.protobuf.loadSync(protoPath);
 const ResponseParams = root.lookupType('ResponseParams');
 
+const projectId = 'my-project';
+
 /**
  * A fake implementation of the Bigtable client for testing purposes.  Provides a
  * metricsTracerFactory and a stubbed projectId method.
  */
 class FakeBigtable {
-  clientUid = 'fake-uuid';
   appProfileId?: string;
-  projectId = 'my-project';
+  projectId = projectId;
 }
 
 /**
@@ -52,6 +53,11 @@ class FakeInstance {
    */
   id = 'fakeInstanceId';
 }
+
+const logger = {value: ''};
+const testHandler = new TestMetricsHandler();
+testHandler.projectId = projectId;
+testHandler.messages = logger;
 
 describe('Bigtable/MetricsCollector', () => {
   class FakeHRTime {
@@ -67,16 +73,16 @@ describe('Bigtable/MetricsCollector', () => {
     'node:process': {
       hrtime: new FakeHRTime(),
     },
+    './gcp-metrics-handler': {
+      GCPMetricsHandler: testHandler,
+    },
   };
   const FakeOperationsMetricsCollector = proxyquire(
     '../../src/client-side-metrics/operation-metrics-collector.js',
     stubs,
   ).OperationMetricsCollector;
 
-  const logger = {value: ''};
-
   it('should record the right metrics with a typical method call', async () => {
-    const testHandler = new TestMetricsHandler(logger);
     class FakeTable {
       id = 'fakeTableId';
       instance = new FakeInstance();
@@ -112,10 +118,8 @@ describe('Bigtable/MetricsCollector', () => {
             this,
             MethodName.READ_ROWS,
             StreamingState.STREAMING,
+            [testHandler as unknown as GCPMetricsHandler],
           );
-          FakeOperationsMetricsCollector.metricsHandlers = [
-            testHandler as unknown as GCPMetricsHandler,
-          ];
           // In this method we simulate a series of events that might happen
           // when a user calls one of the Table methods.
           // Here is an example of what might happen in a method call:
@@ -138,10 +142,7 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '9. User receives second row.\n';
           metricsCollector.onRowReachesUser();
           logger.value += '10. A transient error occurs.\n';
-          metricsCollector.onAttemptComplete(
-            this.bigtable.projectId,
-            grpc.status.DEADLINE_EXCEEDED,
-          );
+          metricsCollector.onAttemptComplete(grpc.status.DEADLINE_EXCEEDED);
           logger.value += '11. After a timeout, the second attempt is made.\n';
           metricsCollector.onAttemptStart();
           logger.value += '12. Client receives status information.\n';
@@ -160,10 +161,7 @@ describe('Bigtable/MetricsCollector', () => {
           metricsCollector.onRowReachesUser();
           logger.value += '19. User reads row 1\n';
           logger.value += '20. Stream ends, operation completes\n';
-          metricsCollector.onOperationComplete(
-            this.bigtable.projectId,
-            grpc.status.OK,
-          );
+          metricsCollector.onOperationComplete(grpc.status.OK);
         }
       }
     }

@@ -26,6 +26,8 @@ import {Bigtable} from '../src';
 import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
+import {ClientOptions} from 'google-gax';
+import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
@@ -33,33 +35,22 @@ function getFakeBigtable(
   projectId: string,
   metricsHandlerClass: typeof GCPMetricsHandler | typeof TestMetricsHandler,
 ) {
-  /*
-  Below we mock out the table so that it sends the metrics to a test exporter
-  that will still send the metrics to Google Cloud Monitoring, but then also
-  ensure the export was successful and pass the test with code 0 if it is
-  successful.
-   */
-  const FakeOperationMetricsCollector = proxyquire(
-    '../src/client-side-metrics/operation-metrics-collector',
-    {
-      './gcp-metrics-handler': {GCPMetricsHandler: metricsHandlerClass},
+  const metricHandler = new metricsHandlerClass(
+    {} as unknown as ClientOptions & {value: string},
+  );
+  const newClient = new Bigtable({projectId});
+  newClient._metricsConfigManager = new ClientSideMetricsConfigManager([
+    metricHandler,
+  ]);
+  return newClient;
+}
+
+function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
+  return proxyquire('../src/client-side-metrics/gcp-metrics-handler.js', {
+    './exporter': {
+      CloudMonitoringExporter: Exporter,
     },
-  ).OperationMetricsCollector;
-  const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
-    './client-side-metrics/operation-metrics-collector': {
-      OperationMetricsCollector: FakeOperationMetricsCollector,
-    },
-  }).TabularApiSurface;
-  const FakeTable = proxyquire('../src/table.js', {
-    './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
-  }).Table;
-  const FakeInstance = proxyquire('../src/instance.js', {
-    './table': {Table: FakeTable},
-  }).Instance;
-  const FakeBigtable = proxyquire('../src/index.js', {
-    './instance': {Instance: FakeInstance},
-  }).Bigtable;
-  return new FakeBigtable({projectId});
+  }).GCPMetricsHandler;
 }
 
 describe('Bigtable/ClientSideMetrics', () => {
@@ -135,12 +126,16 @@ describe('Bigtable/ClientSideMetrics', () => {
       }, 120000);
 
       class TestExporter extends CloudMonitoringExporter {
-        export(
+        constructor(options: ClientOptions) {
+          super(options);
+        }
+
+        async export(
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
-        ): void {
+        ): Promise<void> {
           try {
-            super.export(metrics, (result: ExportResult) => {
+            await super.export(metrics, (result: ExportResult) => {
               if (!exported) {
                 exported = true;
                 try {
@@ -165,14 +160,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      class TestGCPMetricsHandler extends GCPMetricsHandler {
-        static value = 'value';
-        constructor() {
-          super(new TestExporter());
-        }
-      }
-
-      return getFakeBigtable(projectId, TestGCPMetricsHandler);
+      return getFakeBigtable(projectId, getHandlerFromExporter(TestExporter));
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
@@ -228,19 +216,30 @@ describe('Bigtable/ClientSideMetrics', () => {
     // This test suite simulates a situation where the user creates multiple
     // clients and ensures that the exporter doesn't produce any errors even
     // when multiple clients are attempting an export.
-    async function mockBigtable(projectId: string, done: mocha.Done) {
+    async function mockBigtable(
+      projectId: string,
+      done: mocha.Done,
+      onExportSuccess?: () => void,
+    ) {
       class TestExporter extends CloudMonitoringExporter {
-        export(
+        constructor(options: ClientOptions) {
+          super(options);
+        }
+
+        async export(
           metrics: ResourceMetrics,
           resultCallback: (result: ExportResult) => void,
-        ): void {
+        ): Promise<void> {
           try {
-            super.export(metrics, (result: ExportResult) => {
+            await super.export(metrics, (result: ExportResult) => {
               try {
                 // The code is expected to be 0 because the
                 // result from calling export was successful.
                 assert.strictEqual(result.code, 0);
                 resultCallback({code: 0});
+                if (onExportSuccess) {
+                  onExportSuccess();
+                }
               } catch (error) {
                 // The code here isn't 0 so we report the original error to the
                 // mocha test runner.
@@ -248,17 +247,13 @@ describe('Bigtable/ClientSideMetrics', () => {
                 // unsuccessful.
                 done(result);
                 done(error);
+                resultCallback({code: 0});
               }
             });
           } catch (error) {
             done(error);
+            resultCallback({code: 0});
           }
-        }
-      }
-
-      class TestGCPMetricsHandler extends GCPMetricsHandler {
-        constructor() {
-          super(new TestExporter());
         }
       }
 
@@ -268,7 +263,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       ensure the export was successful and pass the test with code 0 if it is
       successful.
        */
-      return getFakeBigtable(projectId, TestGCPMetricsHandler);
+      return getFakeBigtable(projectId, getHandlerFromExporter(TestExporter));
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
@@ -308,11 +303,70 @@ describe('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
+    it('should send the metrics to Google Cloud Monitoring for a ReadRows call with thirty clients', done => {
+      /*
+      We need to create a timeout here because if we don't then mocha shuts down
+      the test as it is sleeping before the GCPMetricsHandler has a chance to
+      export the data. When the timeout is finished, if there were no export
+      errors then the test passes.
+      */
+      const testTimeout = setTimeout(() => {
+        done(new Error('The test timed out'));
+      }, 480000);
+      let testComplete = false;
+      const numClients = 30;
+      (async () => {
+        try {
+          const bigtableList = [];
+          const completedSet = new Set();
+          for (
+            let bigtableCount = 0;
+            bigtableCount < numClients;
+            bigtableCount++
+          ) {
+            const currentCount = bigtableCount;
+            const onExportSuccess = () => {
+              completedSet.add(currentCount);
+              if (completedSet.size === numClients) {
+                // If every client has completed the export then pass the test.
+                clearTimeout(testTimeout);
+                if (!testComplete) {
+                  testComplete = true;
+                  done();
+                }
+              }
+            };
+            bigtableList.push(
+              await mockBigtable(projectId, done, onExportSuccess),
+            );
+          }
+          for (const bigtable of bigtableList) {
+            for (const instanceId of [instanceId1, instanceId2]) {
+              await setupBigtable(bigtable, columnFamilyId, instanceId, [
+                tableId1,
+                tableId2,
+              ]);
+              const instance = bigtable.instance(instanceId);
+              const table = instance.table(tableId1);
+              await table.getRows();
+              const table2 = instance.table(tableId2);
+              await table2.getRows();
+            }
+          }
+        } catch (e) {
+          done(e);
+          done(new Error('An error occurred while running the script'));
+        }
+      })().catch(err => {
+        throw err;
+      });
+    });
   });
   describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     async function mockBigtable(projectId: string, done: mocha.Done) {
       let handlerRequestCount = 0;
       class TestGCPMetricsHandler extends TestMetricsHandler {
+        projectId = projectId;
         onOperationComplete(data: OnOperationCompleteData) {
           handlerRequestCount++;
           try {
@@ -324,10 +378,8 @@ describe('Bigtable/ClientSideMetrics', () => {
               // them from the comparison after checking they exist.
               assert(firstRequest.attemptLatency);
               assert(firstRequest.serverLatency);
-              assert(firstRequest.metricsCollectorData.client_uid);
               delete firstRequest.attemptLatency;
               delete firstRequest.serverLatency;
-              delete firstRequest.metricsCollectorData.client_uid;
               delete firstRequest.metricsCollectorData.appProfileId;
               assert.deepStrictEqual(firstRequest, {
                 connectivityErrorCount: 0,
@@ -349,11 +401,9 @@ describe('Bigtable/ClientSideMetrics', () => {
               assert(secondRequest.operationLatency);
               assert(secondRequest.firstResponseLatency);
               assert(secondRequest.applicationLatencies);
-              assert(secondRequest.metricsCollectorData.client_uid);
               delete secondRequest.operationLatency;
               delete secondRequest.firstResponseLatency;
               delete secondRequest.applicationLatencies;
-              delete secondRequest.metricsCollectorData.client_uid;
               delete secondRequest.metricsCollectorData.appProfileId;
               assert.deepStrictEqual(secondRequest, {
                 status: '0',
@@ -374,10 +424,8 @@ describe('Bigtable/ClientSideMetrics', () => {
               const thirdRequest = this.requestsHandled[2] as any;
               assert(thirdRequest.attemptLatency);
               assert(thirdRequest.serverLatency);
-              assert(thirdRequest.metricsCollectorData.client_uid);
               delete thirdRequest.attemptLatency;
               delete thirdRequest.serverLatency;
-              delete thirdRequest.metricsCollectorData.client_uid;
               delete thirdRequest.metricsCollectorData.appProfileId;
               assert.deepStrictEqual(thirdRequest, {
                 connectivityErrorCount: 0,
@@ -399,11 +447,9 @@ describe('Bigtable/ClientSideMetrics', () => {
               assert(fourthRequest.operationLatency);
               assert(fourthRequest.firstResponseLatency);
               assert(fourthRequest.applicationLatencies);
-              assert(fourthRequest.metricsCollectorData.client_uid);
               delete fourthRequest.operationLatency;
               delete fourthRequest.firstResponseLatency;
               delete fourthRequest.applicationLatencies;
-              delete fourthRequest.metricsCollectorData.client_uid;
               delete fourthRequest.metricsCollectorData.appProfileId;
               assert.deepStrictEqual(fourthRequest, {
                 status: '0',

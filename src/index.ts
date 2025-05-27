@@ -16,7 +16,12 @@ import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import * as extend from 'extend';
-import {GoogleAuth, CallOptions, grpc as gaxVendoredGrpc} from 'google-gax';
+import {
+  GoogleAuth,
+  CallOptions,
+  grpc as gaxVendoredGrpc,
+  ClientOptions,
+} from 'google-gax';
 import * as gax from 'google-gax';
 import * as protos from '../protos/protos';
 import * as os from 'os';
@@ -37,6 +42,8 @@ import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
+import {ClientSideMetricsConfigManager} from './client-side-metrics/metrics-config-manager';
+import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -430,15 +437,10 @@ export class Bigtable {
   appProfileId?: string;
   projectName: string;
   shouldReplaceProjectIdToken: boolean;
-  clientUid = generateClientUuid();
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
-  // metricsEnabled is a member variable that is used to ensure that if the
-  // user provides a `false` value and opts out of metrics collection that
-  // the metrics collector is ignored altogether to reduce latency in the
-  // client.
-  metricsEnabled: boolean;
+  _metricsConfigManager: ClientSideMetricsConfigManager;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -537,11 +539,11 @@ export class Bigtable {
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
 
-    if (options.metricsEnabled === false) {
-      this.metricsEnabled = false;
-    } else {
-      this.metricsEnabled = true;
-    }
+    const handlers =
+      options.metricsEnabled === true
+        ? [new GCPMetricsHandler(options as ClientOptions)]
+        : [];
+    this._metricsConfigManager = new ClientSideMetricsConfigManager(handlers);
   }
 
   createInstance(

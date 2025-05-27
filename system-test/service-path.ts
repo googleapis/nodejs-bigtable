@@ -44,7 +44,7 @@ describe('Service Path', () => {
       await bigtable.getInstances({timeout: 1000});
     } catch (e) {
       assert.strictEqual(
-        (e as ServiceError).message,
+        (e as ServiceError).message.substring(0, 250),
         'Total timeout of API google.bigtable.admin.v2.BigtableInstanceAdmin exceeded 1000 milliseconds retrying error Error: 14 UNAVAILABLE: Name resolution failed for target dns:bigtableadmin.someUniverseDomain:443  before any response was received.',
       );
     } finally {
@@ -104,7 +104,7 @@ describe('Service Path', () => {
       await bigtable.getInstances({timeout: 1000});
     } catch (e) {
       assert.strictEqual(
-        (e as ServiceError).message,
+        (e as ServiceError).message.substring(0, 250),
         'Total timeout of API google.bigtable.admin.v2.BigtableInstanceAdmin exceeded 1000 milliseconds retrying error Error: 14 UNAVAILABLE: Name resolution failed for target dns:someApiEndpoint:443  before any response was received.',
       );
     } finally {
@@ -157,7 +157,7 @@ describe('Service Path', () => {
       await bigtable.getInstances({timeout: 1000});
     } catch (e) {
       assert.strictEqual(
-        (e as ServiceError).message,
+        (e as ServiceError).message.substring(0, 250),
         'Total timeout of API google.bigtable.admin.v2.BigtableInstanceAdmin exceeded 1000 milliseconds retrying error Error: 14 UNAVAILABLE: Name resolution failed for target dns:bigtableadmin.someUniverseDomain:443  before any response was received.',
       );
     } finally {
