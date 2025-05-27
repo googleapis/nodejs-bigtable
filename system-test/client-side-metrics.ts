@@ -53,7 +53,7 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
   }).GCPMetricsHandler;
 }
 
-describe('Bigtable/ClientSideMetrics', () => {
+describe.only('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -303,7 +303,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
-    it.only('should send the metrics to Google Cloud Monitoring for a ReadRows call with thirty clients', done => {
+    it('should send the metrics to Google Cloud Monitoring for a ReadRows call with thirty clients', done => {
       /*
       We need to create a timeout here because if we don't then mocha shuts down
       the test as it is sleeping before the GCPMetricsHandler has a chance to
