@@ -17,7 +17,7 @@ import {ClientOptions} from 'google-gax';
 import * as assert from 'assert';
 import {setupBigtable} from './client-side-metrics-setup-table';
 
-describe.only('Bigtable/MetricServiceClientCredentials', () => {
+describe('Bigtable/MetricServiceClientCredentials', () => {
   it('should pass the credentials to the metric service client', done => {
     const clientOptions = {metricsEnabled: true};
     class FakeExporter {

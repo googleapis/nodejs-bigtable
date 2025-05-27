@@ -65,7 +65,7 @@ const ReadRowsResponse = root.lookupType('google.bigtable.v2.ReadRowsResponse');
 const CellChunk = root.lookupType(
   'google.bigtable.v2.ReadRowsResponse.CellChunk',
 );
-describe.only('Read Row Acceptance tests', () => {
+describe('Read Row Acceptance tests', () => {
   testcases.forEach(test => {
     it(test.name, done => {
       const table = new Table({id: 'xyz'} as Instance, 'my-table');
