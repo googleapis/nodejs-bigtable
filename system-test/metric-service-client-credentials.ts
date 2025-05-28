@@ -16,6 +16,7 @@ import * as proxyquire from 'proxyquire';
 import {ClientOptions} from 'google-gax';
 import * as assert from 'assert';
 import {setupBigtable} from './client-side-metrics-setup-table';
+import {MetricServiceClient} from '@google-cloud/monitoring';
 
 describe('Bigtable/MetricServiceClientCredentials', () => {
   it('should pass the credentials to the metric service client', done => {
@@ -59,5 +60,32 @@ describe('Bigtable/MetricServiceClientCredentials', () => {
     })().catch(err => {
       throw err;
     });
+  });
+  it('should use second project for the metric service client', async () => {
+    const SECOND_PROJECT_ID = 'second-project-id';
+    const clientOptions = {metricsEnabled: true, projectId: SECOND_PROJECT_ID};
+    let savedOptions: ClientOptions = {};
+    class FakeExporter {
+      constructor(options: ClientOptions) {
+        savedOptions = options;
+      }
+    }
+    const FakeCGPMetricsHandler = proxyquire(
+      '../src/client-side-metrics/gcp-metrics-handler.js',
+      {
+        './exporter': {
+          CloudMonitoringExporter: FakeExporter,
+        },
+      },
+    ).GCPMetricsHandler;
+    const FakeBigtable = proxyquire('../src/index.js', {
+      './client-side-metrics/gcp-metrics-handler': {
+        GCPMetricsHandler: FakeCGPMetricsHandler,
+      },
+    }).Bigtable;
+    new FakeBigtable(clientOptions);
+    const client = new MetricServiceClient(savedOptions);
+    const projectIdUsed = await client.getProjectId();
+    assert.strictEqual(projectIdUsed, SECOND_PROJECT_ID);
   });
 });
