@@ -25,10 +25,15 @@ import * as proxyquire from 'proxyquire';
 import {Bigtable} from '../src';
 import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
-import {OnAttemptCompleteData, OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
+import {
+  OnAttemptCompleteData,
+  OnOperationCompleteData,
+} from '../src/client-side-metrics/metrics-handler';
 import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {OperationMetricsCollector} from '../src/client-side-metrics/operation-metrics-collector';
+import {PassThrough} from 'stream';
+import {generateChunksFromRequest} from '../test/utils/readRowsImpl';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
@@ -509,6 +514,79 @@ describe('Bigtable/ClientSideMetrics', () => {
         retryCount: 0,
       });
     }
+    function applicationLatenciesChecks(
+      requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
+    ) {
+      const compareValue = [
+        {
+          projectId: 'cfdb-sdk-node-tests',
+          serverLatency: undefined,
+          attemptLatency: 20000,
+          connectivityErrorCount: 0,
+          streaming: 'true',
+          status: '0',
+          client_name: 'nodejs-bigtable',
+          metricsCollectorData: {
+            instanceId: 'emulator-test-instance',
+            table: 'my-table',
+            cluster: 'unspecified',
+            zone: 'global',
+            method: 'Bigtable.ReadRows',
+          },
+        },
+        {
+          projectId: 'cfdb-sdk-node-tests',
+          status: '0',
+          streaming: 'true',
+          metricsCollectorData: {
+            instanceId: 'emulator-test-instance',
+            table: 'my-table',
+            cluster: 'unspecified',
+            zone: 'global',
+            method: 'Bigtable.ReadRows',
+          },
+          client_name: 'nodejs-bigtable',
+          operationLatency: 22000,
+          retryCount: 0,
+          firstResponseLatency: 2000,
+          applicationLatencies: [6000, 6000],
+        },
+        {
+          projectId: 'cfdb-sdk-node-tests',
+          attemptLatency: 5000,
+          serverLatency: undefined,
+          connectivityErrorCount: 0,
+          streaming: 'true',
+          status: '0',
+          client_name: 'nodejs-bigtable',
+          metricsCollectorData: {
+            instanceId: 'emulator-test-instance',
+            table: 'my-table2',
+            cluster: 'unspecified',
+            zone: 'global',
+            method: 'Bigtable.ReadRows',
+          },
+        },
+        {
+          projectId: 'cfdb-sdk-node-tests',
+          status: '0',
+          streaming: 'true',
+          metricsCollectorData: {
+            instanceId: 'emulator-test-instance',
+            table: 'my-table2',
+            cluster: 'unspecified',
+            zone: 'global',
+            method: 'Bigtable.ReadRows',
+          },
+          client_name: 'nodejs-bigtable',
+          operationLatency: 7000,
+          retryCount: 0,
+          firstResponseLatency: 2000,
+          applicationLatencies: [1000, 1000],
+        },
+      ];
+      assert.deepStrictEqual(requestsHandled, compareValue);
+    }
 
     async function mockBigtable(
       projectId: string,
@@ -595,11 +673,41 @@ describe('Bigtable/ClientSideMetrics', () => {
           const bigtable = await mockBigtable(
             projectId,
             done,
-            standardAssertionChecks,
+            applicationLatenciesChecks,
             hrtime,
           );
           const instance = bigtable.instance(instanceId1);
           const table = instance.table(tableId1);
+          // Mock stream behaviour:
+          // @ts-ignore
+          table.bigtable.request = () => {
+            const chunks = generateChunksFromRequest(
+              {},
+              {
+                chunkSize: 1,
+                valueSize: 1,
+                errorAfterChunkNo: 2,
+                keyFrom: 0,
+                keyTo: 3,
+                chunksPerResponse: 1,
+                debugLog: () => {},
+              },
+            );
+            const data = {
+              lastRowKey: chunks[2].rowKey,
+              chunks,
+            };
+            const stream = new PassThrough({
+              objectMode: true,
+            });
+
+            setImmediate(() => {
+              stream.emit('data', data);
+              stream.emit('end');
+            });
+
+            return stream;
+          };
           const stream = table.createReadStream();
           for await (const row of stream) {
             // Simulate an application that takes 5 seconds between row reads.
@@ -609,6 +717,7 @@ describe('Bigtable/ClientSideMetrics', () => {
             hrtime.bigint();
             hrtime.bigint();
           }
+          // TODO: try handling a stream error here
           const table2 = instance.table(tableId2);
           await table2.getRows();
         } catch (e) {
