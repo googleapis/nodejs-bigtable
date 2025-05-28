@@ -28,9 +28,19 @@ import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
 import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
+import {TabularApiSurface} from '../src/tabular-api-surface';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
+/**
+ * This method retrieves a bigtable client that sends metrics to the metrics
+ * handler class. The client also uses metrics collectors that have
+ * deterministic timestamps associated with the various latency metrics so that
+ * they can be tested.
+ *
+ * @param projectId
+ * @param metricsHandlerClass
+ */
 function getFakeBigtable(
   projectId: string,
   metricsHandlerClass: typeof GCPMetricsHandler | typeof TestMetricsHandler,
@@ -38,7 +48,35 @@ function getFakeBigtable(
   const metricHandler = new metricsHandlerClass(
     {} as unknown as ClientOptions & {value: string},
   );
-  const newClient = new Bigtable({projectId});
+  class FakeHRTime {
+    startTime = BigInt(0);
+    bigint() {
+      this.startTime += BigInt(1000000000);
+      return this.startTime;
+    }
+  }
+  const stubs = {
+    'node:process': {
+      hrtime: new FakeHRTime(),
+    },
+  };
+  const FakeOperationsMetricsCollector = proxyquire(
+    '../../src/client-side-metrics/operation-metrics-collector.js',
+    stubs,
+  ).OperationMetricsCollector;
+  const FakeClientSideMetricsConfigManager = proxyquire(
+    '../src/client-side-metrics/metrics-config-manager.js',
+    {
+      './operation-metrics-collector': FakeOperationsMetricsCollector,
+    },
+  ).ClientSideMetricsConfigManager;
+  const FakeBigtable = proxyquire('../src/index.js', {
+    '../src/client-side-metrics/metrics-config-manager.js': {
+      ClientSideMetricsConfigManager: FakeClientSideMetricsConfigManager,
+    },
+  }).Bigtable;
+
+  const newClient = new FakeBigtable({projectId});
   newClient._metricsConfigManager = new ClientSideMetricsConfigManager([
     metricHandler,
   ]);
