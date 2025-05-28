@@ -25,12 +25,21 @@ import * as proxyquire from 'proxyquire';
 import {Bigtable} from '../src';
 import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
-import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
+import {OnAttemptCompleteData, OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
 import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
-import {TabularApiSurface} from '../src/tabular-api-surface';
+import {OperationMetricsCollector} from '../src/client-side-metrics/operation-metrics-collector';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
+
+class FakeHRTime {
+  startTime = BigInt(0);
+
+  bigint() {
+    this.startTime += BigInt(1000000000);
+    return this.startTime;
+  }
+}
 
 /**
  * This method retrieves a bigtable client that sends metrics to the metrics
@@ -44,40 +53,29 @@ const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 function getFakeBigtable(
   projectId: string,
   metricsHandlerClass: typeof GCPMetricsHandler | typeof TestMetricsHandler,
+  hrtime: FakeHRTime,
 ) {
   const metricHandler = new metricsHandlerClass(
     {} as unknown as ClientOptions & {value: string},
   );
-  class FakeHRTime {
-    startTime = BigInt(0);
-    bigint() {
-      this.startTime += BigInt(1000000000);
-      return this.startTime;
-    }
-  }
-  const stubs = {
-    'node:process': {
-      hrtime: new FakeHRTime(),
-    },
-  };
   const FakeOperationsMetricsCollector = proxyquire(
     '../src/client-side-metrics/operation-metrics-collector.js',
-    stubs,
+    {
+      'node:process': {
+        hrtime,
+      },
+    },
   ).OperationMetricsCollector;
   const FakeClientSideMetricsConfigManager = proxyquire(
     '../src/client-side-metrics/metrics-config-manager.js',
     {
-      './operation-metrics-collector': FakeOperationsMetricsCollector,
+      './operation-metrics-collector.js': {
+        OperationMetricsCollector: FakeOperationsMetricsCollector,
+      },
     },
   ).ClientSideMetricsConfigManager;
-  const FakeBigtable = proxyquire('../src/index.js', {
-    '../src/client-side-metrics/metrics-config-manager.js': {
-      ClientSideMetricsConfigManager: FakeClientSideMetricsConfigManager,
-    },
-  }).Bigtable;
-
-  const newClient = new FakeBigtable({projectId});
-  newClient._metricsConfigManager = new ClientSideMetricsConfigManager([
+  const newClient = new Bigtable({projectId});
+  newClient._metricsConfigManager = new FakeClientSideMetricsConfigManager([
     metricHandler,
   ]);
   return newClient;
@@ -91,7 +89,7 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
   }).GCPMetricsHandler;
 }
 
-describe.only('Bigtable/ClientSideMetrics', () => {
+describe('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -198,7 +196,11 @@ describe.only('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      return getFakeBigtable(projectId, getHandlerFromExporter(TestExporter));
+      return getFakeBigtable(
+        projectId,
+        getHandlerFromExporter(TestExporter),
+        new FakeHRTime(),
+      );
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
@@ -301,7 +303,11 @@ describe.only('Bigtable/ClientSideMetrics', () => {
       ensure the export was successful and pass the test with code 0 if it is
       successful.
        */
-      return getFakeBigtable(projectId, getHandlerFromExporter(TestExporter));
+      return getFakeBigtable(
+        projectId,
+        getHandlerFromExporter(TestExporter),
+        new FakeHRTime(),
+      );
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
@@ -401,7 +407,117 @@ describe.only('Bigtable/ClientSideMetrics', () => {
     });
   });
   describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
-    async function mockBigtable(projectId: string, done: mocha.Done) {
+    /**
+     * This method is called to do a bunch of basic assertion checks that are
+     * expected to pass when a client makes two getRows calls.
+     *
+     * @param requestsHandled
+     */
+    function standardAssertionChecks(
+      requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
+    ) {
+      const firstRequest = requestsHandled[0] as any;
+      // We would expect these parameters to be different every time so delete
+      // them from the comparison after checking they exist.
+      assert(firstRequest.attemptLatency);
+      assert(firstRequest.serverLatency);
+      delete firstRequest.attemptLatency;
+      delete firstRequest.serverLatency;
+      delete firstRequest.metricsCollectorData.appProfileId;
+      assert.deepStrictEqual(firstRequest, {
+        connectivityErrorCount: 0,
+        streaming: 'true',
+        status: '0',
+        client_name: 'nodejs-bigtable',
+        metricsCollectorData: {
+          instanceId: 'emulator-test-instance',
+          table: 'my-table',
+          cluster: 'fake-cluster3',
+          zone: 'us-west1-c',
+          method: 'Bigtable.ReadRows',
+        },
+        projectId,
+      });
+      const secondRequest = requestsHandled[1] as any;
+      // We would expect these parameters to be different every time so delete
+      // them from the comparison after checking they exist.
+      assert(secondRequest.operationLatency);
+      assert(secondRequest.firstResponseLatency);
+      assert(secondRequest.applicationLatencies);
+      delete secondRequest.operationLatency;
+      delete secondRequest.firstResponseLatency;
+      delete secondRequest.applicationLatencies;
+      delete secondRequest.metricsCollectorData.appProfileId;
+      assert.deepStrictEqual(secondRequest, {
+        status: '0',
+        streaming: 'true',
+        client_name: 'nodejs-bigtable',
+        metricsCollectorData: {
+          instanceId: 'emulator-test-instance',
+          cluster: 'fake-cluster3',
+          zone: 'us-west1-c',
+          method: 'Bigtable.ReadRows',
+          table: 'my-table',
+        },
+        projectId,
+        retryCount: 0,
+      });
+      // We would expect these parameters to be different every time so delete
+      // them from the comparison after checking they exist.
+      const thirdRequest = requestsHandled[2] as any;
+      assert(thirdRequest.attemptLatency);
+      assert(thirdRequest.serverLatency);
+      delete thirdRequest.attemptLatency;
+      delete thirdRequest.serverLatency;
+      delete thirdRequest.metricsCollectorData.appProfileId;
+      assert.deepStrictEqual(thirdRequest, {
+        connectivityErrorCount: 0,
+        streaming: 'true',
+        status: '0',
+        client_name: 'nodejs-bigtable',
+        metricsCollectorData: {
+          instanceId: 'emulator-test-instance',
+          table: 'my-table2',
+          cluster: 'fake-cluster3',
+          zone: 'us-west1-c',
+          method: 'Bigtable.ReadRows',
+        },
+        projectId,
+      });
+      const fourthRequest = requestsHandled[3] as any;
+      // We would expect these parameters to be different every time so delete
+      // them from the comparison after checking they exist.
+      assert(fourthRequest.operationLatency);
+      assert(fourthRequest.firstResponseLatency);
+      assert(fourthRequest.applicationLatencies);
+      delete fourthRequest.operationLatency;
+      delete fourthRequest.firstResponseLatency;
+      delete fourthRequest.applicationLatencies;
+      delete fourthRequest.metricsCollectorData.appProfileId;
+      assert.deepStrictEqual(fourthRequest, {
+        status: '0',
+        streaming: 'true',
+        client_name: 'nodejs-bigtable',
+        metricsCollectorData: {
+          instanceId: 'emulator-test-instance',
+          cluster: 'fake-cluster3',
+          zone: 'us-west1-c',
+          method: 'Bigtable.ReadRows',
+          table: 'my-table2',
+        },
+        projectId,
+        retryCount: 0,
+      });
+    }
+
+    async function mockBigtable(
+      projectId: string,
+      done: mocha.Done,
+      checkFn: (
+        requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
+      ) => void,
+      hrtime: FakeHRTime,
+    ) {
       let handlerRequestCount = 0;
       class TestGCPMetricsHandler extends TestMetricsHandler {
         projectId = projectId;
@@ -411,98 +527,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
             super.onOperationComplete(data);
             if (handlerRequestCount > 1) {
               assert.strictEqual(this.requestsHandled.length, 4);
-              const firstRequest = this.requestsHandled[0] as any;
-              // We would expect these parameters to be different every time so delete
-              // them from the comparison after checking they exist.
-              assert(firstRequest.attemptLatency);
-              assert(firstRequest.serverLatency);
-              delete firstRequest.attemptLatency;
-              delete firstRequest.serverLatency;
-              delete firstRequest.metricsCollectorData.appProfileId;
-              assert.deepStrictEqual(firstRequest, {
-                connectivityErrorCount: 0,
-                streaming: 'true',
-                status: '0',
-                client_name: 'nodejs-bigtable',
-                metricsCollectorData: {
-                  instanceId: 'emulator-test-instance',
-                  table: 'my-table',
-                  cluster: 'fake-cluster3',
-                  zone: 'us-west1-c',
-                  method: 'Bigtable.ReadRows',
-                },
-                projectId,
-              });
-              const secondRequest = this.requestsHandled[1] as any;
-              // We would expect these parameters to be different every time so delete
-              // them from the comparison after checking they exist.
-              assert(secondRequest.operationLatency);
-              assert(secondRequest.firstResponseLatency);
-              assert(secondRequest.applicationLatencies);
-              delete secondRequest.operationLatency;
-              delete secondRequest.firstResponseLatency;
-              delete secondRequest.applicationLatencies;
-              delete secondRequest.metricsCollectorData.appProfileId;
-              assert.deepStrictEqual(secondRequest, {
-                status: '0',
-                streaming: 'true',
-                client_name: 'nodejs-bigtable',
-                metricsCollectorData: {
-                  instanceId: 'emulator-test-instance',
-                  cluster: 'fake-cluster3',
-                  zone: 'us-west1-c',
-                  method: 'Bigtable.ReadRows',
-                  table: 'my-table',
-                },
-                projectId,
-                retryCount: 0,
-              });
-              // We would expect these parameters to be different every time so delete
-              // them from the comparison after checking they exist.
-              const thirdRequest = this.requestsHandled[2] as any;
-              assert(thirdRequest.attemptLatency);
-              assert(thirdRequest.serverLatency);
-              delete thirdRequest.attemptLatency;
-              delete thirdRequest.serverLatency;
-              delete thirdRequest.metricsCollectorData.appProfileId;
-              assert.deepStrictEqual(thirdRequest, {
-                connectivityErrorCount: 0,
-                streaming: 'true',
-                status: '0',
-                client_name: 'nodejs-bigtable',
-                metricsCollectorData: {
-                  instanceId: 'emulator-test-instance',
-                  table: 'my-table2',
-                  cluster: 'fake-cluster3',
-                  zone: 'us-west1-c',
-                  method: 'Bigtable.ReadRows',
-                },
-                projectId,
-              });
-              const fourthRequest = this.requestsHandled[3] as any;
-              // We would expect these parameters to be different every time so delete
-              // them from the comparison after checking they exist.
-              assert(fourthRequest.operationLatency);
-              assert(fourthRequest.firstResponseLatency);
-              assert(fourthRequest.applicationLatencies);
-              delete fourthRequest.operationLatency;
-              delete fourthRequest.firstResponseLatency;
-              delete fourthRequest.applicationLatencies;
-              delete fourthRequest.metricsCollectorData.appProfileId;
-              assert.deepStrictEqual(fourthRequest, {
-                status: '0',
-                streaming: 'true',
-                client_name: 'nodejs-bigtable',
-                metricsCollectorData: {
-                  instanceId: 'emulator-test-instance',
-                  cluster: 'fake-cluster3',
-                  zone: 'us-west1-c',
-                  method: 'Bigtable.ReadRows',
-                  table: 'my-table2',
-                },
-                projectId,
-                retryCount: 0,
-              });
+              checkFn(this.requestsHandled);
               done();
             }
           } catch (e) {
@@ -511,7 +536,11 @@ describe.only('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      const bigtable = getFakeBigtable(projectId, TestGCPMetricsHandler);
+      const bigtable = getFakeBigtable(
+        projectId,
+        TestGCPMetricsHandler,
+        hrtime,
+      );
       await setupBigtable(bigtable, columnFamilyId, instanceId1, [
         tableId1,
         tableId2,
@@ -521,7 +550,12 @@ describe.only('Bigtable/ClientSideMetrics', () => {
 
     it('should send the metrics to the metrics handler for a ReadRows call', done => {
       (async () => {
-        const bigtable = await mockBigtable(projectId, done);
+        const bigtable = await mockBigtable(
+          projectId,
+          done,
+          standardAssertionChecks,
+          new FakeHRTime(),
+        );
         const instance = bigtable.instance(instanceId1);
         const table = instance.table(tableId1);
         await table.getRows();
@@ -535,10 +569,46 @@ describe.only('Bigtable/ClientSideMetrics', () => {
       (async () => {
         try {
           const projectId = SECOND_PROJECT_ID;
-          const bigtable = await mockBigtable(projectId, done);
+          const bigtable = await mockBigtable(
+            projectId,
+            done,
+            standardAssertionChecks,
+            new FakeHRTime(),
+          );
           const instance = bigtable.instance(instanceId1);
           const table = instance.table(tableId1);
           await table.getRows();
+          const table2 = instance.table(tableId2);
+          await table2.getRows();
+        } catch (e) {
+          done(e);
+        }
+      })().catch(err => {
+        throw err;
+      });
+    });
+    it.only('should record the right metrics when iterating through readrows stream', done => {
+      (async () => {
+        try {
+          const hrtime = new FakeHRTime();
+          const projectId = SECOND_PROJECT_ID;
+          const bigtable = await mockBigtable(
+            projectId,
+            done,
+            standardAssertionChecks,
+            hrtime,
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          const stream = table.createReadStream();
+          for await (const row of stream) {
+            // Simulate an application that takes 5 seconds between row reads.
+            hrtime.bigint();
+            hrtime.bigint();
+            hrtime.bigint();
+            hrtime.bigint();
+            hrtime.bigint();
+          }
           const table2 = instance.table(tableId2);
           await table2.getRows();
         } catch (e) {
