@@ -61,7 +61,7 @@ function getFakeBigtable(
     },
   };
   const FakeOperationsMetricsCollector = proxyquire(
-    '../../src/client-side-metrics/operation-metrics-collector.js',
+    '../src/client-side-metrics/operation-metrics-collector.js',
     stubs,
   ).OperationMetricsCollector;
   const FakeClientSideMetricsConfigManager = proxyquire(
@@ -91,7 +91,7 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
   }).GCPMetricsHandler;
 }
 
-describe('Bigtable/ClientSideMetrics', () => {
+describe.only('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
