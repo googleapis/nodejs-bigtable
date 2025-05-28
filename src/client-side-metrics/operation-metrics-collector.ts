@@ -14,7 +14,7 @@
 
 import * as fs from 'fs';
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
-import {grpc} from 'google-gax';
+import {grpc, ServiceError} from 'google-gax';
 import * as gax from 'google-gax';
 import {AbortableDuplex, BigtableOptions} from '../index';
 import * as path from 'path';
@@ -77,7 +77,8 @@ function withMetricsDebug<T>(fn: () => T): T | undefined {
     return fn();
   } catch (e) {
     if (METRICS_DEBUG) {
-      throw e;
+      console.warn('METRICS_DEBUG warning');
+      console.warn((e as ServiceError).message);
     }
   }
   return;
