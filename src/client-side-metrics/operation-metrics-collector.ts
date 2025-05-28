@@ -100,6 +100,7 @@ function checkState<T>(
  * A class for tracing and recording client-side metrics related to Bigtable operations.
  */
 export class OperationMetricsCollector {
+  private readonly INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
   private state: MetricsCollectorState;
   private operationStartTime: bigint | null;
   private attemptStartTime: bigint | null;
@@ -391,9 +392,8 @@ export class OperationMetricsCollector {
   }) {
     withMetricsDebug(() => {
       if (!this.zone || !this.cluster) {
-        const INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
         const mappedValue = status.metadata.internalRepr.get(
-          INSTANCE_INFORMATION_KEY,
+          this.INSTANCE_INFORMATION_KEY,
         ) as Buffer[];
         if (mappedValue && mappedValue[0] && ResponseParams) {
           const decodedValue = ResponseParams.decode(
