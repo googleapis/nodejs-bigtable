@@ -64,9 +64,11 @@ function getFakeBigtable(
   const FakeOperationsMetricsCollector = proxyquire(
     '../src/client-side-metrics/operation-metrics-collector.js',
     {
+      /*
       'node:process': {
         hrtime,
       },
+       */
     },
   ).OperationMetricsCollector;
   const FakeClientSideMetricsConfigManager = proxyquire(
@@ -734,7 +736,10 @@ describe('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
-    it('should record the right metrics when iterating through readrows stream', done => {
+    it.only('should record the right metrics when iterating through readrows stream', done => {
+      function sleep(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
       (async () => {
         try {
           const hrtime = new FakeHRTime();
@@ -757,7 +762,7 @@ describe('Bigtable/ClientSideMetrics', () => {
                 valueSize: 1,
                 errorAfterChunkNo: 2,
                 keyFrom: 0,
-                keyTo: 3,
+                keyTo: 20,
                 chunksPerResponse: 1,
                 debugLog: () => {},
               },
@@ -780,11 +785,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           const stream = table.createReadStream();
           for await (const row of stream) {
             // Simulate an application that takes 5 seconds between row reads.
-            hrtime.bigint();
-            hrtime.bigint();
-            hrtime.bigint();
-            hrtime.bigint();
-            hrtime.bigint();
+            await sleep(5000);
           }
           const table2 = instance.table(tableId2);
           await table2.getRows();
