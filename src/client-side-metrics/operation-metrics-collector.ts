@@ -70,8 +70,7 @@ enum MetricsCollectorState {
   OPERATION_COMPLETE,
 }
 
-// This method swallows errors when metrics debugging is not enabled so
-// that errors don't bubble up to the user.
+// This method displays warnings if METRICS_DEBUG is enabled.
 function withMetricsDebug<T>(fn: () => T): T | undefined {
   try {
     return fn();
