@@ -663,7 +663,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
-    it.only('should record the right metrics when handling rows through readrows stream', done => {
+    it('should record the right metrics when handling rows through readrows stream', done => {
       (async () => {
         try {
           const hrtime = new FakeHRTime();
