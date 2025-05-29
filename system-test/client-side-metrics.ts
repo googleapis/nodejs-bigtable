@@ -33,7 +33,7 @@ import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {OperationMetricsCollector} from '../src/client-side-metrics/operation-metrics-collector';
 import {PassThrough} from 'stream';
-import {generateChunksFromRequest} from '../test/utils/readRowsImpl';
+import {generateChunksFromRequest} from '../test-common/utils/readRowsImpl';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
