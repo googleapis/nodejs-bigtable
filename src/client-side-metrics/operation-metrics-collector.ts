@@ -152,7 +152,7 @@ export class OperationMetricsCollector {
       {
         instanceId: this.tabularApiSurface.instance.id,
         table: this.tabularApiSurface.id,
-        cluster: this.cluster || 'unspecified',
+        cluster: this.cluster || '<unspecified>',
         zone: this.zone || 'global',
         method: this.methodName,
       },
