@@ -414,7 +414,7 @@ describe('Bigtable/ClientSideMetrics', () => {
      * This method is called to do a bunch of basic assertion checks that are
      * expected to pass when a client makes two getRows calls.
      *
-     * @param requestsHandled
+     * @param requestsHandled The requests handled by the mock metrics handler
      */
     function standardAssertionChecks(
       requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
@@ -512,6 +512,14 @@ describe('Bigtable/ClientSideMetrics', () => {
         retryCount: 0,
       });
     }
+
+    /**
+     * This method is called to check that the requests handled from the
+     * readRows streaming calls have the right application latencies and other
+     * appropriate metrics.
+     *
+     * @param requestsHandled The requests handled by the mock metrics handler
+     */
     function applicationLatenciesChecks(
       requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
     ) {
