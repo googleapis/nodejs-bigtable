@@ -663,6 +663,69 @@ describe('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
+    it.only('should record the right metrics when handling rows through readrows stream', done => {
+      (async () => {
+        try {
+          const hrtime = new FakeHRTime();
+          const projectId = SECOND_PROJECT_ID;
+          const bigtable = await mockBigtable(
+            projectId,
+            done,
+            applicationLatenciesChecks,
+            hrtime,
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          // Mock stream behaviour:
+          // @ts-ignore
+          table.bigtable.request = () => {
+            const chunks = generateChunksFromRequest(
+              {},
+              {
+                chunkSize: 1,
+                valueSize: 1,
+                errorAfterChunkNo: 2,
+                keyFrom: 0,
+                keyTo: 3,
+                chunksPerResponse: 1,
+                debugLog: () => {},
+              },
+            );
+            const data = {
+              lastRowKey: chunks[2].rowKey,
+              chunks,
+            };
+            const stream = new PassThrough({
+              objectMode: true,
+            });
+
+            setImmediate(() => {
+              stream.emit('data', data);
+              stream.emit('end');
+            });
+
+            return stream;
+          };
+          const stream = table.createReadStream();
+          stream.on('data', () => {
+            // Simulate an application that takes 5 seconds between row reads.
+            hrtime.bigint();
+            hrtime.bigint();
+            hrtime.bigint();
+            hrtime.bigint();
+            hrtime.bigint();
+          });
+          stream.on('end', async () => {
+            const table2 = instance.table(tableId2);
+            await table2.getRows();
+          });
+        } catch (e) {
+          done(e);
+        }
+      })().catch(err => {
+        throw err;
+      });
+    });
     it('should record the right metrics when iterating through readrows stream', done => {
       (async () => {
         try {
