@@ -778,7 +778,6 @@ describe('Bigtable/ClientSideMetrics', () => {
             hrtime.bigint();
             hrtime.bigint();
           }
-          // TODO: try handling a stream error here
           const table2 = instance.table(tableId2);
           await table2.getRows();
         } catch (e) {
