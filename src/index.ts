@@ -48,8 +48,6 @@ import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
 
-const crypto = require('crypto');
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const PKG = require('../../package.json');
 
@@ -138,13 +136,6 @@ function getDomain(prefix: string, opts?: gax.ClientOptions) {
     universeDomainEnvVar ??
     'googleapis.com'
   }`;
-}
-
-function generateClientUuid() {
-  const hostname = os.hostname() || 'localhost';
-  const currentPid = process.pid || '';
-  const uuid4 = crypto.randomUUID();
-  return `node-${uuid4}-${currentPid}${hostname}`;
 }
 
 /**
