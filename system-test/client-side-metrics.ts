@@ -547,7 +547,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           operationLatency: 22000,
           retryCount: 0,
           firstResponseLatency: 2000,
-          applicationLatencies: [6000, 6000],
+          applicationLatencies: [6000, 6000], // From the stream for loop
         },
         {
           projectId: 'cfdb-sdk-node-tests',
@@ -580,7 +580,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           operationLatency: 7000,
           retryCount: 0,
           firstResponseLatency: 2000,
-          applicationLatencies: [1000, 1000],
+          applicationLatencies: [1000, 1000], // This is from the getRows call.
         },
       ];
       assert.deepStrictEqual(requestsHandled, compareValue);
@@ -663,7 +663,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
-    it.only('should record the right metrics when iterating through readrows stream', done => {
+    it('should record the right metrics when iterating through readrows stream', done => {
       (async () => {
         try {
           const hrtime = new FakeHRTime();
