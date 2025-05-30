@@ -30,6 +30,9 @@ import * as tblTypes from '../src/table';
 import {Bigtable, RequestOptions} from '../src';
 import {EventEmitter} from 'events';
 import {TableUtils} from '../src/utils/table';
+import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
+import {IMetricsHandler} from '../src/client-side-metrics/metrics-handler';
+import {OperationMetricsCollector} from '../src/client-side-metrics/operation-metrics-collector';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
@@ -57,6 +60,24 @@ function createFake(klass: any) {
       this.calledWith_ = args;
     }
   };
+}
+
+class FakeMetricsCollector {
+  onOperationStart() {}
+  onOperationComplete() {}
+  onResponse() {}
+  onAttemptStart() {}
+  onAttemptComplete() {}
+  onMetadataReceived() {}
+  handleStatusAndMetadata() {}
+  onStatusMetadataReceived() {}
+  onRowReachesUser() {}
+}
+
+class FakeMetricsConfigManager extends ClientSideMetricsConfigManager {
+  createOperation() {
+    return new FakeMetricsCollector() as unknown as OperationMetricsCollector;
+  }
 }
 
 const FakeFamily = createFake(Family);
@@ -130,7 +151,11 @@ describe('Bigtable/Table', () => {
 
   beforeEach(() => {
     INSTANCE = {
-      bigtable: {} as Bigtable,
+      bigtable: {
+        _metricsConfigManager: new FakeMetricsConfigManager(
+          [],
+        ) as ClientSideMetricsConfigManager,
+      } as Bigtable,
       name: 'a/b/c/d',
     } as inst.Instance;
     TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;

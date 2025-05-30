@@ -16,9 +16,15 @@ import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import * as extend from 'extend';
-import {GoogleAuth, CallOptions, grpc as gaxVendoredGrpc} from 'google-gax';
+import {
+  GoogleAuth,
+  CallOptions,
+  grpc as gaxVendoredGrpc,
+  ClientOptions,
+} from 'google-gax';
 import * as gax from 'google-gax';
 import * as protos from '../protos/protos';
+import * as os from 'os';
 
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
@@ -36,6 +42,8 @@ import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
+import {ClientSideMetricsConfigManager} from './client-side-metrics/metrics-config-manager';
+import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -101,6 +109,8 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
    * Internal only.
    */
   BigtableTableAdminClient?: gax.ClientOptions;
+
+  metricsEnabled?: boolean;
 }
 
 /**
@@ -474,6 +484,7 @@ export class Bigtable {
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
+  _metricsConfigManager: ClientSideMetricsConfigManager;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -578,6 +589,12 @@ export class Bigtable {
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
+
+    const handlers =
+      options.metricsEnabled === true
+        ? [new GCPMetricsHandler(options as ClientOptions)]
+        : [];
+    this._metricsConfigManager = new ClientSideMetricsConfigManager(handlers);
   }
 
   createInstance(
@@ -970,6 +987,7 @@ export class Bigtable {
         gaxStream
           .on('error', stream.destroy.bind(stream))
           .on('metadata', stream.emit.bind(stream, 'metadata'))
+          .on('status', stream.emit.bind(stream, 'status'))
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
       });
