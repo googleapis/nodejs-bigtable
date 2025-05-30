@@ -70,8 +70,7 @@ enum MetricsCollectorState {
   OPERATION_COMPLETE,
 }
 
-// This method swallows errors when metrics debugging is not enabled so
-// that errors don't bubble up to the user.
+// This method displays warnings if METRICS_DEBUG is enabled.
 function withMetricsDebug<T>(fn: () => T): T | undefined {
   try {
     return fn();
@@ -160,7 +159,7 @@ export class OperationMetricsCollector {
       {
         instanceId: this.tabularApiSurface.instance.id,
         table: this.tabularApiSurface.id,
-        cluster: this.cluster || 'unspecified',
+        cluster: this.cluster || '<unspecified>',
         zone: this.zone || 'global',
         method: this.methodName,
       },
