@@ -303,6 +303,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
         lastRowKey = row.id;
         rowsRead++;
+        metricsCollector.onRowReachesUser();
         callback(null, row);
       },
     });
