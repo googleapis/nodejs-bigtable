@@ -92,13 +92,13 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
   }).GCPMetricsHandler;
 }
 
-describe('Bigtable/ClientSideMetrics', () => {
+describe.only('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
   const tableId2 = 'my-table2';
   const columnFamilyId = 'cf1';
-  let projectId: string;
+  let defaultProjectId: string;
 
   before(async () => {
     const bigtable = new Bigtable();
@@ -108,7 +108,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         tableId2,
       ]);
     }
-    projectId = await new Promise((resolve, reject) => {
+    defaultProjectId = await new Promise((resolve, reject) => {
       bigtable.getProjectId_((err: Error | null, projectId?: string) => {
         if (err) {
           reject(err);
@@ -209,7 +209,7 @@ describe('Bigtable/ClientSideMetrics', () => {
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
       (async () => {
         try {
-          const bigtable = await mockBigtable(projectId, done);
+          const bigtable = await mockBigtable(defaultProjectId, done);
           for (const instanceId of [instanceId1, instanceId2]) {
             await setupBigtable(bigtable, columnFamilyId, instanceId, [
               tableId1,
@@ -327,8 +327,8 @@ describe('Bigtable/ClientSideMetrics', () => {
       }, 120000);
       (async () => {
         try {
-          const bigtable1 = await mockBigtable(projectId, done);
-          const bigtable2 = await mockBigtable(projectId, done);
+          const bigtable1 = await mockBigtable(defaultProjectId, done);
+          const bigtable2 = await mockBigtable(defaultProjectId, done);
           for (const bigtable of [bigtable1, bigtable2]) {
             for (const instanceId of [instanceId1, instanceId2]) {
               await setupBigtable(bigtable, columnFamilyId, instanceId, [
@@ -384,7 +384,7 @@ describe('Bigtable/ClientSideMetrics', () => {
               }
             };
             bigtableList.push(
-              await mockBigtable(projectId, done, onExportSuccess),
+              await mockBigtable(defaultProjectId, done, onExportSuccess),
             );
           }
           for (const bigtable of bigtableList) {
@@ -414,9 +414,11 @@ describe('Bigtable/ClientSideMetrics', () => {
      * This method is called to do a bunch of basic assertion checks that are
      * expected to pass when a client makes two getRows calls.
      *
+     * @param projectId The projectId the request was made with
      * @param requestsHandled The requests handled by the mock metrics handler
      */
     function standardAssertionChecks(
+      projectId: string,
       requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
     ) {
       const firstRequest = requestsHandled[0] as any;
@@ -518,14 +520,16 @@ describe('Bigtable/ClientSideMetrics', () => {
      * readRows streaming calls have the right application latencies and other
      * appropriate metrics.
      *
+     * @param projectId The projectId the request was made with
      * @param requestsHandled The requests handled by the mock metrics handler
      */
     function applicationLatenciesChecks(
+      projectId: string,
       requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
     ) {
       const compareValue = [
         {
-          projectId: 'cfdb-sdk-node-tests',
+          projectId,
           serverLatency: undefined,
           attemptLatency: 20000,
           connectivityErrorCount: 0,
@@ -541,7 +545,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           },
         },
         {
-          projectId: 'cfdb-sdk-node-tests',
+          projectId,
           status: '0',
           streaming: 'true',
           metricsCollectorData: {
@@ -558,7 +562,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           applicationLatencies: [6000, 6000], // From the stream for loop
         },
         {
-          projectId: 'cfdb-sdk-node-tests',
+          projectId,
           attemptLatency: 5000,
           serverLatency: undefined,
           connectivityErrorCount: 0,
@@ -574,7 +578,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           },
         },
         {
-          projectId: 'cfdb-sdk-node-tests',
+          projectId,
           status: '0',
           streaming: 'true',
           metricsCollectorData: {
@@ -598,6 +602,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       projectId: string,
       done: mocha.Done,
       checkFn: (
+        projectId: string,
         requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
       ) => void,
       hrtime: FakeHRTime,
@@ -611,7 +616,7 @@ describe('Bigtable/ClientSideMetrics', () => {
             super.onOperationComplete(data);
             if (handlerRequestCount > 1) {
               assert.strictEqual(this.requestsHandled.length, 4);
-              checkFn(this.requestsHandled);
+              checkFn(projectId, this.requestsHandled);
               done();
             }
           } catch (e) {
@@ -634,6 +639,7 @@ describe('Bigtable/ClientSideMetrics', () => {
 
     it('should send the metrics to the metrics handler for a ReadRows call', done => {
       (async () => {
+        const projectId = defaultProjectId;
         const bigtable = await mockBigtable(
           projectId,
           done,
@@ -675,9 +681,8 @@ describe('Bigtable/ClientSideMetrics', () => {
       (async () => {
         try {
           const hrtime = new FakeHRTime();
-          const projectId = SECOND_PROJECT_ID;
           const bigtable = await mockBigtable(
-            projectId,
+            SECOND_PROJECT_ID,
             done,
             applicationLatenciesChecks,
             hrtime,
@@ -738,9 +743,8 @@ describe('Bigtable/ClientSideMetrics', () => {
       (async () => {
         try {
           const hrtime = new FakeHRTime();
-          const projectId = SECOND_PROJECT_ID;
           const bigtable = await mockBigtable(
-            projectId,
+            SECOND_PROJECT_ID,
             done,
             applicationLatenciesChecks,
             hrtime,
