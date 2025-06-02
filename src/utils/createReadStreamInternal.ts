@@ -188,8 +188,8 @@ export function createReadStreamInternal(
     return originalEnd(chunk, encoding, cb);
   };
   const metricsCollector = table.bigtable._metricsConfigManager.createOperation(
-    MethodName.READ_ROWS,
-    StreamingState.STREAMING,
+    singleRow ? MethodName.READ_ROW : MethodName.READ_ROWS,
+    singleRow ? StreamingState.UNARY : StreamingState.STREAMING,
     table,
   );
   metricsCollector.onOperationStart();
