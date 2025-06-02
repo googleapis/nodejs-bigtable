@@ -124,7 +124,7 @@ const FakeFilter = {
   },
 };
 
-describe.only('Bigtable/Table', () => {
+describe('Bigtable/Table', () => {
   const TABLE_ID = 'my-table';
   let INSTANCE: inst.Instance;
   let TABLE_NAME: string;
@@ -2427,10 +2427,11 @@ describe.only('Bigtable/Table', () => {
     });
 
     describe('error', () => {
+      let createReadStreamInternal: SinonSpy<[], PassThrough>;
       const error = new Error('err');
 
       beforeEach(() => {
-        table.createReadStream = sinon.spy(() => {
+        createReadStreamInternal = sinon.spy(() => {
           const stream = new PassThrough({
             objectMode: true,
           });
@@ -2441,6 +2442,43 @@ describe.only('Bigtable/Table', () => {
 
           return stream;
         });
+        const FakeGetRows = proxyquire('../src/utils/getRowsInternal.js', {
+          './createReadStreamInternal': {
+            createReadStreamInternal: createReadStreamInternal,
+          },
+        });
+        const FakeTabularApiSurface = proxyquire(
+          '../src/tabular-api-surface.js',
+          {
+            '@google-cloud/promisify': fakePromisify,
+            './family.js': {Family: FakeFamily},
+            './mutation.js': {Mutation: FakeMutation},
+            './filter.js': {Filter: FakeFilter},
+            pumpify,
+            './row.js': {Row: FakeRow},
+            './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+            './utils/getRowsInternal': {
+              getRowsInternal: FakeGetRows.getRowsInternal,
+            },
+          },
+        ).TabularApiSurface;
+        Table = proxyquire('../src/table.js', {
+          '@google-cloud/promisify': fakePromisify,
+          './family.js': {Family: FakeFamily},
+          './mutation.js': {Mutation: FakeMutation},
+          './row.js': {Row: FakeRow},
+          './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
+        }).Table;
+        INSTANCE = {
+          bigtable: {
+            _metricsConfigManager: new FakeMetricsConfigManager(
+              [],
+            ) as ClientSideMetricsConfigManager,
+          } as Bigtable,
+          name: 'a/b/c/d',
+        } as inst.Instance;
+        TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;
+        table = new Table(INSTANCE, TABLE_ID);
       });
 
       it('should return the error to the callback', done => {
