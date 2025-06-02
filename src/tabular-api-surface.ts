@@ -32,6 +32,7 @@ import {Transform} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {createReadStreamInternal} from './utils/createReadStreamInternal';
+import {getRowsInternal} from './utils/getRowsInternal';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -180,7 +181,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * Get {@link Row} objects for the rows currently in your table as a
    * readable object stream.
    *
-   * @param {object} [options] Configuration object.
    * @param {boolean} [options.decode=true] If set to `false` it will not decode
    *     Buffer values returned from Bigtable.
    * @param {boolean} [options.encoding] The encoding to use when converting
@@ -201,6 +201,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    *
    * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
    * region_tag:bigtable_api_table_readstream
+   * @param opts
    */
   createReadStream(opts?: GetRowsOptions) {
     return createReadStreamInternal(this, true, opts, this.viewName);
@@ -216,32 +217,22 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * before returning the results. Instead we recommend using the streaming API
    * via {@link Table#createReadStream}.
    *
-   * @param {object} [options] Configuration object. See
    *     {@link Table#createReadStream} for a complete list of options.
    * @param {object} [options.gaxOptions] Request configuration options, outlined
    *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
-   * @param {function} callback The callback function.
    * @param {?error} callback.err An error returned while making this request.
    * @param {Row[]} callback.rows List of Row objects.
    *
    * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
    * region_tag:bigtable_api_get_rows
+   * @param optionsOrCallback
+   * @param cb
    */
   getRows(
     optionsOrCallback?: GetRowsOptions | GetRowsCallback,
     cb?: GetRowsCallback,
   ): void | Promise<GetRowsResponse> {
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    this.createReadStream(options)
-      .on('error', callback)
-      .pipe(
-        concat((rows: Row[]) => {
-          callback(null, rows);
-        }),
-      );
+    return getRowsInternal(this, true, this.viewName, optionsOrCallback, cb);
   }
 
   insert(
