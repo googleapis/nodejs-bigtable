@@ -83,7 +83,7 @@ const FakeRowDataUtil = proxyquire('../src/row-data-utils.js', {
   './filter.js': {Filter: FakeFilter},
 }).RowDataUtils;
 
-describe.only('Bigtable/Row', () => {
+describe('Bigtable/Row', () => {
   let Row: typeof rw.Row;
   let RowError: typeof rw.RowError;
   let row: rw.Row;
@@ -105,13 +105,13 @@ describe.only('Bigtable/Row', () => {
         getRowsInternal,
       },
     });
+    RowError = Fake.RowError;
     return Fake;
   }
 
   before(() => {
     const Fake = getFakeRow(() => {});
     Row = Fake.Row;
-    RowError = Fake.RowError;
   });
 
   beforeEach(() => {
