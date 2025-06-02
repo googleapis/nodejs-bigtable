@@ -31,11 +31,8 @@ import {Bigtable, RequestOptions} from '../src';
 import {EventEmitter} from 'events';
 import {TableUtils} from '../src/utils/table';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
-import {IMetricsHandler} from '../src/client-side-metrics/metrics-handler';
 import {OperationMetricsCollector} from '../src/client-side-metrics/operation-metrics-collector';
-import {createReadStreamInternal} from '../src/utils/createReadStreamInternal';
-import {getRowsInternal} from '../src/utils/getRowsInternal';
-import {SinonSpy, SinonSpyStatic} from 'sinon';
+import {SinonSpy} from 'sinon';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};

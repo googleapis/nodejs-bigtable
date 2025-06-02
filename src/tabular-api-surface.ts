@@ -153,7 +153,9 @@ export class TabularApiSurface {
   id: string;
   metadata?: google.bigtable.admin.v2.ITable;
   maxRetries?: number;
-  protected viewName?: string;
+  // We need viewName to be public because now we need it in Row class
+  // We need it in Row class because now we use getRowsInternal instead of getRows
+  viewName?: string;
 
   protected constructor(instance: Instance, id: string, viewName?: string) {
     this.bigtable = instance.bigtable;
@@ -204,7 +206,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param opts
    */
   createReadStream(opts?: GetRowsOptions) {
-    return createReadStreamInternal(this, true, opts, this.viewName);
+    return createReadStreamInternal(this, true, opts);
   }
 
   getRows(options?: GetRowsOptions): Promise<GetRowsResponse>;
@@ -232,7 +234,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     optionsOrCallback?: GetRowsOptions | GetRowsCallback,
     cb?: GetRowsCallback,
   ): void | Promise<GetRowsResponse> {
-    return getRowsInternal(this, true, this.viewName, optionsOrCallback, cb);
+    return getRowsInternal(this, false, optionsOrCallback, cb);
   }
 
   insert(

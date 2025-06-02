@@ -35,7 +35,6 @@ const concat = require('concat-stream');
 export function getRowsInternal(
   table: TabularApiSurface,
   singleRow: boolean,
-  viewName?: string,
   optionsOrCallback?: GetRowsOptions | GetRowsCallback,
   cb?: GetRowsCallback,
 ): void | Promise<GetRowsResponse> {
@@ -43,7 +42,7 @@ export function getRowsInternal(
     typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
   const options =
     typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-  createReadStreamInternal(table, singleRow, options, viewName)
+  createReadStreamInternal(table, singleRow, options)
     .on('error', callback)
     .pipe(
       concat((rows: Row[]) => {

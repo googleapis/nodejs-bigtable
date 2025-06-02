@@ -31,6 +31,7 @@ import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
 import {RowDataUtils, RowProperties} from './row-data-utils';
 import {TabularApiSurface} from './tabular-api-surface';
+import {getRowsInternal} from './utils/getRowsInternal';
 
 export interface Rule {
   column: string;
@@ -666,7 +667,7 @@ export class Row {
       filter,
     });
 
-    this.table.getRows(getRowsOptions, (err, rows) => {
+    void getRowsInternal(this.table, true, getRowsOptions, (err, rows) => {
       if (err) {
         callback(err);
         return;

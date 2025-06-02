@@ -62,7 +62,6 @@ export function createReadStreamInternal(
   table: TabularApiSurface,
   singleRow: boolean,
   opts?: GetRowsOptions,
-  viewName?: string,
 ) {
   const options = opts || {};
   const maxRetries = is.number(table.maxRetries) ? table.maxRetries! : 10;
@@ -71,6 +70,8 @@ export function createReadStreamInternal(
   let filter: {} | null;
   const rowsLimit = options.limit || 0;
   const hasLimit = rowsLimit !== 0;
+
+  const viewName = table.viewName;
 
   let numConsecutiveErrors = 0;
   let numRequestsMade = 0;
