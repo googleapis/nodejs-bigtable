@@ -134,6 +134,7 @@ describe('Bigtable/Table', () => {
   let table: any;
 
   before(() => {
+    // TODO: factor out proxyquire.
     const FakeCreateReadStreamInternal = proxyquire(
       '../src/utils/createReadStreamInternal.js',
       {
