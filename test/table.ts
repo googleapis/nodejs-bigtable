@@ -33,6 +33,7 @@ import {TableUtils} from '../src/utils/table';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {IMetricsHandler} from '../src/client-side-metrics/metrics-handler';
 import {OperationMetricsCollector} from '../src/client-side-metrics/operation-metrics-collector';
+import {createReadStreamInternal} from '../src/utils/createReadStreamInternal';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
@@ -131,6 +132,16 @@ describe('Bigtable/Table', () => {
   let table: any;
 
   before(() => {
+    const FakeCreateReadStreamInternal = proxyquire(
+      '../src/utils/createReadStreamInternal.js',
+      {
+        '../row.js': {Row: FakeRow},
+        '../chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+        '../filter.js': {Filter: FakeFilter},
+        '../mutation.js': {Mutation: FakeMutation},
+        pumpify,
+      },
+    ).createReadStreamInternal;
     const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
       '@google-cloud/promisify': fakePromisify,
       './family.js': {Family: FakeFamily},
@@ -139,6 +150,9 @@ describe('Bigtable/Table', () => {
       pumpify,
       './row.js': {Row: FakeRow},
       './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+      './utils/createReadStreamInternal': {
+        createReadStreamInternal: FakeCreateReadStreamInternal,
+      },
     }).TabularApiSurface;
     Table = proxyquire('../src/table.js', {
       '@google-cloud/promisify': fakePromisify,
