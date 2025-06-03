@@ -22,12 +22,16 @@ import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 import * as proxyquire from 'proxyquire';
-import {Bigtable} from '../src';
+import {Bigtable, Row} from '../src';
 import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
-import {OnOperationCompleteData} from '../src/client-side-metrics/metrics-handler';
+import {
+  OnAttemptCompleteData,
+  OnOperationCompleteData,
+} from '../src/client-side-metrics/metrics-handler';
 import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
+import {google} from '../protos/protos';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
@@ -51,6 +55,131 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
       CloudMonitoringExporter: Exporter,
     },
   }).GCPMetricsHandler;
+}
+
+function readRowsAssertionCheck(
+  projectId: string,
+  requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
+  method: string,
+  streaming: string,
+) {
+  assert.strictEqual(requestsHandled.length, 4);
+  const firstRequest = requestsHandled[0] as any;
+  // We would expect these parameters to be different every time so delete
+  // them from the comparison after checking they exist.
+  assert(firstRequest.attemptLatency);
+  assert(firstRequest.serverLatency);
+  delete firstRequest.attemptLatency;
+  delete firstRequest.serverLatency;
+  delete firstRequest.metricsCollectorData.appProfileId;
+  assert.deepStrictEqual(firstRequest, {
+    connectivityErrorCount: 0,
+    streaming,
+    status: '0',
+    client_name: 'nodejs-bigtable',
+    metricsCollectorData: {
+      instanceId: 'emulator-test-instance',
+      table: 'my-table',
+      cluster: 'fake-cluster3',
+      zone: 'us-west1-c',
+      method,
+    },
+    projectId,
+  });
+  const secondRequest = requestsHandled[1] as any;
+  // We would expect these parameters to be different every time so delete
+  // them from the comparison after checking they exist.
+  assert(secondRequest.operationLatency);
+  assert(secondRequest.firstResponseLatency);
+  assert(secondRequest.applicationLatencies);
+  delete secondRequest.operationLatency;
+  delete secondRequest.firstResponseLatency;
+  delete secondRequest.applicationLatencies;
+  delete secondRequest.metricsCollectorData.appProfileId;
+  assert.deepStrictEqual(secondRequest, {
+    status: '0',
+    streaming,
+    client_name: 'nodejs-bigtable',
+    metricsCollectorData: {
+      instanceId: 'emulator-test-instance',
+      cluster: 'fake-cluster3',
+      zone: 'us-west1-c',
+      method,
+      table: 'my-table',
+    },
+    projectId,
+    retryCount: 0,
+  });
+  // We would expect these parameters to be different every time so delete
+  // them from the comparison after checking they exist.
+  const thirdRequest = requestsHandled[2] as any;
+  assert(thirdRequest.attemptLatency);
+  assert(thirdRequest.serverLatency);
+  delete thirdRequest.attemptLatency;
+  delete thirdRequest.serverLatency;
+  delete thirdRequest.metricsCollectorData.appProfileId;
+  assert.deepStrictEqual(thirdRequest, {
+    connectivityErrorCount: 0,
+    streaming,
+    status: '0',
+    client_name: 'nodejs-bigtable',
+    metricsCollectorData: {
+      instanceId: 'emulator-test-instance',
+      table: 'my-table2',
+      cluster: 'fake-cluster3',
+      zone: 'us-west1-c',
+      method,
+    },
+    projectId,
+  });
+  const fourthRequest = requestsHandled[3] as any;
+  // We would expect these parameters to be different every time so delete
+  // them from the comparison after checking they exist.
+  assert(fourthRequest.operationLatency);
+  assert(fourthRequest.firstResponseLatency);
+  assert(fourthRequest.applicationLatencies);
+  delete fourthRequest.operationLatency;
+  delete fourthRequest.firstResponseLatency;
+  delete fourthRequest.applicationLatencies;
+  delete fourthRequest.metricsCollectorData.appProfileId;
+  assert.deepStrictEqual(fourthRequest, {
+    status: '0',
+    streaming,
+    client_name: 'nodejs-bigtable',
+    metricsCollectorData: {
+      instanceId: 'emulator-test-instance',
+      cluster: 'fake-cluster3',
+      zone: 'us-west1-c',
+      method,
+      table: 'my-table2',
+    },
+    projectId,
+    retryCount: 0,
+  });
+}
+
+function checkMultiRowCall(
+  projectId: string,
+  requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
+) {
+  readRowsAssertionCheck(
+    projectId,
+    requestsHandled,
+    'Bigtable.ReadRows',
+    'true',
+  );
+}
+
+function checkSingleRowCall(
+  projectId: string,
+  requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
+) {
+  readRowsAssertionCheck(
+    projectId,
+    requestsHandled,
+    'Bigtable.ReadRow',
+    'false',
+  );
 }
 
 describe('Bigtable/ClientSideMetrics', () => {
@@ -362,8 +491,15 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
-    async function mockBigtable(projectId: string, done: mocha.Done) {
+  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+    async function mockBigtable(
+      projectId: string,
+      done: mocha.Done,
+      checkFn: (
+        projectId: string,
+        requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
+      ) => void,
+    ) {
       let handlerRequestCount = 0;
       class TestGCPMetricsHandler extends TestMetricsHandler {
         projectId = projectId;
@@ -372,99 +508,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           try {
             super.onOperationComplete(data);
             if (handlerRequestCount > 1) {
-              assert.strictEqual(this.requestsHandled.length, 4);
-              const firstRequest = this.requestsHandled[0] as any;
-              // We would expect these parameters to be different every time so delete
-              // them from the comparison after checking they exist.
-              assert(firstRequest.attemptLatency);
-              assert(firstRequest.serverLatency);
-              delete firstRequest.attemptLatency;
-              delete firstRequest.serverLatency;
-              delete firstRequest.metricsCollectorData.appProfileId;
-              assert.deepStrictEqual(firstRequest, {
-                connectivityErrorCount: 0,
-                streaming: 'true',
-                status: '0',
-                client_name: 'nodejs-bigtable',
-                metricsCollectorData: {
-                  instanceId: 'emulator-test-instance',
-                  table: 'my-table',
-                  cluster: 'fake-cluster3',
-                  zone: 'us-west1-c',
-                  method: 'Bigtable.ReadRows',
-                },
-                projectId,
-              });
-              const secondRequest = this.requestsHandled[1] as any;
-              // We would expect these parameters to be different every time so delete
-              // them from the comparison after checking they exist.
-              assert(secondRequest.operationLatency);
-              assert(secondRequest.firstResponseLatency);
-              assert(secondRequest.applicationLatencies);
-              delete secondRequest.operationLatency;
-              delete secondRequest.firstResponseLatency;
-              delete secondRequest.applicationLatencies;
-              delete secondRequest.metricsCollectorData.appProfileId;
-              assert.deepStrictEqual(secondRequest, {
-                status: '0',
-                streaming: 'true',
-                client_name: 'nodejs-bigtable',
-                metricsCollectorData: {
-                  instanceId: 'emulator-test-instance',
-                  cluster: 'fake-cluster3',
-                  zone: 'us-west1-c',
-                  method: 'Bigtable.ReadRows',
-                  table: 'my-table',
-                },
-                projectId,
-                retryCount: 0,
-              });
-              // We would expect these parameters to be different every time so delete
-              // them from the comparison after checking they exist.
-              const thirdRequest = this.requestsHandled[2] as any;
-              assert(thirdRequest.attemptLatency);
-              assert(thirdRequest.serverLatency);
-              delete thirdRequest.attemptLatency;
-              delete thirdRequest.serverLatency;
-              delete thirdRequest.metricsCollectorData.appProfileId;
-              assert.deepStrictEqual(thirdRequest, {
-                connectivityErrorCount: 0,
-                streaming: 'true',
-                status: '0',
-                client_name: 'nodejs-bigtable',
-                metricsCollectorData: {
-                  instanceId: 'emulator-test-instance',
-                  table: 'my-table2',
-                  cluster: 'fake-cluster3',
-                  zone: 'us-west1-c',
-                  method: 'Bigtable.ReadRows',
-                },
-                projectId,
-              });
-              const fourthRequest = this.requestsHandled[3] as any;
-              // We would expect these parameters to be different every time so delete
-              // them from the comparison after checking they exist.
-              assert(fourthRequest.operationLatency);
-              assert(fourthRequest.firstResponseLatency);
-              assert(fourthRequest.applicationLatencies);
-              delete fourthRequest.operationLatency;
-              delete fourthRequest.firstResponseLatency;
-              delete fourthRequest.applicationLatencies;
-              delete fourthRequest.metricsCollectorData.appProfileId;
-              assert.deepStrictEqual(fourthRequest, {
-                status: '0',
-                streaming: 'true',
-                client_name: 'nodejs-bigtable',
-                metricsCollectorData: {
-                  instanceId: 'emulator-test-instance',
-                  cluster: 'fake-cluster3',
-                  zone: 'us-west1-c',
-                  method: 'Bigtable.ReadRows',
-                  table: 'my-table2',
-                },
-                projectId,
-                retryCount: 0,
-              });
+              checkFn(projectId, this.requestsHandled);
               done();
             }
           } catch (e) {
@@ -483,7 +527,27 @@ describe('Bigtable/ClientSideMetrics', () => {
 
     it('should send the metrics to the metrics handler for a ReadRows call', done => {
       (async () => {
-        const bigtable = await mockBigtable(defaultProjectId, done);
+        const bigtable = await mockBigtable(
+          defaultProjectId,
+          done,
+          checkMultiRowCall,
+        );
+        const instance = bigtable.instance(instanceId1);
+        const table = instance.table(tableId1);
+        await table.getRows();
+        const table2 = instance.table(tableId2);
+        await table2.getRows();
+      })().catch(err => {
+        throw err;
+      });
+    });
+    it('should send the metrics to the metrics handler for a single row read', done => {
+      (async () => {
+        const bigtable = await mockBigtable(
+          defaultProjectId,
+          done,
+          checkMultiRowCall,
+        );
         const instance = bigtable.instance(instanceId1);
         const table = instance.table(tableId1);
         await table.getRows();
@@ -497,12 +561,16 @@ describe('Bigtable/ClientSideMetrics', () => {
       (async () => {
         try {
           const projectId = SECOND_PROJECT_ID;
-          const bigtable = await mockBigtable(projectId, done);
+          const bigtable = await mockBigtable(
+            projectId,
+            done,
+            checkMultiRowCall,
+          );
           const instance = bigtable.instance(instanceId1);
           const table = instance.table(tableId1);
-          await table.getRows();
-          const table2 = instance.table(tableId2);
-          await table2.getRows();
+          const row = new Row(table, 'row-id');
+          await row.get();
+          await row.get();
         } catch (e) {
           done(e);
         }
