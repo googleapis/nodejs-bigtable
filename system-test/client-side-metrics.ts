@@ -570,7 +570,9 @@ describe('Bigtable/ClientSideMetrics', () => {
           const table = instance.table(tableId1);
           const row = new Row(table, 'rowId');
           await row.get();
-          await row.get();
+          const table2 = instance.table(tableId2);
+          const row2 = new Row(table2, 'rowId');
+          await row2.get();
         } catch (e) {
           done(e);
         }
