@@ -491,7 +491,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     async function mockBigtable(
       projectId: string,
       done: mocha.Done,

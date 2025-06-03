@@ -33,6 +33,8 @@ import {TableUtils} from '../src/utils/table';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {OperationMetricsCollector} from '../src/client-side-metrics/operation-metrics-collector';
 import {SinonSpy} from 'sinon';
+import {TabularApiSurface} from '../src/tabular-api-surface';
+import {GetRowsOptions} from '../src/table';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
@@ -121,7 +123,44 @@ const FakeFilter = {
   },
 };
 
-describe('Bigtable/Table', () => {
+function getTableMock(
+  createReadStreamInternal: (
+    table: TabularApiSurface,
+    singleRow: boolean,
+    opts?: GetRowsOptions,
+  ) => PassThrough,
+) {
+  const FakeGetRows = proxyquire('../src/utils/getRowsInternal.js', {
+    './createReadStreamInternal': {
+      createReadStreamInternal: createReadStreamInternal,
+    },
+  });
+  const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
+    '@google-cloud/promisify': fakePromisify,
+    './family.js': {Family: FakeFamily},
+    './mutation.js': {Mutation: FakeMutation},
+    './filter.js': {Filter: FakeFilter},
+    pumpify,
+    './row.js': {Row: FakeRow},
+    './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+    './utils/createReadStreamInternal': {
+      createReadStreamInternal,
+    },
+    './utils/getRowsInternal': {
+      getRowsInternal: FakeGetRows.getRowsInternal,
+    },
+  }).TabularApiSurface;
+  const Table = proxyquire('../src/table.js', {
+    '@google-cloud/promisify': fakePromisify,
+    './family.js': {Family: FakeFamily},
+    './mutation.js': {Mutation: FakeMutation},
+    './row.js': {Row: FakeRow},
+    './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
+  }).Table;
+  return Table;
+}
+
+describe.only('Bigtable/Table', () => {
   const TABLE_ID = 'my-table';
   let INSTANCE: inst.Instance;
   let TABLE_NAME: string;
@@ -131,7 +170,6 @@ describe('Bigtable/Table', () => {
   let table: any;
 
   before(() => {
-    // TODO: factor out proxyquire.
     const FakeCreateReadStreamInternal = proxyquire(
       '../src/utils/createReadStreamInternal.js',
       {
@@ -142,25 +180,7 @@ describe('Bigtable/Table', () => {
         pumpify,
       },
     ).createReadStreamInternal;
-    const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
-      '@google-cloud/promisify': fakePromisify,
-      './family.js': {Family: FakeFamily},
-      './mutation.js': {Mutation: FakeMutation},
-      './filter.js': {Filter: FakeFilter},
-      pumpify,
-      './row.js': {Row: FakeRow},
-      './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
-      './utils/createReadStreamInternal': {
-        createReadStreamInternal: FakeCreateReadStreamInternal,
-      },
-    }).TabularApiSurface;
-    Table = proxyquire('../src/table.js', {
-      '@google-cloud/promisify': fakePromisify,
-      './family.js': {Family: FakeFamily},
-      './mutation.js': {Mutation: FakeMutation},
-      './row.js': {Row: FakeRow},
-      './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
-    }).Table;
+    Table = getTableMock(FakeCreateReadStreamInternal);
   });
 
   beforeEach(() => {
@@ -2362,33 +2382,7 @@ describe('Bigtable/Table', () => {
 
           return stream;
         });
-        const FakeGetRows = proxyquire('../src/utils/getRowsInternal.js', {
-          './createReadStreamInternal': {
-            createReadStreamInternal: createReadStreamInternal,
-          },
-        });
-        const FakeTabularApiSurface = proxyquire(
-          '../src/tabular-api-surface.js',
-          {
-            '@google-cloud/promisify': fakePromisify,
-            './family.js': {Family: FakeFamily},
-            './mutation.js': {Mutation: FakeMutation},
-            './filter.js': {Filter: FakeFilter},
-            pumpify,
-            './row.js': {Row: FakeRow},
-            './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
-            './utils/getRowsInternal': {
-              getRowsInternal: FakeGetRows.getRowsInternal,
-            },
-          },
-        ).TabularApiSurface;
-        Table = proxyquire('../src/table.js', {
-          '@google-cloud/promisify': fakePromisify,
-          './family.js': {Family: FakeFamily},
-          './mutation.js': {Mutation: FakeMutation},
-          './row.js': {Row: FakeRow},
-          './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
-        }).Table;
+        Table = getTableMock(createReadStreamInternal);
         INSTANCE = {
           bigtable: {
             _metricsConfigManager: new FakeMetricsConfigManager(
@@ -2440,33 +2434,7 @@ describe('Bigtable/Table', () => {
 
           return stream;
         });
-        const FakeGetRows = proxyquire('../src/utils/getRowsInternal.js', {
-          './createReadStreamInternal': {
-            createReadStreamInternal: createReadStreamInternal,
-          },
-        });
-        const FakeTabularApiSurface = proxyquire(
-          '../src/tabular-api-surface.js',
-          {
-            '@google-cloud/promisify': fakePromisify,
-            './family.js': {Family: FakeFamily},
-            './mutation.js': {Mutation: FakeMutation},
-            './filter.js': {Filter: FakeFilter},
-            pumpify,
-            './row.js': {Row: FakeRow},
-            './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
-            './utils/getRowsInternal': {
-              getRowsInternal: FakeGetRows.getRowsInternal,
-            },
-          },
-        ).TabularApiSurface;
-        Table = proxyquire('../src/table.js', {
-          '@google-cloud/promisify': fakePromisify,
-          './family.js': {Family: FakeFamily},
-          './mutation.js': {Mutation: FakeMutation},
-          './row.js': {Row: FakeRow},
-          './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
-        }).Table;
+        Table = getTableMock(createReadStreamInternal);
         INSTANCE = {
           bigtable: {
             _metricsConfigManager: new FakeMetricsConfigManager(
