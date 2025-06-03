@@ -22,7 +22,8 @@ import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 import * as proxyquire from 'proxyquire';
-import {Bigtable, Row} from '../src';
+import {Bigtable} from '../src';
+import {Row} from '../src/row';
 import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {
@@ -31,7 +32,6 @@ import {
 } from '../src/client-side-metrics/metrics-handler';
 import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
-import {google} from '../protos/protos';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
@@ -541,7 +541,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
-    it('should send the metrics to the metrics handler for a single row read', done => {
+    it('should pass the projectId to the metrics handler properly', done => {
       (async () => {
         const bigtable = await mockBigtable(
           defaultProjectId,
@@ -557,18 +557,18 @@ describe('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
-    it('should pass the projectId to the metrics handler properly', done => {
+    it('should send the metrics to the metrics handler for a single row read', done => {
       (async () => {
         try {
           const projectId = SECOND_PROJECT_ID;
           const bigtable = await mockBigtable(
             projectId,
             done,
-            checkMultiRowCall,
+            checkSingleRowCall,
           );
           const instance = bigtable.instance(instanceId1);
           const table = instance.table(tableId1);
-          const row = new Row(table, 'row-id');
+          const row = new Row(table, 'rowId');
           await row.get();
           await row.get();
         } catch (e) {
