@@ -206,7 +206,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param opts
    */
   createReadStream(opts?: GetRowsOptions) {
-    return createReadStreamInternal(this, true, opts);
+    return createReadStreamInternal(this, false, opts);
   }
 
   getRows(options?: GetRowsOptions): Promise<GetRowsResponse>;
