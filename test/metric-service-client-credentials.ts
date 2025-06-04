@@ -13,14 +13,17 @@
 // limitations under the License.
 
 import * as proxyquire from 'proxyquire';
-import {ClientOptions} from 'google-gax';
+import {ClientOptions, grpc} from 'google-gax';
 import * as assert from 'assert';
-import {setupBigtable} from './client-side-metrics-setup-table';
+import {setupBigtable} from '../system-test/client-side-metrics-setup-table';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 
 describe('Bigtable/MetricServiceClientCredentials', () => {
   it('should pass the credentials to the exporter', done => {
-    const clientOptions = {metricsEnabled: true, credentials: {}};
+    const clientOptions = {
+      metricsEnabled: true,
+      sslCreds: grpc.credentials.createInsecure(),
+    };
     class FakeExporter {
       constructor(options: ClientOptions) {
         try {
