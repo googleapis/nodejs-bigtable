@@ -47,22 +47,7 @@ describe('Bigtable/MetricServiceClientCredentials', () => {
         GCPMetricsHandler: FakeCGPMetricsHandler,
       },
     }).Bigtable;
-    const bigtable = new FakeBigtable(clientOptions);
-    const instanceId = 'emulator-test-instance';
-    const columnFamilyId = 'cf1';
-    const tableId1 = 'my-table';
-    (async () => {
-      try {
-        await setupBigtable(bigtable, columnFamilyId, instanceId, [tableId1]);
-        const instance = bigtable.instance(instanceId);
-        const table = instance.table(tableId1);
-        await table.getRows();
-      } catch (e) {
-        done(e);
-      }
-    })().catch(err => {
-      throw err;
-    });
+    new FakeBigtable(clientOptions);
   });
   it('should use second project for the metric service client', async () => {
     const SECOND_PROJECT_ID = 'second-project-id';
