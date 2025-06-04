@@ -84,6 +84,12 @@ describe('Bigtable/MetricServiceClientCredentials', () => {
       },
     }).Bigtable;
     new FakeBigtable(clientOptions);
+    // savedOptions are the options passed down to the exporter
+    // we want to ensure that when the second project id is provided to the
+    // fake client that this sends savedOptions to the exporter that then
+    // fetches the right projectId when the saved options are provided to the
+    // MetricsServiceClient as this is required to save the metrics to the right
+    // project.
     const client = new MetricServiceClient(savedOptions);
     const projectIdUsed = await client.getProjectId();
     assert.strictEqual(projectIdUsed, SECOND_PROJECT_ID);
