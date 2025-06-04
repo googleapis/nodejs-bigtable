@@ -19,8 +19,8 @@ import {setupBigtable} from './client-side-metrics-setup-table';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 
 describe('Bigtable/MetricServiceClientCredentials', () => {
-  it('should pass the credentials to the metric service client', done => {
-    const clientOptions = {metricsEnabled: true};
+  it('should pass the credentials to the exporter', done => {
+    const clientOptions = {metricsEnabled: true, credentials: {}};
     class FakeExporter {
       constructor(options: ClientOptions) {
         try {
