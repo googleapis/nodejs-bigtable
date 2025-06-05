@@ -19,11 +19,10 @@ import {
   Histogram,
   ResourceMetrics,
 } from '@opentelemetry/sdk-metrics';
-import {grpc, ClientOptions, ServiceError} from 'google-gax';
+import {ClientOptions, ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
-import {RetryOptions} from 'google-gax';
 
 export interface ExportResult {
   code: number;
@@ -298,6 +297,10 @@ export class CloudMonitoringExporter extends MetricExporter {
 
   constructor(options: ClientOptions) {
     super();
+    if (options.apiEndpoint) {
+      // We want the MetricServiceClient to always hit its default endpoint.
+      delete options.apiEndpoint;
+    }
     this.client = new MetricServiceClient(options);
   }
 

@@ -30,7 +30,7 @@ import {
   OnAttemptCompleteData,
   OnOperationCompleteData,
 } from '../src/client-side-metrics/metrics-handler';
-import {ClientOptions} from 'google-gax';
+import {ClientOptions, ServiceError} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 
@@ -39,11 +39,15 @@ const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 function getFakeBigtable(
   projectId: string,
   metricsHandlerClass: typeof GCPMetricsHandler | typeof TestMetricsHandler,
+  apiEndpoint?: string,
 ) {
   const metricHandler = new metricsHandlerClass(
     {} as unknown as ClientOptions & {value: string},
   );
-  const newClient = new Bigtable({projectId});
+  const newClient = new Bigtable({
+    projectId,
+    apiEndpoint,
+  });
   newClient._metricsConfigManager = new ClientSideMetricsConfigManager([
     metricHandler,
   ]);
@@ -280,7 +284,11 @@ describe('Bigtable/ClientSideMetrics', () => {
   describe('Bigtable/ClientSideMetricsToGCM', () => {
     // This test suite ensures that for each test all the export calls are
     // successful even when multiple instances and tables are created.
-    async function mockBigtable(projectId: string, done: mocha.Done) {
+    async function mockBigtable(
+      projectId: string,
+      done: mocha.Done,
+      apiEndpoint?: string,
+    ) {
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
@@ -312,7 +320,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           resultCallback: (result: ExportResult) => void,
         ): Promise<void> {
           try {
-            await super.export(metrics, async (result: ExportResult) => {
+            await super.export(metrics, (result: ExportResult) => {
               if (!exported) {
                 exported = true;
                 try {
@@ -321,8 +329,9 @@ describe('Bigtable/ClientSideMetrics', () => {
                   // result from calling export was successful.
                   assert.strictEqual(result.code, 0);
                   resultCallback({code: 0});
-                  await checkForPublishedMetrics(projectId);
-                  done();
+                  void checkForPublishedMetrics(projectId).then(() => {
+                    done();
+                  });
                 } catch (error) {
                   // The code here isn't 0 so we report the original error to the mocha test runner.
                   done(result);
@@ -338,7 +347,11 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       }
 
-      return getFakeBigtable(projectId, getHandlerFromExporter(TestExporter));
+      return getFakeBigtable(
+        projectId,
+        getHandlerFromExporter(TestExporter),
+        apiEndpoint,
+      );
     }
 
     it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
@@ -355,6 +368,32 @@ describe('Bigtable/ClientSideMetrics', () => {
             await table.getRows();
             const table2 = instance.table(tableId2);
             await table2.getRows();
+          }
+        } catch (e) {
+          done(new Error('An error occurred while running the script'));
+          done(e);
+        }
+      })().catch(err => {
+        throw err;
+      });
+    });
+    it('should send the metrics to Google Cloud Monitoring for a custom endpoint', done => {
+      (async () => {
+        try {
+          const bigtable = await mockBigtable(
+            defaultProjectId,
+            done,
+            'bogus-endpoint',
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          try {
+            // This call will fail because we are trying to hit a bogus endpoint.
+            // The idea here is that we just want to record at least one metric
+            // so that the exporter gets executed.
+            await table.getRows();
+          } catch (e: unknown) {
+            // Try blocks just need a catch/finally block.
           }
         } catch (e) {
           done(new Error('An error occurred while running the script'));
