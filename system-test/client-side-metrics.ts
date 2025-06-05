@@ -41,9 +41,9 @@ function getFakeBigtable(
   metricsHandlerClass: typeof GCPMetricsHandler | typeof TestMetricsHandler,
   apiEndpoint?: string,
 ) {
-  const metricHandler = new metricsHandlerClass(
-    {} as unknown as ClientOptions & {value: string},
-  );
+  const metricHandler = new metricsHandlerClass({
+    apiEndpoint,
+  } as unknown as ClientOptions & {value: string});
   const newClient = new Bigtable({
     projectId,
     apiEndpoint,
