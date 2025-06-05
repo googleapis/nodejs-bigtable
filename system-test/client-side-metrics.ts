@@ -32,6 +32,7 @@ import {
 } from '../src/client-side-metrics/metrics-handler';
 import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
+import {MetricServiceClient} from '@google-cloud/monitoring';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
@@ -182,6 +183,53 @@ function checkSingleRowCall(
   );
 }
 
+/**
+ * Checks if metrics have been published to Google Cloud Monitoring.
+ *
+ * This asynchronous function queries Google Cloud Monitoring to verify
+ * that the expected metrics from the Bigtable client library have been
+ * successfully published. It constructs a `MetricServiceClient` to
+ * interact with the Cloud Monitoring API and retrieves time series data
+ * for a predefined set of metrics. The test passes if time series data
+ * is found for each of the specified metrics within a defined time
+ * interval.
+ *
+ * @param {string} projectId The Google Cloud project ID where metrics are
+ *   expected to be published.
+ * @throws {Error} If no time series data is found for any of the specified
+ *   metrics, indicating that the metrics were not successfully published to
+ *   Cloud Monitoring.
+ */
+async function checkForPublishedMetrics(projectId: string) {
+  const monitoringClient = new MetricServiceClient(); // Correct instantiation
+  const now = Math.floor(Date.now() / 1000);
+  const filters = [
+    'metric.type="bigtable.googleapis.com/client/attempt_latencies"',
+    'metric.type="bigtable.googleapis.com/client/operation_latencies"',
+    'metric.type="bigtable.googleapis.com/client/retry_count"',
+    'metric.type="bigtable.googleapis.com/client/server_latencies"',
+    'metric.type="bigtable.googleapis.com/client/first_response_latencies"',
+  ];
+  for (let i = 0; i < filters.length; i++) {
+    const filter = filters[i];
+    const [series] = await monitoringClient.listTimeSeries({
+      name: `projects/${projectId}`,
+      interval: {
+        endTime: {
+          seconds: now,
+          nanos: 0,
+        },
+        startTime: {
+          seconds: now - 1000 * 60 * 60 * 24,
+          nanos: 0,
+        },
+      },
+      filter,
+    });
+    assert(series.length > 0);
+  }
+}
+
 describe('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
@@ -264,7 +312,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           resultCallback: (result: ExportResult) => void,
         ): Promise<void> {
           try {
-            await super.export(metrics, (result: ExportResult) => {
+            await super.export(metrics, async (result: ExportResult) => {
               if (!exported) {
                 exported = true;
                 try {
@@ -273,6 +321,7 @@ describe('Bigtable/ClientSideMetrics', () => {
                   // result from calling export was successful.
                   assert.strictEqual(result.code, 0);
                   resultCallback({code: 0});
+                  await checkForPublishedMetrics(projectId);
                   done();
                 } catch (error) {
                   // The code here isn't 0 so we report the original error to the mocha test runner.
@@ -360,7 +409,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           resultCallback: (result: ExportResult) => void,
         ): Promise<void> {
           try {
-            await super.export(metrics, (result: ExportResult) => {
+            await super.export(metrics, async (result: ExportResult) => {
               try {
                 // The code is expected to be 0 because the
                 // result from calling export was successful.
