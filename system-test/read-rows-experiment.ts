@@ -27,7 +27,7 @@ describe.only('Bigtable/ClientSideMetricsExperiment', () => {
   const columnFamilyId = 'cf1';
 
   it('should pass the projectId to the metrics handler properly', async () => {
-    const bigtable = new Bigtable();
+    const bigtable = new Bigtable({metricsEnabled: true});
     await setupBigtable(bigtable, columnFamilyId, instanceId1, [
       tableId1,
       tableId2,

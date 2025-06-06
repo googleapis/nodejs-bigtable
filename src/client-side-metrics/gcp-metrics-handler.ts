@@ -220,6 +220,7 @@ export class GCPMetricsHandler implements IMetricsHandler {
    *
    */
   constructor(options: ClientOptions) {
+    console.log('handler');
     this.clientUid = generateClientUuid();
     const exporter = new CloudMonitoringExporter(options);
     this.otelInstruments = createInstruments(exporter);
