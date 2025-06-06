@@ -25,11 +25,6 @@ import {
 import {Bigtable} from '../src';
 import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
-import {
-  expectedOtelExportInput,
-  expectedOtelHundredExportInputs,
-} from '../test-common/expected-otel-export-input';
-import {replaceTimestamps} from '../test-common/replace-timestamps';
 import {ClientOptions} from 'google-gax';
 import * as proxyquire from 'proxyquire';
 
@@ -122,7 +117,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
         }
       }
     })().catch(err => {
-      throw err;
+      done(err);
     });
   });
   it('Should export a value to two GCPMetricsHandlers', done => {
@@ -224,7 +219,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
         }
       }
     })().catch(err => {
-      throw err;
+      done(err);
     });
   });
   it('Should write two duplicate points inserted into the metrics handler', done => {
@@ -305,7 +300,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
         }
       }
     })().catch(err => {
-      throw err;
+      done(err);
     });
   });
 });

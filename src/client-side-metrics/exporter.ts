@@ -297,7 +297,7 @@ export class CloudMonitoringExporter extends MetricExporter {
 
   constructor(options: ClientOptions) {
     super();
-    if (options.apiEndpoint) {
+    if (options && options.apiEndpoint) {
       // We want the MetricServiceClient to always hit its default endpoint.
       delete options.apiEndpoint;
     }
