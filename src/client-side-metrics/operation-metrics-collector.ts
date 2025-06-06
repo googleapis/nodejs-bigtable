@@ -99,6 +99,8 @@ function checkState<T>(
  * A class for tracing and recording client-side metrics related to Bigtable operations.
  */
 export class OperationMetricsCollector {
+  // The following key corresponds to the key the instance information is
+  // stored in for the metadata that gets returned from the server.
   private readonly INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
   private state: MetricsCollectorState;
   private operationStartTime: bigint | null;
