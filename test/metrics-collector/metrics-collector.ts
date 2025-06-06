@@ -26,6 +26,7 @@ import * as path from 'path'; // Import the 'path' module
 import * as gax from 'google-gax';
 import * as proxyquire from 'proxyquire';
 import {GCPMetricsHandler} from '../../src/client-side-metrics/gcp-metrics-handler';
+import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 const protoPath = path.join(
   __dirname,
   '../../protos/google/bigtable/v2/response_params.proto',
