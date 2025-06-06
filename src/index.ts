@@ -19,6 +19,7 @@ import * as extend from 'extend';
 import {GoogleAuth, CallOptions, grpc as gaxVendoredGrpc} from 'google-gax';
 import * as gax from 'google-gax';
 import * as protos from '../protos/protos';
+import * as SqlTypes from './execute-query/types';
 
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
@@ -1120,6 +1121,7 @@ promisifyAll(Bigtable, {
 module.exports = Bigtable;
 module.exports.v2 = v2;
 module.exports.Bigtable = Bigtable;
+module.exports.SqlTypes = SqlTypes;
 
 export {v2};
 export {protos};
@@ -1345,3 +1347,4 @@ export {
   WaitForReplicationCallback,
   WaitForReplicationResponse,
 } from './table';
+export {SqlTypes};

@@ -15,6 +15,4 @@ TestSampleRowKeys_Retry_WithRoutingCookie\|
 TestSampleRowKeys_Generic_CloseClient\|
 TestSampleRowKeys_Generic_Headers\|
 TestSampleRowKeys_NoRetry_NoEmptyKey\|
-TestSampleRowKeys_Retry_WithRetryInfo\|
-TestExecuteQuery_EmptyResponse\|
-TestExecuteQuery_SingleSimpleRow
+TestSampleRowKeys_Retry_WithRetryInfo
