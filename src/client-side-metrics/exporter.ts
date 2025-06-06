@@ -318,9 +318,8 @@ export class CloudMonitoringExporter extends MetricExporter {
         // The resultCallback typically accepts a value equal to {code: x}
         // for some value x along with other info. When the code is equal to 0
         // then the operation completed successfully. When the code is not equal
-        // to 0 then the operation failed. Open telemetry logs errors to the
-        // console when the resultCallback passes in non-zero code values and
-        // logs nothing when the code is 0.
+        // to 0 then the operation failed. The resultCallback will not log
+        // anything to the console whether the error code was 0 or not.
         resultCallback({code: 0});
       } catch (error) {
         resultCallback(error as ServiceError);
