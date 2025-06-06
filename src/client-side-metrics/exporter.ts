@@ -312,7 +312,9 @@ export class CloudMonitoringExporter extends MetricExporter {
       try {
         const projectId = await this.client.getProjectId();
         const request = metricsToRequest(projectId, metrics);
-        await this.client.createTimeSeries(request as ICreateTimeSeriesRequest);
+        await this.client.createServiceTimeSeries(
+          request as ICreateTimeSeriesRequest,
+        );
         // The resultCallback typically accepts a value equal to {code: x}
         // for some value x along with other info. When the code is equal to 0
         // then the operation completed successfully. When the code is not equal
