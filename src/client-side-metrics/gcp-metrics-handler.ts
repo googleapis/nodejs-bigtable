@@ -48,7 +48,7 @@ import * as crypto from 'crypto';
  *
  * @returns {string} A unique client identifier string.
  */
-export function generateClientUuid() {
+function generateClientUuid() {
   const hostname = os.hostname() || 'localhost';
   const currentPid = process.pid || '';
   const uuid4 = crypto.randomUUID();
