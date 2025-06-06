@@ -23,21 +23,20 @@ import {
  * It logs the metrics and attributes received by the onOperationComplete and onAttemptComplete methods.
  */
 export class TestMetricsHandler implements IMetricsHandler {
-  private messages: {value: string};
+  messages = {value: ''};
+  projectId = 'projectId';
   requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [];
 
-  constructor(messages: {value: string}) {
-    this.messages = messages;
-  }
   /**
    * Logs the metrics and attributes received for an operation completion.
    * @param {OnOperationCompleteData} data Metrics related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    this.requestsHandled.push(data);
-    data.client_name = 'nodejs-bigtable';
+    const dataWithProject = Object.assign({projectId: this.projectId}, data);
+    dataWithProject.client_name = 'nodejs-bigtable';
+    this.requestsHandled.push(dataWithProject);
     this.messages.value += 'Recording parameters for onOperationComplete:\n';
-    this.messages.value += `${JSON.stringify(data)}\n`;
+    this.messages.value += `${JSON.stringify(dataWithProject)}\n`;
   }
 
   /**
@@ -45,9 +44,10 @@ export class TestMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Metrics related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    this.requestsHandled.push(data);
-    data.client_name = 'nodejs-bigtable';
+    const dataWithProject = Object.assign({projectId: this.projectId}, data);
+    dataWithProject.client_name = 'nodejs-bigtable';
+    this.requestsHandled.push(dataWithProject);
     this.messages.value += 'Recording parameters for onAttemptComplete:\n';
-    this.messages.value += `${JSON.stringify(data)}\n`;
+    this.messages.value += `${JSON.stringify(dataWithProject)}\n`;
   }
 }

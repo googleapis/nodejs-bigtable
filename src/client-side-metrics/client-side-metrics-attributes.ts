@@ -25,6 +25,7 @@ export enum StreamingState {
  * metrics, allowing for differentiation of performance by method.
  */
 export enum MethodName {
+  READ_ROW = 'Bigtable.ReadRow',
   READ_ROWS = 'Bigtable.ReadRows',
   MUTATE_ROW = 'Bigtable.MutateRow',
   CHECK_AND_MUTATE_ROW = 'Bigtable.CheckAndMutateRow',
