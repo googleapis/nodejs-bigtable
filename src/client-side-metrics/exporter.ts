@@ -311,18 +311,24 @@ export class CloudMonitoringExporter extends MetricExporter {
     (async () => {
       try {
         const projectId = await this.client.getProjectId();
-        const request = metricsToRequest(projectId, metrics);
-        await this.client.createServiceTimeSeries(
-          request as ICreateTimeSeriesRequest,
-        );
+        // const request = metricsToRequest(projectId, metrics);
+        console.log('calling export');
+        const err = new Error('test error');
+        (err as ServiceError).code = 4;
+        (err as ServiceError).message = 'error message';
+        throw err;
+        // await this.client.createServiceTimeSeries(
+        //   request as ICreateTimeSeriesRequest,
+        // );
         // The resultCallback typically accepts a value equal to {code: x}
         // for some value x along with other info. When the code is equal to 0
         // then the operation completed successfully. When the code is not equal
         // to 0 then the operation failed. Open telemetry logs errors to the
         // console when the resultCallback passes in non-zero code values and
         // logs nothing when the code is 0.
-        resultCallback({code: 0});
+        // resultCallback({code: 0});
       } catch (error) {
+        console.log('catching error');
         resultCallback(error as ServiceError);
       }
     })().catch(err => {
