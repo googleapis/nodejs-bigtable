@@ -33,6 +33,10 @@ import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {createReadStreamInternal} from './utils/createReadStreamInternal';
 import {getRowsInternal} from './utils/getRowsInternal';
+import {
+  MethodName,
+  StreamingState,
+} from './client-side-metrics/client-side-metrics-attributes';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -206,7 +210,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param opts
    */
   createReadStream(opts?: GetRowsOptions) {
-    return createReadStreamInternal(this, false, opts);
+    const metricsCollector =
+      this.bigtable._metricsConfigManager.createOperation(
+        MethodName.READ_ROWS,
+        StreamingState.STREAMING,
+        this,
+      );
+    return createReadStreamInternal(this, metricsCollector, opts);
   }
 
   getRows(options?: GetRowsOptions): Promise<GetRowsResponse>;
@@ -234,7 +244,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     optionsOrCallback?: GetRowsOptions | GetRowsCallback,
     cb?: GetRowsCallback,
   ): void | Promise<GetRowsResponse> {
-    return getRowsInternal(this, false, optionsOrCallback, cb);
+    const metricsCollector =
+      this.bigtable._metricsConfigManager.createOperation(
+        MethodName.READ_ROWS,
+        StreamingState.STREAMING,
+        this,
+      );
+    return getRowsInternal(this, metricsCollector, optionsOrCallback, cb);
   }
 
   insert(

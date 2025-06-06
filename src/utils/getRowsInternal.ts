@@ -20,6 +20,7 @@ import {
 } from '../tabular-api-surface';
 import {createReadStreamInternal} from './createReadStreamInternal';
 import {Row} from '../row';
+import {OperationMetricsCollector} from '../client-side-metrics/operation-metrics-collector';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
 
@@ -31,8 +32,7 @@ const concat = require('concat-stream');
  * via {@link Table#createReadStream}.
  *
  * @param {TabularApiSurface} table The table instance to get rows from.
- * @param {boolean} singleRow Boolean to check if the request is for a single row.
- * @param {string} [viewName] The name of the authorized view, if applicable.
+ * @param metricsCollector
  * @param {object} [optionsOrCallback] Configuration object. See
  *     {@link Table#createReadStream} for a complete list of options.
  * @param {object} [optionsOrCallback.gaxOptions] Request configuration options, outlined
@@ -48,7 +48,7 @@ const concat = require('concat-stream');
  */
 export function getRowsInternal(
   table: TabularApiSurface,
-  singleRow: boolean,
+  metricsCollector: OperationMetricsCollector,
   optionsOrCallback?: GetRowsOptions | GetRowsCallback,
   cb?: GetRowsCallback,
 ): void | Promise<GetRowsResponse> {
@@ -56,7 +56,7 @@ export function getRowsInternal(
     typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
   const options =
     typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-  createReadStreamInternal(table, singleRow, options)
+  createReadStreamInternal(table, metricsCollector, options)
     .on('error', callback)
     .pipe(
       concat((rows: Row[]) => {

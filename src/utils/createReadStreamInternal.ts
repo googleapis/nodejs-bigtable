@@ -41,6 +41,7 @@ import {
   RETRYABLE_STATUS_CODES,
   TabularApiSurface,
 } from '../tabular-api-surface';
+import {OperationMetricsCollector} from '../client-side-metrics/operation-metrics-collector';
 
 /**
  * Creates a readable stream of rows from a Bigtable table or authorized view.
@@ -50,7 +51,7 @@ import {
  * be used to create a stream for either a whole table or an authorized view.
  *
  * @param {Table} table The Table instance to read rows from.
- * @param {boolean} singleRow boolean to check if the request is for a single row.
+ * @param metricsCollector
  * @param {GetRowsOptions} [opts] Optional configuration for the read operation.
  * @param {boolean} [opts.decode=true] If set to `false` it will not decode
  *     Buffer values returned from Bigtable.
@@ -68,13 +69,12 @@ import {
  *     match.
  * @param {object[]} [opts.ranges] A list of key ranges.
  * @param {string} [opts.start] Start value for key range.
- * @param {string} [viewName] The name of the authorized view, if applicable.
  * @returns {stream} A readable stream of {@link Row} objects.
  *
  */
 export function createReadStreamInternal(
   table: TabularApiSurface,
-  singleRow: boolean,
+  metricsCollector: OperationMetricsCollector,
   opts?: GetRowsOptions,
 ) {
   const options = opts || {};
@@ -201,11 +201,6 @@ export function createReadStreamInternal(
     }
     return originalEnd(chunk, encoding, cb);
   };
-  const metricsCollector = table.bigtable._metricsConfigManager.createOperation(
-    singleRow ? MethodName.READ_ROW : MethodName.READ_ROWS,
-    singleRow ? StreamingState.UNARY : StreamingState.STREAMING,
-    table,
-  );
   metricsCollector.onOperationStart();
   const makeNewRequest = () => {
     metricsCollector.onAttemptStart();
