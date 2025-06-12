@@ -376,7 +376,6 @@ const snippets = {
       row_key: 'alincoln',
     };
 
-    // if query parameter types are ambiguous, you can pass types explicitly
     const parameterTypes = {
       row_key: Bigtable.ExecuteQueryTypes.String(),
     };
@@ -386,23 +385,27 @@ const snippets = {
       parameterTypes,
     };
 
-    instance.prepareStatement(prepareStatementOptions).then(
-      preparedStatement => instance.executeQuery({
-        preparedStatement,
-        parameters,
+    instance
+      .prepareStatement(prepareStatementOptions)
+      .then(preparedStatement =>
+        instance.executeQuery({
+          preparedStatement,
+          parameters,
+        }),
+      )
+      .then(result => {
+        const rows = result[0];
       })
-    ).then(result => {
-      const rows = result[0];
-    }).catch(err => {
-      // Handle errors
-    });
+      .catch(err => {
+        // Handle errors
+      });
 
     // [END bigtable_api_execute_query]
   },
 
   createExecuteQueryStream: (instanceId, tableId) => {
     // [START bigtable_api_create_query_stream]
-    const { Bigtable } = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -412,13 +415,17 @@ const snippets = {
     const parameters = {
       row_key: 'alincoln',
     };
+    const parameterTypes = {
+      row_key: Bigtable.ExecuteQueryTypes.String(),
+    };
 
     const prepareStatementOptions = {
       query,
       parameterTypes,
     };
-    instance.prepareStatement(prepareStatementOptions).then(
-      preparedStatement => {
+    instance
+      .prepareStatement(prepareStatementOptions)
+      .then(preparedStatement => {
         instance
           .createExecuteQueryStream({
             preparedStatement,
@@ -433,8 +440,7 @@ const snippets = {
           .on('end', () => {
             // All rows retrieved.
           });
-      }
-    )
+      });
 
     // If you anticipate many results, you can end a stream early to prevent
     // unnecessary processing.
