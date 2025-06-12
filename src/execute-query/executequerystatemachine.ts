@@ -272,7 +272,7 @@ export class ExecuteQueryStateMachine {
   private createValuesStream = (): AbortableDuplex => {
     const reqOpts: google.bigtable.v2.IExecuteQueryRequest = {
       ...this.requestParams,
-      preparedStatement: this.lastPreparedStatementBytes,
+      preparedQuery: this.lastPreparedStatementBytes,
       resumeToken: this.callerStream.getLatestResumeToken(),
     };
 
