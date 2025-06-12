@@ -25,6 +25,7 @@ import {
   Instance,
   InstanceOptions,
   MutateOptions,
+  SqlTypes,
 } from '../src';
 import {Mutation} from '../src/mutation';
 import {AppProfile} from '../src/app-profile.js';
@@ -37,6 +38,7 @@ import {RawFilter} from '../src/filter';
 import {generateId, PREFIX} from './common';
 import {BigtableTableAdminClient} from '../src/v2';
 import {ServiceError} from 'google-gax';
+import {BigtableDate, QueryResultRow} from '../src/execute-query/values';
 
 describe('Bigtable', () => {
   const bigtable = new Bigtable();
@@ -788,6 +790,100 @@ describe('Bigtable', () => {
     });
 
     describe('fetching data', () => {
+      it('should execute a query', async () => {
+        const [preparedStatement] = await INSTANCE.prepareStatement({
+          query:
+            'SELECT @stringParam AS strCol, @bytesParam as bytesCol, @int64Param AS intCol, @doubleParam AS doubleCol,\n' +
+            '@floatParam AS floatCol, @boolParam AS boolCol, @tsParam AS tsCol, @dateParam AS dateCol,\n' +
+            '@byteArrayParam AS byteArrayCol, @stringArrayParam AS stringArrayCol, @intArrayParam AS intArrayCol,\n' +
+            '@floatArrayParam AS floatArrayCol, @doubleArrayParam AS doubleArrayCol, @boolArrayParam AS boolArrayCol,\n' +
+            '@tsArrayParam AS tsArrayCol, @dateArrayParam AS dateArrayCol',
+          parameterTypes: {
+            bytesParam: SqlTypes.Bytes(),
+            intArrayParam: SqlTypes.Array(SqlTypes.Int64()),
+            dateArrayParam: SqlTypes.Array(SqlTypes.Date()),
+            stringParam: SqlTypes.String(),
+            byteArrayParam: SqlTypes.Array(SqlTypes.Bytes()),
+            doubleArrayParam: SqlTypes.Array(SqlTypes.Float64()),
+            boolArrayParam: SqlTypes.Array(SqlTypes.Bool()),
+            doubleParam: SqlTypes.Float64(),
+            floatParam: SqlTypes.Float32(),
+            dateParam: SqlTypes.Date(),
+            floatArrayParam: SqlTypes.Array(SqlTypes.Float32()),
+            tsArrayParam: SqlTypes.Array(SqlTypes.Timestamp()),
+            int64Param: SqlTypes.Int64(),
+            boolParam: SqlTypes.Bool(),
+            tsParam: SqlTypes.Timestamp(),
+            stringArrayParam: SqlTypes.Array(SqlTypes.String()),
+          },
+        });
+        const params = {
+          bytesParam: Buffer.from('test'),
+          intArrayParam: [BigInt(1), BigInt(2), BigInt(3)],
+          dateArrayParam: [
+            new BigtableDate(2025, 5, 14),
+            new BigtableDate(2025, 5, 13),
+          ],
+          stringParam: 'test',
+          byteArrayParam: [Buffer.from('test')],
+          doubleArrayParam: [1.0, 2.0, 3.0],
+          boolArrayParam: [true, false],
+          doubleParam: 1.0,
+          floatParam: 1.0,
+          dateParam: new BigtableDate(2025, 5, 14),
+          floatArrayParam: [1.0, 2.0, 3.0],
+          tsArrayParam: [
+            new PreciseDate(Date.now()),
+            new PreciseDate(Date.now()),
+          ],
+          int64Param: BigInt(123),
+          boolParam: true,
+          tsParam: new PreciseDate(Date.now()),
+          stringArrayParam: ['test', 'test'],
+        };
+        const [rows] = (await INSTANCE.executeQuery({
+          preparedStatement,
+          parameters: params,
+        })) as any as [Row[]];
+        assert(rows[0] instanceof QueryResultRow);
+        assert.deepStrictEqual(rows[0].get('strCol'), params.stringParam);
+        assert.deepStrictEqual(rows[0].get('bytesCol'), params.bytesParam);
+        assert.deepStrictEqual(rows[0].get('intCol'), params.int64Param);
+        assert.deepStrictEqual(rows[0].get('doubleCol'), params.doubleParam);
+        assert.deepStrictEqual(rows[0].get('floatCol'), params.floatParam);
+        assert.deepStrictEqual(rows[0].get('boolCol'), params.boolParam);
+        assert.deepStrictEqual(rows[0].get('tsCol'), params.tsParam);
+        assert.deepStrictEqual(rows[0].get('dateCol'), params.dateParam);
+        assert.deepStrictEqual(
+          rows[0].get('byteArrayCol'),
+          params.byteArrayParam,
+        );
+        assert.deepStrictEqual(
+          rows[0].get('stringArrayCol'),
+          params.stringArrayParam,
+        );
+        assert.deepStrictEqual(
+          rows[0].get('intArrayCol'),
+          params.intArrayParam,
+        );
+        assert.deepStrictEqual(
+          rows[0].get('floatArrayCol'),
+          params.floatArrayParam,
+        );
+        assert.deepStrictEqual(
+          rows[0].get('doubleArrayCol'),
+          params.doubleArrayParam,
+        );
+        assert.deepStrictEqual(
+          rows[0].get('boolArrayCol'),
+          params.boolArrayParam,
+        );
+        assert.deepStrictEqual(rows[0].get('tsArrayCol'), params.tsArrayParam);
+        assert.deepStrictEqual(
+          rows[0].get('dateArrayCol'),
+          params.dateArrayParam,
+        );
+      });
       it('should get rows', async () => {
         const [rows] = await TABLE.getRows();
         assert.strictEqual(rows.length, 4);

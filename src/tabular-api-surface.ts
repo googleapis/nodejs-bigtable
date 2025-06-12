@@ -494,19 +494,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
-      // Retry on "received rst stream" errors
-      const isRstStreamError = (error: ServiceError): boolean => {
-        if (error.code === 13 && error.message) {
-          const error_message = (error.message || '').toLowerCase();
-          return (
-            error.code === 13 &&
-            (error_message.includes('rst_stream') ||
-              error_message.includes('rst stream'))
-          );
-        }
-        return false;
-      };
-
       rowStream
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
@@ -1040,4 +1027,16 @@ export class PartialFailureError extends Error {
       this.message += 'Request failed with: ' + rpcError.message;
     }
   }
+}
+// Retry on "received rst stream" errors
+export function isRstStreamError(error: ServiceError): boolean {
+  if (error.code === 13 && error.message) {
+    const error_message = (error.message || '').toLowerCase();
+    return (
+      error.code === 13 &&
+      (error_message.includes('rst_stream') ||
+        error_message.includes('rst stream'))
+    );
+  }
+  return false;
 }

@@ -19,6 +19,7 @@ import * as is from 'is';
 import * as extend from 'extend';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
+const concat = require('concat-stream');
 
 import snakeCase = require('lodash.snakecase');
 import {
@@ -69,6 +70,25 @@ import {google} from '../protos/protos';
 import {Backup, RestoreTableCallback, RestoreTableResponse} from './backup';
 import {ClusterUtils} from './utils/cluster';
 import {AuthorizedView} from './authorized-view';
+
+import * as SqlTypes from './execute-query/types';
+import {
+  ExecuteQueryParameterValue,
+  QueryResultRow,
+} from './execute-query/values';
+import {ProtobufReaderTransformer} from './execute-query/protobufreadertransformer';
+import {ExecuteQueryStreamTransformWithMetadata} from './execute-query/queryresultrowtransformer';
+import {ExecuteQueryStreamWithMetadata} from './execute-query/values';
+import {
+  parseParameters,
+  parseParameterTypes,
+} from './execute-query/parameterparsing';
+import {MetadataConsumer} from './execute-query/metadataconsumer';
+import {
+  createCallerStream,
+  ExecuteQueryStateMachine,
+} from './execute-query/executequerystatemachine';
+import {PreparedStatement} from './execute-query/preparedstatement';
 
 export interface ClusterInfo extends BasicClusterConfig {
   id: string;
@@ -153,6 +173,32 @@ export interface CreateTableFromBackupConfig {
   backup: Backup | string;
   gaxOptions?: CallOptions;
 }
+
+export type ExecuteQueryCallback = (
+  err: Error | null,
+  rows?: QueryResultRow[],
+) => void;
+
+export interface ExecuteQueryOptions {
+  preparedStatement: PreparedStatement;
+  parameters?: {[param: string]: ExecuteQueryParameterValue};
+  retryOptions?: CallOptions;
+  encoding?: BufferEncoding;
+}
+export type ExecuteQueryResponse = [QueryResultRow[]];
+
+export type PrepareStatementCallback = (
+  err: Error | null,
+  preparedStatement?: PreparedStatement,
+) => void;
+
+export interface PrepareStatementOptions {
+  query: string;
+  parameterTypes?: {[param: string]: SqlTypes.Type};
+  retryOptions?: CallOptions;
+  encoding?: BufferEncoding;
+}
+export type PrepareStatementResponse = [PreparedStatement];
 
 /**
  * Create an Instance object to interact with a Cloud Bigtable instance.
@@ -1485,6 +1531,206 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   view(tableName: string, viewName: string): AuthorizedView {
     return new AuthorizedView(this, tableName, viewName);
+  }
+
+  prepareStatement(
+    options: PrepareStatementOptions,
+  ): Promise<PrepareStatementResponse>;
+  prepareStatement(
+    options: PrepareStatementOptions,
+    callback: PrepareStatementCallback,
+  ): void;
+  prepareStatement(query: string): Promise<PrepareStatementResponse>;
+  prepareStatement(query: string, callback: PrepareStatementCallback): void;
+  /**
+   * Prepare an SQL query to be executed on an instance.
+   *
+   * @param {?string} [query] PreparedStatement object representing a query
+   *   to execute.
+   * @param {string} [opts.query] Query string for which we want to construct the preparedStatement object.
+   * @param {object} [opts.parameterTypes] Object mapping names of parameters to their types.
+   * Type hints should be constructed using factory functions such as {@link Int64}
+   * @param {CallOptions} [opts.retryOptions] gax's CallOptions wich are passed straight to gax.
+   *   The same retry options are also used when automatically refreshing the PreparedStatement.
+   *
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {?PreparedStatement} callback.preparedStatement The preparedStatement object used to perform the executeQuery operation.
+   *
+   */
+  prepareStatement(
+    queryOrOpts: string | PrepareStatementOptions,
+    callback?: PrepareStatementCallback,
+  ): void | Promise<PrepareStatementResponse> {
+    const opts: PrepareStatementOptions =
+      typeof queryOrOpts === 'string' ? {query: queryOrOpts} : queryOrOpts;
+
+    const protoParamTypes = parseParameterTypes(opts.parameterTypes || {});
+    const request = {
+      client: 'BigtableClient',
+      method: 'prepareQuery',
+      reqOpts: {
+        instanceName: this.name,
+        appProfileId: this.bigtable.appProfileId,
+        query: opts.query,
+        paramTypes: protoParamTypes,
+      },
+      gaxOpts: opts.retryOptions,
+    };
+    this.bigtable.request(request, (...args) => {
+      if (args[0]) {
+        callback!(args[0]);
+      }
+      try {
+        callback!(
+          null,
+          new PreparedStatement(
+            this.bigtable,
+            args[1]!,
+            request,
+            opts.parameterTypes || {},
+          ),
+        );
+      } catch (err) {
+        callback!(err as any, undefined);
+      }
+    });
+  }
+
+  executeQuery(options: ExecuteQueryOptions): Promise<ExecuteQueryResponse>;
+  executeQuery(
+    options: ExecuteQueryOptions,
+    callback: ExecuteQueryCallback,
+  ): void;
+  executeQuery(
+    preparedStatement: PreparedStatement,
+  ): Promise<ExecuteQueryResponse>;
+  executeQuery(
+    preparedStatement: PreparedStatement,
+    callback: ExecuteQueryCallback,
+  ): void;
+  /**
+   * Execute a SQL query on an instance.
+   *
+   *
+   * @param {?PreparedStatement} [preparedStatement] PreparedStatement object representing a query
+   *   to execute.
+   * @param {?object} [options] Configuration object. See
+   *     {@link Instance#createExecuteQueryStream} for a complete list of options.
+   *
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {?QueryResultRow[]} callback.rows List of rows.
+   * @param {?SqlTypes.ResultSetMetadata} callback.metadata Metadata for the response.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_execute_query
+   */
+  executeQuery(
+    preparedStatementOrOpts: PreparedStatement | ExecuteQueryOptions,
+    callback?: ExecuteQueryCallback,
+  ): void | Promise<ExecuteQueryResponse> {
+    let opts: ExecuteQueryOptions;
+    if (preparedStatementOrOpts instanceof PreparedStatement) {
+      opts = {preparedStatement: preparedStatementOrOpts};
+    } else {
+      opts = preparedStatementOrOpts;
+    }
+    const stream = this.createExecuteQueryStream(opts);
+
+    stream.on('error', callback!).pipe(
+      concat((rows: QueryResultRow[]) => {
+        callback!(null, rows);
+      }),
+    );
+  }
+
+  /**
+   * Execute a SQL query on an instance.
+   *
+   * @param {PreparedStatement} [preparedStatement] SQL query to execute. Parameters can be specified using @name notation.
+   * @param {object} [opts] Configuration object.
+   * @param {object} [opts.parameters] Object mapping names of parameters used in the query to JS values.
+   * @param {object} [opts.retryOptions] Retry options used for executing the query. Note that the only values
+   *   used are:
+   *   - retryOptions.retry.retryCodes
+   *   - retryOptions.retry.backoffSettings.maxRetries
+   *   - retryOptions.retry.backoffSettings.totalTimeoutMillis
+   *   - retryOptions.retry.backoffSettings.maxRetryDelayMillis
+   *   - retryOptions.retry.backoffSettings.retryDelayMultiplier
+   *   - retryOptions.retry.backoffSettings.initialRetryDelayMillis
+   * @returns {ExecuteQueryStreamWithMetadata}
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_create_query_stream
+   */
+  createExecuteQueryStream(
+    opts: ExecuteQueryOptions,
+  ): ExecuteQueryStreamWithMetadata {
+    /**
+     * We create the following streams:
+     * responseStream -> byteBuffer -> readerStream -> resultStream
+     *
+     * The last two (readerStream and resultStream) are connected using pumpify
+     * and returned to the caller.
+     *
+     * When a request is made responseStream and byteBuffer are created,
+     * connected using pumpify and piped to the readerStream.
+     *
+     * On retry, the old responseStream-byteBuffer pair is discarded and a
+     * new pair is crated.
+     *
+     * For more info please refer to comments in setupRetries function.
+     *
+     */
+    const metadataConsumer = new MetadataConsumer();
+
+    let callerCancelled = false;
+    const setCallerCancelled = (value: boolean) => {
+      callerCancelled = value;
+    };
+    const hasCallerCancelled = () => callerCancelled;
+
+    const resultStream = new ExecuteQueryStreamTransformWithMetadata(
+      metadataConsumer,
+      hasCallerCancelled,
+      opts.encoding,
+    );
+    const protoParams: {[k: string]: google.bigtable.v2.IValue} | null =
+      parseParameters(
+        opts.parameters || {},
+        opts.preparedStatement.getParameterTypes(),
+      );
+
+    const readerStream = new ProtobufReaderTransformer(metadataConsumer);
+
+    const reqOpts: google.bigtable.v2.IExecuteQueryRequest = {
+      instanceName: this.name,
+      appProfileId: this.bigtable.appProfileId,
+      params: protoParams,
+    };
+
+    // This creates a row stream which is two streams connected in a series.
+    const callerStream = createCallerStream(
+      readerStream,
+      resultStream,
+      metadataConsumer,
+      setCallerCancelled,
+    );
+
+    const stateMachine = new ExecuteQueryStateMachine(
+      this.bigtable,
+      callerStream,
+      opts.preparedStatement,
+      reqOpts,
+      opts.retryOptions?.retry,
+      opts.encoding,
+    );
+
+    // make sure stateMachine is not garbage collected as long as the callerStream.
+    callerStream._stateMachine = stateMachine;
+
+    return callerStream;
   }
 }
 
