@@ -1573,7 +1573,6 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         instanceName: this.name,
         appProfileId: this.bigtable.appProfileId,
         query: opts.query,
-        protoFormat: google.bigtable.v2.ProtoFormat.create(),
         paramTypes: protoParamTypes,
       },
       gaxOpts: opts.retryOptions,
@@ -1708,7 +1707,6 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     const reqOpts: google.bigtable.v2.IExecuteQueryRequest = {
       instanceName: this.name,
       appProfileId: this.bigtable.appProfileId,
-      protoFormat: google.bigtable.v2.ProtoFormat.create(),
       params: protoParams,
     };
 
