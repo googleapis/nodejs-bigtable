@@ -73,3 +73,4 @@ jobs:
         with:
           paths: docs/
           concurrency: 1
+          retry: true
