@@ -31,8 +31,8 @@ function main(authorizedView) {
   /**
    *  Required. The AuthorizedView to update. The `name` in `authorized_view` is
    *  used to identify the AuthorizedView. AuthorizedView name must in this
-   *  format
-   *  projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorized_view>
+   *  format:
+   *  `projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}`.
    */
   // const authorizedView = {}
   /**

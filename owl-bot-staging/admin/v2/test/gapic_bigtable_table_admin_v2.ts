@@ -2115,6 +2115,222 @@ describe('v2.BigtableTableAdminClient', () => {
         });
     });
 
+    describe('getSchemaBundle', () => {
+        it('invokes getSchemaBundle without error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.GetSchemaBundleRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.GetSchemaBundleRequest', ['name']);
+            request.name = defaultValue1;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
+            const expectedResponse = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.SchemaBundle()
+            );
+            client.innerApiCalls.getSchemaBundle = stubSimpleCall(expectedResponse);
+            const [response] = await client.getSchemaBundle(request);
+            assert.deepStrictEqual(response, expectedResponse);
+            const actualRequest = (client.innerApiCalls.getSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.getSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes getSchemaBundle without error using callback', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.GetSchemaBundleRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.GetSchemaBundleRequest', ['name']);
+            request.name = defaultValue1;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
+            const expectedResponse = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.SchemaBundle()
+            );
+            client.innerApiCalls.getSchemaBundle = stubSimpleCallWithCallback(expectedResponse);
+            const promise = new Promise((resolve, reject) => {
+                 client.getSchemaBundle(
+                    request,
+                    (err?: Error|null, result?: protos.google.bigtable.admin.v2.ISchemaBundle|null) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(result);
+                        }
+                    });
+            });
+            const response = await promise;
+            assert.deepStrictEqual(response, expectedResponse);
+            const actualRequest = (client.innerApiCalls.getSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.getSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes getSchemaBundle with error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.GetSchemaBundleRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.GetSchemaBundleRequest', ['name']);
+            request.name = defaultValue1;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
+            const expectedError = new Error('expected');
+            client.innerApiCalls.getSchemaBundle = stubSimpleCall(undefined, expectedError);
+            await assert.rejects(client.getSchemaBundle(request), expectedError);
+            const actualRequest = (client.innerApiCalls.getSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.getSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes getSchemaBundle with closed client', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.GetSchemaBundleRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.GetSchemaBundleRequest', ['name']);
+            request.name = defaultValue1;
+            const expectedError = new Error('The client has already been closed.');
+            client.close().catch(err => {throw err});
+            await assert.rejects(client.getSchemaBundle(request), expectedError);
+        });
+    });
+
+    describe('deleteSchemaBundle', () => {
+        it('invokes deleteSchemaBundle without error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.DeleteSchemaBundleRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.DeleteSchemaBundleRequest', ['name']);
+            request.name = defaultValue1;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
+            const expectedResponse = generateSampleMessage(
+              new protos.google.protobuf.Empty()
+            );
+            client.innerApiCalls.deleteSchemaBundle = stubSimpleCall(expectedResponse);
+            const [response] = await client.deleteSchemaBundle(request);
+            assert.deepStrictEqual(response, expectedResponse);
+            const actualRequest = (client.innerApiCalls.deleteSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.deleteSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes deleteSchemaBundle without error using callback', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.DeleteSchemaBundleRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.DeleteSchemaBundleRequest', ['name']);
+            request.name = defaultValue1;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
+            const expectedResponse = generateSampleMessage(
+              new protos.google.protobuf.Empty()
+            );
+            client.innerApiCalls.deleteSchemaBundle = stubSimpleCallWithCallback(expectedResponse);
+            const promise = new Promise((resolve, reject) => {
+                 client.deleteSchemaBundle(
+                    request,
+                    (err?: Error|null, result?: protos.google.protobuf.IEmpty|null) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(result);
+                        }
+                    });
+            });
+            const response = await promise;
+            assert.deepStrictEqual(response, expectedResponse);
+            const actualRequest = (client.innerApiCalls.deleteSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.deleteSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes deleteSchemaBundle with error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.DeleteSchemaBundleRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.DeleteSchemaBundleRequest', ['name']);
+            request.name = defaultValue1;
+            const expectedHeaderRequestParams = `name=${defaultValue1 ?? '' }`;
+            const expectedError = new Error('expected');
+            client.innerApiCalls.deleteSchemaBundle = stubSimpleCall(undefined, expectedError);
+            await assert.rejects(client.deleteSchemaBundle(request), expectedError);
+            const actualRequest = (client.innerApiCalls.deleteSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.deleteSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes deleteSchemaBundle with closed client', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.DeleteSchemaBundleRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.DeleteSchemaBundleRequest', ['name']);
+            request.name = defaultValue1;
+            const expectedError = new Error('The client has already been closed.');
+            client.close().catch(err => {throw err});
+            await assert.rejects(client.deleteSchemaBundle(request), expectedError);
+        });
+    });
+
     describe('createTableFromSnapshot', () => {
         it('invokes createTableFromSnapshot without error', async () => {
             const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
@@ -3509,6 +3725,318 @@ describe('v2.BigtableTableAdminClient', () => {
         });
     });
 
+    describe('createSchemaBundle', () => {
+        it('invokes createSchemaBundle without error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.CreateSchemaBundleRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.CreateSchemaBundleRequest', ['parent']);
+            request.parent = defaultValue1;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
+            const expectedResponse = generateSampleMessage(
+              new protos.google.longrunning.Operation()
+            );
+            client.innerApiCalls.createSchemaBundle = stubLongRunningCall(expectedResponse);
+            const [operation] = await client.createSchemaBundle(request);
+            const [response] = await operation.promise();
+            assert.deepStrictEqual(response, expectedResponse);
+            const actualRequest = (client.innerApiCalls.createSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.createSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes createSchemaBundle without error using callback', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.CreateSchemaBundleRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.CreateSchemaBundleRequest', ['parent']);
+            request.parent = defaultValue1;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
+            const expectedResponse = generateSampleMessage(
+              new protos.google.longrunning.Operation()
+            );
+            client.innerApiCalls.createSchemaBundle = stubLongRunningCallWithCallback(expectedResponse);
+            const promise = new Promise((resolve, reject) => {
+                 client.createSchemaBundle(
+                    request,
+                    (err?: Error|null,
+                     result?: LROperation<protos.google.bigtable.admin.v2.ISchemaBundle, protos.google.bigtable.admin.v2.ICreateSchemaBundleMetadata>|null
+                    ) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(result);
+                        }
+                    });
+            });
+            const operation = await promise as LROperation<protos.google.bigtable.admin.v2.ISchemaBundle, protos.google.bigtable.admin.v2.ICreateSchemaBundleMetadata>;
+            const [response] = await operation.promise();
+            assert.deepStrictEqual(response, expectedResponse);
+            const actualRequest = (client.innerApiCalls.createSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.createSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes createSchemaBundle with call error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.CreateSchemaBundleRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.CreateSchemaBundleRequest', ['parent']);
+            request.parent = defaultValue1;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
+            const expectedError = new Error('expected');
+            client.innerApiCalls.createSchemaBundle = stubLongRunningCall(undefined, expectedError);
+            await assert.rejects(client.createSchemaBundle(request), expectedError);
+            const actualRequest = (client.innerApiCalls.createSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.createSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes createSchemaBundle with LRO error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.CreateSchemaBundleRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.CreateSchemaBundleRequest', ['parent']);
+            request.parent = defaultValue1;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
+            const expectedError = new Error('expected');
+            client.innerApiCalls.createSchemaBundle = stubLongRunningCall(undefined, undefined, expectedError);
+            const [operation] = await client.createSchemaBundle(request);
+            await assert.rejects(operation.promise(), expectedError);
+            const actualRequest = (client.innerApiCalls.createSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.createSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes checkCreateSchemaBundleProgress without error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const expectedResponse = generateSampleMessage(
+              new operationsProtos.google.longrunning.Operation()
+            );
+            expectedResponse.name = 'test';
+            expectedResponse.response = {type_url: 'url', value: Buffer.from('')};
+            expectedResponse.metadata = {type_url: 'url', value: Buffer.from('')}
+
+            client.operationsClient.getOperation = stubSimpleCall(expectedResponse);
+            const decodedOperation = await client.checkCreateSchemaBundleProgress(expectedResponse.name);
+            assert.deepStrictEqual(decodedOperation.name, expectedResponse.name);
+            assert(decodedOperation.metadata);
+            assert((client.operationsClient.getOperation as SinonStub).getCall(0));
+        });
+
+        it('invokes checkCreateSchemaBundleProgress with error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const expectedError = new Error('expected');
+
+            client.operationsClient.getOperation = stubSimpleCall(undefined, expectedError);
+            await assert.rejects(client.checkCreateSchemaBundleProgress(''), expectedError);
+            assert((client.operationsClient.getOperation as SinonStub)
+                .getCall(0));
+        });
+    });
+
+    describe('updateSchemaBundle', () => {
+        it('invokes updateSchemaBundle without error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.UpdateSchemaBundleRequest()
+            );
+            request.schemaBundle ??= {};
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.UpdateSchemaBundleRequest', ['schemaBundle', 'name']);
+            request.schemaBundle.name = defaultValue1;
+            const expectedHeaderRequestParams = `schema_bundle.name=${defaultValue1 ?? '' }`;
+            const expectedResponse = generateSampleMessage(
+              new protos.google.longrunning.Operation()
+            );
+            client.innerApiCalls.updateSchemaBundle = stubLongRunningCall(expectedResponse);
+            const [operation] = await client.updateSchemaBundle(request);
+            const [response] = await operation.promise();
+            assert.deepStrictEqual(response, expectedResponse);
+            const actualRequest = (client.innerApiCalls.updateSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.updateSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes updateSchemaBundle without error using callback', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.UpdateSchemaBundleRequest()
+            );
+            request.schemaBundle ??= {};
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.UpdateSchemaBundleRequest', ['schemaBundle', 'name']);
+            request.schemaBundle.name = defaultValue1;
+            const expectedHeaderRequestParams = `schema_bundle.name=${defaultValue1 ?? '' }`;
+            const expectedResponse = generateSampleMessage(
+              new protos.google.longrunning.Operation()
+            );
+            client.innerApiCalls.updateSchemaBundle = stubLongRunningCallWithCallback(expectedResponse);
+            const promise = new Promise((resolve, reject) => {
+                 client.updateSchemaBundle(
+                    request,
+                    (err?: Error|null,
+                     result?: LROperation<protos.google.bigtable.admin.v2.ISchemaBundle, protos.google.bigtable.admin.v2.IUpdateSchemaBundleMetadata>|null
+                    ) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(result);
+                        }
+                    });
+            });
+            const operation = await promise as LROperation<protos.google.bigtable.admin.v2.ISchemaBundle, protos.google.bigtable.admin.v2.IUpdateSchemaBundleMetadata>;
+            const [response] = await operation.promise();
+            assert.deepStrictEqual(response, expectedResponse);
+            const actualRequest = (client.innerApiCalls.updateSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.updateSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes updateSchemaBundle with call error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.UpdateSchemaBundleRequest()
+            );
+            request.schemaBundle ??= {};
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.UpdateSchemaBundleRequest', ['schemaBundle', 'name']);
+            request.schemaBundle.name = defaultValue1;
+            const expectedHeaderRequestParams = `schema_bundle.name=${defaultValue1 ?? '' }`;
+            const expectedError = new Error('expected');
+            client.innerApiCalls.updateSchemaBundle = stubLongRunningCall(undefined, expectedError);
+            await assert.rejects(client.updateSchemaBundle(request), expectedError);
+            const actualRequest = (client.innerApiCalls.updateSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.updateSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes updateSchemaBundle with LRO error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.UpdateSchemaBundleRequest()
+            );
+            request.schemaBundle ??= {};
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.UpdateSchemaBundleRequest', ['schemaBundle', 'name']);
+            request.schemaBundle.name = defaultValue1;
+            const expectedHeaderRequestParams = `schema_bundle.name=${defaultValue1 ?? '' }`;
+            const expectedError = new Error('expected');
+            client.innerApiCalls.updateSchemaBundle = stubLongRunningCall(undefined, undefined, expectedError);
+            const [operation] = await client.updateSchemaBundle(request);
+            await assert.rejects(operation.promise(), expectedError);
+            const actualRequest = (client.innerApiCalls.updateSchemaBundle as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.updateSchemaBundle as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes checkUpdateSchemaBundleProgress without error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const expectedResponse = generateSampleMessage(
+              new operationsProtos.google.longrunning.Operation()
+            );
+            expectedResponse.name = 'test';
+            expectedResponse.response = {type_url: 'url', value: Buffer.from('')};
+            expectedResponse.metadata = {type_url: 'url', value: Buffer.from('')}
+
+            client.operationsClient.getOperation = stubSimpleCall(expectedResponse);
+            const decodedOperation = await client.checkUpdateSchemaBundleProgress(expectedResponse.name);
+            assert.deepStrictEqual(decodedOperation.name, expectedResponse.name);
+            assert(decodedOperation.metadata);
+            assert((client.operationsClient.getOperation as SinonStub).getCall(0));
+        });
+
+        it('invokes checkUpdateSchemaBundleProgress with error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const expectedError = new Error('expected');
+
+            client.operationsClient.getOperation = stubSimpleCall(undefined, expectedError);
+            await assert.rejects(client.checkUpdateSchemaBundleProgress(''), expectedError);
+            assert((client.operationsClient.getOperation as SinonStub)
+                .getCall(0));
+        });
+    });
+
     describe('listTables', () => {
         it('invokes listTables without error', async () => {
             const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
@@ -4489,6 +5017,251 @@ describe('v2.BigtableTableAdminClient', () => {
         });
     });
 
+    describe('listSchemaBundles', () => {
+        it('invokes listSchemaBundles without error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.ListSchemaBundlesRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.ListSchemaBundlesRequest', ['parent']);
+            request.parent = defaultValue1;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;const expectedResponse = [
+              generateSampleMessage(new protos.google.bigtable.admin.v2.SchemaBundle()),
+              generateSampleMessage(new protos.google.bigtable.admin.v2.SchemaBundle()),
+              generateSampleMessage(new protos.google.bigtable.admin.v2.SchemaBundle()),
+            ];
+            client.innerApiCalls.listSchemaBundles = stubSimpleCall(expectedResponse);
+            const [response] = await client.listSchemaBundles(request);
+            assert.deepStrictEqual(response, expectedResponse);
+            const actualRequest = (client.innerApiCalls.listSchemaBundles as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.listSchemaBundles as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes listSchemaBundles without error using callback', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.ListSchemaBundlesRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.ListSchemaBundlesRequest', ['parent']);
+            request.parent = defaultValue1;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;const expectedResponse = [
+              generateSampleMessage(new protos.google.bigtable.admin.v2.SchemaBundle()),
+              generateSampleMessage(new protos.google.bigtable.admin.v2.SchemaBundle()),
+              generateSampleMessage(new protos.google.bigtable.admin.v2.SchemaBundle()),
+            ];
+            client.innerApiCalls.listSchemaBundles = stubSimpleCallWithCallback(expectedResponse);
+            const promise = new Promise((resolve, reject) => {
+                 client.listSchemaBundles(
+                    request,
+                    (err?: Error|null, result?: protos.google.bigtable.admin.v2.ISchemaBundle[]|null) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(result);
+                        }
+                    });
+            });
+            const response = await promise;
+            assert.deepStrictEqual(response, expectedResponse);
+            const actualRequest = (client.innerApiCalls.listSchemaBundles as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.listSchemaBundles as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes listSchemaBundles with error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.ListSchemaBundlesRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.ListSchemaBundlesRequest', ['parent']);
+            request.parent = defaultValue1;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
+            const expectedError = new Error('expected');
+            client.innerApiCalls.listSchemaBundles = stubSimpleCall(undefined, expectedError);
+            await assert.rejects(client.listSchemaBundles(request), expectedError);
+            const actualRequest = (client.innerApiCalls.listSchemaBundles as SinonStub)
+                .getCall(0).args[0];
+            assert.deepStrictEqual(actualRequest, request);
+            const actualHeaderRequestParams = (client.innerApiCalls.listSchemaBundles as SinonStub)
+                .getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+            assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+        });
+
+        it('invokes listSchemaBundlesStream without error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.ListSchemaBundlesRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.ListSchemaBundlesRequest', ['parent']);
+            request.parent = defaultValue1;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
+            const expectedResponse = [
+              generateSampleMessage(new protos.google.bigtable.admin.v2.SchemaBundle()),
+              generateSampleMessage(new protos.google.bigtable.admin.v2.SchemaBundle()),
+              generateSampleMessage(new protos.google.bigtable.admin.v2.SchemaBundle()),
+            ];
+            client.descriptors.page.listSchemaBundles.createStream = stubPageStreamingCall(expectedResponse);
+            const stream = client.listSchemaBundlesStream(request);
+            const promise = new Promise((resolve, reject) => {
+                const responses: protos.google.bigtable.admin.v2.SchemaBundle[] = [];
+                stream.on('data', (response: protos.google.bigtable.admin.v2.SchemaBundle) => {
+                    responses.push(response);
+                });
+                stream.on('end', () => {
+                    resolve(responses);
+                });
+                stream.on('error', (err: Error) => {
+                    reject(err);
+                });
+            });
+            const responses = await promise;
+            assert.deepStrictEqual(responses, expectedResponse);
+            assert((client.descriptors.page.listSchemaBundles.createStream as SinonStub)
+                .getCall(0).calledWith(client.innerApiCalls.listSchemaBundles, request));
+            assert(
+                (client.descriptors.page.listSchemaBundles.createStream as SinonStub)
+                    .getCall(0).args[2].otherArgs.headers['x-goog-request-params'].includes(
+                        expectedHeaderRequestParams
+                    )
+            );
+        });
+
+        it('invokes listSchemaBundlesStream with error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.ListSchemaBundlesRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.ListSchemaBundlesRequest', ['parent']);
+            request.parent = defaultValue1;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
+            const expectedError = new Error('expected');
+            client.descriptors.page.listSchemaBundles.createStream = stubPageStreamingCall(undefined, expectedError);
+            const stream = client.listSchemaBundlesStream(request);
+            const promise = new Promise((resolve, reject) => {
+                const responses: protos.google.bigtable.admin.v2.SchemaBundle[] = [];
+                stream.on('data', (response: protos.google.bigtable.admin.v2.SchemaBundle) => {
+                    responses.push(response);
+                });
+                stream.on('end', () => {
+                    resolve(responses);
+                });
+                stream.on('error', (err: Error) => {
+                    reject(err);
+                });
+            });
+            await assert.rejects(promise, expectedError);
+            assert((client.descriptors.page.listSchemaBundles.createStream as SinonStub)
+                .getCall(0).calledWith(client.innerApiCalls.listSchemaBundles, request));
+            assert(
+                (client.descriptors.page.listSchemaBundles.createStream as SinonStub)
+                    .getCall(0).args[2].otherArgs.headers['x-goog-request-params'].includes(
+                         expectedHeaderRequestParams
+                    ) 
+            );
+        });
+
+        it('uses async iteration with listSchemaBundles without error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+              credentials: {client_email: 'bogus', private_key: 'bogus'},
+              projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.ListSchemaBundlesRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.ListSchemaBundlesRequest', ['parent']);
+            request.parent = defaultValue1;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
+            const expectedResponse = [
+              generateSampleMessage(new protos.google.bigtable.admin.v2.SchemaBundle()),
+              generateSampleMessage(new protos.google.bigtable.admin.v2.SchemaBundle()),
+              generateSampleMessage(new protos.google.bigtable.admin.v2.SchemaBundle()),
+            ];
+            client.descriptors.page.listSchemaBundles.asyncIterate = stubAsyncIterationCall(expectedResponse);
+            const responses: protos.google.bigtable.admin.v2.ISchemaBundle[] = [];
+            const iterable = client.listSchemaBundlesAsync(request);
+            for await (const resource of iterable) {
+                responses.push(resource!);
+            }
+            assert.deepStrictEqual(responses, expectedResponse);
+            assert.deepStrictEqual(
+                (client.descriptors.page.listSchemaBundles.asyncIterate as SinonStub)
+                    .getCall(0).args[1], request);
+            assert(
+                (client.descriptors.page.listSchemaBundles.asyncIterate as SinonStub)
+                    .getCall(0).args[2].otherArgs.headers['x-goog-request-params'].includes(
+                        expectedHeaderRequestParams
+                    )
+            );
+        });
+
+        it('uses async iteration with listSchemaBundles with error', async () => {
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            await client.initialize();
+            const request = generateSampleMessage(
+              new protos.google.bigtable.admin.v2.ListSchemaBundlesRequest()
+            );
+            const defaultValue1 =
+              getTypeDefaultValue('.google.bigtable.admin.v2.ListSchemaBundlesRequest', ['parent']);
+            request.parent = defaultValue1;
+            const expectedHeaderRequestParams = `parent=${defaultValue1 ?? '' }`;
+            const expectedError = new Error('expected');
+            client.descriptors.page.listSchemaBundles.asyncIterate = stubAsyncIterationCall(undefined, expectedError);
+            const iterable = client.listSchemaBundlesAsync(request);
+            await assert.rejects(async () => {
+                const responses: protos.google.bigtable.admin.v2.ISchemaBundle[] = [];
+                for await (const resource of iterable) {
+                    responses.push(resource!);
+                }
+            });
+            assert.deepStrictEqual(
+                (client.descriptors.page.listSchemaBundles.asyncIterate as SinonStub)
+                    .getCall(0).args[1], request);
+            assert(
+                (client.descriptors.page.listSchemaBundles.asyncIterate as SinonStub)
+                    .getCall(0).args[2].otherArgs.headers['x-goog-request-params'].includes(
+                        expectedHeaderRequestParams
+                    )
+            );
+        });
+    });
+
     describe('Path templates', () => {
 
         describe('appProfile', async () => {
@@ -4901,6 +5674,60 @@ describe('v2.BigtableTableAdminClient', () => {
                 const result = client.matchProjectFromProjectName(fakePath);
                 assert.strictEqual(result, "projectValue");
                 assert((client.pathTemplates.projectPathTemplate.match as SinonStub)
+                    .getCall(-1).calledWith(fakePath));
+            });
+        });
+
+        describe('schemaBundle', async () => {
+            const fakePath = "/rendered/path/schemaBundle";
+            const expectedParameters = {
+                project: "projectValue",
+                instance: "instanceValue",
+                table: "tableValue",
+                schema_bundle: "schemaBundleValue",
+            };
+            const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            await client.initialize();
+            client.pathTemplates.schemaBundlePathTemplate.render =
+                sinon.stub().returns(fakePath);
+            client.pathTemplates.schemaBundlePathTemplate.match =
+                sinon.stub().returns(expectedParameters);
+
+            it('schemaBundlePath', () => {
+                const result = client.schemaBundlePath("projectValue", "instanceValue", "tableValue", "schemaBundleValue");
+                assert.strictEqual(result, fakePath);
+                assert((client.pathTemplates.schemaBundlePathTemplate.render as SinonStub)
+                    .getCall(-1).calledWith(expectedParameters));
+            });
+
+            it('matchProjectFromSchemaBundleName', () => {
+                const result = client.matchProjectFromSchemaBundleName(fakePath);
+                assert.strictEqual(result, "projectValue");
+                assert((client.pathTemplates.schemaBundlePathTemplate.match as SinonStub)
+                    .getCall(-1).calledWith(fakePath));
+            });
+
+            it('matchInstanceFromSchemaBundleName', () => {
+                const result = client.matchInstanceFromSchemaBundleName(fakePath);
+                assert.strictEqual(result, "instanceValue");
+                assert((client.pathTemplates.schemaBundlePathTemplate.match as SinonStub)
+                    .getCall(-1).calledWith(fakePath));
+            });
+
+            it('matchTableFromSchemaBundleName', () => {
+                const result = client.matchTableFromSchemaBundleName(fakePath);
+                assert.strictEqual(result, "tableValue");
+                assert((client.pathTemplates.schemaBundlePathTemplate.match as SinonStub)
+                    .getCall(-1).calledWith(fakePath));
+            });
+
+            it('matchSchemaBundleFromSchemaBundleName', () => {
+                const result = client.matchSchemaBundleFromSchemaBundleName(fakePath);
+                assert.strictEqual(result, "schemaBundleValue");
+                assert((client.pathTemplates.schemaBundlePathTemplate.match as SinonStub)
                     .getCall(-1).calledWith(fakePath));
             });
         });

@@ -168,6 +168,26 @@
           "timeout_millis": 60000,
           "retry_codes_name": "idempotent",
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
+        },
+        "CreateSchemaBundle": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "UpdateSchemaBundle": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "GetSchemaBundle": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "ListSchemaBundles": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "DeleteSchemaBundle": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
         }
       }
     }

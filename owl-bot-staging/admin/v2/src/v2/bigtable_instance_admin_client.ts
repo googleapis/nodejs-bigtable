@@ -207,6 +207,9 @@ export class BigtableInstanceAdminClient {
       projectPathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}'
       ),
+      schemaBundlePathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}/tables/{table}/schemaBundles/{schema_bundle}'
+      ),
       snapshotPathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}'
       ),
@@ -4696,6 +4699,68 @@ export class BigtableInstanceAdminClient {
    */
   matchProjectFromProjectName(projectName: string) {
     return this.pathTemplates.projectPathTemplate.match(projectName).project;
+  }
+
+  /**
+   * Return a fully-qualified schemaBundle resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @param {string} table
+   * @param {string} schema_bundle
+   * @returns {string} Resource name string.
+   */
+  schemaBundlePath(project:string,instance:string,table:string,schemaBundle:string) {
+    return this.pathTemplates.schemaBundlePathTemplate.render({
+      project: project,
+      instance: instance,
+      table: table,
+      schema_bundle: schemaBundle,
+    });
+  }
+
+  /**
+   * Parse the project from SchemaBundle resource.
+   *
+   * @param {string} schemaBundleName
+   *   A fully-qualified path representing SchemaBundle resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromSchemaBundleName(schemaBundleName: string) {
+    return this.pathTemplates.schemaBundlePathTemplate.match(schemaBundleName).project;
+  }
+
+  /**
+   * Parse the instance from SchemaBundle resource.
+   *
+   * @param {string} schemaBundleName
+   *   A fully-qualified path representing SchemaBundle resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromSchemaBundleName(schemaBundleName: string) {
+    return this.pathTemplates.schemaBundlePathTemplate.match(schemaBundleName).instance;
+  }
+
+  /**
+   * Parse the table from SchemaBundle resource.
+   *
+   * @param {string} schemaBundleName
+   *   A fully-qualified path representing SchemaBundle resource.
+   * @returns {string} A string representing the table.
+   */
+  matchTableFromSchemaBundleName(schemaBundleName: string) {
+    return this.pathTemplates.schemaBundlePathTemplate.match(schemaBundleName).table;
+  }
+
+  /**
+   * Parse the schema_bundle from SchemaBundle resource.
+   *
+   * @param {string} schemaBundleName
+   *   A fully-qualified path representing SchemaBundle resource.
+   * @returns {string} A string representing the schema_bundle.
+   */
+  matchSchemaBundleFromSchemaBundleName(schemaBundleName: string) {
+    return this.pathTemplates.schemaBundlePathTemplate.match(schemaBundleName).schema_bundle;
   }
 
   /**

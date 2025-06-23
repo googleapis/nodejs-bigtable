@@ -435,6 +435,16 @@
                 "testIamPermissions"
               ]
             },
+            "GetSchemaBundle": {
+              "methods": [
+                "getSchemaBundle"
+              ]
+            },
+            "DeleteSchemaBundle": {
+              "methods": [
+                "deleteSchemaBundle"
+              ]
+            },
             "CreateTableFromSnapshot": {
               "methods": [
                 "createTableFromSnapshot"
@@ -480,6 +490,16 @@
                 "copyBackup"
               ]
             },
+            "CreateSchemaBundle": {
+              "methods": [
+                "createSchemaBundle"
+              ]
+            },
+            "UpdateSchemaBundle": {
+              "methods": [
+                "updateSchemaBundle"
+              ]
+            },
             "ListTables": {
               "methods": [
                 "listTables",
@@ -506,6 +526,13 @@
                 "listBackups",
                 "listBackupsStream",
                 "listBackupsAsync"
+              ]
+            },
+            "ListSchemaBundles": {
+              "methods": [
+                "listSchemaBundles",
+                "listSchemaBundlesStream",
+                "listSchemaBundlesAsync"
               ]
             }
           }
@@ -598,6 +625,16 @@
                 "testIamPermissions"
               ]
             },
+            "GetSchemaBundle": {
+              "methods": [
+                "getSchemaBundle"
+              ]
+            },
+            "DeleteSchemaBundle": {
+              "methods": [
+                "deleteSchemaBundle"
+              ]
+            },
             "CreateTableFromSnapshot": {
               "methods": [
                 "createTableFromSnapshot"
@@ -643,6 +680,16 @@
                 "copyBackup"
               ]
             },
+            "CreateSchemaBundle": {
+              "methods": [
+                "createSchemaBundle"
+              ]
+            },
+            "UpdateSchemaBundle": {
+              "methods": [
+                "updateSchemaBundle"
+              ]
+            },
             "ListTables": {
               "methods": [
                 "listTables",
@@ -669,6 +716,13 @@
                 "listBackups",
                 "listBackupsStream",
                 "listBackupsAsync"
+              ]
+            },
+            "ListSchemaBundles": {
+              "methods": [
+                "listSchemaBundles",
+                "listSchemaBundlesStream",
+                "listSchemaBundlesAsync"
               ]
             }
           }

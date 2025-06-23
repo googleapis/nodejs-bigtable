@@ -21,7 +21,7 @@
 'use strict';
 
 function main(parent) {
-  // [START bigtableadmin_v2_generated_BigtableTableAdmin_ListAuthorizedViews_async]
+  // [START bigtableadmin_v2_generated_BigtableTableAdmin_ListSchemaBundles_async]
   /**
    * This snippet has been automatically generated and should be regarded as a code template only.
    * It will require modifications to work.
@@ -29,30 +29,24 @@ function main(parent) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the table for which AuthorizedViews should be
-   *  listed. Values are of the form
+   *  Required. The parent, which owns this collection of schema bundles.
+   *  Values are of the form
    *  `projects/{project}/instances/{instance}/tables/{table}`.
    */
   // const parent = 'abc123'
   /**
-   *  Optional. Maximum number of results per page.
-   *  A page_size of zero lets the server choose the number of items to return.
-   *  A page_size which is strictly positive will return at most that many items.
-   *  A negative page_size will cause an error.
-   *  Following the first request, subsequent paginated calls are not required
-   *  to pass a page_size. If a page_size is set in subsequent calls, it must
-   *  match the page_size given in the first request.
+   *  The maximum number of schema bundles to return. If the value is positive,
+   *  the server may return at most this value. If unspecified, the server will
+   *  return the maximum allowed page size.
    */
   // const pageSize = 1234
   /**
-   *  Optional. The value of `next_page_token` returned by a previous call.
+   *  A page token, received from a previous `ListSchemaBundles` call.
+   *  Provide this to retrieve the subsequent page.
+   *  When paginating, all other parameters provided to `ListSchemaBundles` must
+   *  match the call that provided the page token.
    */
   // const pageToken = 'abc123'
-  /**
-   *  Optional. The resource_view to be applied to the returned AuthorizedViews'
-   *  fields. Default to NAME_ONLY.
-   */
-  // const view = {}
 
   // Imports the Admin library
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
@@ -60,21 +54,21 @@ function main(parent) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function callListAuthorizedViews() {
+  async function callListSchemaBundles() {
     // Construct request
     const request = {
       parent,
     };
 
     // Run request
-    const iterable = adminClient.listAuthorizedViewsAsync(request);
+    const iterable = adminClient.listSchemaBundlesAsync(request);
     for await (const response of iterable) {
         console.log(response);
     }
   }
 
-  callListAuthorizedViews();
-  // [END bigtableadmin_v2_generated_BigtableTableAdmin_ListAuthorizedViews_async]
+  callListSchemaBundles();
+  // [END bigtableadmin_v2_generated_BigtableTableAdmin_ListSchemaBundles_async]
 }
 
 process.on('unhandledRejection', err => {

@@ -5067,6 +5067,60 @@ describe('v2.BigtableInstanceAdminClient', () => {
             });
         });
 
+        describe('schemaBundle', async () => {
+            const fakePath = "/rendered/path/schemaBundle";
+            const expectedParameters = {
+                project: "projectValue",
+                instance: "instanceValue",
+                table: "tableValue",
+                schema_bundle: "schemaBundleValue",
+            };
+            const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+                credentials: {client_email: 'bogus', private_key: 'bogus'},
+                projectId: 'bogus',
+            });
+            await client.initialize();
+            client.pathTemplates.schemaBundlePathTemplate.render =
+                sinon.stub().returns(fakePath);
+            client.pathTemplates.schemaBundlePathTemplate.match =
+                sinon.stub().returns(expectedParameters);
+
+            it('schemaBundlePath', () => {
+                const result = client.schemaBundlePath("projectValue", "instanceValue", "tableValue", "schemaBundleValue");
+                assert.strictEqual(result, fakePath);
+                assert((client.pathTemplates.schemaBundlePathTemplate.render as SinonStub)
+                    .getCall(-1).calledWith(expectedParameters));
+            });
+
+            it('matchProjectFromSchemaBundleName', () => {
+                const result = client.matchProjectFromSchemaBundleName(fakePath);
+                assert.strictEqual(result, "projectValue");
+                assert((client.pathTemplates.schemaBundlePathTemplate.match as SinonStub)
+                    .getCall(-1).calledWith(fakePath));
+            });
+
+            it('matchInstanceFromSchemaBundleName', () => {
+                const result = client.matchInstanceFromSchemaBundleName(fakePath);
+                assert.strictEqual(result, "instanceValue");
+                assert((client.pathTemplates.schemaBundlePathTemplate.match as SinonStub)
+                    .getCall(-1).calledWith(fakePath));
+            });
+
+            it('matchTableFromSchemaBundleName', () => {
+                const result = client.matchTableFromSchemaBundleName(fakePath);
+                assert.strictEqual(result, "tableValue");
+                assert((client.pathTemplates.schemaBundlePathTemplate.match as SinonStub)
+                    .getCall(-1).calledWith(fakePath));
+            });
+
+            it('matchSchemaBundleFromSchemaBundleName', () => {
+                const result = client.matchSchemaBundleFromSchemaBundleName(fakePath);
+                assert.strictEqual(result, "schemaBundleValue");
+                assert((client.pathTemplates.schemaBundlePathTemplate.match as SinonStub)
+                    .getCall(-1).calledWith(fakePath));
+            });
+        });
+
         describe('snapshot', async () => {
             const fakePath = "/rendered/path/snapshot";
             const expectedParameters = {

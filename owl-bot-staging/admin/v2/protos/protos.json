@@ -2626,7 +2626,7 @@
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:getIamPolicy",
                             "(google.api.http).body": "*",
-                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:getIamPolicy",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/tables/*/schemaBundles/*}:getIamPolicy",
                             "(google.api.http).additional_bindings.body": "*",
                             "(google.api.method_signature)": "resource"
                           },
@@ -2635,10 +2635,20 @@
                               "(google.api.http)": {
                                 "post": "/v2/{resource=projects/*/instances/*/tables/*}:getIamPolicy",
                                 "body": "*",
-                                "additional_bindings": {
-                                  "post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:getIamPolicy",
-                                  "body": "*"
-                                }
+                                "additional_bindings": [
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:getIamPolicy",
+                                    "body": "*"
+                                  },
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/tables/*/authorizedViews/*}:getIamPolicy",
+                                    "body": "*"
+                                  },
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/tables/*/schemaBundles/*}:getIamPolicy",
+                                    "body": "*"
+                                  }
+                                ]
                               }
                             },
                             {
@@ -2652,7 +2662,7 @@
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:setIamPolicy",
                             "(google.api.http).body": "*",
-                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:setIamPolicy",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/tables/*/schemaBundles/*}:setIamPolicy",
                             "(google.api.http).additional_bindings.body": "*",
                             "(google.api.method_signature)": "resource,policy"
                           },
@@ -2661,10 +2671,20 @@
                               "(google.api.http)": {
                                 "post": "/v2/{resource=projects/*/instances/*/tables/*}:setIamPolicy",
                                 "body": "*",
-                                "additional_bindings": {
-                                  "post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:setIamPolicy",
-                                  "body": "*"
-                                }
+                                "additional_bindings": [
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:setIamPolicy",
+                                    "body": "*"
+                                  },
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/tables/*/authorizedViews/*}:setIamPolicy",
+                                    "body": "*"
+                                  },
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/tables/*/schemaBundles/*}:setIamPolicy",
+                                    "body": "*"
+                                  }
+                                ]
                               }
                             },
                             {
@@ -2678,7 +2698,7 @@
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:testIamPermissions",
                             "(google.api.http).body": "*",
-                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:testIamPermissions",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/tables/*/schemaBundles/*}:testIamPermissions",
                             "(google.api.http).additional_bindings.body": "*",
                             "(google.api.method_signature)": "resource,permissions"
                           },
@@ -2687,14 +2707,134 @@
                               "(google.api.http)": {
                                 "post": "/v2/{resource=projects/*/instances/*/tables/*}:testIamPermissions",
                                 "body": "*",
-                                "additional_bindings": {
-                                  "post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:testIamPermissions",
-                                  "body": "*"
-                                }
+                                "additional_bindings": [
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:testIamPermissions",
+                                    "body": "*"
+                                  },
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/tables/*/authorizedViews/*}:testIamPermissions",
+                                    "body": "*"
+                                  },
+                                  {
+                                    "post": "/v2/{resource=projects/*/instances/*/tables/*/schemaBundles/*}:testIamPermissions",
+                                    "body": "*"
+                                  }
+                                ]
                               }
                             },
                             {
                               "(google.api.method_signature)": "resource,permissions"
+                            }
+                          ]
+                        },
+                        "CreateSchemaBundle": {
+                          "requestType": "CreateSchemaBundleRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*/tables/*}/schemaBundles",
+                            "(google.api.http).body": "schema_bundle",
+                            "(google.api.method_signature)": "parent,schema_bundle_id,schema_bundle",
+                            "(google.longrunning.operation_info).response_type": "SchemaBundle",
+                            "(google.longrunning.operation_info).metadata_type": "CreateSchemaBundleMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "post": "/v2/{parent=projects/*/instances/*/tables/*}/schemaBundles",
+                                "body": "schema_bundle"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "parent,schema_bundle_id,schema_bundle"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "SchemaBundle",
+                                "metadata_type": "CreateSchemaBundleMetadata"
+                              }
+                            }
+                          ]
+                        },
+                        "UpdateSchemaBundle": {
+                          "requestType": "UpdateSchemaBundleRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).patch": "/v2/{schema_bundle.name=projects/*/instances/*/tables/*/schemaBundles/*}",
+                            "(google.api.http).body": "schema_bundle",
+                            "(google.api.method_signature)": "schema_bundle,update_mask",
+                            "(google.longrunning.operation_info).response_type": "SchemaBundle",
+                            "(google.longrunning.operation_info).metadata_type": "UpdateSchemaBundleMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "patch": "/v2/{schema_bundle.name=projects/*/instances/*/tables/*/schemaBundles/*}",
+                                "body": "schema_bundle"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "schema_bundle,update_mask"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "SchemaBundle",
+                                "metadata_type": "UpdateSchemaBundleMetadata"
+                              }
+                            }
+                          ]
+                        },
+                        "GetSchemaBundle": {
+                          "requestType": "GetSchemaBundleRequest",
+                          "responseType": "SchemaBundle",
+                          "options": {
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/tables/*/schemaBundles/*}",
+                            "(google.api.method_signature)": "name"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "get": "/v2/{name=projects/*/instances/*/tables/*/schemaBundles/*}"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "name"
+                            }
+                          ]
+                        },
+                        "ListSchemaBundles": {
+                          "requestType": "ListSchemaBundlesRequest",
+                          "responseType": "ListSchemaBundlesResponse",
+                          "options": {
+                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*/tables/*}/schemaBundles",
+                            "(google.api.method_signature)": "parent"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "get": "/v2/{parent=projects/*/instances/*/tables/*}/schemaBundles"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "parent"
+                            }
+                          ]
+                        },
+                        "DeleteSchemaBundle": {
+                          "requestType": "DeleteSchemaBundleRequest",
+                          "responseType": "google.protobuf.Empty",
+                          "options": {
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/tables/*/schemaBundles/*}",
+                            "(google.api.method_signature)": "name"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "delete": "/v2/{name=projects/*/instances/*/tables/*/schemaBundles/*}"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "name"
                             }
                           ]
                         }
@@ -3613,6 +3753,153 @@
                         }
                       }
                     },
+                    "CreateSchemaBundleRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                          }
+                        },
+                        "schemaBundleId": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "schemaBundle": {
+                          "type": "SchemaBundle",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "CreateSchemaBundleMetadata": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "UpdateSchemaBundleRequest": {
+                      "fields": {
+                        "schemaBundle": {
+                          "type": "SchemaBundle",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "updateMask": {
+                          "type": "google.protobuf.FieldMask",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        },
+                        "ignoreWarnings": {
+                          "type": "bool",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        }
+                      }
+                    },
+                    "UpdateSchemaBundleMetadata": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "GetSchemaBundleRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/SchemaBundle"
+                          }
+                        }
+                      }
+                    },
+                    "ListSchemaBundlesRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).child_type": "bigtableadmin.googleapis.com/SchemaBundle"
+                          }
+                        },
+                        "pageSize": {
+                          "type": "int32",
+                          "id": 2
+                        },
+                        "pageToken": {
+                          "type": "string",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "ListSchemaBundlesResponse": {
+                      "fields": {
+                        "schemaBundles": {
+                          "rule": "repeated",
+                          "type": "SchemaBundle",
+                          "id": 1
+                        },
+                        "nextPageToken": {
+                          "type": "string",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "DeleteSchemaBundleRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/SchemaBundle"
+                          }
+                        },
+                        "etag": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        }
+                      }
+                    },
                     "RestoreInfo": {
                       "oneofs": {
                         "sourceInfo": {
@@ -4132,6 +4419,52 @@
                       "values": {
                         "RESTORE_SOURCE_TYPE_UNSPECIFIED": 0,
                         "BACKUP": 1
+                      }
+                    },
+                    "ProtoSchema": {
+                      "fields": {
+                        "protoDescriptors": {
+                          "type": "bytes",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "SchemaBundle": {
+                      "options": {
+                        "(google.api.resource).type": "bigtableadmin.googleapis.com/SchemaBundle",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/tables/{table}/schemaBundles/{schema_bundle}",
+                        "(google.api.resource).plural": "schemaBundles",
+                        "(google.api.resource).singular": "schemaBundle"
+                      },
+                      "oneofs": {
+                        "type": {
+                          "oneof": [
+                            "protoSchema"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "IDENTIFIER"
+                          }
+                        },
+                        "protoSchema": {
+                          "type": "ProtoSchema",
+                          "id": 2
+                        },
+                        "etag": {
+                          "type": "string",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        }
                       }
                     },
                     "Type": {

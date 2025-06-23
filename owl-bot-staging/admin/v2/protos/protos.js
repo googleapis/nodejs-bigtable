@@ -17953,6 +17953,171 @@
                          * @variation 2
                          */
     
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|createSchemaBundle}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef CreateSchemaBundleCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.longrunning.Operation} [response] Operation
+                         */
+    
+                        /**
+                         * Calls CreateSchemaBundle.
+                         * @function createSchemaBundle
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.ICreateSchemaBundleRequest} request CreateSchemaBundleRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.CreateSchemaBundleCallback} callback Node-style callback called with the error, if any, and Operation
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.createSchemaBundle = function createSchemaBundle(request, callback) {
+                            return this.rpcCall(createSchemaBundle, $root.google.bigtable.admin.v2.CreateSchemaBundleRequest, $root.google.longrunning.Operation, request, callback);
+                        }, "name", { value: "CreateSchemaBundle" });
+    
+                        /**
+                         * Calls CreateSchemaBundle.
+                         * @function createSchemaBundle
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.ICreateSchemaBundleRequest} request CreateSchemaBundleRequest message or plain object
+                         * @returns {Promise<google.longrunning.Operation>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|updateSchemaBundle}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef UpdateSchemaBundleCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.longrunning.Operation} [response] Operation
+                         */
+    
+                        /**
+                         * Calls UpdateSchemaBundle.
+                         * @function updateSchemaBundle
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IUpdateSchemaBundleRequest} request UpdateSchemaBundleRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.UpdateSchemaBundleCallback} callback Node-style callback called with the error, if any, and Operation
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.updateSchemaBundle = function updateSchemaBundle(request, callback) {
+                            return this.rpcCall(updateSchemaBundle, $root.google.bigtable.admin.v2.UpdateSchemaBundleRequest, $root.google.longrunning.Operation, request, callback);
+                        }, "name", { value: "UpdateSchemaBundle" });
+    
+                        /**
+                         * Calls UpdateSchemaBundle.
+                         * @function updateSchemaBundle
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IUpdateSchemaBundleRequest} request UpdateSchemaBundleRequest message or plain object
+                         * @returns {Promise<google.longrunning.Operation>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getSchemaBundle}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef GetSchemaBundleCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.bigtable.admin.v2.SchemaBundle} [response] SchemaBundle
+                         */
+    
+                        /**
+                         * Calls GetSchemaBundle.
+                         * @function getSchemaBundle
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IGetSchemaBundleRequest} request GetSchemaBundleRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.GetSchemaBundleCallback} callback Node-style callback called with the error, if any, and SchemaBundle
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.getSchemaBundle = function getSchemaBundle(request, callback) {
+                            return this.rpcCall(getSchemaBundle, $root.google.bigtable.admin.v2.GetSchemaBundleRequest, $root.google.bigtable.admin.v2.SchemaBundle, request, callback);
+                        }, "name", { value: "GetSchemaBundle" });
+    
+                        /**
+                         * Calls GetSchemaBundle.
+                         * @function getSchemaBundle
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IGetSchemaBundleRequest} request GetSchemaBundleRequest message or plain object
+                         * @returns {Promise<google.bigtable.admin.v2.SchemaBundle>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|listSchemaBundles}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef ListSchemaBundlesCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.bigtable.admin.v2.ListSchemaBundlesResponse} [response] ListSchemaBundlesResponse
+                         */
+    
+                        /**
+                         * Calls ListSchemaBundles.
+                         * @function listSchemaBundles
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IListSchemaBundlesRequest} request ListSchemaBundlesRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.ListSchemaBundlesCallback} callback Node-style callback called with the error, if any, and ListSchemaBundlesResponse
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.listSchemaBundles = function listSchemaBundles(request, callback) {
+                            return this.rpcCall(listSchemaBundles, $root.google.bigtable.admin.v2.ListSchemaBundlesRequest, $root.google.bigtable.admin.v2.ListSchemaBundlesResponse, request, callback);
+                        }, "name", { value: "ListSchemaBundles" });
+    
+                        /**
+                         * Calls ListSchemaBundles.
+                         * @function listSchemaBundles
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IListSchemaBundlesRequest} request ListSchemaBundlesRequest message or plain object
+                         * @returns {Promise<google.bigtable.admin.v2.ListSchemaBundlesResponse>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteSchemaBundle}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef DeleteSchemaBundleCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.protobuf.Empty} [response] Empty
+                         */
+    
+                        /**
+                         * Calls DeleteSchemaBundle.
+                         * @function deleteSchemaBundle
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IDeleteSchemaBundleRequest} request DeleteSchemaBundleRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.DeleteSchemaBundleCallback} callback Node-style callback called with the error, if any, and Empty
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.deleteSchemaBundle = function deleteSchemaBundle(request, callback) {
+                            return this.rpcCall(deleteSchemaBundle, $root.google.bigtable.admin.v2.DeleteSchemaBundleRequest, $root.google.protobuf.Empty, request, callback);
+                        }, "name", { value: "DeleteSchemaBundle" });
+    
+                        /**
+                         * Calls DeleteSchemaBundle.
+                         * @function deleteSchemaBundle
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IDeleteSchemaBundleRequest} request DeleteSchemaBundleRequest message or plain object
+                         * @returns {Promise<google.protobuf.Empty>} Promise
+                         * @variation 2
+                         */
+    
                         return BigtableTableAdmin;
                     })();
     
@@ -29908,6 +30073,1985 @@
                         return DeleteAuthorizedViewRequest;
                     })();
     
+                    v2.CreateSchemaBundleRequest = (function() {
+    
+                        /**
+                         * Properties of a CreateSchemaBundleRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface ICreateSchemaBundleRequest
+                         * @property {string|null} [parent] CreateSchemaBundleRequest parent
+                         * @property {string|null} [schemaBundleId] CreateSchemaBundleRequest schemaBundleId
+                         * @property {google.bigtable.admin.v2.ISchemaBundle|null} [schemaBundle] CreateSchemaBundleRequest schemaBundle
+                         */
+    
+                        /**
+                         * Constructs a new CreateSchemaBundleRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a CreateSchemaBundleRequest.
+                         * @implements ICreateSchemaBundleRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.ICreateSchemaBundleRequest=} [properties] Properties to set
+                         */
+                        function CreateSchemaBundleRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * CreateSchemaBundleRequest parent.
+                         * @member {string} parent
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleRequest
+                         * @instance
+                         */
+                        CreateSchemaBundleRequest.prototype.parent = "";
+    
+                        /**
+                         * CreateSchemaBundleRequest schemaBundleId.
+                         * @member {string} schemaBundleId
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleRequest
+                         * @instance
+                         */
+                        CreateSchemaBundleRequest.prototype.schemaBundleId = "";
+    
+                        /**
+                         * CreateSchemaBundleRequest schemaBundle.
+                         * @member {google.bigtable.admin.v2.ISchemaBundle|null|undefined} schemaBundle
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleRequest
+                         * @instance
+                         */
+                        CreateSchemaBundleRequest.prototype.schemaBundle = null;
+    
+                        /**
+                         * Creates a new CreateSchemaBundleRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICreateSchemaBundleRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.CreateSchemaBundleRequest} CreateSchemaBundleRequest instance
+                         */
+                        CreateSchemaBundleRequest.create = function create(properties) {
+                            return new CreateSchemaBundleRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified CreateSchemaBundleRequest message. Does not implicitly {@link google.bigtable.admin.v2.CreateSchemaBundleRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICreateSchemaBundleRequest} message CreateSchemaBundleRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        CreateSchemaBundleRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.parent != null && Object.hasOwnProperty.call(message, "parent"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.parent);
+                            if (message.schemaBundleId != null && Object.hasOwnProperty.call(message, "schemaBundleId"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.schemaBundleId);
+                            if (message.schemaBundle != null && Object.hasOwnProperty.call(message, "schemaBundle"))
+                                $root.google.bigtable.admin.v2.SchemaBundle.encode(message.schemaBundle, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified CreateSchemaBundleRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CreateSchemaBundleRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICreateSchemaBundleRequest} message CreateSchemaBundleRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        CreateSchemaBundleRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a CreateSchemaBundleRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.CreateSchemaBundleRequest} CreateSchemaBundleRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        CreateSchemaBundleRequest.decode = function decode(reader, length, error) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.CreateSchemaBundleRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                if (tag === error)
+                                    break;
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.parent = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.schemaBundleId = reader.string();
+                                        break;
+                                    }
+                                case 3: {
+                                        message.schemaBundle = $root.google.bigtable.admin.v2.SchemaBundle.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a CreateSchemaBundleRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.CreateSchemaBundleRequest} CreateSchemaBundleRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        CreateSchemaBundleRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a CreateSchemaBundleRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        CreateSchemaBundleRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                if (!$util.isString(message.parent))
+                                    return "parent: string expected";
+                            if (message.schemaBundleId != null && message.hasOwnProperty("schemaBundleId"))
+                                if (!$util.isString(message.schemaBundleId))
+                                    return "schemaBundleId: string expected";
+                            if (message.schemaBundle != null && message.hasOwnProperty("schemaBundle")) {
+                                var error = $root.google.bigtable.admin.v2.SchemaBundle.verify(message.schemaBundle);
+                                if (error)
+                                    return "schemaBundle." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a CreateSchemaBundleRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.CreateSchemaBundleRequest} CreateSchemaBundleRequest
+                         */
+                        CreateSchemaBundleRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.CreateSchemaBundleRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.CreateSchemaBundleRequest();
+                            if (object.parent != null)
+                                message.parent = String(object.parent);
+                            if (object.schemaBundleId != null)
+                                message.schemaBundleId = String(object.schemaBundleId);
+                            if (object.schemaBundle != null) {
+                                if (typeof object.schemaBundle !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.CreateSchemaBundleRequest.schemaBundle: object expected");
+                                message.schemaBundle = $root.google.bigtable.admin.v2.SchemaBundle.fromObject(object.schemaBundle);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a CreateSchemaBundleRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.CreateSchemaBundleRequest} message CreateSchemaBundleRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        CreateSchemaBundleRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.parent = "";
+                                object.schemaBundleId = "";
+                                object.schemaBundle = null;
+                            }
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                object.parent = message.parent;
+                            if (message.schemaBundleId != null && message.hasOwnProperty("schemaBundleId"))
+                                object.schemaBundleId = message.schemaBundleId;
+                            if (message.schemaBundle != null && message.hasOwnProperty("schemaBundle"))
+                                object.schemaBundle = $root.google.bigtable.admin.v2.SchemaBundle.toObject(message.schemaBundle, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this CreateSchemaBundleRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        CreateSchemaBundleRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for CreateSchemaBundleRequest
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleRequest
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        CreateSchemaBundleRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.CreateSchemaBundleRequest";
+                        };
+    
+                        return CreateSchemaBundleRequest;
+                    })();
+    
+                    v2.CreateSchemaBundleMetadata = (function() {
+    
+                        /**
+                         * Properties of a CreateSchemaBundleMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface ICreateSchemaBundleMetadata
+                         * @property {string|null} [name] CreateSchemaBundleMetadata name
+                         * @property {google.protobuf.ITimestamp|null} [startTime] CreateSchemaBundleMetadata startTime
+                         * @property {google.protobuf.ITimestamp|null} [endTime] CreateSchemaBundleMetadata endTime
+                         */
+    
+                        /**
+                         * Constructs a new CreateSchemaBundleMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a CreateSchemaBundleMetadata.
+                         * @implements ICreateSchemaBundleMetadata
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.ICreateSchemaBundleMetadata=} [properties] Properties to set
+                         */
+                        function CreateSchemaBundleMetadata(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * CreateSchemaBundleMetadata name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleMetadata
+                         * @instance
+                         */
+                        CreateSchemaBundleMetadata.prototype.name = "";
+    
+                        /**
+                         * CreateSchemaBundleMetadata startTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} startTime
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleMetadata
+                         * @instance
+                         */
+                        CreateSchemaBundleMetadata.prototype.startTime = null;
+    
+                        /**
+                         * CreateSchemaBundleMetadata endTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} endTime
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleMetadata
+                         * @instance
+                         */
+                        CreateSchemaBundleMetadata.prototype.endTime = null;
+    
+                        /**
+                         * Creates a new CreateSchemaBundleMetadata instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICreateSchemaBundleMetadata=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.CreateSchemaBundleMetadata} CreateSchemaBundleMetadata instance
+                         */
+                        CreateSchemaBundleMetadata.create = function create(properties) {
+                            return new CreateSchemaBundleMetadata(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified CreateSchemaBundleMetadata message. Does not implicitly {@link google.bigtable.admin.v2.CreateSchemaBundleMetadata.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICreateSchemaBundleMetadata} message CreateSchemaBundleMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        CreateSchemaBundleMetadata.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
+                                $root.google.protobuf.Timestamp.encode(message.startTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
+                                $root.google.protobuf.Timestamp.encode(message.endTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified CreateSchemaBundleMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CreateSchemaBundleMetadata.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICreateSchemaBundleMetadata} message CreateSchemaBundleMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        CreateSchemaBundleMetadata.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a CreateSchemaBundleMetadata message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.CreateSchemaBundleMetadata} CreateSchemaBundleMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        CreateSchemaBundleMetadata.decode = function decode(reader, length, error) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.CreateSchemaBundleMetadata();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                if (tag === error)
+                                    break;
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.name = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.startTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 3: {
+                                        message.endTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a CreateSchemaBundleMetadata message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.CreateSchemaBundleMetadata} CreateSchemaBundleMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        CreateSchemaBundleMetadata.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a CreateSchemaBundleMetadata message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleMetadata
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        CreateSchemaBundleMetadata.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.startTime != null && message.hasOwnProperty("startTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.startTime);
+                                if (error)
+                                    return "startTime." + error;
+                            }
+                            if (message.endTime != null && message.hasOwnProperty("endTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.endTime);
+                                if (error)
+                                    return "endTime." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a CreateSchemaBundleMetadata message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleMetadata
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.CreateSchemaBundleMetadata} CreateSchemaBundleMetadata
+                         */
+                        CreateSchemaBundleMetadata.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.CreateSchemaBundleMetadata)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.CreateSchemaBundleMetadata();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.startTime != null) {
+                                if (typeof object.startTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.CreateSchemaBundleMetadata.startTime: object expected");
+                                message.startTime = $root.google.protobuf.Timestamp.fromObject(object.startTime);
+                            }
+                            if (object.endTime != null) {
+                                if (typeof object.endTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.CreateSchemaBundleMetadata.endTime: object expected");
+                                message.endTime = $root.google.protobuf.Timestamp.fromObject(object.endTime);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a CreateSchemaBundleMetadata message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.CreateSchemaBundleMetadata} message CreateSchemaBundleMetadata
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        CreateSchemaBundleMetadata.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.startTime = null;
+                                object.endTime = null;
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                object.startTime = $root.google.protobuf.Timestamp.toObject(message.startTime, options);
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                object.endTime = $root.google.protobuf.Timestamp.toObject(message.endTime, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this CreateSchemaBundleMetadata to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleMetadata
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        CreateSchemaBundleMetadata.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for CreateSchemaBundleMetadata
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.CreateSchemaBundleMetadata
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        CreateSchemaBundleMetadata.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.CreateSchemaBundleMetadata";
+                        };
+    
+                        return CreateSchemaBundleMetadata;
+                    })();
+    
+                    v2.UpdateSchemaBundleRequest = (function() {
+    
+                        /**
+                         * Properties of an UpdateSchemaBundleRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IUpdateSchemaBundleRequest
+                         * @property {google.bigtable.admin.v2.ISchemaBundle|null} [schemaBundle] UpdateSchemaBundleRequest schemaBundle
+                         * @property {google.protobuf.IFieldMask|null} [updateMask] UpdateSchemaBundleRequest updateMask
+                         * @property {boolean|null} [ignoreWarnings] UpdateSchemaBundleRequest ignoreWarnings
+                         */
+    
+                        /**
+                         * Constructs a new UpdateSchemaBundleRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an UpdateSchemaBundleRequest.
+                         * @implements IUpdateSchemaBundleRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IUpdateSchemaBundleRequest=} [properties] Properties to set
+                         */
+                        function UpdateSchemaBundleRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * UpdateSchemaBundleRequest schemaBundle.
+                         * @member {google.bigtable.admin.v2.ISchemaBundle|null|undefined} schemaBundle
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleRequest
+                         * @instance
+                         */
+                        UpdateSchemaBundleRequest.prototype.schemaBundle = null;
+    
+                        /**
+                         * UpdateSchemaBundleRequest updateMask.
+                         * @member {google.protobuf.IFieldMask|null|undefined} updateMask
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleRequest
+                         * @instance
+                         */
+                        UpdateSchemaBundleRequest.prototype.updateMask = null;
+    
+                        /**
+                         * UpdateSchemaBundleRequest ignoreWarnings.
+                         * @member {boolean} ignoreWarnings
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleRequest
+                         * @instance
+                         */
+                        UpdateSchemaBundleRequest.prototype.ignoreWarnings = false;
+    
+                        /**
+                         * Creates a new UpdateSchemaBundleRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateSchemaBundleRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.UpdateSchemaBundleRequest} UpdateSchemaBundleRequest instance
+                         */
+                        UpdateSchemaBundleRequest.create = function create(properties) {
+                            return new UpdateSchemaBundleRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateSchemaBundleRequest message. Does not implicitly {@link google.bigtable.admin.v2.UpdateSchemaBundleRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateSchemaBundleRequest} message UpdateSchemaBundleRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateSchemaBundleRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.schemaBundle != null && Object.hasOwnProperty.call(message, "schemaBundle"))
+                                $root.google.bigtable.admin.v2.SchemaBundle.encode(message.schemaBundle, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.updateMask != null && Object.hasOwnProperty.call(message, "updateMask"))
+                                $root.google.protobuf.FieldMask.encode(message.updateMask, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.ignoreWarnings != null && Object.hasOwnProperty.call(message, "ignoreWarnings"))
+                                writer.uint32(/* id 3, wireType 0 =*/24).bool(message.ignoreWarnings);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateSchemaBundleRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UpdateSchemaBundleRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateSchemaBundleRequest} message UpdateSchemaBundleRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateSchemaBundleRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an UpdateSchemaBundleRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.UpdateSchemaBundleRequest} UpdateSchemaBundleRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateSchemaBundleRequest.decode = function decode(reader, length, error) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.UpdateSchemaBundleRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                if (tag === error)
+                                    break;
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.schemaBundle = $root.google.bigtable.admin.v2.SchemaBundle.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 2: {
+                                        message.updateMask = $root.google.protobuf.FieldMask.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 3: {
+                                        message.ignoreWarnings = reader.bool();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an UpdateSchemaBundleRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.UpdateSchemaBundleRequest} UpdateSchemaBundleRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateSchemaBundleRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an UpdateSchemaBundleRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        UpdateSchemaBundleRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.schemaBundle != null && message.hasOwnProperty("schemaBundle")) {
+                                var error = $root.google.bigtable.admin.v2.SchemaBundle.verify(message.schemaBundle);
+                                if (error)
+                                    return "schemaBundle." + error;
+                            }
+                            if (message.updateMask != null && message.hasOwnProperty("updateMask")) {
+                                var error = $root.google.protobuf.FieldMask.verify(message.updateMask);
+                                if (error)
+                                    return "updateMask." + error;
+                            }
+                            if (message.ignoreWarnings != null && message.hasOwnProperty("ignoreWarnings"))
+                                if (typeof message.ignoreWarnings !== "boolean")
+                                    return "ignoreWarnings: boolean expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an UpdateSchemaBundleRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.UpdateSchemaBundleRequest} UpdateSchemaBundleRequest
+                         */
+                        UpdateSchemaBundleRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.UpdateSchemaBundleRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.UpdateSchemaBundleRequest();
+                            if (object.schemaBundle != null) {
+                                if (typeof object.schemaBundle !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateSchemaBundleRequest.schemaBundle: object expected");
+                                message.schemaBundle = $root.google.bigtable.admin.v2.SchemaBundle.fromObject(object.schemaBundle);
+                            }
+                            if (object.updateMask != null) {
+                                if (typeof object.updateMask !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateSchemaBundleRequest.updateMask: object expected");
+                                message.updateMask = $root.google.protobuf.FieldMask.fromObject(object.updateMask);
+                            }
+                            if (object.ignoreWarnings != null)
+                                message.ignoreWarnings = Boolean(object.ignoreWarnings);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an UpdateSchemaBundleRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.UpdateSchemaBundleRequest} message UpdateSchemaBundleRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        UpdateSchemaBundleRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.schemaBundle = null;
+                                object.updateMask = null;
+                                object.ignoreWarnings = false;
+                            }
+                            if (message.schemaBundle != null && message.hasOwnProperty("schemaBundle"))
+                                object.schemaBundle = $root.google.bigtable.admin.v2.SchemaBundle.toObject(message.schemaBundle, options);
+                            if (message.updateMask != null && message.hasOwnProperty("updateMask"))
+                                object.updateMask = $root.google.protobuf.FieldMask.toObject(message.updateMask, options);
+                            if (message.ignoreWarnings != null && message.hasOwnProperty("ignoreWarnings"))
+                                object.ignoreWarnings = message.ignoreWarnings;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this UpdateSchemaBundleRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        UpdateSchemaBundleRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for UpdateSchemaBundleRequest
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleRequest
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        UpdateSchemaBundleRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.UpdateSchemaBundleRequest";
+                        };
+    
+                        return UpdateSchemaBundleRequest;
+                    })();
+    
+                    v2.UpdateSchemaBundleMetadata = (function() {
+    
+                        /**
+                         * Properties of an UpdateSchemaBundleMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IUpdateSchemaBundleMetadata
+                         * @property {string|null} [name] UpdateSchemaBundleMetadata name
+                         * @property {google.protobuf.ITimestamp|null} [startTime] UpdateSchemaBundleMetadata startTime
+                         * @property {google.protobuf.ITimestamp|null} [endTime] UpdateSchemaBundleMetadata endTime
+                         */
+    
+                        /**
+                         * Constructs a new UpdateSchemaBundleMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an UpdateSchemaBundleMetadata.
+                         * @implements IUpdateSchemaBundleMetadata
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IUpdateSchemaBundleMetadata=} [properties] Properties to set
+                         */
+                        function UpdateSchemaBundleMetadata(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * UpdateSchemaBundleMetadata name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleMetadata
+                         * @instance
+                         */
+                        UpdateSchemaBundleMetadata.prototype.name = "";
+    
+                        /**
+                         * UpdateSchemaBundleMetadata startTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} startTime
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleMetadata
+                         * @instance
+                         */
+                        UpdateSchemaBundleMetadata.prototype.startTime = null;
+    
+                        /**
+                         * UpdateSchemaBundleMetadata endTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} endTime
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleMetadata
+                         * @instance
+                         */
+                        UpdateSchemaBundleMetadata.prototype.endTime = null;
+    
+                        /**
+                         * Creates a new UpdateSchemaBundleMetadata instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateSchemaBundleMetadata=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.UpdateSchemaBundleMetadata} UpdateSchemaBundleMetadata instance
+                         */
+                        UpdateSchemaBundleMetadata.create = function create(properties) {
+                            return new UpdateSchemaBundleMetadata(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateSchemaBundleMetadata message. Does not implicitly {@link google.bigtable.admin.v2.UpdateSchemaBundleMetadata.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateSchemaBundleMetadata} message UpdateSchemaBundleMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateSchemaBundleMetadata.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
+                                $root.google.protobuf.Timestamp.encode(message.startTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
+                                $root.google.protobuf.Timestamp.encode(message.endTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateSchemaBundleMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UpdateSchemaBundleMetadata.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateSchemaBundleMetadata} message UpdateSchemaBundleMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateSchemaBundleMetadata.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an UpdateSchemaBundleMetadata message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.UpdateSchemaBundleMetadata} UpdateSchemaBundleMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateSchemaBundleMetadata.decode = function decode(reader, length, error) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.UpdateSchemaBundleMetadata();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                if (tag === error)
+                                    break;
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.name = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.startTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 3: {
+                                        message.endTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an UpdateSchemaBundleMetadata message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.UpdateSchemaBundleMetadata} UpdateSchemaBundleMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateSchemaBundleMetadata.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an UpdateSchemaBundleMetadata message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleMetadata
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        UpdateSchemaBundleMetadata.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.startTime != null && message.hasOwnProperty("startTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.startTime);
+                                if (error)
+                                    return "startTime." + error;
+                            }
+                            if (message.endTime != null && message.hasOwnProperty("endTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.endTime);
+                                if (error)
+                                    return "endTime." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an UpdateSchemaBundleMetadata message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleMetadata
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.UpdateSchemaBundleMetadata} UpdateSchemaBundleMetadata
+                         */
+                        UpdateSchemaBundleMetadata.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.UpdateSchemaBundleMetadata)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.UpdateSchemaBundleMetadata();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.startTime != null) {
+                                if (typeof object.startTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateSchemaBundleMetadata.startTime: object expected");
+                                message.startTime = $root.google.protobuf.Timestamp.fromObject(object.startTime);
+                            }
+                            if (object.endTime != null) {
+                                if (typeof object.endTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateSchemaBundleMetadata.endTime: object expected");
+                                message.endTime = $root.google.protobuf.Timestamp.fromObject(object.endTime);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an UpdateSchemaBundleMetadata message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.UpdateSchemaBundleMetadata} message UpdateSchemaBundleMetadata
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        UpdateSchemaBundleMetadata.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.startTime = null;
+                                object.endTime = null;
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                object.startTime = $root.google.protobuf.Timestamp.toObject(message.startTime, options);
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                object.endTime = $root.google.protobuf.Timestamp.toObject(message.endTime, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this UpdateSchemaBundleMetadata to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleMetadata
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        UpdateSchemaBundleMetadata.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for UpdateSchemaBundleMetadata
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.UpdateSchemaBundleMetadata
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        UpdateSchemaBundleMetadata.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.UpdateSchemaBundleMetadata";
+                        };
+    
+                        return UpdateSchemaBundleMetadata;
+                    })();
+    
+                    v2.GetSchemaBundleRequest = (function() {
+    
+                        /**
+                         * Properties of a GetSchemaBundleRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IGetSchemaBundleRequest
+                         * @property {string|null} [name] GetSchemaBundleRequest name
+                         */
+    
+                        /**
+                         * Constructs a new GetSchemaBundleRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a GetSchemaBundleRequest.
+                         * @implements IGetSchemaBundleRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IGetSchemaBundleRequest=} [properties] Properties to set
+                         */
+                        function GetSchemaBundleRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * GetSchemaBundleRequest name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.GetSchemaBundleRequest
+                         * @instance
+                         */
+                        GetSchemaBundleRequest.prototype.name = "";
+    
+                        /**
+                         * Creates a new GetSchemaBundleRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.GetSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IGetSchemaBundleRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.GetSchemaBundleRequest} GetSchemaBundleRequest instance
+                         */
+                        GetSchemaBundleRequest.create = function create(properties) {
+                            return new GetSchemaBundleRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified GetSchemaBundleRequest message. Does not implicitly {@link google.bigtable.admin.v2.GetSchemaBundleRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.GetSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IGetSchemaBundleRequest} message GetSchemaBundleRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        GetSchemaBundleRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified GetSchemaBundleRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.GetSchemaBundleRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.GetSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IGetSchemaBundleRequest} message GetSchemaBundleRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        GetSchemaBundleRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a GetSchemaBundleRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.GetSchemaBundleRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.GetSchemaBundleRequest} GetSchemaBundleRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        GetSchemaBundleRequest.decode = function decode(reader, length, error) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.GetSchemaBundleRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                if (tag === error)
+                                    break;
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.name = reader.string();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a GetSchemaBundleRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.GetSchemaBundleRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.GetSchemaBundleRequest} GetSchemaBundleRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        GetSchemaBundleRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a GetSchemaBundleRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.GetSchemaBundleRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        GetSchemaBundleRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a GetSchemaBundleRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.GetSchemaBundleRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.GetSchemaBundleRequest} GetSchemaBundleRequest
+                         */
+                        GetSchemaBundleRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.GetSchemaBundleRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.GetSchemaBundleRequest();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a GetSchemaBundleRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.GetSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.GetSchemaBundleRequest} message GetSchemaBundleRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        GetSchemaBundleRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                object.name = "";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this GetSchemaBundleRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.GetSchemaBundleRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        GetSchemaBundleRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for GetSchemaBundleRequest
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.GetSchemaBundleRequest
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        GetSchemaBundleRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.GetSchemaBundleRequest";
+                        };
+    
+                        return GetSchemaBundleRequest;
+                    })();
+    
+                    v2.ListSchemaBundlesRequest = (function() {
+    
+                        /**
+                         * Properties of a ListSchemaBundlesRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IListSchemaBundlesRequest
+                         * @property {string|null} [parent] ListSchemaBundlesRequest parent
+                         * @property {number|null} [pageSize] ListSchemaBundlesRequest pageSize
+                         * @property {string|null} [pageToken] ListSchemaBundlesRequest pageToken
+                         */
+    
+                        /**
+                         * Constructs a new ListSchemaBundlesRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a ListSchemaBundlesRequest.
+                         * @implements IListSchemaBundlesRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IListSchemaBundlesRequest=} [properties] Properties to set
+                         */
+                        function ListSchemaBundlesRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * ListSchemaBundlesRequest parent.
+                         * @member {string} parent
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesRequest
+                         * @instance
+                         */
+                        ListSchemaBundlesRequest.prototype.parent = "";
+    
+                        /**
+                         * ListSchemaBundlesRequest pageSize.
+                         * @member {number} pageSize
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesRequest
+                         * @instance
+                         */
+                        ListSchemaBundlesRequest.prototype.pageSize = 0;
+    
+                        /**
+                         * ListSchemaBundlesRequest pageToken.
+                         * @member {string} pageToken
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesRequest
+                         * @instance
+                         */
+                        ListSchemaBundlesRequest.prototype.pageToken = "";
+    
+                        /**
+                         * Creates a new ListSchemaBundlesRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListSchemaBundlesRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.ListSchemaBundlesRequest} ListSchemaBundlesRequest instance
+                         */
+                        ListSchemaBundlesRequest.create = function create(properties) {
+                            return new ListSchemaBundlesRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified ListSchemaBundlesRequest message. Does not implicitly {@link google.bigtable.admin.v2.ListSchemaBundlesRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListSchemaBundlesRequest} message ListSchemaBundlesRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ListSchemaBundlesRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.parent != null && Object.hasOwnProperty.call(message, "parent"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.parent);
+                            if (message.pageSize != null && Object.hasOwnProperty.call(message, "pageSize"))
+                                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.pageSize);
+                            if (message.pageToken != null && Object.hasOwnProperty.call(message, "pageToken"))
+                                writer.uint32(/* id 3, wireType 2 =*/26).string(message.pageToken);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified ListSchemaBundlesRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListSchemaBundlesRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListSchemaBundlesRequest} message ListSchemaBundlesRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ListSchemaBundlesRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a ListSchemaBundlesRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.ListSchemaBundlesRequest} ListSchemaBundlesRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ListSchemaBundlesRequest.decode = function decode(reader, length, error) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.ListSchemaBundlesRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                if (tag === error)
+                                    break;
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.parent = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.pageSize = reader.int32();
+                                        break;
+                                    }
+                                case 3: {
+                                        message.pageToken = reader.string();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a ListSchemaBundlesRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.ListSchemaBundlesRequest} ListSchemaBundlesRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ListSchemaBundlesRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a ListSchemaBundlesRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ListSchemaBundlesRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                if (!$util.isString(message.parent))
+                                    return "parent: string expected";
+                            if (message.pageSize != null && message.hasOwnProperty("pageSize"))
+                                if (!$util.isInteger(message.pageSize))
+                                    return "pageSize: integer expected";
+                            if (message.pageToken != null && message.hasOwnProperty("pageToken"))
+                                if (!$util.isString(message.pageToken))
+                                    return "pageToken: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a ListSchemaBundlesRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.ListSchemaBundlesRequest} ListSchemaBundlesRequest
+                         */
+                        ListSchemaBundlesRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.ListSchemaBundlesRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.ListSchemaBundlesRequest();
+                            if (object.parent != null)
+                                message.parent = String(object.parent);
+                            if (object.pageSize != null)
+                                message.pageSize = object.pageSize | 0;
+                            if (object.pageToken != null)
+                                message.pageToken = String(object.pageToken);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a ListSchemaBundlesRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.ListSchemaBundlesRequest} message ListSchemaBundlesRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ListSchemaBundlesRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.parent = "";
+                                object.pageSize = 0;
+                                object.pageToken = "";
+                            }
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                object.parent = message.parent;
+                            if (message.pageSize != null && message.hasOwnProperty("pageSize"))
+                                object.pageSize = message.pageSize;
+                            if (message.pageToken != null && message.hasOwnProperty("pageToken"))
+                                object.pageToken = message.pageToken;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this ListSchemaBundlesRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ListSchemaBundlesRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for ListSchemaBundlesRequest
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesRequest
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        ListSchemaBundlesRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.ListSchemaBundlesRequest";
+                        };
+    
+                        return ListSchemaBundlesRequest;
+                    })();
+    
+                    v2.ListSchemaBundlesResponse = (function() {
+    
+                        /**
+                         * Properties of a ListSchemaBundlesResponse.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IListSchemaBundlesResponse
+                         * @property {Array.<google.bigtable.admin.v2.ISchemaBundle>|null} [schemaBundles] ListSchemaBundlesResponse schemaBundles
+                         * @property {string|null} [nextPageToken] ListSchemaBundlesResponse nextPageToken
+                         */
+    
+                        /**
+                         * Constructs a new ListSchemaBundlesResponse.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a ListSchemaBundlesResponse.
+                         * @implements IListSchemaBundlesResponse
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IListSchemaBundlesResponse=} [properties] Properties to set
+                         */
+                        function ListSchemaBundlesResponse(properties) {
+                            this.schemaBundles = [];
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * ListSchemaBundlesResponse schemaBundles.
+                         * @member {Array.<google.bigtable.admin.v2.ISchemaBundle>} schemaBundles
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesResponse
+                         * @instance
+                         */
+                        ListSchemaBundlesResponse.prototype.schemaBundles = $util.emptyArray;
+    
+                        /**
+                         * ListSchemaBundlesResponse nextPageToken.
+                         * @member {string} nextPageToken
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesResponse
+                         * @instance
+                         */
+                        ListSchemaBundlesResponse.prototype.nextPageToken = "";
+    
+                        /**
+                         * Creates a new ListSchemaBundlesResponse instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesResponse
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListSchemaBundlesResponse=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.ListSchemaBundlesResponse} ListSchemaBundlesResponse instance
+                         */
+                        ListSchemaBundlesResponse.create = function create(properties) {
+                            return new ListSchemaBundlesResponse(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified ListSchemaBundlesResponse message. Does not implicitly {@link google.bigtable.admin.v2.ListSchemaBundlesResponse.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesResponse
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListSchemaBundlesResponse} message ListSchemaBundlesResponse message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ListSchemaBundlesResponse.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.schemaBundles != null && message.schemaBundles.length)
+                                for (var i = 0; i < message.schemaBundles.length; ++i)
+                                    $root.google.bigtable.admin.v2.SchemaBundle.encode(message.schemaBundles[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.nextPageToken != null && Object.hasOwnProperty.call(message, "nextPageToken"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.nextPageToken);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified ListSchemaBundlesResponse message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListSchemaBundlesResponse.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesResponse
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListSchemaBundlesResponse} message ListSchemaBundlesResponse message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ListSchemaBundlesResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a ListSchemaBundlesResponse message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesResponse
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.ListSchemaBundlesResponse} ListSchemaBundlesResponse
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ListSchemaBundlesResponse.decode = function decode(reader, length, error) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.ListSchemaBundlesResponse();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                if (tag === error)
+                                    break;
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        if (!(message.schemaBundles && message.schemaBundles.length))
+                                            message.schemaBundles = [];
+                                        message.schemaBundles.push($root.google.bigtable.admin.v2.SchemaBundle.decode(reader, reader.uint32()));
+                                        break;
+                                    }
+                                case 2: {
+                                        message.nextPageToken = reader.string();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a ListSchemaBundlesResponse message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesResponse
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.ListSchemaBundlesResponse} ListSchemaBundlesResponse
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ListSchemaBundlesResponse.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a ListSchemaBundlesResponse message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesResponse
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ListSchemaBundlesResponse.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.schemaBundles != null && message.hasOwnProperty("schemaBundles")) {
+                                if (!Array.isArray(message.schemaBundles))
+                                    return "schemaBundles: array expected";
+                                for (var i = 0; i < message.schemaBundles.length; ++i) {
+                                    var error = $root.google.bigtable.admin.v2.SchemaBundle.verify(message.schemaBundles[i]);
+                                    if (error)
+                                        return "schemaBundles." + error;
+                                }
+                            }
+                            if (message.nextPageToken != null && message.hasOwnProperty("nextPageToken"))
+                                if (!$util.isString(message.nextPageToken))
+                                    return "nextPageToken: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a ListSchemaBundlesResponse message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesResponse
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.ListSchemaBundlesResponse} ListSchemaBundlesResponse
+                         */
+                        ListSchemaBundlesResponse.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.ListSchemaBundlesResponse)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.ListSchemaBundlesResponse();
+                            if (object.schemaBundles) {
+                                if (!Array.isArray(object.schemaBundles))
+                                    throw TypeError(".google.bigtable.admin.v2.ListSchemaBundlesResponse.schemaBundles: array expected");
+                                message.schemaBundles = [];
+                                for (var i = 0; i < object.schemaBundles.length; ++i) {
+                                    if (typeof object.schemaBundles[i] !== "object")
+                                        throw TypeError(".google.bigtable.admin.v2.ListSchemaBundlesResponse.schemaBundles: object expected");
+                                    message.schemaBundles[i] = $root.google.bigtable.admin.v2.SchemaBundle.fromObject(object.schemaBundles[i]);
+                                }
+                            }
+                            if (object.nextPageToken != null)
+                                message.nextPageToken = String(object.nextPageToken);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a ListSchemaBundlesResponse message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesResponse
+                         * @static
+                         * @param {google.bigtable.admin.v2.ListSchemaBundlesResponse} message ListSchemaBundlesResponse
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ListSchemaBundlesResponse.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.arrays || options.defaults)
+                                object.schemaBundles = [];
+                            if (options.defaults)
+                                object.nextPageToken = "";
+                            if (message.schemaBundles && message.schemaBundles.length) {
+                                object.schemaBundles = [];
+                                for (var j = 0; j < message.schemaBundles.length; ++j)
+                                    object.schemaBundles[j] = $root.google.bigtable.admin.v2.SchemaBundle.toObject(message.schemaBundles[j], options);
+                            }
+                            if (message.nextPageToken != null && message.hasOwnProperty("nextPageToken"))
+                                object.nextPageToken = message.nextPageToken;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this ListSchemaBundlesResponse to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesResponse
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ListSchemaBundlesResponse.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for ListSchemaBundlesResponse
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.ListSchemaBundlesResponse
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        ListSchemaBundlesResponse.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.ListSchemaBundlesResponse";
+                        };
+    
+                        return ListSchemaBundlesResponse;
+                    })();
+    
+                    v2.DeleteSchemaBundleRequest = (function() {
+    
+                        /**
+                         * Properties of a DeleteSchemaBundleRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IDeleteSchemaBundleRequest
+                         * @property {string|null} [name] DeleteSchemaBundleRequest name
+                         * @property {string|null} [etag] DeleteSchemaBundleRequest etag
+                         */
+    
+                        /**
+                         * Constructs a new DeleteSchemaBundleRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a DeleteSchemaBundleRequest.
+                         * @implements IDeleteSchemaBundleRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IDeleteSchemaBundleRequest=} [properties] Properties to set
+                         */
+                        function DeleteSchemaBundleRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * DeleteSchemaBundleRequest name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.DeleteSchemaBundleRequest
+                         * @instance
+                         */
+                        DeleteSchemaBundleRequest.prototype.name = "";
+    
+                        /**
+                         * DeleteSchemaBundleRequest etag.
+                         * @member {string} etag
+                         * @memberof google.bigtable.admin.v2.DeleteSchemaBundleRequest
+                         * @instance
+                         */
+                        DeleteSchemaBundleRequest.prototype.etag = "";
+    
+                        /**
+                         * Creates a new DeleteSchemaBundleRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.DeleteSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IDeleteSchemaBundleRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.DeleteSchemaBundleRequest} DeleteSchemaBundleRequest instance
+                         */
+                        DeleteSchemaBundleRequest.create = function create(properties) {
+                            return new DeleteSchemaBundleRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified DeleteSchemaBundleRequest message. Does not implicitly {@link google.bigtable.admin.v2.DeleteSchemaBundleRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.DeleteSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IDeleteSchemaBundleRequest} message DeleteSchemaBundleRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        DeleteSchemaBundleRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.etag != null && Object.hasOwnProperty.call(message, "etag"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.etag);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified DeleteSchemaBundleRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.DeleteSchemaBundleRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.DeleteSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IDeleteSchemaBundleRequest} message DeleteSchemaBundleRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        DeleteSchemaBundleRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a DeleteSchemaBundleRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.DeleteSchemaBundleRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.DeleteSchemaBundleRequest} DeleteSchemaBundleRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        DeleteSchemaBundleRequest.decode = function decode(reader, length, error) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.DeleteSchemaBundleRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                if (tag === error)
+                                    break;
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.name = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.etag = reader.string();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a DeleteSchemaBundleRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.DeleteSchemaBundleRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.DeleteSchemaBundleRequest} DeleteSchemaBundleRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        DeleteSchemaBundleRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a DeleteSchemaBundleRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.DeleteSchemaBundleRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        DeleteSchemaBundleRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.etag != null && message.hasOwnProperty("etag"))
+                                if (!$util.isString(message.etag))
+                                    return "etag: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a DeleteSchemaBundleRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.DeleteSchemaBundleRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.DeleteSchemaBundleRequest} DeleteSchemaBundleRequest
+                         */
+                        DeleteSchemaBundleRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.DeleteSchemaBundleRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.DeleteSchemaBundleRequest();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.etag != null)
+                                message.etag = String(object.etag);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a DeleteSchemaBundleRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.DeleteSchemaBundleRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.DeleteSchemaBundleRequest} message DeleteSchemaBundleRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        DeleteSchemaBundleRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.etag = "";
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.etag != null && message.hasOwnProperty("etag"))
+                                object.etag = message.etag;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this DeleteSchemaBundleRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.DeleteSchemaBundleRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        DeleteSchemaBundleRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for DeleteSchemaBundleRequest
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.DeleteSchemaBundleRequest
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        DeleteSchemaBundleRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.DeleteSchemaBundleRequest";
+                        };
+    
+                        return DeleteSchemaBundleRequest;
+                    })();
+    
                     v2.RestoreInfo = (function() {
     
                         /**
@@ -34989,6 +37133,497 @@
                         values[valuesById[0] = "RESTORE_SOURCE_TYPE_UNSPECIFIED"] = 0;
                         values[valuesById[1] = "BACKUP"] = 1;
                         return values;
+                    })();
+    
+                    v2.ProtoSchema = (function() {
+    
+                        /**
+                         * Properties of a ProtoSchema.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IProtoSchema
+                         * @property {Uint8Array|null} [protoDescriptors] ProtoSchema protoDescriptors
+                         */
+    
+                        /**
+                         * Constructs a new ProtoSchema.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a ProtoSchema.
+                         * @implements IProtoSchema
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IProtoSchema=} [properties] Properties to set
+                         */
+                        function ProtoSchema(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * ProtoSchema protoDescriptors.
+                         * @member {Uint8Array} protoDescriptors
+                         * @memberof google.bigtable.admin.v2.ProtoSchema
+                         * @instance
+                         */
+                        ProtoSchema.prototype.protoDescriptors = $util.newBuffer([]);
+    
+                        /**
+                         * Creates a new ProtoSchema instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.ProtoSchema
+                         * @static
+                         * @param {google.bigtable.admin.v2.IProtoSchema=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.ProtoSchema} ProtoSchema instance
+                         */
+                        ProtoSchema.create = function create(properties) {
+                            return new ProtoSchema(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified ProtoSchema message. Does not implicitly {@link google.bigtable.admin.v2.ProtoSchema.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.ProtoSchema
+                         * @static
+                         * @param {google.bigtable.admin.v2.IProtoSchema} message ProtoSchema message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ProtoSchema.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.protoDescriptors != null && Object.hasOwnProperty.call(message, "protoDescriptors"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.protoDescriptors);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified ProtoSchema message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ProtoSchema.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.ProtoSchema
+                         * @static
+                         * @param {google.bigtable.admin.v2.IProtoSchema} message ProtoSchema message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ProtoSchema.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a ProtoSchema message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.ProtoSchema
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.ProtoSchema} ProtoSchema
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ProtoSchema.decode = function decode(reader, length, error) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.ProtoSchema();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                if (tag === error)
+                                    break;
+                                switch (tag >>> 3) {
+                                case 2: {
+                                        message.protoDescriptors = reader.bytes();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a ProtoSchema message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.ProtoSchema
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.ProtoSchema} ProtoSchema
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ProtoSchema.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a ProtoSchema message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.ProtoSchema
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ProtoSchema.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.protoDescriptors != null && message.hasOwnProperty("protoDescriptors"))
+                                if (!(message.protoDescriptors && typeof message.protoDescriptors.length === "number" || $util.isString(message.protoDescriptors)))
+                                    return "protoDescriptors: buffer expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a ProtoSchema message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.ProtoSchema
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.ProtoSchema} ProtoSchema
+                         */
+                        ProtoSchema.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.ProtoSchema)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.ProtoSchema();
+                            if (object.protoDescriptors != null)
+                                if (typeof object.protoDescriptors === "string")
+                                    $util.base64.decode(object.protoDescriptors, message.protoDescriptors = $util.newBuffer($util.base64.length(object.protoDescriptors)), 0);
+                                else if (object.protoDescriptors.length >= 0)
+                                    message.protoDescriptors = object.protoDescriptors;
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a ProtoSchema message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.ProtoSchema
+                         * @static
+                         * @param {google.bigtable.admin.v2.ProtoSchema} message ProtoSchema
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ProtoSchema.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                if (options.bytes === String)
+                                    object.protoDescriptors = "";
+                                else {
+                                    object.protoDescriptors = [];
+                                    if (options.bytes !== Array)
+                                        object.protoDescriptors = $util.newBuffer(object.protoDescriptors);
+                                }
+                            if (message.protoDescriptors != null && message.hasOwnProperty("protoDescriptors"))
+                                object.protoDescriptors = options.bytes === String ? $util.base64.encode(message.protoDescriptors, 0, message.protoDescriptors.length) : options.bytes === Array ? Array.prototype.slice.call(message.protoDescriptors) : message.protoDescriptors;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this ProtoSchema to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.ProtoSchema
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ProtoSchema.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for ProtoSchema
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.ProtoSchema
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        ProtoSchema.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.ProtoSchema";
+                        };
+    
+                        return ProtoSchema;
+                    })();
+    
+                    v2.SchemaBundle = (function() {
+    
+                        /**
+                         * Properties of a SchemaBundle.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface ISchemaBundle
+                         * @property {string|null} [name] SchemaBundle name
+                         * @property {google.bigtable.admin.v2.IProtoSchema|null} [protoSchema] SchemaBundle protoSchema
+                         * @property {string|null} [etag] SchemaBundle etag
+                         */
+    
+                        /**
+                         * Constructs a new SchemaBundle.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a SchemaBundle.
+                         * @implements ISchemaBundle
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.ISchemaBundle=} [properties] Properties to set
+                         */
+                        function SchemaBundle(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * SchemaBundle name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @instance
+                         */
+                        SchemaBundle.prototype.name = "";
+    
+                        /**
+                         * SchemaBundle protoSchema.
+                         * @member {google.bigtable.admin.v2.IProtoSchema|null|undefined} protoSchema
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @instance
+                         */
+                        SchemaBundle.prototype.protoSchema = null;
+    
+                        /**
+                         * SchemaBundle etag.
+                         * @member {string} etag
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @instance
+                         */
+                        SchemaBundle.prototype.etag = "";
+    
+                        // OneOf field names bound to virtual getters and setters
+                        var $oneOfFields;
+    
+                        /**
+                         * SchemaBundle type.
+                         * @member {"protoSchema"|undefined} type
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @instance
+                         */
+                        Object.defineProperty(SchemaBundle.prototype, "type", {
+                            get: $util.oneOfGetter($oneOfFields = ["protoSchema"]),
+                            set: $util.oneOfSetter($oneOfFields)
+                        });
+    
+                        /**
+                         * Creates a new SchemaBundle instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @static
+                         * @param {google.bigtable.admin.v2.ISchemaBundle=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.SchemaBundle} SchemaBundle instance
+                         */
+                        SchemaBundle.create = function create(properties) {
+                            return new SchemaBundle(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified SchemaBundle message. Does not implicitly {@link google.bigtable.admin.v2.SchemaBundle.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @static
+                         * @param {google.bigtable.admin.v2.ISchemaBundle} message SchemaBundle message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        SchemaBundle.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.protoSchema != null && Object.hasOwnProperty.call(message, "protoSchema"))
+                                $root.google.bigtable.admin.v2.ProtoSchema.encode(message.protoSchema, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.etag != null && Object.hasOwnProperty.call(message, "etag"))
+                                writer.uint32(/* id 3, wireType 2 =*/26).string(message.etag);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified SchemaBundle message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.SchemaBundle.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @static
+                         * @param {google.bigtable.admin.v2.ISchemaBundle} message SchemaBundle message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        SchemaBundle.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a SchemaBundle message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.SchemaBundle} SchemaBundle
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        SchemaBundle.decode = function decode(reader, length, error) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.SchemaBundle();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                if (tag === error)
+                                    break;
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.name = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.protoSchema = $root.google.bigtable.admin.v2.ProtoSchema.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 3: {
+                                        message.etag = reader.string();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a SchemaBundle message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.SchemaBundle} SchemaBundle
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        SchemaBundle.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a SchemaBundle message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        SchemaBundle.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            var properties = {};
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.protoSchema != null && message.hasOwnProperty("protoSchema")) {
+                                properties.type = 1;
+                                {
+                                    var error = $root.google.bigtable.admin.v2.ProtoSchema.verify(message.protoSchema);
+                                    if (error)
+                                        return "protoSchema." + error;
+                                }
+                            }
+                            if (message.etag != null && message.hasOwnProperty("etag"))
+                                if (!$util.isString(message.etag))
+                                    return "etag: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a SchemaBundle message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.SchemaBundle} SchemaBundle
+                         */
+                        SchemaBundle.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.SchemaBundle)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.SchemaBundle();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.protoSchema != null) {
+                                if (typeof object.protoSchema !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.SchemaBundle.protoSchema: object expected");
+                                message.protoSchema = $root.google.bigtable.admin.v2.ProtoSchema.fromObject(object.protoSchema);
+                            }
+                            if (object.etag != null)
+                                message.etag = String(object.etag);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a SchemaBundle message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @static
+                         * @param {google.bigtable.admin.v2.SchemaBundle} message SchemaBundle
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        SchemaBundle.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.etag = "";
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.protoSchema != null && message.hasOwnProperty("protoSchema")) {
+                                object.protoSchema = $root.google.bigtable.admin.v2.ProtoSchema.toObject(message.protoSchema, options);
+                                if (options.oneofs)
+                                    object.type = "protoSchema";
+                            }
+                            if (message.etag != null && message.hasOwnProperty("etag"))
+                                object.etag = message.etag;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this SchemaBundle to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        SchemaBundle.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for SchemaBundle
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.SchemaBundle
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        SchemaBundle.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.SchemaBundle";
+                        };
+    
+                        return SchemaBundle;
                     })();
     
                     v2.Type = (function() {
