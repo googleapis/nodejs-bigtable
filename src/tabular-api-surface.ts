@@ -157,11 +157,11 @@ class TransformWithReadHook extends PassThrough {
     this.readHook = opts?.readHook;
   }
 
-  read(n: number) {
+  read(size?: number) {
     if (this.readHook) {
       this.readHook();
     }
-    super.read(n);
+    return super.read(size);
   }
 }
 
