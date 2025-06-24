@@ -377,7 +377,7 @@ const snippets = {
     };
 
     const parameterTypes = {
-      row_key: Bigtable.ExecuteQueryTypes.String(),
+      row_key: Bigtable.SqlTypes.String(),
     };
 
     const prepareStatementOptions = {
@@ -387,7 +387,7 @@ const snippets = {
 
     instance
       .prepareStatement(prepareStatementOptions)
-      .then(preparedStatement =>
+      .then(([preparedStatement]) =>
         instance.executeQuery({
           preparedStatement,
           parameters,
