@@ -20,7 +20,7 @@ import {Mutation} from '../src/mutation';
 import * as mocha from 'mocha';
 import {Row} from '../src';
 
-describe.only('Bigtable/AuthorizedViews', () => {
+describe('Bigtable/AuthorizedViews', () => {
   describe('Authorized View methods should have requests that match Table and Row requests', () => {
     const bigtable = new Bigtable({});
     const fakeTableName = 'fake-table';

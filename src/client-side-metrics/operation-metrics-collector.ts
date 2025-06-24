@@ -122,6 +122,7 @@ export class OperationMetricsCollector {
   // we will not continue to add to application latency time when the request
   // is being sent.
   private recordingApplicationLatencies: boolean;
+  private totalApplicationLatencyTime: number;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -150,6 +151,7 @@ export class OperationMetricsCollector {
     this.lastRowReceivedTime = null;
     this.applicationLatencies = [];
     this.recordingApplicationLatencies = false;
+    this.totalApplicationLatencyTime = 0;
     this.handlers = handlers;
   }
 
@@ -258,6 +260,7 @@ export class OperationMetricsCollector {
       this.connectivityErrorCount = 0;
       this.lastRowReceivedTime = null;
       this.recordingApplicationLatencies = false;
+      this.totalApplicationLatencyTime = 0;
     });
   }
 
@@ -267,7 +270,6 @@ export class OperationMetricsCollector {
   onResponse() {
     withMetricsDebug(() => {
       if (!this.firstResponseLatency) {
-        this.recordingApplicationLatencies = true;
         checkState(this.state, [
           MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
         ]);
@@ -359,6 +361,31 @@ export class OperationMetricsCollector {
     }
   }
 
+  onRowRead() {
+    if (
+      this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
+      this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED ||
+      this.state ===
+        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
+    ) {
+      this.recordingApplicationLatencies = true;
+      const currentTime = hrtime.bigint();
+      if (this.lastRowReceivedTime) {
+        // application latency is measured in total milliseconds.
+        const applicationLatency = Number(
+          (currentTime - this.lastRowReceivedTime) / BigInt(1000000),
+        );
+        this.totalApplicationLatencyTime += applicationLatency;
+        this.lastRowReceivedTime = null;
+        // TODO: Must also stop timer when the loop ends
+      }
+    } else {
+      console.warn('Invalid state transition attempted');
+    }
+  }
+
   /**
    * Called when a row from the Bigtable stream reaches the application user.
    *
@@ -368,7 +395,7 @@ export class OperationMetricsCollector {
    * latencies are then collected and reported as `applicationBlockingLatencies`
    * when the operation completes.
    */
-  onRowReachesUser() {
+  onPrepareNextRow() {
     if (
       this.state ===
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
@@ -379,13 +406,6 @@ export class OperationMetricsCollector {
     ) {
       if (this.recordingApplicationLatencies) {
         const currentTime = hrtime.bigint();
-        if (this.lastRowReceivedTime) {
-          // application latency is measured in total milliseconds.
-          const applicationLatency = Number(
-            (currentTime - this.lastRowReceivedTime) / BigInt(1000000),
-          );
-          this.applicationLatencies.push(applicationLatency);
-        }
         this.lastRowReceivedTime = currentTime;
       }
     } else {
