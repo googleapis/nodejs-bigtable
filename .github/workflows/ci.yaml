@@ -72,5 +72,3 @@ jobs:
       - uses: JustinBeckwith/linkinator-action@v1
         with:
           paths: docs/
-          concurrency: 1
-          retry: true
