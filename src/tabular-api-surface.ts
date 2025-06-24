@@ -35,7 +35,7 @@ import {
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {google} from '../protos/protos';
 import {CallOptions, grpc, ServiceError} from 'google-gax';
-import {Duplex, PassThrough, Transform} from 'stream';
+import {Duplex, PassThrough, Transform, TransformOptions} from 'stream';
 import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {TableUtils} from './utils/table';
@@ -145,6 +145,25 @@ export interface PrefixRange {
 const concat = require('concat-stream');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
+
+interface TransformWithReadHookOptions extends TransformOptions {
+  readHook?: () => {};
+}
+
+class TransformWithReadHook extends PassThrough {
+  private readHook?: () => {};
+  constructor(opts?: TransformWithReadHookOptions) {
+    super(opts);
+    this.readHook = opts?.readHook;
+  }
+
+  read(n: number) {
+    if (this.readHook) {
+      this.readHook();
+    }
+    super.read(n);
+  }
+}
 
 /**
  * The TabularApiSurface class is a class that contains methods we want to
@@ -263,7 +282,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     // discarded in the per attempt subpipeline (rowStream)
     let lastRowKey = '';
     let rowsRead = 0;
-    const userStream = new PassThrough({
+    const userStream = new TransformWithReadHook({
       objectMode: true,
       readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
       writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
