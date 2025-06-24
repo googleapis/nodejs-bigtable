@@ -57,7 +57,7 @@ function dispatch(emitter: EventEmitter, response: any) {
       const emit = emits[index];
       index++;
       emitter.emit(emit.name, emit.arg);
-      setImmediate(next);
+      next();
     }
   }
 }
@@ -123,7 +123,7 @@ describe('Bigtable/Table', () => {
     });
   });
 
-  describe('createReadStream', () => {
+  describe.only('createReadStream', () => {
     let clock: sinon.SinonFakeTimers;
     let endCalled: boolean;
     let error: ServiceError | null;
@@ -199,6 +199,7 @@ describe('Bigtable/Table', () => {
           .on('end', () => (endCalled = true))
           .on('error', err => (error = err as ServiceError));
         clock.runAll();
+        console.log('clock');
 
         if (test.error) {
           assert(!endCalled, ".on('end') should not have been invoked");
