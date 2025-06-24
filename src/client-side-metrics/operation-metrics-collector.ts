@@ -232,7 +232,7 @@ export class OperationMetricsCollector {
           }
         });
       } else {
-        throw new Error('Start time should always be provided');
+        console.warn('Start time should always be provided');
       }
     });
   }
@@ -272,7 +272,7 @@ export class OperationMetricsCollector {
             (endTime - this.operationStartTime) / BigInt(1000000),
           );
         } else {
-          throw new Error(
+          console.warn(
             'ProjectId and operationStartTime should always be provided',
           );
         }
