@@ -124,7 +124,7 @@ describe('Bigtable/Table', () => {
     });
   });
 
-  describe.only('createReadStream', () => {
+  describe('createReadStream', () => {
     let endCalled: boolean;
     let error: ServiceError | null;
     let requestedOptions: Array<{}>;
