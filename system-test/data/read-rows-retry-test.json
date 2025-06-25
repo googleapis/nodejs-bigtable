@@ -144,12 +144,12 @@
         }]
       },
       "request_options": [
-        { "rowKeys": [],
+        { "rowKeys": [], 
           "rowRanges": [
           { "startKeyClosed": "a", "endKeyClosed": "c" },
           { "startKeyClosed": "x", "endKeyClosed": "z" }
         ] },
-        { "rowKeys": [], 
+        { "rowKeys": [],
           "rowRanges": [ { "startKeyClosed": "x", "endKeyClosed": "z" } ] }
       ],
       "responses": [
