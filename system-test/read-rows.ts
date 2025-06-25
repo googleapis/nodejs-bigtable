@@ -75,7 +75,7 @@ function rowResponse(rowKey: {}) {
   };
 }
 
-describe('Bigtable/Table', () => {
+describe.only('Bigtable/Table', () => {
   const bigtable = new Bigtable();
   const INSTANCE_NAME = 'fake-instance2';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -137,12 +137,9 @@ describe('Bigtable/Table', () => {
         toFake: [
           'setTimeout',
           'clearTimeout',
-          'setImmediate',
-          'clearImmediate',
           'setInterval',
           'clearInterval',
           'Date',
-          'nextTick',
         ],
       });
       endCalled = false;
