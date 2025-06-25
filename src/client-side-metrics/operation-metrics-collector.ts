@@ -379,7 +379,10 @@ export class OperationMetricsCollector {
         );
         this.totalApplicationLatencyTime += applicationLatency;
         this.lastRowReceivedTime = null;
-        // TODO: Must also stop timer when the loop ends
+        // NOTE: It's worth noting that we won't include the application latency
+        // for the last row, but this is expected to be negligible for the whole
+        // calculation. We don't have a mechanism to stop the timer when the
+        // last row is read.
       }
     } else {
       console.warn('Invalid state transition attempted');
@@ -405,8 +408,10 @@ export class OperationMetricsCollector {
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
     ) {
       if (this.recordingApplicationLatencies) {
-        const currentTime = hrtime.bigint();
-        this.lastRowReceivedTime = currentTime;
+        // We don't want to record application latencies before the first row is
+        // read so we only want to start the timer here after the first row is
+        // read ie. after this.recordingApplicationLatencies is set to true.
+        this.lastRowReceivedTime = hrtime.bigint();
       }
     } else {
       console.warn('Invalid state transition attempted');
