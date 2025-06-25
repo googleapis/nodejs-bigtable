@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {AbortableDuplex, Bigtable} from '../src';
+import {Bigtable} from '../src';
 import {Mutation} from '../src/mutation.js';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
   tests: Test[];
@@ -130,6 +130,7 @@ describe('Bigtable/Table', () => {
     let requestedOptions: Array<{}>;
     let responses: Array<{}> | null;
     let rowKeysRead: Array<Array<{}>>;
+    let stub: sinon.SinonStub;
 
     beforeEach(() => {
       endCalled = false;
@@ -137,7 +138,7 @@ describe('Bigtable/Table', () => {
       responses = null;
       rowKeysRead = [];
       requestedOptions = [];
-      bigtable.request = ((cfg: any) => {
+      stub = sinon.stub(bigtable, 'request').callsFake(cfg => {
         const reqOpts = cfg.reqOpts;
         const requestOptions = {} as google.bigtable.v2.IRowSet;
         if (reqOpts.rows && reqOpts.rows.rowRanges) {
@@ -169,7 +170,11 @@ describe('Bigtable/Table', () => {
         (requestStream as any).abort = () => {};
         dispatch(requestStream, responses!.shift());
         return requestStream;
-      }) as unknown as () => AbortableDuplex;
+      });
+    });
+
+    afterEach(() => {
+      stub.restore();
     });
 
     tests.forEach(test => {
