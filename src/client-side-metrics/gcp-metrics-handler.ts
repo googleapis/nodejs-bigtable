@@ -231,12 +231,10 @@ export class GCPMetricsHandler implements IMetricsHandler {
       status: data.status,
       ...commonAttributes,
     });
-    for (const applicationLatency of data.applicationLatency) {
-      otelInstruments.applicationBlockingLatencies.record(
-        applicationLatency,
-        commonAttributes,
-      );
-    }
+    otelInstruments.applicationBlockingLatencies.record(
+      data.applicationLatency,
+      commonAttributes,
+    );
     otelInstruments.retryCount.add(data.retryCount, commonAttributes);
   }
 
