@@ -147,11 +147,11 @@ const concat = require('concat-stream');
 const pumpify = require('pumpify');
 
 interface TransformWithReadHookOptions extends TransformOptions {
-  readHook?: () => {};
+  readHook?: () => void;
 }
 
 class TransformWithReadHook extends PassThrough {
-  private readHook?: () => {};
+  private readHook?: () => void;
   constructor(opts?: TransformWithReadHookOptions) {
     super(opts);
     this.readHook = opts?.readHook;
@@ -282,7 +282,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     // discarded in the per attempt subpipeline (rowStream)
     let lastRowKey = '';
     let rowsRead = 0;
+    const metricsCollector =
+      this.bigtable._metricsConfigManager.createOperation(
+        MethodName.READ_ROWS,
+        StreamingState.STREAMING,
+        this,
+      );
     const userStream = new TransformWithReadHook({
+      readHook: () => {
+        metricsCollector.onRowRead();
+      },
       objectMode: true,
       readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
       writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
@@ -322,7 +331,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
         lastRowKey = row.id;
         rowsRead++;
-        metricsCollector.onRowReachesUser();
+        metricsCollector.onPrepareNextRow();
         callback(null, row);
       },
     });
@@ -356,12 +365,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
-    const metricsCollector =
-      this.bigtable._metricsConfigManager.createOperation(
-        MethodName.READ_ROWS,
-        StreamingState.STREAMING,
-        this,
-      );
     metricsCollector.onOperationStart();
     const makeNewRequest = () => {
       metricsCollector.onAttemptStart();
