@@ -39,7 +39,7 @@ interface StandardData {
 export interface OnOperationCompleteData extends StandardData {
   firstResponseLatency?: number;
   operationLatency: number;
-  applicationLatencies: number[];
+  applicationLatency: number;
   retryCount?: number;
 }
 

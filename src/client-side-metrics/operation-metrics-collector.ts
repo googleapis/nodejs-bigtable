@@ -113,7 +113,6 @@ export class OperationMetricsCollector {
   private serverTime: number | null;
   private connectivityErrorCount: number;
   private streamingOperation: StreamingState;
-  private applicationLatencies: number[];
   private lastRowReceivedTime: bigint | null;
   private handlers: IMetricsHandler[];
   // recordingApplicationLatencies is set to false when other operations are
@@ -149,7 +148,6 @@ export class OperationMetricsCollector {
     this.connectivityErrorCount = 0;
     this.streamingOperation = streamingOperation;
     this.lastRowReceivedTime = null;
-    this.applicationLatencies = [];
     this.recordingApplicationLatencies = false;
     this.totalApplicationLatencyTime = 0;
     this.handlers = handlers;
@@ -317,7 +315,7 @@ export class OperationMetricsCollector {
                 operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? undefined,
-                applicationLatencies: this.applicationLatencies,
+                applicationLatency: this.totalApplicationLatencyTime,
               });
             }
           });
