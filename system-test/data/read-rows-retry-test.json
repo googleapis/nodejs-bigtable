@@ -146,9 +146,9 @@
       "request_options": [
         { "rowKeys": [],
           "rowRanges": [
-            { "startKeyClosed": "a", "endKeyClosed": "c" },
-            { "startKeyClosed": "x", "endKeyClosed": "z" }
-          ] },
+          { "startKeyClosed": "a", "endKeyClosed": "c" },
+          { "startKeyClosed": "x", "endKeyClosed": "z" }
+        ] },
         { "rowKeys": [],
           "rowRanges": [ { "startKeyClosed": "x", "endKeyClosed": "z" } ] }
       ],

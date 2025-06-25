@@ -491,7 +491,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         },
         objectMode: true,
       });
-      
+
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
       // Retry on "received rst stream" errors
