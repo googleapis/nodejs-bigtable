@@ -71,7 +71,8 @@ class FakeMetricsCollector {
   onMetadataReceived() {}
   handleStatusAndMetadata() {}
   onStatusMetadataReceived() {}
-  onRowReachesUser() {}
+  onRowRead() {}
+  onPrepareNextRow() {}
 }
 
 class FakeMetricsConfigManager extends ClientSideMetricsConfigManager {
