@@ -58,7 +58,7 @@ export const expectedRequestsHandled = [
     client_name: 'nodejs-bigtable',
     projectId: 'my-project',
     operationLatency: 10000,
-    applicationLatencies: [1000, 1000],
+    applicationLatency: 2000,
     retryCount: 1,
     firstResponseLatency: 2000,
   },
