@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {CloudMonitoringExporter} from './exporter';
 import {
   IMetricsHandler,
   OnAttemptCompleteData,
@@ -20,6 +21,7 @@ import {
 import * as Resources from '@opentelemetry/resources';
 import * as ResourceUtil from '@google-cloud/opentelemetry-resource-util';
 import {PushMetricExporter, View} from '@opentelemetry/sdk-metrics';
+import {ClientOptions} from 'google-gax';
 const {
   Aggregation,
   ExplicitBucketHistogramAggregation,
@@ -27,6 +29,31 @@ const {
   Histogram,
   PeriodicExportingMetricReader,
 } = require('@opentelemetry/sdk-metrics');
+import * as os from 'os';
+import * as crypto from 'crypto';
+
+/**
+ * Generates a unique client identifier string.
+ *
+ * This function creates a client identifier that incorporates the hostname,
+ * process ID, and a UUID to ensure uniqueness across different client instances
+ * and processes. The identifier follows the pattern:
+ *
+ * `node-<uuid>-<pid><hostname>`
+ *
+ * where:
+ * - `<uuid>` is a randomly generated UUID (version 4).
+ * - `<pid>` is the process ID of the current Node.js process.
+ * - `<hostname>` is the hostname of the machine.
+ *
+ * @returns {string} A unique client identifier string.
+ */
+function generateClientUuid() {
+  const hostname = os.hostname() || 'localhost';
+  const currentPid = process.pid || '';
+  const uuid4 = crypto.randomUUID();
+  return `node-${uuid4}-${currentPid}${hostname}`;
+}
 
 /**
  * A collection of OpenTelemetry metric instruments used to record
@@ -47,10 +74,9 @@ interface MetricsInstruments {
  * This method gets the open telemetry instruments that will store GCP metrics
  * for a particular project.
  *
- * @param projectId The project for which the instruments will be stored.
  * @param exporter The exporter the metrics will be sent to.
  */
-function createInstruments(projectId: string, exporter: PushMetricExporter) {
+function createInstruments(exporter: PushMetricExporter): MetricsInstruments {
   const latencyBuckets = [
     0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0, 16.0, 20.0, 25.0, 30.0,
     40.0, 50.0, 65.0, 80.0, 100.0, 130.0, 160.0, 200.0, 250.0, 300.0, 400.0,
@@ -80,7 +106,6 @@ function createInstruments(projectId: string, exporter: PushMetricExporter) {
     views: viewList,
     resource: new Resources.Resource({
       'service.name': 'Cloud Bigtable Table',
-      'monitored_resource.project_id': projectId,
     }).merge(new ResourceUtil.GcpDetectorSync().detect()),
     readers: [
       // Register the exporter
@@ -183,11 +208,8 @@ function createInstruments(projectId: string, exporter: PushMetricExporter) {
  * associating them with relevant attributes for detailed analysis in Cloud Monitoring.
  */
 export class GCPMetricsHandler implements IMetricsHandler {
-  private exporter: PushMetricExporter;
-  // The variable below is the singleton map from projects to instrument stacks
-  // which exists so that we only create one instrument stack per project. This
-  // will eliminate errors due to the maximum sampling period.
-  static instrumentsForProject: {[projectId: string]: MetricsInstruments} = {};
+  private otelInstruments: MetricsInstruments;
+  private clientUid: string;
 
   /**
    * The `GCPMetricsHandler` is responsible for managing and recording
@@ -196,33 +218,11 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * (histograms and counters) and exports them to Google Cloud Monitoring
    * through the provided `PushMetricExporter`.
    *
-   * @param exporter - The `PushMetricExporter` instance to use for exporting
-   *   metrics to Google Cloud Monitoring. This exporter is responsible for
-   *   sending the collected metrics data to the monitoring backend. The provided exporter must be fully configured, for example the projectId must have been set.
    */
-  constructor(exporter: PushMetricExporter) {
-    this.exporter = exporter;
-  }
-
-  /**
-   * Initializes the OpenTelemetry metrics instruments if they haven't been already.
-   * Creates and registers metric instruments (histograms and counters) for various Bigtable client metrics.
-   * Sets up a MeterProvider and configures a PeriodicExportingMetricReader for exporting metrics to Cloud Monitoring.
-   *
-   * which will be provided to the exporter in every export call.
-   *
-   */
-  private getInstruments(projectId: string): MetricsInstruments {
-    // The projectId is needed per metrics handler because when the exporter is
-    // used it provides the project id for the name of the time series exported.
-    // ie. name: `projects/${....['monitored_resource.project_id']}`,
-    if (!GCPMetricsHandler.instrumentsForProject[projectId]) {
-      GCPMetricsHandler.instrumentsForProject[projectId] = createInstruments(
-        projectId,
-        this.exporter,
-      );
-    }
-    return GCPMetricsHandler.instrumentsForProject[projectId];
+  constructor(options: ClientOptions) {
+    this.clientUid = generateClientUuid();
+    const exporter = new CloudMonitoringExporter(options);
+    this.otelInstruments = createInstruments(exporter);
   }
 
   /**
@@ -231,11 +231,11 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    const otelInstruments = this.getInstruments(data.projectId);
+    const otelInstruments = this.otelInstruments;
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
-      client_uid: data.metricsCollectorData.client_uid,
+      client_uid: this.clientUid,
       client_name: data.client_name,
       instanceId: data.metricsCollectorData.instanceId,
       table: data.metricsCollectorData.table,
@@ -271,11 +271,11 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    const otelInstruments = this.getInstruments(data.projectId);
+    const otelInstruments = this.otelInstruments;
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
-      client_uid: data.metricsCollectorData.client_uid,
+      client_uid: this.clientUid,
       status: data.status,
       client_name: data.client_name,
       instanceId: data.metricsCollectorData.instanceId,
