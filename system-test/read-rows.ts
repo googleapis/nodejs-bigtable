@@ -25,6 +25,8 @@ import {EventEmitter} from 'events';
 import {Test} from './testTypes';
 import {ServiceError, GrpcClient, GoogleError, CallOptions} from 'google-gax';
 import {PassThrough} from 'stream';
+import {TabularApiSurface} from '../src/tabular-api-surface';
+import * as proxyquire from 'proxyquire';
 
 const {grpc} = new GrpcClient();
 
