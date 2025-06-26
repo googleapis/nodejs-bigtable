@@ -30,6 +30,11 @@ import * as tblTypes from '../src/table';
 import {Bigtable, RequestOptions} from '../src';
 import {EventEmitter} from 'events';
 import {TableUtils} from '../src/utils/table';
+import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
+import {OperationMetricsCollector} from '../src/client-side-metrics/operation-metrics-collector';
+import {SinonSpy} from 'sinon';
+import {TabularApiSurface} from '../src/tabular-api-surface';
+import {GetRowsOptions} from '../src/table';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
@@ -57,6 +62,24 @@ function createFake(klass: any) {
       this.calledWith_ = args;
     }
   };
+}
+
+class FakeMetricsCollector {
+  onOperationStart() {}
+  onOperationComplete() {}
+  onResponse() {}
+  onAttemptStart() {}
+  onAttemptComplete() {}
+  onMetadataReceived() {}
+  handleStatusAndMetadata() {}
+  onStatusMetadataReceived() {}
+  onRowReachesUser() {}
+}
+
+class FakeMetricsConfigManager extends ClientSideMetricsConfigManager {
+  createOperation() {
+    return new FakeMetricsCollector() as unknown as OperationMetricsCollector;
+  }
 }
 
 const FakeFamily = createFake(Family);
@@ -100,6 +123,43 @@ const FakeFilter = {
   },
 };
 
+function getTableMock(
+  createReadStreamInternal: (
+    table: TabularApiSurface,
+    singleRow: boolean,
+    opts?: GetRowsOptions,
+  ) => PassThrough,
+) {
+  const FakeGetRows = proxyquire('../src/utils/getRowsInternal.js', {
+    './createReadStreamInternal': {
+      createReadStreamInternal: createReadStreamInternal,
+    },
+  });
+  const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
+    '@google-cloud/promisify': fakePromisify,
+    './family.js': {Family: FakeFamily},
+    './mutation.js': {Mutation: FakeMutation},
+    './filter.js': {Filter: FakeFilter},
+    pumpify,
+    './row.js': {Row: FakeRow},
+    './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+    './utils/createReadStreamInternal': {
+      createReadStreamInternal,
+    },
+    './utils/getRowsInternal': {
+      getRowsInternal: FakeGetRows.getRowsInternal,
+    },
+  }).TabularApiSurface;
+  const Table = proxyquire('../src/table.js', {
+    '@google-cloud/promisify': fakePromisify,
+    './family.js': {Family: FakeFamily},
+    './mutation.js': {Mutation: FakeMutation},
+    './row.js': {Row: FakeRow},
+    './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
+  }).Table;
+  return Table;
+}
+
 describe('Bigtable/Table', () => {
   const TABLE_ID = 'my-table';
   let INSTANCE: inst.Instance;
@@ -110,27 +170,26 @@ describe('Bigtable/Table', () => {
   let table: any;
 
   before(() => {
-    const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
-      '@google-cloud/promisify': fakePromisify,
-      './family.js': {Family: FakeFamily},
-      './mutation.js': {Mutation: FakeMutation},
-      './filter.js': {Filter: FakeFilter},
-      pumpify,
-      './row.js': {Row: FakeRow},
-      './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
-    }).TabularApiSurface;
-    Table = proxyquire('../src/table.js', {
-      '@google-cloud/promisify': fakePromisify,
-      './family.js': {Family: FakeFamily},
-      './mutation.js': {Mutation: FakeMutation},
-      './row.js': {Row: FakeRow},
-      './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
-    }).Table;
+    const FakeCreateReadStreamInternal = proxyquire(
+      '../src/utils/createReadStreamInternal.js',
+      {
+        '../row.js': {Row: FakeRow},
+        '../chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+        '../filter.js': {Filter: FakeFilter},
+        '../mutation.js': {Mutation: FakeMutation},
+        pumpify,
+      },
+    ).createReadStreamInternal;
+    Table = getTableMock(FakeCreateReadStreamInternal);
   });
 
   beforeEach(() => {
     INSTANCE = {
-      bigtable: {} as Bigtable,
+      bigtable: {
+        _metricsConfigManager: new FakeMetricsConfigManager(
+          [],
+        ) as ClientSideMetricsConfigManager,
+      } as Bigtable,
       name: 'a/b/c/d',
     } as inst.Instance;
     TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;
@@ -2301,13 +2360,14 @@ describe('Bigtable/Table', () => {
 
   describe('getRows', () => {
     describe('success', () => {
+      let createReadStreamInternal: SinonSpy<[], PassThrough>;
       const fakeRows = [
         {key: 'c', data: {}},
         {key: 'd', data: {}},
       ];
 
       beforeEach(() => {
-        table.createReadStream = sinon.spy(() => {
+        createReadStreamInternal = sinon.spy(() => {
           const stream = new PassThrough({
             objectMode: true,
           });
@@ -2322,6 +2382,17 @@ describe('Bigtable/Table', () => {
 
           return stream;
         });
+        Table = getTableMock(createReadStreamInternal);
+        INSTANCE = {
+          bigtable: {
+            _metricsConfigManager: new FakeMetricsConfigManager(
+              [],
+            ) as ClientSideMetricsConfigManager,
+          } as Bigtable,
+          name: 'a/b/c/d',
+        } as inst.Instance;
+        TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;
+        table = new Table(INSTANCE, TABLE_ID);
       });
 
       it('should return the rows to the callback', done => {
@@ -2332,8 +2403,8 @@ describe('Bigtable/Table', () => {
           assert.deepStrictEqual(rows, fakeRows);
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const spy = (table as any).createReadStream.getCall(0);
-          assert.strictEqual(spy.args[0], options);
+          const spy = createReadStreamInternal.getCall(0);
+          assert.strictEqual((spy.args as any)[2], options);
           done();
         });
       });
@@ -2348,10 +2419,11 @@ describe('Bigtable/Table', () => {
     });
 
     describe('error', () => {
+      let createReadStreamInternal: SinonSpy<[], PassThrough>;
       const error = new Error('err');
 
       beforeEach(() => {
-        table.createReadStream = sinon.spy(() => {
+        createReadStreamInternal = sinon.spy(() => {
           const stream = new PassThrough({
             objectMode: true,
           });
@@ -2362,6 +2434,17 @@ describe('Bigtable/Table', () => {
 
           return stream;
         });
+        Table = getTableMock(createReadStreamInternal);
+        INSTANCE = {
+          bigtable: {
+            _metricsConfigManager: new FakeMetricsConfigManager(
+              [],
+            ) as ClientSideMetricsConfigManager,
+          } as Bigtable,
+          name: 'a/b/c/d',
+        } as inst.Instance;
+        TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;
+        table = new Table(INSTANCE, TABLE_ID);
       });
 
       it('should return the error to the callback', done => {
