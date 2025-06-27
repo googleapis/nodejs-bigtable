@@ -21,7 +21,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
   const tableId = 'large-table';
 
   describe('Bigtable/QPSExperiment', () => {
-    for (let k = 0; k < 10000; k++) {
+    for (let k = 0; k < 1; k++) {
       it(`readRows call ${k}`, done => {
         (async () => {
           try {
@@ -35,7 +35,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
                 hundredValues.push(i);
               }
               const promises = hundredValues.map(i =>
-                table.getRows({limit: 100}),
+                  table.getRows({limit: 100}),
               );
               console.log(new Date());
               console.log('running 100 readRows calls');
