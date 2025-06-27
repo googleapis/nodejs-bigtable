@@ -2209,6 +2209,7 @@
                      * @property {string|null} [appProfileId] MutateRowRequest appProfileId
                      * @property {Uint8Array|null} [rowKey] MutateRowRequest rowKey
                      * @property {Array.<google.bigtable.v2.IMutation>|null} [mutations] MutateRowRequest mutations
+                     * @property {google.bigtable.v2.IIdempotency|null} [idempotency] MutateRowRequest idempotency
                      */
     
                     /**
@@ -2268,6 +2269,14 @@
                     MutateRowRequest.prototype.mutations = $util.emptyArray;
     
                     /**
+                     * MutateRowRequest idempotency.
+                     * @member {google.bigtable.v2.IIdempotency|null|undefined} idempotency
+                     * @memberof google.bigtable.v2.MutateRowRequest
+                     * @instance
+                     */
+                    MutateRowRequest.prototype.idempotency = null;
+    
+                    /**
                      * Creates a new MutateRowRequest instance using the specified properties.
                      * @function create
                      * @memberof google.bigtable.v2.MutateRowRequest
@@ -2302,6 +2311,8 @@
                             writer.uint32(/* id 4, wireType 2 =*/34).string(message.appProfileId);
                         if (message.authorizedViewName != null && Object.hasOwnProperty.call(message, "authorizedViewName"))
                             writer.uint32(/* id 6, wireType 2 =*/50).string(message.authorizedViewName);
+                        if (message.idempotency != null && Object.hasOwnProperty.call(message, "idempotency"))
+                            $root.google.bigtable.v2.Idempotency.encode(message.idempotency, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
                         return writer;
                     };
     
@@ -2360,6 +2371,10 @@
                                     message.mutations.push($root.google.bigtable.v2.Mutation.decode(reader, reader.uint32()));
                                     break;
                                 }
+                            case 8: {
+                                    message.idempotency = $root.google.bigtable.v2.Idempotency.decode(reader, reader.uint32());
+                                    break;
+                                }
                             default:
                                 reader.skipType(tag & 7);
                                 break;
@@ -2416,6 +2431,11 @@
                                     return "mutations." + error;
                             }
                         }
+                        if (message.idempotency != null && message.hasOwnProperty("idempotency")) {
+                            var error = $root.google.bigtable.v2.Idempotency.verify(message.idempotency);
+                            if (error)
+                                return "idempotency." + error;
+                        }
                         return null;
                     };
     
@@ -2452,6 +2472,11 @@
                                 message.mutations[i] = $root.google.bigtable.v2.Mutation.fromObject(object.mutations[i]);
                             }
                         }
+                        if (object.idempotency != null) {
+                            if (typeof object.idempotency !== "object")
+                                throw TypeError(".google.bigtable.v2.MutateRowRequest.idempotency: object expected");
+                            message.idempotency = $root.google.bigtable.v2.Idempotency.fromObject(object.idempotency);
+                        }
                         return message;
                     };
     
@@ -2481,6 +2506,7 @@
                             }
                             object.appProfileId = "";
                             object.authorizedViewName = "";
+                            object.idempotency = null;
                         }
                         if (message.tableName != null && message.hasOwnProperty("tableName"))
                             object.tableName = message.tableName;
@@ -2495,6 +2521,8 @@
                             object.appProfileId = message.appProfileId;
                         if (message.authorizedViewName != null && message.hasOwnProperty("authorizedViewName"))
                             object.authorizedViewName = message.authorizedViewName;
+                        if (message.idempotency != null && message.hasOwnProperty("idempotency"))
+                            object.idempotency = $root.google.bigtable.v2.Idempotency.toObject(message.idempotency, options);
                         return object;
                     };
     
@@ -19008,6 +19036,249 @@
                     };
     
                     return PartialResultSet;
+                })();
+    
+                v2.Idempotency = (function() {
+    
+                    /**
+                     * Properties of an Idempotency.
+                     * @memberof google.bigtable.v2
+                     * @interface IIdempotency
+                     * @property {Uint8Array|null} [token] Idempotency token
+                     * @property {google.protobuf.ITimestamp|null} [startTime] Idempotency startTime
+                     */
+    
+                    /**
+                     * Constructs a new Idempotency.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents an Idempotency.
+                     * @implements IIdempotency
+                     * @constructor
+                     * @param {google.bigtable.v2.IIdempotency=} [properties] Properties to set
+                     */
+                    function Idempotency(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * Idempotency token.
+                     * @member {Uint8Array} token
+                     * @memberof google.bigtable.v2.Idempotency
+                     * @instance
+                     */
+                    Idempotency.prototype.token = $util.newBuffer([]);
+    
+                    /**
+                     * Idempotency startTime.
+                     * @member {google.protobuf.ITimestamp|null|undefined} startTime
+                     * @memberof google.bigtable.v2.Idempotency
+                     * @instance
+                     */
+                    Idempotency.prototype.startTime = null;
+    
+                    /**
+                     * Creates a new Idempotency instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.Idempotency
+                     * @static
+                     * @param {google.bigtable.v2.IIdempotency=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.Idempotency} Idempotency instance
+                     */
+                    Idempotency.create = function create(properties) {
+                        return new Idempotency(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified Idempotency message. Does not implicitly {@link google.bigtable.v2.Idempotency.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.Idempotency
+                     * @static
+                     * @param {google.bigtable.v2.IIdempotency} message Idempotency message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    Idempotency.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.token != null && Object.hasOwnProperty.call(message, "token"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.token);
+                        if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
+                            $root.google.protobuf.Timestamp.encode(message.startTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified Idempotency message, length delimited. Does not implicitly {@link google.bigtable.v2.Idempotency.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.Idempotency
+                     * @static
+                     * @param {google.bigtable.v2.IIdempotency} message Idempotency message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    Idempotency.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes an Idempotency message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.Idempotency
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.Idempotency} Idempotency
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    Idempotency.decode = function decode(reader, length, error) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.Idempotency();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            if (tag === error)
+                                break;
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.token = reader.bytes();
+                                    break;
+                                }
+                            case 2: {
+                                    message.startTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes an Idempotency message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.Idempotency
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.Idempotency} Idempotency
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    Idempotency.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies an Idempotency message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.Idempotency
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    Idempotency.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.token != null && message.hasOwnProperty("token"))
+                            if (!(message.token && typeof message.token.length === "number" || $util.isString(message.token)))
+                                return "token: buffer expected";
+                        if (message.startTime != null && message.hasOwnProperty("startTime")) {
+                            var error = $root.google.protobuf.Timestamp.verify(message.startTime);
+                            if (error)
+                                return "startTime." + error;
+                        }
+                        return null;
+                    };
+    
+                    /**
+                     * Creates an Idempotency message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.Idempotency
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.Idempotency} Idempotency
+                     */
+                    Idempotency.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.Idempotency)
+                            return object;
+                        var message = new $root.google.bigtable.v2.Idempotency();
+                        if (object.token != null)
+                            if (typeof object.token === "string")
+                                $util.base64.decode(object.token, message.token = $util.newBuffer($util.base64.length(object.token)), 0);
+                            else if (object.token.length >= 0)
+                                message.token = object.token;
+                        if (object.startTime != null) {
+                            if (typeof object.startTime !== "object")
+                                throw TypeError(".google.bigtable.v2.Idempotency.startTime: object expected");
+                            message.startTime = $root.google.protobuf.Timestamp.fromObject(object.startTime);
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from an Idempotency message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.Idempotency
+                     * @static
+                     * @param {google.bigtable.v2.Idempotency} message Idempotency
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    Idempotency.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.token = "";
+                            else {
+                                object.token = [];
+                                if (options.bytes !== Array)
+                                    object.token = $util.newBuffer(object.token);
+                            }
+                            object.startTime = null;
+                        }
+                        if (message.token != null && message.hasOwnProperty("token"))
+                            object.token = options.bytes === String ? $util.base64.encode(message.token, 0, message.token.length) : options.bytes === Array ? Array.prototype.slice.call(message.token) : message.token;
+                        if (message.startTime != null && message.hasOwnProperty("startTime"))
+                            object.startTime = $root.google.protobuf.Timestamp.toObject(message.startTime, options);
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this Idempotency to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.Idempotency
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    Idempotency.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for Idempotency
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.Idempotency
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    Idempotency.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.Idempotency";
+                    };
+    
+                    return Idempotency;
                 })();
     
                 v2.Type = (function() {

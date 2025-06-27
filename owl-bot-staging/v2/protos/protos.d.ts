@@ -928,6 +928,9 @@ export namespace google {
 
                 /** MutateRowRequest mutations */
                 mutations?: (google.bigtable.v2.IMutation[]|null);
+
+                /** MutateRowRequest idempotency */
+                idempotency?: (google.bigtable.v2.IIdempotency|null);
             }
 
             /** Represents a MutateRowRequest. */
@@ -953,6 +956,9 @@ export namespace google {
 
                 /** MutateRowRequest mutations. */
                 public mutations: google.bigtable.v2.IMutation[];
+
+                /** MutateRowRequest idempotency. */
+                public idempotency?: (google.bigtable.v2.IIdempotency|null);
 
                 /**
                  * Creates a new MutateRowRequest instance using the specified properties.
@@ -7464,6 +7470,109 @@ export namespace google {
 
                 /**
                  * Gets the default type url for PartialResultSet
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of an Idempotency. */
+            interface IIdempotency {
+
+                /** Idempotency token */
+                token?: (Uint8Array|Buffer|string|null);
+
+                /** Idempotency startTime */
+                startTime?: (google.protobuf.ITimestamp|null);
+            }
+
+            /** Represents an Idempotency. */
+            class Idempotency implements IIdempotency {
+
+                /**
+                 * Constructs a new Idempotency.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IIdempotency);
+
+                /** Idempotency token. */
+                public token: (Uint8Array|Buffer|string);
+
+                /** Idempotency startTime. */
+                public startTime?: (google.protobuf.ITimestamp|null);
+
+                /**
+                 * Creates a new Idempotency instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns Idempotency instance
+                 */
+                public static create(properties?: google.bigtable.v2.IIdempotency): google.bigtable.v2.Idempotency;
+
+                /**
+                 * Encodes the specified Idempotency message. Does not implicitly {@link google.bigtable.v2.Idempotency.verify|verify} messages.
+                 * @param message Idempotency message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IIdempotency, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified Idempotency message, length delimited. Does not implicitly {@link google.bigtable.v2.Idempotency.verify|verify} messages.
+                 * @param message Idempotency message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IIdempotency, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes an Idempotency message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns Idempotency
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.Idempotency;
+
+                /**
+                 * Decodes an Idempotency message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns Idempotency
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.Idempotency;
+
+                /**
+                 * Verifies an Idempotency message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates an Idempotency message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns Idempotency
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.Idempotency;
+
+                /**
+                 * Creates a plain object from an Idempotency message. Also converts values to other types if specified.
+                 * @param message Idempotency
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.Idempotency, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this Idempotency to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for Idempotency
                  * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                  * @returns The default type url
                  */

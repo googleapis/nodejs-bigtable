@@ -387,6 +387,9 @@ export class BigtableClient {
  *   Required. Changes to be atomically applied to the specified row. Entries
  *   are applied in order, meaning that earlier mutations can be masked by later
  *   ones. Must contain at least one entry and at most 100000.
+ * @param {google.bigtable.v2.Idempotency} request.idempotency
+ *   Optional parameter for ensuring a MutateRow request is only applied once.
+ *   Currently applicable only for certain aggregate types.
  * @param {object} [options]
  *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
  * @returns {Promise} - The promise which resolves to an array.

@@ -146,7 +146,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 83,
+          "end": 88,
           "type": "FULL"
         }
       ],
@@ -174,6 +174,10 @@
           {
             "name": "mutations",
             "type": "TYPE_MESSAGE[]"
+          },
+          {
+            "name": "idempotency",
+            "type": ".google.bigtable.v2.Idempotency"
           }
         ],
         "resultType": ".google.bigtable.v2.MutateRowResponse",

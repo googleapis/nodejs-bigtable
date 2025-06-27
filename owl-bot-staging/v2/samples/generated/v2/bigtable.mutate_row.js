@@ -61,6 +61,11 @@ function main(rowKey, mutations) {
    *  ones. Must contain at least one entry and at most 100000.
    */
   // const mutations = [1,2,3,4]
+  /**
+   *  Optional parameter for ensuring a MutateRow request is only applied once.
+   *  Currently applicable only for certain aggregate types.
+   */
+  // const idempotency = {}
 
   // Imports the Bigtable library
   const {BigtableClient} = require('@google-cloud/bigtable').v2;

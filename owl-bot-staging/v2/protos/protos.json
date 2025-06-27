@@ -684,6 +684,10 @@
                       "options": {
                         "(google.api.field_behavior)": "REQUIRED"
                       }
+                    },
+                    "idempotency": {
+                      "type": "Idempotency",
+                      "id": 8
                     }
                   }
                 },
@@ -1935,6 +1939,18 @@
                     "estimatedBatchSize": {
                       "type": "int32",
                       "id": 4
+                    }
+                  }
+                },
+                "Idempotency": {
+                  "fields": {
+                    "token": {
+                      "type": "bytes",
+                      "id": 1
+                    },
+                    "startTime": {
+                      "type": "google.protobuf.Timestamp",
+                      "id": 2
                     }
                   }
                 },
