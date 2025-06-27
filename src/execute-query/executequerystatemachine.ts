@@ -29,10 +29,8 @@ import {
 import {ExecuteQueryStreamWithMetadata} from './values';
 import {ProtobufReaderTransformer} from './protobufreadertransformer';
 import {MetadataConsumer} from './metadataconsumer';
-import {
-  DEFAULT_BACKOFF_SETTINGS,
-} from '../tabular-api-surface';
-import { isRstStreamError } from '../utils/createReadStreamInternal';
+import {DEFAULT_BACKOFF_SETTINGS} from '../tabular-api-surface';
+import {isRstStreamError} from '../utils/createReadStreamInternal';
 const pumpify = require('pumpify');
 
 /**
