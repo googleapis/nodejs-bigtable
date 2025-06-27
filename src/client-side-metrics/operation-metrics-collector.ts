@@ -285,7 +285,10 @@ export class OperationMetricsCollector {
    * Records operation latencies, retry counts, and connectivity error counts.
    * @param {grpc.status} finalOperationStatus Information about the completed operation.
    */
-  onOperationComplete(finalOperationStatus: grpc.status) {
+  onOperationComplete(
+    finalOperationStatus: grpc.status,
+    applicationLatency?: number,
+  ) {
     this.onAttemptComplete(finalOperationStatus);
     withMetricsDebug(() => {
       checkState(this.state, [
@@ -308,7 +311,9 @@ export class OperationMetricsCollector {
                 operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? undefined,
-                applicationLatencies: this.applicationLatencies,
+                applicationLatencies: applicationLatency
+                  ? [applicationLatency]
+                  : [],
               });
             }
           });

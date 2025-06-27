@@ -25,7 +25,7 @@ import {
   DataEvent,
 } from '../chunktransformer';
 import {TableUtils} from './table';
-import {Duplex, PassThrough, Transform} from 'stream';
+import {Duplex, PassThrough, Transform, TransformOptions} from 'stream';
 import {
   MethodName,
   StreamingState,
@@ -42,6 +42,48 @@ import {
   TabularApiSurface,
 } from '../tabular-api-surface';
 import {OperationMetricsCollector} from '../client-side-metrics/operation-metrics-collector';
+
+class TransformWithReadHook extends PassThrough {
+  startTime;
+  totalDuration;
+
+  constructor(options: TransformOptions) {
+    // highWaterMark of 1 is needed to respond to each row
+    super({...options});
+    this.startTime = 0n;
+    this.totalDuration = 0n;
+    this.handleBeforeRow = this.handleBeforeRow.bind(this);
+    this.handleAfterRow = this.handleAfterRow.bind(this);
+    this.on('before_row', this.handleBeforeRow);
+    this.on('after_row', this.handleAfterRow);
+  }
+
+  _read(size: number) {
+    // log(`_read called`);
+    super._read(size);
+    this.emit('before_row');
+    // Defer the after call to the next tick of the event loop
+    process.nextTick(() => {
+      this.emit('after_row');
+    });
+  }
+
+  handleBeforeRow() {
+    // log(`[BEFORE]`);
+    this.startTime = process.hrtime.bigint();
+  }
+
+  handleAfterRow() {
+    const endTime = process.hrtime.bigint();
+    const duration = endTime - this.startTime;
+    this.totalDuration += duration;
+    // log(`[AFTER] - Row processing took ${duration / 1_000_000n} ms.`);
+  }
+
+  getTotalDurationMs() {
+    return Number(this.totalDuration / 1_000_000n);
+  }
+}
 
 /**
  * Creates a readable stream of rows from a Bigtable table or authorized view.
@@ -128,9 +170,9 @@ export function createReadStreamInternal(
   // discarded in the per attempt subpipeline (rowStream)
   let lastRowKey = '';
   let rowsRead = 0;
-  const userStream = new PassThrough({
+  const userStream = new TransformWithReadHook({
     objectMode: true,
-    readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
+    readableHighWaterMark: 1, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
     writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
     transform(event, _encoding, callback) {
       if (userCanceled) {
@@ -430,7 +472,10 @@ export function createReadStreamInternal(
       })
       .on('end', () => {
         activeRequestStream = null;
-        metricsCollector.onOperationComplete(grpc.status.OK);
+        metricsCollector.onOperationComplete(
+          grpc.status.OK,
+          userStream.getTotalDurationMs(),
+        );
       });
     rowStreamPipe(rowStream, userStream);
   };
