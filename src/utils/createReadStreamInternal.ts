@@ -364,19 +364,6 @@ export function createReadStreamInternal(
 
     rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
-    // Retry on "received rst stream" errors
-    const isRstStreamError = (error: ServiceError): boolean => {
-      if (error.code === 13 && error.message) {
-        const error_message = (error.message || '').toLowerCase();
-        return (
-          error.code === 13 &&
-          (error_message.includes('rst_stream') ||
-            error_message.includes('rst stream'))
-        );
-      }
-      return false;
-    };
-
     metricsCollector.handleStatusAndMetadata(requestStream);
     rowStream
       .on('error', (error: ServiceError) => {
@@ -437,4 +424,17 @@ export function createReadStreamInternal(
 
   makeNewRequest();
   return userStream;
+}
+
+// Retry on "received rst stream" errors
+export function isRstStreamError(error: ServiceError): boolean {
+  if (error.code === 13 && error.message) {
+    const error_message = (error.message || '').toLowerCase();
+    return (
+      error.code === 13 &&
+      (error_message.includes('rst_stream') ||
+        error_message.includes('rst stream'))
+    );
+  }
+  return false;
 }

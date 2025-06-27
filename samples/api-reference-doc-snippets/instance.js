@@ -362,6 +362,97 @@ const snippets = {
       });
     // [END bigtable_api_del_instance]
   },
+
+  executeQuery: (instanceId, tableId) => {
+    // [START bigtable_api_execute_query]
+    const {Bigtable} = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceId);
+
+    const query = `SELECT
+                    _key
+                  from \`${tableId}\` WHERE _key=@row_key`;
+    const parameters = {
+      row_key: 'alincoln',
+    };
+
+    const parameterTypes = {
+      row_key: Bigtable.SqlTypes.String(),
+    };
+
+    const prepareStatementOptions = {
+      query,
+      parameterTypes,
+    };
+
+    instance
+      .prepareStatement(prepareStatementOptions)
+      .then(([preparedStatement]) =>
+        instance.executeQuery({
+          preparedStatement,
+          parameters,
+        }),
+      )
+      .then(result => {
+        const rows = result[0];
+      })
+      .catch(err => {
+        // Handle errors
+      });
+
+    // [END bigtable_api_execute_query]
+  },
+
+  createExecuteQueryStream: (instanceId, tableId) => {
+    // [START bigtable_api_create_query_stream]
+    const {Bigtable} = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceId);
+
+    const query = `SELECT
+                    _key
+                  from \`${tableId}\` WHERE _key=@row_key`;
+    const parameters = {
+      row_key: 'alincoln',
+    };
+    const parameterTypes = {
+      row_key: Bigtable.ExecuteQueryTypes.String(),
+    };
+
+    const prepareStatementOptions = {
+      query,
+      parameterTypes,
+    };
+    instance
+      .prepareStatement(prepareStatementOptions)
+      .then(preparedStatement => {
+        instance
+          .createExecuteQueryStream({
+            preparedStatement,
+            parameters,
+          })
+          .on('error', err => {
+            // Handle the error.
+          })
+          .on('data', row => {
+            // `row` is a QueryResultRow object.
+          })
+          .on('end', () => {
+            // All rows retrieved.
+          });
+      });
+
+    // If you anticipate many results, you can end a stream early to prevent
+    // unnecessary processing.
+    //-
+    // instance
+    //   .createExecuteQueryStream(options)
+    //   .on('data', function (row) {
+    //     this.end();
+    //   });
+
+    // [END bigtable_api_create_query_stream]
+  },
 };
 
 module.exports = snippets;
