@@ -21,7 +21,12 @@ describe.only('Bigtable/ClientSideMetrics', () => {
   const tableId = 'large-table';
 
   describe('Bigtable/QPSExperiment', () => {
+<<<<<<< HEAD
     console.log('Test watermark 0');
+=======
+    console.log('Test watermark 1');
+    const elapsedTimes: any[] = [];
+>>>>>>> e22d7c4a (print summary on each iteration)
     for (let k = 0; k < 10; k++) {
       it(`readRows call ${k}`, done => {
         (async () => {
@@ -47,7 +52,9 @@ describe.only('Bigtable/ClientSideMetrics', () => {
             const endTime = Date.now();
             // Calculate the elapsed time in milliseconds
             const elapsedTime = endTime - startTime;
+            elapsedTimes.push(elapsedTime);
             console.log(`Elapsed time: ${elapsedTime}`);
+            console.log(elapsedTimes);
             done();
           } catch (e) {
             done(new Error('An error occurred while running the script'));
