@@ -21,7 +21,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
   const tableId = 'large-table';
 
   describe('Bigtable/QPSExperiment', () => {
-    for (let k = 0; k < 1; k++) {
+    for (let k = 0; k < 10; k++) {
       it(`readRows call ${k}`, done => {
         (async () => {
           try {
