@@ -21,6 +21,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
   const tableId = 'large-table';
 
   describe('Bigtable/QPSExperiment', () => {
+    const elapsedTimes: any[] = [];
     console.log('Test no application latency collection');
     for (let k = 0; k < 10; k++) {
       it(`readRows call ${k}`, done => {
@@ -47,7 +48,9 @@ describe.only('Bigtable/ClientSideMetrics', () => {
             const endTime = Date.now();
             // Calculate the elapsed time in milliseconds
             const elapsedTime = endTime - startTime;
+            elapsedTimes.push(elapsedTime);
             console.log(`Elapsed time: ${elapsedTime}`);
+            console.log(elapsedTimes);
             done();
           } catch (e) {
             done(new Error('An error occurred while running the script'));
