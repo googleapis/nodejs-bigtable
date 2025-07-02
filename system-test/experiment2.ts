@@ -21,6 +21,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
   const tableId = 'large-table';
 
   describe('Bigtable/QPSExperiment', () => {
+    console.log('Test watermark 1');
     for (let k = 0; k < 1; k++) {
       it(`readRows call ${k}`, done => {
         (async () => {
