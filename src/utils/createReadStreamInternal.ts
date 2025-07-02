@@ -48,6 +48,7 @@ class TransformWithReadHook extends PassThrough {
   totalDuration;
 
   constructor(options: TransformOptions) {
+    console.log('constructing with read hook')
     // highWaterMark of 1 is needed to respond to each row
     super({...options});
     this.startTime = 0n;
