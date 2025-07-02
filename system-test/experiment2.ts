@@ -21,12 +21,8 @@ describe.only('Bigtable/ClientSideMetrics', () => {
   const tableId = 'large-table';
 
   describe('Bigtable/QPSExperiment', () => {
-<<<<<<< HEAD
     console.log('Test watermark 0');
-=======
-    console.log('Test watermark 1');
     const elapsedTimes: any[] = [];
->>>>>>> e22d7c4a (print summary on each iteration)
     for (let k = 0; k < 10; k++) {
       it(`readRows call ${k}`, done => {
         (async () => {
@@ -41,7 +37,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
                 hundredValues.push(i);
               }
               const promises = hundredValues.map(i =>
-                  table.getRows({limit: 100}),
+                table.getRows({limit: 100}),
               );
               console.log(new Date());
               console.log('running 100 readRows calls');
