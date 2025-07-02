@@ -22,7 +22,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
 
   describe('Bigtable/QPSExperiment', () => {
     console.log('Test watermark 1');
-    for (let k = 0; k < 1; k++) {
+    for (let k = 0; k < 10; k++) {
       it(`readRows call ${k}`, done => {
         (async () => {
           try {
