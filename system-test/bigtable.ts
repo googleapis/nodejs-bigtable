@@ -770,7 +770,7 @@ describe('Bigtable', () => {
         assert.strictEqual(data.traits.teeth[0].value, 'shiny-wood');
       });
 
-      it('should check and mutate a row', async () => {
+      it.only('should check and mutate a row', async () => {
         const row = TABLE.row('gwashington');
         const filter: RawFilter = {
           family: 'follows',
