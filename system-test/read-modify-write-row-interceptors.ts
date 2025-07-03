@@ -18,7 +18,7 @@ import {
   CallOptions,
   ClientConfig,
   GoogleError,
-  grpc,
+  grpc, ServiceError,
 } from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
@@ -104,6 +104,7 @@ class MockBigtableService extends MockService {
     >,
     callback: grpcJs.sendUnaryData<google.bigtable.v2.IReadModifyWriteRowResponse>
   ) {
+    console.log('readModifyWriteRow get call');
     if (this.mockInitialMetadata) {
       call.sendMetadata(this.mockInitialMetadata);
     }
@@ -153,8 +154,8 @@ function getBigtableClientWithTestMetricsHandler(
   // google-gax defaults to insecure if apiEndpoint doesn't start with "grpcs://"
   // and no sslCreds are provided.
   const clientOptions: BigtableOptions & ClientConfig = {
-    projectId,
-    apiEndpoint: `localhost:${port}`, // Point to mock server
+    // projectId,
+    // apiEndpoint: `localhost:${port}`, // Point to mock server
     ...options,
   };
   const client = new Bigtable(clientOptions);
@@ -201,6 +202,7 @@ function createMetricsInterceptorProvider(collector: OperationMetricsCollector) 
         // AttemptStart is called by the orchestrating code
         const newListener: grpcJs.Listener = {
           onReceiveMetadata: (metadata, nextMd) => {
+            console.log('metadata encountered');
             collector.onMetadataReceived(metadata);
             nextMd(metadata);
           },
@@ -316,17 +318,27 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
 
       try {
         // Make the request using bigtable.request, which will hit the mock server
-        const responseArray = (await bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
-          {
-            client: 'BigtableClient',
-            method: 'readModifyWriteRow',
-            reqOpts,
-            gaxOpts: gaxOptions,
-          }
-        )) as unknown as [google.bigtable.v2.IReadModifyWriteRowResponse];
-
+        const myPromise = new Promise((resolve, reject) => {
+          bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
+            {
+              client: 'BigtableClient',
+              method: 'readModifyWriteRow',
+              reqOpts,
+              gaxOpts: gaxOptions,
+            },
+            (err: ServiceError | null, resp?: any) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(resp);
+              }
+            },
+          ) as unknown as [google.bigtable.v2.IReadModifyWriteRowResponse];
+        });
+        const responseArray = await myPromise;
         metricsCollector.onAttemptComplete(GrpcStatus.OK);
         metricsCollector.onOperationComplete(GrpcStatus.OK);
+        // @ts-ignore
         return responseArray[0];
       } catch (err) {
         const googleError = err as GoogleError;

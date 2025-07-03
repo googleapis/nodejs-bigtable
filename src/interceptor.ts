@@ -66,6 +66,10 @@ export const getInterceptor = (metricsCollector: OperationMetricsCollector) => {
             metadata: Metadata,
             next: (metadata: Metadata) => void,
           ) {
+            console.log(
+              '[Interceptor LOG] Incoming Metadata:',
+              metadata.getMap(),
+            );
             metricsCollector.onMetadataReceived(metadata);
             next(metadata);
           },
@@ -79,6 +83,7 @@ export const getInterceptor = (metricsCollector: OperationMetricsCollector) => {
             status: ServerStatus,
             next: (s: ServerStatus) => void,
           ) {
+            console.log('[Interceptor LOG] Status:', status);
             next(status);
           },
         };

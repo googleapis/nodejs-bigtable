@@ -39,9 +39,7 @@ import {BigtableTableAdminClient} from '../src/v2';
 import {ServiceError} from 'google-gax';
 
 describe('Bigtable', () => {
-  const projectId = process.env.GCLOUD_PROJECT || 'test-project';
-  const apiEndpoint = process.env.BIGTABLE_EMULATOR_HOST || 'localhost:8086';
-  const bigtable = new Bigtable({projectId, apiEndpoint});
+  const bigtable = new Bigtable();
   const INSTANCE = bigtable.instance(generateId('instance'));
   const DIFF_INSTANCE = bigtable.instance(generateId('d-inst'));
   const CMEK_INSTANCE = bigtable.instance(generateId('cmek'));

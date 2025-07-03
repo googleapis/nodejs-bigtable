@@ -33,6 +33,7 @@ import arrify = require('arrify');
 import {Bigtable} from './index';
 import {CallOptions} from 'google-gax';
 import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
+import {MethodName, StreamingState} from './client-side-metrics/client-side-metrics-attributes';
 
 function withInterceptors(
   gaxOptions: CallOptions,
@@ -183,6 +184,12 @@ class RowDataUtils {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
+    const metricsCollector =
+      properties.requestData.bigtable._metricsConfigManager.createOperation(
+        MethodName.READ_ROWS,
+        StreamingState.STREAMING,
+        properties.requestData.table,
+      );
     if (!rules || (rules as Rule[]).length === 0) {
       throw new Error('At least one rule must be provided.');
     }
@@ -220,7 +227,7 @@ class RowDataUtils {
         client: 'BigtableClient',
         method: 'readModifyWriteRow',
         reqOpts,
-        gaxOpts: withInterceptors(gaxOptions),
+        gaxOpts: withInterceptors(gaxOptions, metricsCollector),
       },
       callback,
     );
