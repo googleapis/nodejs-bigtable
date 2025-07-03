@@ -1,21 +1,9 @@
 import {grpc} from 'google-gax';
 import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
-import {StatusObject} from '@grpc/grpc-js/src/call-interface';
 import {InterceptorOptions, Metadata, NextCall} from '@grpc/grpc-js';
 
-// TODO: Try to replace this class with its real type
-class ServerStatusMetadata {
-  // TODO: internalRepr is protected to meet needs of the compiler in the
-  protected internalRepr: Map<string, Uint8Array[]>;
-  options: {};
-  constructor(internalRepr: Map<string, Uint8Array[]>, options: {}) {
-    this.internalRepr = internalRepr;
-    this.options = options;
-  }
-}
-
 // TODO: Put this in more places
-type ServerStatus = {
+export type ServerStatus = {
   metadata: Metadata;
   code: number;
   details: string;

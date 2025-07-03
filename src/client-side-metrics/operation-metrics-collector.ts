@@ -20,6 +20,7 @@ import {AbortableDuplex, BigtableOptions} from '../index';
 import * as path from 'path';
 import {IMetricsHandler} from './metrics-handler';
 import {Metadata} from '@grpc/grpc-js';
+import {ServerStatus} from '../interceptor';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
@@ -174,14 +175,9 @@ export class OperationMetricsCollector {
       .on('metadata', (metadata: Metadata) => {
         this.onMetadataReceived(metadata);
       })
-      .on(
-        'status',
-        (status: {
-          metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
-        }) => {
-          this.onStatusMetadataReceived(status);
-        },
-      );
+      .on('status', (status: ServerStatus) => {
+        this.onStatusMetadataReceived(status);
+      });
   }
 
   /**
@@ -389,14 +385,14 @@ export class OperationMetricsCollector {
    * Called when status information is received. Extracts zone and cluster information.
    * @param {object} status The received status information.
    */
-  onStatusMetadataReceived(status: {
-    metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
-  }) {
+  onStatusMetadataReceived(status: ServerStatus) {
     withMetricsDebug(() => {
       if (!this.zone || !this.cluster) {
-        const mappedValue = status.metadata.internalRepr.get(
-          this.INSTANCE_INFORMATION_KEY,
-        ) as Buffer[];
+        const mappedValue = (
+          status.metadata as unknown as {
+            internalRepr: Map<string, Uint8Array[]>;
+          }
+        ).internalRepr.get(this.INSTANCE_INFORMATION_KEY) as Buffer[];
         if (mappedValue && mappedValue[0] && ResponseParams) {
           const decodedValue = ResponseParams.decode(
             mappedValue[0],
