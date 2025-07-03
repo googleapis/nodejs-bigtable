@@ -104,11 +104,14 @@ class MockBigtableService extends MockService {
     >,
     callback: grpcJs.sendUnaryData<google.bigtable.v2.IReadModifyWriteRowResponse>
   ) {
+    console.log('[MOCK_SERVER] ReadModifyWriteRow called with request:', call.request);
     if (this.mockInitialMetadata) {
+      console.log('[MOCK_SERVER] Sending initial metadata.');
       call.sendMetadata(this.mockInitialMetadata);
     }
 
     if (this.mockReadModifyWriteRowError) {
+      console.log('[MOCK_SERVER] Sending error:', this.mockReadModifyWriteRowError);
       const errorToSend = {...this.mockReadModifyWriteRowError}; // Clone to avoid modifying original
       errorToSend.metadata = errorToSend.metadata || new grpcJs.Metadata();
       if (this.mockTrailingMetadata) {
@@ -124,6 +127,7 @@ class MockBigtableService extends MockService {
       }
       callback(errorToSend, null);
     } else {
+      console.log('[MOCK_SERVER] Sending success response.');
       callback(
         null,
         this.mockReadModifyWriteRowResponse,
@@ -190,40 +194,68 @@ async function waitForMetrics(
 
 // Helper to create interceptor provider for OperationMetricsCollector
 function createMetricsInterceptorProvider(collector: OperationMetricsCollector) {
-  return (options: grpcJs.InterceptorOptions, nextCall: grpcJs.NextCall) => {
-    let savedReceiveMessage: any;
-    // savedReceiveMetadata and savedReceiveStatus are not strictly needed here anymore for the interceptor's own state
-
-    // OperationStart and AttemptStart will be called by the calling code (`fakeReadModifyWriteRow`)
-
-    return new grpcJs.InterceptingCall(nextCall(options), {
-      start: (metadata, listener, next) => {
-        // AttemptStart is called by the orchestrating code
-        const newListener: grpcJs.Listener = {
-          onReceiveMetadata: (metadata, nextMd) => {
-            collector.onMetadataReceived(metadata);
-            nextMd(metadata);
-          },
-          onReceiveMessage: (message, nextMsg) => {
-            savedReceiveMessage = message; // Still need to know if a message was received for onResponse
-            nextMsg(message);
-          },
-          onReceiveStatus: (status, nextStat) => {
-             if (status.code === GrpcStatus.OK && savedReceiveMessage) {
-              collector.onResponse(); // Call onResponse for successful unary calls with a message
+  try {
+    console.log('[TEST_INTERCEPTOR_PROVIDER] Factory called.');
+    return (options: grpcJs.InterceptorOptions, nextCall: grpcJs.NextCall) => {
+      try {
+        console.log('[TEST_INTERCEPTOR_PROVIDER] Provider created for call, options:', JSON.stringify(options).substring(0, 200));
+        let savedReceiveMessage: any;
+        const interceptingCall = new grpcJs.InterceptingCall(nextCall(options), {
+          start: (metadata, listener, next) => {
+            try {
+              console.log('[TEST_INTERCEPTOR] Interceptor Start called.');
+              const newListener: grpcJs.Listener = {
+                onReceiveMetadata: (metadataVal, nextMd) => {
+                  console.log('[TEST_INTERCEPTOR] onReceiveMetadata hit.');
+                  collector.onMetadataReceived(metadataVal);
+                  nextMd(metadataVal);
+                },
+                onReceiveMessage: (message, nextMsg) => {
+                  console.log('[TEST_INTERCEPTOR] onReceiveMessage hit.');
+                  savedReceiveMessage = message;
+                  nextMsg(message);
+                },
+                onReceiveStatus: (status, nextStat) => {
+                  console.log('[TEST_INTERCEPTOR] onReceiveStatus hit, status code:', status.code);
+                  if (status.code === GrpcStatus.OK && savedReceiveMessage) {
+                    collector.onResponse();
+                  }
+                  collector.onStatusMetadataReceived(status as ServerStatus);
+                  nextStat(status);
+                },
+              };
+              next(metadata, newListener);
+            } catch (e) {
+              console.error('[TEST_INTERCEPTOR] Error in Start method:', e);
+              // If error occurs in `start`, it might not propagate correctly to the main call's promise
+              // depending on how gRPC handles it. For now, just log.
+              // Potentially, one might need to manually fail the call if `next` isn't called.
+              throw e;
             }
-            collector.onStatusMetadataReceived(status as ServerStatus);
-            // AttemptComplete and OperationComplete will be called by the calling code
-            nextStat(status);
           },
-        };
-        next(metadata, newListener);
-      },
-      sendMessage: (message, next) => next(message),
-      halfClose: next => next(),
-      cancel: next => next(),
-    });
-  };
+          sendMessage: (message, next) => {
+            console.log('[TEST_INTERCEPTOR] sendMessage called.');
+            next(message);
+          },
+          halfClose: (next) => {
+            console.log('[TEST_INTERCEPTOR] halfClose called.');
+            next();
+          },
+          cancel: (next) => {
+            console.log('[TEST_INTERCEPTOR] cancel called.');
+            next();
+          },
+        });
+        return interceptingCall;
+      } catch (e) {
+        console.error('[TEST_INTERCEPTOR_PROVIDER] Error creating InterceptingCall:', e);
+        throw e;
+      }
+    };
+  } catch (e) {
+    console.error('[TEST_INTERCEPTOR_PROVIDER] Error in factory:', e);
+    throw e;
+  }
 }
 
 describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
@@ -279,11 +311,13 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
       rowKey: string,
       rules: any[]
     ): Promise<google.bigtable.v2.IReadModifyWriteRowResponse> => {
+      console.log('[TEST_FAKE_RMRW] Start of fakeReadModifyWriteRow');
       metricsCollector.onOperationStart();
       metricsCollector.onAttemptStart();
 
       // Prepare mock server response
       mockBigtableService.reset(); // Clear previous mock settings
+      console.log('[TEST_FAKE_RMRW] Configuring mock server response...');
       mockBigtableService.mockReadModifyWriteRowResponse = {
         row: {key: Buffer.from(rowKey), families: []},
       };
@@ -298,6 +332,7 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
       ]);
       trailingMetadata.set('x-goog-ext-425905942-bin', responseParamsProto);
       mockBigtableService.mockTrailingMetadata = trailingMetadata;
+      console.log('[TEST_FAKE_RMRW] Mock server response configured.');
 
       const reqOpts = {
         tableName: table.name,
@@ -313,9 +348,10 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
           },
         },
       };
+      console.log('[TEST_FAKE_RMRW] Interceptors prepared for gaxOptions.');
 
       try {
-        // Make the request using bigtable.request, which will hit the mock server
+        console.log('[TEST_FAKE_RMRW] Before await bigtable.request.');
         const responseArray = (await bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
           {
             client: 'BigtableClient',
@@ -324,21 +360,25 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
             gaxOpts: gaxOptions,
           }
         )) as unknown as [google.bigtable.v2.IReadModifyWriteRowResponse];
+        console.log('[TEST_FAKE_RMRW] After await bigtable.request - Success.');
 
-        metricsCollector.onAttemptComplete(GrpcStatus.OK);
         metricsCollector.onOperationComplete(GrpcStatus.OK);
+        console.log('[TEST_FAKE_RMRW] Called onOperationComplete (Success).');
         return responseArray[0];
       } catch (err) {
+        console.error('[TEST_FAKE_RMRW] After await bigtable.request - Error:', err);
         const googleError = err as GoogleError;
         const status = googleError.code || GrpcStatus.UNKNOWN;
-        metricsCollector.onAttemptComplete(status);
         metricsCollector.onOperationComplete(status);
+        console.log('[TEST_FAKE_RMRW] Called onOperationComplete (Error).');
         throw googleError;
       }
     };
 
     const rules = [{rule: 'append', column: `cf1:c1`, value: '-appended'}];
+    console.log('[TEST_CASE] Calling fakeReadModifyWriteRow...');
     await (table as any).fakeReadModifyWriteRow(ROW_KEY, rules);
+    console.log('[TEST_CASE] fakeReadModifyWriteRow call completed.');
 
     await waitForMetrics(testMetricsHandler, 2);
 
