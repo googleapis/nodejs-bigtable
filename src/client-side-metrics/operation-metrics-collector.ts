@@ -19,6 +19,7 @@ import * as gax from 'google-gax';
 import {AbortableDuplex, BigtableOptions} from '../index';
 import * as path from 'path';
 import {IMetricsHandler} from './metrics-handler';
+import {Metadata} from '@grpc/grpc-js';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
@@ -170,12 +171,9 @@ export class OperationMetricsCollector {
    */
   handleStatusAndMetadata(stream: AbortableDuplex) {
     stream
-      .on(
-        'metadata',
-        (metadata: {internalRepr: Map<string, string[]>; options: {}}) => {
-          this.onMetadataReceived(metadata);
-        },
-      )
+      .on('metadata', (metadata: Metadata) => {
+        this.onMetadataReceived(metadata);
+      })
       .on(
         'status',
         (status: {
@@ -323,17 +321,20 @@ export class OperationMetricsCollector {
    * Called when metadata is received. Extracts server timing information if available.
    * @param {object} metadata The received metadata.
    */
-  onMetadataReceived(metadata: {
-    internalRepr: Map<string, string[]>;
-    options: {};
-  }) {
+  onMetadataReceived(metadata: Metadata) {
     if (!this.serverTimeRead && this.connectivityErrorCount < 1) {
       // Check serverTimeRead, connectivityErrorCount here to reduce latency.
       const mappedEntries = new Map(
-        Array.from(metadata.internalRepr.entries(), ([key, value]) => [
-          key,
-          value.toString(),
-        ]),
+        // Note: The cast on metadata is required to satisfy the compiler.
+        // In practice the internalRepr property is available for us to read.
+        // But the internalRepr is protected on the Metadata type so we need
+        // to cast.
+        Array.from(
+          (
+            metadata as unknown as {internalRepr: Map<string, Uint8Array[]>}
+          ).internalRepr.entries(),
+          ([key, value]) => [key, value.toString()],
+        ),
       );
       const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
       const SERVER_TIMING_KEY = 'server-timing';
