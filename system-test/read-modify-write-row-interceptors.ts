@@ -1,0 +1,378 @@
+// Copyright 2025 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import {describe, it, before, after} from 'mocha';
+import {Bigtable, Table, BigtableOptions} from '../src';
+import {
+  CallOptions,
+  ClientConfig,
+  GoogleError,
+  grpc,
+} from 'google-gax';
+import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
+import {TestMetricsHandler} from '../test-common/test-metrics-handler';
+import {
+  OnAttemptCompleteData,
+  OnOperationCompleteData,
+} from '../src/client-side-metrics/metrics-handler';
+import {
+  OperationMetricsCollector,
+  ITabularApiSurface,
+} from '../src/client-side-metrics/operation-metrics-collector';
+import {
+  MethodName,
+  StreamingState,
+} from '../src/client-side-metrics/client-side-metrics-attributes';
+import * as assert from 'assert';
+import {google} from '../protos/protos';
+import {Metadata, status as GrpcStatus, MetadataValue} from '@grpc/grpc-js';
+import arrify = require('arrify');
+import {ServerStatus} from '../src/interceptor';
+
+const INSTANCE_ID = 'isolated-rmw-instance';
+const TABLE_ID = 'isolated-rmw-table';
+const ROW_KEY = 'test-row';
+const DUMMY_PROJECT_ID = 'test-project-isolated';
+
+// Mock Server Implementation
+import * as protoLoader from '@grpc/proto-loader';
+import * as grpcJs from '@grpc/grpc-js';
+import {MockServer} from '../src/util/mock-servers/mock-server'; // Adjust path if necessary
+import {MockService} from '../src/util/mock-servers/mock-service'; // Adjust path if necessary
+import * as jsonProtos from '../protos/protos.json'; // Adjust path to your protos.json
+
+const packageDefinition = protoLoader.fromJSON(jsonProtos, {
+  keepCase: true,
+  longs: String,
+  enums: String,
+  defaults: true,
+  oneofs: true,
+});
+const bigtableProto = grpcJs.loadPackageDefinition(packageDefinition) as any;
+const bigtableServiceDef =
+  bigtableProto.google.bigtable.v2.Bigtable.service;
+
+class MockBigtableService extends MockService {
+  service = bigtableServiceDef;
+  // Properties to control mock behavior
+  mockReadModifyWriteRowResponse: google.bigtable.v2.IReadModifyWriteRowResponse | null =
+    null;
+  mockReadModifyWriteRowError: grpcJs.ServiceError | null = null;
+  mockInitialMetadata: grpcJs.Metadata | null = null;
+  mockTrailingMetadata: grpcJs.Metadata | null = null;
+
+  constructor(server: MockServer) {
+    super(server);
+    this.server.setService(this.service, {
+      ReadModifyWriteRow: this.ReadModifyWriteRow.bind(this),
+      // Add other methods if needed, or have them return Unimplemented
+      ReadRows: (
+        call: grpcJs.ServerReadableStream<any, any>,
+        callback: grpcJs.sendUnaryData<any>
+      ) => {
+        // For ReadRows, we'd typically use call.write() for each row
+        // and call.end() when done. Or send an error via callback for unary part.
+        // For this test, we only care about ReadModifyWriteRow.
+        const error: grpcJs.ServiceError = {
+          code: GrpcStatus.UNIMPLEMENTED,
+          details: 'ReadRows not implemented in this mock',
+          metadata: new grpcJs.Metadata(),
+          name: 'Error',
+          message: 'ReadRows not implemented',
+        };
+        callback(error, null);
+      },
+      // ... other methods returning UNIMPLEMENTED ...
+    });
+  }
+
+  ReadModifyWriteRow(
+    call: grpcJs.ServerUnaryCall<
+      google.bigtable.v2.IReadModifyWriteRowRequest,
+      google.bigtable.v2.IReadModifyWriteRowResponse
+    >,
+    callback: grpcJs.sendUnaryData<google.bigtable.v2.IReadModifyWriteRowResponse>
+  ) {
+    if (this.mockInitialMetadata) {
+      call.sendMetadata(this.mockInitialMetadata);
+    }
+
+    if (this.mockReadModifyWriteRowError) {
+      const errorToSend = {...this.mockReadModifyWriteRowError}; // Clone to avoid modifying original
+      errorToSend.metadata = errorToSend.metadata || new grpcJs.Metadata();
+      if (this.mockTrailingMetadata) {
+        const trailerObject = this.mockTrailingMetadata.getMap(); // Returns { [key: string]: MetadataValue }
+        for (const key in trailerObject) {
+          if (Object.prototype.hasOwnProperty.call(trailerObject, key)) {
+            const values = arrify(trailerObject[key]) as (string | Buffer)[]; // Ensure it's an array
+            values.forEach((v: string | Buffer) => {
+              errorToSend.metadata!.add(key, v);
+            });
+          }
+        }
+      }
+      callback(errorToSend, null);
+    } else {
+      callback(
+        null,
+        this.mockReadModifyWriteRowResponse,
+        this.mockTrailingMetadata || undefined // Ensure undefined if null
+      );
+    }
+  }
+
+  // Helper to reset mocks
+  reset() {
+    this.mockReadModifyWriteRowResponse = null;
+    this.mockReadModifyWriteRowError = null;
+    this.mockInitialMetadata = null;
+    this.mockTrailingMetadata = null;
+  }
+}
+
+// Helper function to create a Bigtable client with a TestMetricsHandler
+function getBigtableClientWithTestMetricsHandler(
+  projectId: string,
+  port: string, // Port for the mock server
+  options?: BigtableOptions
+) {
+  const testMetricsHandler = new TestMetricsHandler();
+  testMetricsHandler.projectId = projectId;
+  // Forcing insecure by not providing sslCreds and using a non-HTTPS endpoint.
+  // google-gax defaults to insecure if apiEndpoint doesn't start with "grpcs://"
+  // and no sslCreds are provided.
+  const clientOptions: BigtableOptions & ClientConfig = {
+    projectId,
+    apiEndpoint: `localhost:${port}`, // Point to mock server
+    ...options,
+  };
+  const client = new Bigtable(clientOptions);
+  client._metricsConfigManager = new ClientSideMetricsConfigManager([
+    testMetricsHandler,
+  ]);
+  return {client, testMetricsHandler};
+}
+
+// Helper function to wait for metrics to be processed
+async function waitForMetrics(
+  testMetricsHandler: TestMetricsHandler,
+  expectedCount: number,
+  timeout = 5000 // 5 seconds timeout
+) {
+  return new Promise<void>((resolve, reject) => {
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+      if (testMetricsHandler.requestsHandled.length >= expectedCount) {
+        clearInterval(interval);
+        resolve();
+      } else if (Date.now() - startTime > timeout) {
+        clearInterval(interval);
+        reject(
+          new Error(
+            `Timeout waiting for ${expectedCount} metrics. Received ${testMetricsHandler.requestsHandled.length}`
+          )
+        );
+      }
+    }, 100); // Check every 100ms
+  });
+}
+
+// Helper to create interceptor provider for OperationMetricsCollector
+function createMetricsInterceptorProvider(collector: OperationMetricsCollector) {
+  return (options: grpcJs.InterceptorOptions, nextCall: grpcJs.NextCall) => {
+    let savedReceiveMessage: any;
+    let savedReceiveMetadata: grpcJs.Metadata;
+    let savedReceiveStatus: ServerStatus;
+
+    collector.onOperationStart(); // Called when the interceptor is invoked for an operation
+
+    return new grpcJs.InterceptingCall(nextCall(options), {
+      start: (metadata, listener, next) => {
+        collector.onAttemptStart(); // Called when an attempt starts
+        const newListener: grpcJs.Listener = {
+          onReceiveMetadata: (metadata, nextMd) => {
+            savedReceiveMetadata = metadata;
+            collector.onMetadataReceived(metadata);
+            nextMd(metadata);
+          },
+          onReceiveMessage: (message, nextMsg) => {
+            savedReceiveMessage = message;
+            // For unary, onResponse might be better called after status, or assumed with successful status
+            // collector.onResponse(); // Called when the (first) response message is received
+            nextMsg(message);
+          },
+          onReceiveStatus: (status, nextStat) => {
+            savedReceiveStatus = status as ServerStatus; // Assuming ServerStatus structure
+             if (status.code === GrpcStatus.OK && savedReceiveMessage) {
+              collector.onResponse(); // Call onResponse for successful unary calls with a message
+            }
+            collector.onStatusMetadataReceived(status as ServerStatus);
+            collector.onAttemptComplete(status.code);
+            collector.onOperationComplete(status.code); // For unary, attempt = operation if no retries
+            nextStat(status);
+          },
+        };
+        next(metadata, newListener);
+      },
+      sendMessage: (message, next) => next(message),
+      halfClose: next => next(),
+      cancel: next => next(),
+    });
+  };
+}
+
+describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
+  let bigtable: Bigtable;
+  let table: Table;
+  let testMetricsHandler: TestMetricsHandler;
+  let mockServer: MockServer;
+  let mockBigtableService: MockBigtableService;
+  let serverPort: string;
+
+  before(done => {
+    mockServer = new MockServer(port => {
+      serverPort = port;
+      mockBigtableService = new MockBigtableService(mockServer);
+
+      const {client: testClient, testMetricsHandler: handler} =
+        getBigtableClientWithTestMetricsHandler(
+          DUMMY_PROJECT_ID,
+          serverPort
+        );
+      bigtable = testClient;
+      testMetricsHandler = handler;
+      table = bigtable.instance(INSTANCE_ID).table(TABLE_ID);
+      done();
+    });
+  });
+
+  after(done => {
+    mockServer.shutdown(() => done());
+  });
+
+  it('should record and export correct metrics for ReadModifyWriteRow via interceptors', async () => {
+    const tabularApiSurface: ITabularApiSurface = {
+      instance: {id: (table as any).instance.id},
+      id: table.id,
+      bigtable: {
+        projectId: DUMMY_PROJECT_ID,
+        appProfileId: (table as any).bigtable.appProfileId_,
+        options: (table as any).bigtable.options,
+      },
+    };
+
+    const metricsCollector = new OperationMetricsCollector(
+      tabularApiSurface,
+      MethodName.READ_MODIFY_WRITE_ROW,
+      StreamingState.UNARY,
+      (table as any).bigtable._metricsConfigManager!.handlers
+    );
+
+    // This is the "fake" method on the table for testing purposes
+    (table as any).fakeReadModifyWriteRow = async (
+      rowKey: string,
+      rules: any[]
+    ): Promise<google.bigtable.v2.IReadModifyWriteRowResponse> => {
+      // Prepare mock server response
+      mockBigtableService.reset(); // Clear previous mock settings
+      mockBigtableService.mockReadModifyWriteRowResponse = {
+        row: {key: Buffer.from(rowKey), families: []},
+      };
+      const initialMetadata = new grpcJs.Metadata();
+      initialMetadata.set('server-timing', 'gfet4t7; dur=123');
+      mockBigtableService.mockInitialMetadata = initialMetadata;
+
+      const trailingMetadata = new grpcJs.Metadata();
+      const responseParamsProto = Buffer.from([
+        10, 9, 102, 97, 107, 101, 45, 122, 111, 110, 101, 18, 12, 102, 97,
+        107, 101, 45, 99, 108, 117, 115, 116, 101, 114,
+      ]);
+      trailingMetadata.set('x-goog-ext-425905942-bin', responseParamsProto);
+      mockBigtableService.mockTrailingMetadata = trailingMetadata;
+
+      const reqOpts = {
+        tableName: table.name,
+        rowKey,
+        rules,
+        appProfileId: (table as any).bigtable.appProfileId_,
+      };
+
+      const gaxOptions: CallOptions = {
+        otherArgs: {
+          options: {
+            interceptors: [createMetricsInterceptorProvider(metricsCollector)],
+          },
+        },
+      };
+
+      // Make the request using bigtable.request, which will hit the mock server
+      const responseArray = (await bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
+        {
+          client: 'BigtableClient',
+          method: 'readModifyWriteRow',
+          reqOpts,
+          gaxOpts: gaxOptions, // Corrected shorthand
+        }
+      )) as unknown as [google.bigtable.v2.IReadModifyWriteRowResponse];
+      return responseArray[0];
+    };
+
+    const rules = [{rule: 'append', column: `cf1:c1`, value: '-appended'}];
+    await (table as any).fakeReadModifyWriteRow(ROW_KEY, rules);
+
+    await waitForMetrics(testMetricsHandler, 2);
+
+    assert.strictEqual(testMetricsHandler.requestsHandled.length, 2);
+
+    const attemptCompleteData = testMetricsHandler.requestsHandled.find(
+      m => (m as {attemptLatency?: number}).attemptLatency !== undefined
+    ) as OnAttemptCompleteData | undefined;
+    const operationCompleteData = testMetricsHandler.requestsHandled.find(
+      m => (m as {operationLatency?: number}).operationLatency !== undefined
+    ) as OnOperationCompleteData | undefined;
+
+    assert.ok(attemptCompleteData, 'OnAttemptCompleteData should be present');
+    assert.ok(operationCompleteData, 'OnOperationCompleteData should be present');
+
+    if (!attemptCompleteData || !operationCompleteData) {
+      throw new Error('Metrics data is missing'); // Should be caught by asserts above
+    }
+
+    assert.strictEqual(
+      attemptCompleteData.metricsCollectorData.method,
+      MethodName.READ_MODIFY_WRITE_ROW
+    );
+    assert.strictEqual(attemptCompleteData.status, '0');
+    assert.strictEqual(attemptCompleteData.metricsCollectorData.table, TABLE_ID);
+    assert.strictEqual(attemptCompleteData.metricsCollectorData.instanceId, INSTANCE_ID);
+    assert.ok(attemptCompleteData.attemptLatency >= 0);
+    assert.strictEqual(attemptCompleteData.serverLatency, 123);
+    assert.strictEqual(attemptCompleteData.metricsCollectorData.zone, 'fake-zone');
+    assert.strictEqual(attemptCompleteData.metricsCollectorData.cluster, 'fake-cluster');
+    assert.strictEqual(attemptCompleteData.streaming, StreamingState.UNARY);
+
+    assert.strictEqual(
+      operationCompleteData.metricsCollectorData.method,
+      MethodName.READ_MODIFY_WRITE_ROW
+    );
+    assert.strictEqual(operationCompleteData.status, '0');
+    assert.strictEqual(operationCompleteData.metricsCollectorData.table, TABLE_ID);
+    assert.strictEqual(operationCompleteData.metricsCollectorData.instanceId, INSTANCE_ID);
+    assert.ok(operationCompleteData.operationLatency >= 0);
+    assert.strictEqual(operationCompleteData.retryCount, 0);
+    assert.strictEqual(operationCompleteData.metricsCollectorData.zone, 'fake-zone');
+    assert.strictEqual(operationCompleteData.metricsCollectorData.cluster, 'fake-cluster');
+    assert.strictEqual(operationCompleteData.streaming, StreamingState.UNARY);
+  });
+});
