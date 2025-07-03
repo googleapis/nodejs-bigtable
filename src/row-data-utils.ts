@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {loggingInterceptor} from './interceptor';
+
 const dotProp = require('dot-prop');
 import {Filter, RawFilter} from './filter';
 import {
@@ -30,6 +32,19 @@ import {TabularApiSurface} from './tabular-api-surface';
 import arrify = require('arrify');
 import {Bigtable} from './index';
 import {CallOptions} from 'google-gax';
+
+function withInterceptors(gaxOptions: CallOptions) {
+  if (!gaxOptions.otherArgs) {
+    gaxOptions.otherArgs = {};
+  }
+  if (!gaxOptions.otherArgs.options) {
+    gaxOptions.otherArgs.options = {};
+  }
+  if (!gaxOptions.otherArgs.options.interceptors) {
+    gaxOptions.otherArgs.options.interceptors = [loggingInterceptor];
+  }
+  return gaxOptions;
+}
 
 interface TabularApiSurfaceRequest {
   tableName?: string;
@@ -198,7 +213,7 @@ class RowDataUtils {
         client: 'BigtableClient',
         method: 'readModifyWriteRow',
         reqOpts,
-        gaxOpts: gaxOptions,
+        gaxOpts: withInterceptors(gaxOptions),
       },
       callback,
     );

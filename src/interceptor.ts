@@ -1,6 +1,6 @@
 import {grpc} from 'google-gax';
 
-const loggingInterceptor = (options: any, nextCall: any) => {
+export const loggingInterceptor = (options: any, nextCall: any) => {
   return new grpc.InterceptingCall(nextCall(options), {
     start: function (metadata, listener, next) {
       console.log(
