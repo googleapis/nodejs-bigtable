@@ -192,34 +192,28 @@ async function waitForMetrics(
 function createMetricsInterceptorProvider(collector: OperationMetricsCollector) {
   return (options: grpcJs.InterceptorOptions, nextCall: grpcJs.NextCall) => {
     let savedReceiveMessage: any;
-    let savedReceiveMetadata: grpcJs.Metadata;
-    let savedReceiveStatus: ServerStatus;
+    // savedReceiveMetadata and savedReceiveStatus are not strictly needed here anymore for the interceptor's own state
 
-    collector.onOperationStart(); // Called when the interceptor is invoked for an operation
+    // OperationStart and AttemptStart will be called by the calling code (`fakeReadModifyWriteRow`)
 
     return new grpcJs.InterceptingCall(nextCall(options), {
       start: (metadata, listener, next) => {
-        collector.onAttemptStart(); // Called when an attempt starts
+        // AttemptStart is called by the orchestrating code
         const newListener: grpcJs.Listener = {
           onReceiveMetadata: (metadata, nextMd) => {
-            savedReceiveMetadata = metadata;
             collector.onMetadataReceived(metadata);
             nextMd(metadata);
           },
           onReceiveMessage: (message, nextMsg) => {
-            savedReceiveMessage = message;
-            // For unary, onResponse might be better called after status, or assumed with successful status
-            // collector.onResponse(); // Called when the (first) response message is received
+            savedReceiveMessage = message; // Still need to know if a message was received for onResponse
             nextMsg(message);
           },
           onReceiveStatus: (status, nextStat) => {
-            savedReceiveStatus = status as ServerStatus; // Assuming ServerStatus structure
              if (status.code === GrpcStatus.OK && savedReceiveMessage) {
               collector.onResponse(); // Call onResponse for successful unary calls with a message
             }
             collector.onStatusMetadataReceived(status as ServerStatus);
-            collector.onAttemptComplete(status.code);
-            collector.onOperationComplete(status.code); // For unary, attempt = operation if no retries
+            // AttemptComplete and OperationComplete will be called by the calling code
             nextStat(status);
           },
         };
@@ -280,10 +274,14 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
     );
 
     // This is the "fake" method on the table for testing purposes
+    // This is the "fake" method on the table for testing purposes
     (table as any).fakeReadModifyWriteRow = async (
       rowKey: string,
       rules: any[]
     ): Promise<google.bigtable.v2.IReadModifyWriteRowResponse> => {
+      metricsCollector.onOperationStart();
+      metricsCollector.onAttemptStart();
+
       // Prepare mock server response
       mockBigtableService.reset(); // Clear previous mock settings
       mockBigtableService.mockReadModifyWriteRowResponse = {
@@ -316,16 +314,27 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
         },
       };
 
-      // Make the request using bigtable.request, which will hit the mock server
-      const responseArray = (await bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
-        {
-          client: 'BigtableClient',
-          method: 'readModifyWriteRow',
-          reqOpts,
-          gaxOpts: gaxOptions, // Corrected shorthand
-        }
-      )) as unknown as [google.bigtable.v2.IReadModifyWriteRowResponse];
-      return responseArray[0];
+      try {
+        // Make the request using bigtable.request, which will hit the mock server
+        const responseArray = (await bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
+          {
+            client: 'BigtableClient',
+            method: 'readModifyWriteRow',
+            reqOpts,
+            gaxOpts: gaxOptions,
+          }
+        )) as unknown as [google.bigtable.v2.IReadModifyWriteRowResponse];
+
+        metricsCollector.onAttemptComplete(GrpcStatus.OK);
+        metricsCollector.onOperationComplete(GrpcStatus.OK);
+        return responseArray[0];
+      } catch (err) {
+        const googleError = err as GoogleError;
+        const status = googleError.code || GrpcStatus.UNKNOWN;
+        metricsCollector.onAttemptComplete(status);
+        metricsCollector.onOperationComplete(status);
+        throw googleError;
+      }
     };
 
     const rules = [{rule: 'append', column: `cf1:c1`, value: '-appended'}];
