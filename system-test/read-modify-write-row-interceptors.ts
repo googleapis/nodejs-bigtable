@@ -14,7 +14,7 @@
 
 import {describe, it, before, after} from 'mocha';
 import {Bigtable} from '../src';
-import {CallOptions} from 'google-gax';
+import {CallOptions, ServiceError} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {
@@ -86,6 +86,12 @@ async function createTable(
   const [t] = await table.create({
     families: families,
   });
+  const row = table.row('gwashington');
+  await row.save({
+    traits: {
+      teeth: 'shiny',
+    },
+  });
   console.log(`Created table ${tableId}`);
   return t;
 }
@@ -151,16 +157,22 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
       );
       metricsCollector.onOperationStart();
       metricsCollector.onAttemptStart();
-      const row = table.row('gwashington');
-      const rule = {
-        column: 'traits:teeth',
-        append: '-wood',
+      const column = {
+        family: 'traits',
+        qualifier: 'teeth',
       };
-      await row.save({
-        traits: {
-          teeth: 'shiny',
-        },
-      });
+      const reqOpts = {
+        tableName: table.name,
+        rowKey: Buffer.from('gwashington'),
+        rules: [
+          {
+            familyName: column.family,
+            columnQualifier: Buffer.from(column.qualifier!), // Fn of {column: 'traits:teeth', append: '-wood'}
+            appendValue: Buffer.from('-wood'), // Fn of {column: 'traits:teeth', append: '-wood'}
+          },
+        ],
+        appProfileId: undefined,
+      };
       const gaxOptions: CallOptions = {
         otherArgs: {
           options: {
@@ -168,10 +180,104 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
           },
         },
       };
-      await row.createRules(rule, gaxOptions);
+      const myPromise = new Promise((resolve, reject) => {
+        bigtable.request(
+          {
+            client: 'BigtableClient',
+            method: 'readModifyWriteRow',
+            reqOpts,
+            gaxOpts: gaxOptions,
+          },
+          (err: ServiceError | null, resp?: any) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(resp);
+            }
+          },
+        );
+      });
+      const responseArray = await myPromise;
       metricsCollector.onAttemptComplete(GrpcStatus.OK);
       metricsCollector.onOperationComplete(GrpcStatus.OK);
+      return responseArray;
     };
+
+    // This is the "fake" method on the table for testing purposes
+    // This is the "fake" method on the table for testing purposes
+    /*
+    (table as any).fakeReadModifyWriteRow = async (
+      rowKey: string,
+      rules: any[],
+    ): Promise<google.bigtable.v2.IReadModifyWriteRowResponse> => {
+      metricsCollector.onOperationStart();
+      metricsCollector.onAttemptStart();
+      const column = {
+        family: 'traits',
+        qualifier: 'teeth',
+      };
+
+      const row = table.row('gwashington');
+      await row.save({
+        traits: {
+          teeth: 'shiny',
+        },
+      });
+
+      const reqOpts = {
+        tableName: table.name,
+        rowKey: Buffer.from('gwashington'),
+        rules: [
+          {
+            familyName: column.family,
+            columnQualifier: Buffer.from(column.qualifier!), // Fn of {column: 'traits:teeth', append: '-wood'}
+            appendValue: Buffer.from('-wood'), // Fn of {column: 'traits:teeth', append: '-wood'}
+          },
+        ],
+        appProfileId: undefined,
+      };
+
+      const gaxOptions: CallOptions = {
+        otherArgs: {
+          options: {
+            interceptors: [createMetricsInterceptorProvider(metricsCollector)],
+          },
+        },
+      };
+
+      try {
+        // Make the request using bigtable.request, which will hit the mock server
+        const myPromise = new Promise((resolve, reject) => {
+          bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
+            {
+              client: 'BigtableClient',
+              method: 'readModifyWriteRow',
+              reqOpts,
+              gaxOpts: gaxOptions,
+            },
+            (err: ServiceError | null, resp?: any) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(resp);
+              }
+            },
+          ) as unknown as [google.bigtable.v2.IReadModifyWriteRowResponse];
+        });
+        const responseArray = await myPromise;
+        metricsCollector.onAttemptComplete(GrpcStatus.OK);
+        metricsCollector.onOperationComplete(GrpcStatus.OK);
+        // @ts-ignore
+        return responseArray[0];
+      } catch (err) {
+        const googleError = err as GoogleError;
+        const status = googleError.code || GrpcStatus.UNKNOWN;
+        metricsCollector.onAttemptComplete(status);
+        metricsCollector.onOperationComplete(status);
+        throw googleError;
+      }
+    };
+     */
 
     await (table as any).fakeReadModifyWriteRowMethod();
 
