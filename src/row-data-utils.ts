@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {getInterceptor, loggingInterceptor} from './interceptor';
+import {getInterceptor, loggingInterceptor, withInterceptors} from './interceptor';
 
 const dotProp = require('dot-prop');
 import {Filter, RawFilter} from './filter';
@@ -37,25 +37,6 @@ import {
   MethodName,
   StreamingState,
 } from './client-side-metrics/client-side-metrics-attributes';
-
-function withInterceptors(
-  gaxOptions: CallOptions,
-  metricsCollector?: OperationMetricsCollector,
-) {
-  if (metricsCollector) {
-    const interceptor = getInterceptor(metricsCollector);
-    if (!gaxOptions.otherArgs) {
-      gaxOptions.otherArgs = {};
-    }
-    if (!gaxOptions.otherArgs.options) {
-      gaxOptions.otherArgs.options = {};
-    }
-    if (!gaxOptions.otherArgs.options.interceptors) {
-      gaxOptions.otherArgs.options.interceptors = [interceptor];
-    }
-  }
-  return gaxOptions;
-}
 
 interface TabularApiSurfaceRequest {
   tableName?: string;

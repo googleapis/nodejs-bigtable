@@ -1,4 +1,4 @@
-import {grpc} from 'google-gax';
+import {CallOptions, grpc} from 'google-gax';
 import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
 import {InterceptorOptions, Metadata, NextCall} from '@grpc/grpc-js';
 
@@ -107,7 +107,7 @@ export const getInterceptor = (metricsCollector: OperationMetricsCollector) => {
 };
 
 // Helper to create interceptor provider for OperationMetricsCollector
-export function createMetricsInterceptorProvider(
+function createMetricsInterceptorProvider(
   collector: OperationMetricsCollector,
 ) {
   return (options: grpcJs.InterceptorOptions, nextCall: grpcJs.NextCall) => {
@@ -143,4 +143,23 @@ export function createMetricsInterceptorProvider(
       cancel: next => next(),
     });
   };
+}
+
+export function withInterceptors(
+  gaxOptions: CallOptions,
+  metricsCollector?: OperationMetricsCollector,
+) {
+  if (metricsCollector) {
+    const interceptor = createMetricsInterceptorProvider(metricsCollector);
+    if (!gaxOptions.otherArgs) {
+      gaxOptions.otherArgs = {};
+    }
+    if (!gaxOptions.otherArgs.options) {
+      gaxOptions.otherArgs.options = {};
+    }
+    if (!gaxOptions.otherArgs.options.interceptors) {
+      gaxOptions.otherArgs.options.interceptors = [interceptor];
+    }
+  }
+  return gaxOptions;
 }

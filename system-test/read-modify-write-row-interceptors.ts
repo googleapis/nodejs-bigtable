@@ -28,7 +28,7 @@ import {
 } from '../src/client-side-metrics/client-side-metrics-attributes';
 import * as assert from 'assert';
 import {status as GrpcStatus} from '@grpc/grpc-js';
-import {createMetricsInterceptorProvider} from '../src/interceptor';
+import {withInterceptors} from '../src/interceptor';
 
 const INSTANCE_ID = 'isolated-rmw-instance';
 const TABLE_ID = 'isolated-rmw-table';
@@ -179,15 +179,7 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
               ],
               appProfileId: undefined,
             },
-            gaxOpts: {
-              otherArgs: {
-                options: {
-                  interceptors: [
-                    createMetricsInterceptorProvider(metricsCollector),
-                  ],
-                },
-              },
-            },
+            gaxOpts: withInterceptors({}, metricsCollector),
           },
           (err: ServiceError | null, resp?: any) => {
             if (err) {
