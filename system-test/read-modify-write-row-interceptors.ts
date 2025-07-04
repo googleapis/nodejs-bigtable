@@ -32,8 +32,6 @@ import {withInterceptors} from '../src/interceptor';
 
 const INSTANCE_ID = 'isolated-rmw-instance';
 const TABLE_ID = 'isolated-rmw-table';
-// TODO: Add after hook to delete instance
-
 const ZONE = 'us-central1-a';
 const CLUSTER = 'fake-cluster';
 const COLUMN_FAMILIES = ['cf1', 'cf2', 'data', 'metrics', 'logs', 'traits'];
