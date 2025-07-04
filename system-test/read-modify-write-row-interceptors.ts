@@ -37,6 +37,15 @@ const TABLE_ID = 'isolated-rmw-table';
 const ZONE = 'us-central1-a';
 const CLUSTER = 'fake-cluster';
 
+/**
+ * Creates a Bigtable instance if it does not already exist.
+ *
+ * @param bigtable - The Bigtable client.
+ * @param instanceId - The ID of the instance to create.
+ * @param clusterId - The ID of the initial cluster in the instance.
+ * @param locationId - The location (region) for the initial cluster.
+ * @returns The created instance object if successful, otherwise logs a message and returns the existing instance.
+ */
 async function createInstance(
   bigtable: Bigtable,
   instanceId: string,
@@ -68,6 +77,15 @@ async function createInstance(
   return i;
 }
 
+/**
+ * Creates a Bigtable table if it does not already exist.
+ *
+ * @param bigtable - The Bigtable client.
+ * @param instanceId - The ID of the instance containing the table.
+ * @param tableId - The ID of the table to create.
+ * @param families - An array of column family names to create in the table.
+ * @returns A promise that resolves with the created Table object.
+ */
 async function createTable(
   bigtable: Bigtable,
   instanceId: string,
@@ -96,13 +114,24 @@ async function createTable(
   return t;
 }
 
-// Helper function to create a Bigtable client with a TestMetricsHandler
+/**
+ * Creates and returns a TestMetricsHandler instance for testing purposes.
+ *
+ * @returns A TestMetricsHandler instance with the projectId set to 'test-project-id'.
+ */
 function getTestMetricsHandler() {
   const testMetricsHandler = new TestMetricsHandler();
   testMetricsHandler.projectId = 'test-project-id';
   return testMetricsHandler;
 }
 
+/**
+ * Asynchronously retrieves the project ID associated with the Bigtable client.
+ *
+ * @param bigtable - The Bigtable client instance.
+ * @returns A promise that resolves with the project ID as a string.
+ * @throws An error if the project ID cannot be retrieved.
+ */
 async function getProjectIdFromClient(bigtable: Bigtable): Promise<string> {
   return new Promise((resolve, reject) => {
     bigtable.getProjectId_((err, projectId) => {
@@ -213,11 +242,9 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
       operationCompleteData,
       'OnOperationCompleteData should be present',
     );
-
     if (!attemptCompleteData || !operationCompleteData) {
       throw new Error('Metrics data is missing'); // Should be caught by asserts above
     }
-
     assert.strictEqual(
       attemptCompleteData.metricsCollectorData.method,
       MethodName.READ_MODIFY_WRITE_ROW,
