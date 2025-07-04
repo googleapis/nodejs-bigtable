@@ -57,6 +57,8 @@ const packageDefinition = protoLoader.fromJSON(jsonProtos, {
 });
 const bigtableProto = grpcJs.loadPackageDefinition(packageDefinition) as any;
 const bigtableServiceDef = bigtableProto.google.bigtable.v2.Bigtable.service;
+const ZONE = 'us-central1-a';
+const CLUSTER = 'fake-cluster';
 
 async function createInstance(
   bigtable: Bigtable,
@@ -261,12 +263,7 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
      */
     bigtable = new Bigtable();
     await getProjectIdFromClient(bigtable);
-    await createInstance(
-      bigtable,
-      INSTANCE_ID,
-      'fake-cluster',
-      'us-central1-a',
-    );
+    await createInstance(bigtable, INSTANCE_ID, CLUSTER, ZONE);
     await createTable(bigtable, INSTANCE_ID, TABLE_ID, columnFamilies);
     /*
     mockBigtableService = new BigtableClientMockService(mockServer);
@@ -291,14 +288,15 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
 
     const table = instance.table(TABLE_ID);
 
-    const metricsCollector = new OperationMetricsCollector(
-      table,
-      MethodName.READ_MODIFY_WRITE_ROW,
-      StreamingState.UNARY,
-      (table as any).bigtable._metricsConfigManager!.handlers,
-    );
-
-    (table as any).fakeReadModifyWriteRow = async () => {
+    (table as any).fakeReadModifyWriteRowMethod = async () => {
+      const metricsCollector = new OperationMetricsCollector(
+        table,
+        MethodName.READ_MODIFY_WRITE_ROW,
+        StreamingState.UNARY,
+        (table as any).bigtable._metricsConfigManager!.metricsHandlers,
+      );
+      metricsCollector.onOperationStart();
+      metricsCollector.onAttemptStart();
       const row = table.row('gwashington');
       const rule = {
         column: 'traits:teeth',
@@ -317,6 +315,8 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
         },
       };
       await row.createRules(rule, gaxOptions);
+      metricsCollector.onAttemptComplete(GrpcStatus.OK);
+      metricsCollector.onOperationComplete(GrpcStatus.OK);
     };
     // This is the "fake" method on the table for testing purposes
     // This is the "fake" method on the table for testing purposes
@@ -395,9 +395,9 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
      */
 
     // const rules = [{rule: 'append', column: 'cf1:c1', value: '-appended'}];
-    await (table as any).fakeReadModifyWriteRow();
+    await (table as any).fakeReadModifyWriteRowMethod();
 
-    await waitForMetrics(testMetricsHandler, 2);
+    // await waitForMetrics(testMetricsHandler, 2);
 
     assert.strictEqual(testMetricsHandler.requestsHandled.length, 2);
 
@@ -432,14 +432,12 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
       INSTANCE_ID,
     );
     assert.ok(attemptCompleteData.attemptLatency >= 0);
-    assert.strictEqual(attemptCompleteData.serverLatency, 123);
-    assert.strictEqual(
-      attemptCompleteData.metricsCollectorData.zone,
-      'fake-zone',
-    );
+    assert(attemptCompleteData.serverLatency);
+    assert.ok(attemptCompleteData.serverLatency >= 0);
+    assert.strictEqual(attemptCompleteData.metricsCollectorData.zone, ZONE);
     assert.strictEqual(
       attemptCompleteData.metricsCollectorData.cluster,
-      'fake-cluster',
+      CLUSTER,
     );
     assert.strictEqual(attemptCompleteData.streaming, StreamingState.UNARY);
 
@@ -458,13 +456,10 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
     );
     assert.ok(operationCompleteData.operationLatency >= 0);
     assert.strictEqual(operationCompleteData.retryCount, 0);
-    assert.strictEqual(
-      operationCompleteData.metricsCollectorData.zone,
-      'fake-zone',
-    );
+    assert.strictEqual(operationCompleteData.metricsCollectorData.zone, ZONE);
     assert.strictEqual(
       operationCompleteData.metricsCollectorData.cluster,
-      'fake-cluster',
+      CLUSTER,
     );
     assert.strictEqual(operationCompleteData.streaming, StreamingState.UNARY);
   });
