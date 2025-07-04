@@ -144,7 +144,7 @@ async function getProjectIdFromClient(bigtable: Bigtable): Promise<string> {
   });
 }
 
-const columnFamilies = ['cf1', 'cf2', 'data', 'metrics', 'logs', 'traits'];
+const COLUMN_FAMILIES = ['cf1', 'cf2', 'data', 'metrics', 'logs', 'traits'];
 
 describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   let bigtable: Bigtable;
@@ -154,7 +154,7 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
     bigtable = new Bigtable();
     await getProjectIdFromClient(bigtable);
     await createInstance(bigtable, INSTANCE_ID, CLUSTER, ZONE);
-    await createTable(bigtable, INSTANCE_ID, TABLE_ID, columnFamilies);
+    await createTable(bigtable, INSTANCE_ID, TABLE_ID, COLUMN_FAMILIES);
     testMetricsHandler = getTestMetricsHandler();
     bigtable._metricsConfigManager = new ClientSideMetricsConfigManager([
       testMetricsHandler,
