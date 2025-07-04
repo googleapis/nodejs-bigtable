@@ -13,50 +13,32 @@
 // limitations under the License.
 
 import {describe, it, before, after} from 'mocha';
-import {Bigtable, Mutation, Rule} from '../src';
-import {CallOptions, GoogleError, ServiceError} from 'google-gax';
+import {Bigtable} from '../src';
+import {CallOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {
   OnAttemptCompleteData,
   OnOperationCompleteData,
 } from '../src/client-side-metrics/metrics-handler';
-import {
-  OperationMetricsCollector,
-  ITabularApiSurface,
-} from '../src/client-side-metrics/operation-metrics-collector';
+import {OperationMetricsCollector} from '../src/client-side-metrics/operation-metrics-collector';
 import {
   MethodName,
   StreamingState,
 } from '../src/client-side-metrics/client-side-metrics-attributes';
 import * as assert from 'assert';
-import {google} from '../protos/protos';
 import {status as GrpcStatus} from '@grpc/grpc-js';
-import arrify = require('arrify');
 import {ServerStatus} from '../src/interceptor';
 
 const INSTANCE_ID = 'isolated-rmw-instance';
 const TABLE_ID = 'isolated-rmw-table';
-const ROW_KEY = 'test-row';
 // TODO: Add after hook to delete instance
 
 // Mock Server Implementation
-import * as protoLoader from '@grpc/proto-loader';
 import * as grpcJs from '@grpc/grpc-js';
 import {MockServer} from '../src/util/mock-servers/mock-server'; // Adjust path if necessary
-import {MockService} from '../src/util/mock-servers/mock-service'; // Adjust path if necessary
-import * as jsonProtos from '../protos/protos.json';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service'; // Adjust path to your protos.json
 
-const packageDefinition = protoLoader.fromJSON(jsonProtos, {
-  keepCase: true,
-  longs: String,
-  enums: String,
-  defaults: true,
-  oneofs: true,
-});
-const bigtableProto = grpcJs.loadPackageDefinition(packageDefinition) as any;
-const bigtableServiceDef = bigtableProto.google.bigtable.v2.Bigtable.service;
 const ZONE = 'us-central1-a';
 const CLUSTER = 'fake-cluster';
 
@@ -113,85 +95,11 @@ async function createTable(
   return t;
 }
 
-const readModifyWriteRowService = (
-  call: grpcJs.ServerUnaryCall<
-    google.bigtable.v2.IReadModifyWriteRowRequest,
-    google.bigtable.v2.IReadModifyWriteRowResponse
-  >,
-  callback: grpcJs.sendUnaryData<google.bigtable.v2.IReadModifyWriteRowResponse>,
-) => {
-  console.log('readModifyWriteRow get call');
-  const initialMetadata = new grpcJs.Metadata();
-  initialMetadata.set('server-timing', 'gfet4t7; dur=123');
-  // call.sendMetadata(initialMetadata);
-
-  const trailingMetadata = new grpcJs.Metadata();
-  const responseParamsProto = Buffer.from([
-    10, 9, 102, 97, 107, 101, 45, 122, 111, 110, 101, 18, 12, 102, 97, 107, 101,
-    45, 99, 108, 117, 115, 116, 101, 114,
-  ]);
-  trailingMetadata.set('x-goog-ext-425905942-bin', responseParamsProto);
-
-  /*
-  const errorToSend = {...this.mockReadModifyWriteRowError}; // Clone to avoid modifying original
-  errorToSend.metadata = errorToSend.metadata || new grpcJs.Metadata();
-  if (trailingMetadata) {
-    const trailerObject = trailingMetadata.getMap(); // Returns { [key: string]: MetadataValue }
-    for (const key in trailerObject) {
-      if (Object.prototype.hasOwnProperty.call(trailerObject, key)) {
-        const values = arrify(trailerObject[key]) as (string | Buffer)[]; // Ensure it's an array
-        values.forEach((v: string | Buffer) => {
-          errorToSend.metadata!.add(key, v);
-        });
-      }
-    }
-  }
-  callback(errorToSend, null);
-   */
-  const mockReadModifyWriteRowResponse = {
-    row: {
-      key: Buffer.from(ROW_KEY),
-      families: [],
-    },
-  };
-  /*
-  callback(
-    null,
-    mockReadModifyWriteRowResponse,
-    trailingMetadata || undefined, // Ensure undefined if null
-  );
-   */
-};
-
 // Helper function to create a Bigtable client with a TestMetricsHandler
 function getTestMetricsHandler() {
   const testMetricsHandler = new TestMetricsHandler();
   testMetricsHandler.projectId = 'test-project-id';
   return testMetricsHandler;
-}
-
-// Helper function to wait for metrics to be processed
-async function waitForMetrics(
-  testMetricsHandler: TestMetricsHandler,
-  expectedCount: number,
-  timeout = 5000, // 5 seconds timeout
-) {
-  return new Promise<void>((resolve, reject) => {
-    const startTime = Date.now();
-    const interval = setInterval(() => {
-      if (testMetricsHandler.requestsHandled.length >= expectedCount) {
-        clearInterval(interval);
-        resolve();
-      } else if (Date.now() - startTime > timeout) {
-        clearInterval(interval);
-        reject(
-          new Error(
-            `Timeout waiting for ${expectedCount} metrics. Received ${testMetricsHandler.requestsHandled.length}`,
-          ),
-        );
-      }
-    }, 100); // Check every 100ms
-  });
 }
 
 // Helper to create interceptor provider for OperationMetricsCollector
