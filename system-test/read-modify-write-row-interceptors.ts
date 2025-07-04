@@ -139,7 +139,8 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
     fakeReadModifyWriteRowMethod is just a fake method on a table that makes a
     call to the readWriteModifyRow grpc endpoint. It demonstrates what a method
     might look like when trying to make a unary call while extracting
-    information from the headers and trailers that the server returns.
+    information from the headers and trailers that the server returns so that
+    the extracted information can be recorded in client side metrics.
      */
     (table as any).fakeReadModifyWriteRowMethod = async () => {
       const metricsCollector = new OperationMetricsCollector(
