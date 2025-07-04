@@ -143,7 +143,7 @@ async function getProjectIdFromClient(bigtable: Bigtable): Promise<string> {
   });
 }
 
-describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
+describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   let bigtable: Bigtable;
   let testMetricsHandler: TestMetricsHandler;
 
