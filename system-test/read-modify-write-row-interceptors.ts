@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {describe, it, before, after} from 'mocha';
-import {Bigtable} from '../src';
+import {Bigtable, Mutation, Rule} from '../src';
 import {CallOptions, GoogleError, ServiceError} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
@@ -38,7 +38,7 @@ import {ServerStatus} from '../src/interceptor';
 const INSTANCE_ID = 'isolated-rmw-instance';
 const TABLE_ID = 'isolated-rmw-table';
 const ROW_KEY = 'test-row';
-const DUMMY_PROJECT_ID = 'test-project-isolated';
+// TODO: Add after hook to delete instance
 
 // Mock Server Implementation
 import * as protoLoader from '@grpc/proto-loader';
@@ -233,7 +233,19 @@ function createMetricsInterceptorProvider(
   };
 }
 
-const columnFamilies = ['cf1', 'cf2', 'data', 'metrics', 'logs'];
+async function getProjectIdFromClient(bigtable: Bigtable): Promise<string> {
+  return new Promise((resolve, reject) => {
+    bigtable.getProjectId_((err, projectId) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(projectId!);
+      }
+    });
+  });
+}
+
+const columnFamilies = ['cf1', 'cf2', 'data', 'metrics', 'logs', 'traits'];
 
 describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   let bigtable: Bigtable;
@@ -242,10 +254,13 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   let mockBigtableService: BigtableClientMockService;
 
   before(async () => {
+    /*
     const port = await new Promise<string>(resolve => {
       mockServer = new MockServer(resolve);
     });
+     */
     bigtable = new Bigtable();
+    await getProjectIdFromClient(bigtable);
     await createInstance(
       bigtable,
       INSTANCE_ID,
@@ -253,11 +268,13 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
       'us-central1-a',
     );
     await createTable(bigtable, INSTANCE_ID, TABLE_ID, columnFamilies);
+    /*
     mockBigtableService = new BigtableClientMockService(mockServer);
     mockBigtableService.setService({
       // ReadModifyWriteRow: readModifyWriteRowService,
       readModifyWriteRow: readModifyWriteRowService,
     });
+     */
     testMetricsHandler = getTestMetricsHandler();
     bigtable._metricsConfigManager = new ClientSideMetricsConfigManager([
       testMetricsHandler,
@@ -265,47 +282,71 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   });
 
   after(done => {
-    mockServer.shutdown(() => done());
+    // mockServer.shutdown(() => done());
+    done();
   });
 
   it('should record and export correct metrics for ReadModifyWriteRow via interceptors', async () => {
-    const instance = bigtable.instance('some-instance');
+    const instance = bigtable.instance(INSTANCE_ID);
 
-    const table = instance.table('some-table');
-    const tabularApiSurface: ITabularApiSurface = {
-      instance: {id: (table as any).instance.id},
-      id: table.id,
-      bigtable: {
-        projectId: DUMMY_PROJECT_ID,
-        appProfileId: (table as any).bigtable.appProfileId_,
-        options: (table as any).bigtable.options,
-      },
-    };
+    const table = instance.table(TABLE_ID);
 
     const metricsCollector = new OperationMetricsCollector(
-      tabularApiSurface,
+      table,
       MethodName.READ_MODIFY_WRITE_ROW,
       StreamingState.UNARY,
       (table as any).bigtable._metricsConfigManager!.handlers,
     );
 
+    (table as any).fakeReadModifyWriteRow = async () => {
+      const row = table.row('gwashington');
+      const rule = {
+        column: 'traits:teeth',
+        append: '-wood',
+      };
+      await row.save({
+        traits: {
+          teeth: 'shiny',
+        },
+      });
+      const gaxOptions: CallOptions = {
+        otherArgs: {
+          options: {
+            interceptors: [createMetricsInterceptorProvider(metricsCollector)],
+          },
+        },
+      };
+      await row.createRules(rule, gaxOptions);
+    };
     // This is the "fake" method on the table for testing purposes
     // This is the "fake" method on the table for testing purposes
+    /*
     (table as any).fakeReadModifyWriteRow = async (
       rowKey: string,
       rules: any[],
     ): Promise<google.bigtable.v2.IReadModifyWriteRowResponse> => {
       metricsCollector.onOperationStart();
       metricsCollector.onAttemptStart();
+      const column = {
+        family: 'traits',
+        qualifier: 'teeth',
+      };
+
+      const row = table.row('gwashington');
+      await row.save({
+        traits: {
+          teeth: 'shiny',
+        },
+      });
 
       const reqOpts = {
         tableName: table.name,
-        rowKey: Buffer.from('some-string'),
+        rowKey: Buffer.from('gwashington'),
         rules: [
           {
-            familyName: 'traits',
-            columnQualifier: Buffer.from('some-string'), // Fn of {column: 'traits:teeth', append: '-wood'}
-            appendValue: Buffer.from('some-string'), // Fn of {column: 'traits:teeth', append: '-wood'}
+            familyName: column.family,
+            columnQualifier: Buffer.from(column.qualifier!), // Fn of {column: 'traits:teeth', append: '-wood'}
+            appendValue: Buffer.from('-wood'), // Fn of {column: 'traits:teeth', append: '-wood'}
           },
         ],
         appProfileId: undefined,
@@ -351,9 +392,10 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
         throw googleError;
       }
     };
+     */
 
-    const rules = [{rule: 'append', column: 'cf1:c1', value: '-appended'}];
-    await (table as any).fakeReadModifyWriteRow(ROW_KEY, rules);
+    // const rules = [{rule: 'append', column: 'cf1:c1', value: '-appended'}];
+    await (table as any).fakeReadModifyWriteRow();
 
     await waitForMetrics(testMetricsHandler, 2);
 
