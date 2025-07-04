@@ -68,7 +68,7 @@ const readModifyWriteRowService = (
   console.log('readModifyWriteRow get call');
   const initialMetadata = new grpcJs.Metadata();
   initialMetadata.set('server-timing', 'gfet4t7; dur=123');
-  call.sendMetadata(initialMetadata);
+  // call.sendMetadata(initialMetadata);
 
   const trailingMetadata = new grpcJs.Metadata();
   const responseParamsProto = Buffer.from([
@@ -99,93 +99,14 @@ const readModifyWriteRowService = (
       families: [],
     },
   };
+  /*
   callback(
     null,
     mockReadModifyWriteRowResponse,
     trailingMetadata || undefined, // Ensure undefined if null
   );
+   */
 };
-
-class MockBigtableService extends MockService {
-  service = bigtableServiceDef;
-  // Properties to control mock behavior
-  mockReadModifyWriteRowResponse: google.bigtable.v2.IReadModifyWriteRowResponse | null =
-    null;
-  mockReadModifyWriteRowError: grpcJs.ServiceError | null = null;
-  mockInitialMetadata: grpcJs.Metadata | null = null;
-  mockTrailingMetadata: grpcJs.Metadata | null = null;
-
-  constructor(server: MockServer) {
-    super(server);
-    this.setService({
-      ReadModifyWriteRow: this.ReadModifyWriteRow.bind(this),
-      // Add other methods if needed, or have them return Unimplemented
-      ReadRows: (_: unknown, callback: (err: ServiceError) => void) => {
-        // For ReadRows, we'd typically use call.write() for each row
-        // and call.end() when done. Or send an error via callback for unary part.
-        // For this test, we only care about ReadModifyWriteRow.
-        const error: grpcJs.ServiceError = {
-          code: GrpcStatus.UNIMPLEMENTED,
-          details: 'ReadRows not implemented in this mock',
-          metadata: new grpcJs.Metadata(),
-          name: 'Error',
-          message: 'ReadRows not implemented',
-        };
-        callback(error);
-      },
-      // ... other methods returning UNIMPLEMENTED ...
-    });
-  }
-
-  ReadModifyWriteRow(
-    call: grpcJs.ServerUnaryCall<
-      google.bigtable.v2.IReadModifyWriteRowRequest,
-      google.bigtable.v2.IReadModifyWriteRowResponse
-    >,
-    callback: grpcJs.sendUnaryData<google.bigtable.v2.IReadModifyWriteRowResponse>,
-  ) {
-    console.log('readModifyWriteRow get call');
-    if (this.mockInitialMetadata) {
-      call.sendMetadata(this.mockInitialMetadata);
-    }
-    const trailingMetadata = new grpcJs.Metadata();
-    const responseParamsProto = Buffer.from([
-      10, 9, 102, 97, 107, 101, 45, 122, 111, 110, 101, 18, 12, 102, 97, 107,
-      101, 45, 99, 108, 117, 115, 116, 101, 114,
-    ]);
-    trailingMetadata.set('x-goog-ext-425905942-bin', responseParamsProto);
-    if (this.mockReadModifyWriteRowError) {
-      const errorToSend = {...this.mockReadModifyWriteRowError}; // Clone to avoid modifying original
-      errorToSend.metadata = errorToSend.metadata || new grpcJs.Metadata();
-      if (trailingMetadata) {
-        const trailerObject = trailingMetadata.getMap(); // Returns { [key: string]: MetadataValue }
-        for (const key in trailerObject) {
-          if (Object.prototype.hasOwnProperty.call(trailerObject, key)) {
-            const values = arrify(trailerObject[key]) as (string | Buffer)[]; // Ensure it's an array
-            values.forEach((v: string | Buffer) => {
-              errorToSend.metadata!.add(key, v);
-            });
-          }
-        }
-      }
-      callback(errorToSend, null);
-    } else {
-      callback(
-        null,
-        this.mockReadModifyWriteRowResponse,
-        trailingMetadata, // Ensure undefined if null
-      );
-    }
-  }
-
-  // Helper to reset mocks
-  reset() {
-    this.mockReadModifyWriteRowResponse = null;
-    this.mockReadModifyWriteRowError = null;
-    this.mockInitialMetadata = null;
-    this.mockTrailingMetadata = null;
-  }
-}
 
 // Helper function to create a Bigtable client with a TestMetricsHandler
 function getTestMetricsHandler() {
@@ -259,7 +180,7 @@ function createMetricsInterceptorProvider(
   };
 }
 
-describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
+describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   let bigtable: Bigtable;
   let testMetricsHandler: TestMetricsHandler;
   let mockServer: MockServer;
