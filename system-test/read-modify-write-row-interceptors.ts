@@ -13,14 +13,8 @@
 // limitations under the License.
 
 import {describe, it, before, after} from 'mocha';
-import {Bigtable, Table, BigtableOptions} from '../src';
-import {
-  CallOptions,
-  ClientConfig,
-  GoogleError,
-  grpc,
-  ServiceError,
-} from 'google-gax';
+import {Bigtable} from '../src';
+import {CallOptions, GoogleError, ServiceError} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {
@@ -37,7 +31,7 @@ import {
 } from '../src/client-side-metrics/client-side-metrics-attributes';
 import * as assert from 'assert';
 import {google} from '../protos/protos';
-import {Metadata, status as GrpcStatus, MetadataValue} from '@grpc/grpc-js';
+import {status as GrpcStatus} from '@grpc/grpc-js';
 import arrify = require('arrify');
 import {ServerStatus} from '../src/interceptor';
 
@@ -126,10 +120,7 @@ class MockBigtableService extends MockService {
     this.setService({
       ReadModifyWriteRow: this.ReadModifyWriteRow.bind(this),
       // Add other methods if needed, or have them return Unimplemented
-      ReadRows: (
-        call: grpcJs.ServerReadableStream<any, any>,
-        callback: grpcJs.sendUnaryData<any>,
-      ) => {
+      ReadRows: (_: unknown, callback: (err: ServiceError) => void) => {
         // For ReadRows, we'd typically use call.write() for each row
         // and call.end() when done. Or send an error via callback for unary part.
         // For this test, we only care about ReadModifyWriteRow.
@@ -140,7 +131,7 @@ class MockBigtableService extends MockService {
           name: 'Error',
           message: 'ReadRows not implemented',
         };
-        callback(error, null);
+        callback(error);
       },
       // ... other methods returning UNIMPLEMENTED ...
     });
@@ -270,11 +261,9 @@ function createMetricsInterceptorProvider(
 
 describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   let bigtable: Bigtable;
-  let table: Table;
   let testMetricsHandler: TestMetricsHandler;
   let mockServer: MockServer;
   let mockBigtableService: BigtableClientMockService;
-  let serverPort: string;
 
   before(async () => {
     const port = await new Promise<string>(resolve => {
@@ -298,6 +287,8 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   });
 
   it('should record and export correct metrics for ReadModifyWriteRow via interceptors', async () => {
+    const instance = bigtable.instance('some-instance');
+    const table = instance.table('some-table');
     const tabularApiSurface: ITabularApiSurface = {
       instance: {id: (table as any).instance.id},
       id: table.id,
@@ -323,9 +314,6 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
     ): Promise<google.bigtable.v2.IReadModifyWriteRowResponse> => {
       metricsCollector.onOperationStart();
       metricsCollector.onAttemptStart();
-
-      // Prepare mock server response
-      mockBigtableService.reset(); // Clear previous mock settings
 
       const reqOpts = {
         tableName: table.name,

@@ -33,7 +33,10 @@ import arrify = require('arrify');
 import {Bigtable} from './index';
 import {CallOptions} from 'google-gax';
 import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
-import {MethodName, StreamingState} from './client-side-metrics/client-side-metrics-attributes';
+import {
+  MethodName,
+  StreamingState,
+} from './client-side-metrics/client-side-metrics-attributes';
 
 function withInterceptors(
   gaxOptions: CallOptions,
