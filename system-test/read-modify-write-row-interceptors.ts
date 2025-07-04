@@ -34,7 +34,10 @@ const INSTANCE_ID = 'isolated-rmw-instance';
 const TABLE_ID = 'isolated-rmw-table';
 const ZONE = 'us-central1-a';
 const CLUSTER = 'fake-cluster';
-const COLUMN_FAMILIES = ['cf1', 'cf2', 'data', 'metrics', 'logs', 'traits'];
+const COLUMN_FAMILY = 'traits';
+const COLUMN_FAMILIES = [COLUMN_FAMILY];
+const ROW_KEY = 'gwashington';
+const COLUMN = 'teeth';
 
 /**
  * Creates a Bigtable instance if it does not already exist.
@@ -103,10 +106,10 @@ async function createTable(
   const [t] = await table.create({
     families: families,
   });
-  const row = table.row('gwashington');
+  const row = table.row(ROW_KEY);
   await row.save({
-    traits: {
-      teeth: 'shiny',
+    [COLUMN_FAMILY]: {
+      [COLUMN]: 'shiny',
     },
   });
   console.log(`Created table ${tableId}`);
@@ -196,12 +199,12 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
             method: 'readModifyWriteRow',
             reqOpts: {
               tableName: table.name,
-              rowKey: Buffer.from('gwashington'),
+              rowKey: Buffer.from(ROW_KEY),
               rules: [
                 {
-                  familyName: 'traits',
-                  columnQualifier: Buffer.from('teeth'), // Fn of {column: 'traits:teeth', append: '-wood'}
-                  appendValue: Buffer.from('-wood'), // Fn of {column: 'traits:teeth', append: '-wood'}
+                  familyName: COLUMN_FAMILY,
+                  columnQualifier: Buffer.from(COLUMN),
+                  appendValue: Buffer.from('-wood'),
                 },
               ],
               appProfileId: undefined,
