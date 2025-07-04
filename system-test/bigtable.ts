@@ -754,7 +754,7 @@ describe('Bigtable', () => {
         assert.strictEqual(value, increment);
       });
 
-      it.only('should apply read/modify/write rules to a row', async () => {
+      it('should apply read/modify/write rules to a row', async () => {
         const row = TABLE.row('gwashington');
         const rule = {
           column: 'traits:teeth',

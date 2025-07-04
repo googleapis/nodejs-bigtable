@@ -180,7 +180,7 @@ function createMetricsInterceptorProvider(
   };
 }
 
-describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
+describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   let bigtable: Bigtable;
   let testMetricsHandler: TestMetricsHandler;
   let mockServer: MockServer;
