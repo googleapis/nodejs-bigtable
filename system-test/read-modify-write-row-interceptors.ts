@@ -58,6 +58,59 @@ const packageDefinition = protoLoader.fromJSON(jsonProtos, {
 const bigtableProto = grpcJs.loadPackageDefinition(packageDefinition) as any;
 const bigtableServiceDef = bigtableProto.google.bigtable.v2.Bigtable.service;
 
+async function createInstance(
+  bigtable: Bigtable,
+  instanceId: string,
+  clusterId: string,
+  locationId: string,
+) {
+  const instance = bigtable.instance(instanceId);
+
+  const [exists] = await instance.exists();
+  if (exists) {
+    console.log(`Instance ${instanceId} already exists.`);
+    return instance;
+  }
+
+  const [i, operation] = await instance.create({
+    clusters: [
+      {
+        id: clusterId,
+        location: locationId,
+        nodes: 3,
+      },
+    ],
+    labels: {
+      time_created: Date.now(),
+    },
+  });
+  await operation.promise();
+  console.log(`Created instance ${instanceId}`);
+  return i;
+}
+
+async function createTable(
+  bigtable: Bigtable,
+  instanceId: string,
+  tableId: string,
+  families: string[],
+) {
+  const instance = bigtable.instance(instanceId);
+  const table = instance.table(tableId);
+
+  const [exists] = await table.exists();
+  if (exists) {
+    console.log(`Table ${tableId} already exists.`);
+    return table;
+  }
+
+  const [t] = await table.create({
+    families: families,
+  });
+  console.log(`Created table ${tableId}`);
+  return t;
+}
+
 const readModifyWriteRowService = (
   call: grpcJs.ServerUnaryCall<
     google.bigtable.v2.IReadModifyWriteRowRequest,
@@ -180,6 +233,8 @@ function createMetricsInterceptorProvider(
   };
 }
 
+const columnFamilies = ['cf1', 'cf2', 'data', 'metrics', 'logs'];
+
 describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   let bigtable: Bigtable;
   let testMetricsHandler: TestMetricsHandler;
@@ -190,12 +245,18 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
     const port = await new Promise<string>(resolve => {
       mockServer = new MockServer(resolve);
     });
-    bigtable = new Bigtable({
-      apiEndpoint: `localhost:${port}`,
-    });
+    bigtable = new Bigtable();
+    await createInstance(
+      bigtable,
+      INSTANCE_ID,
+      'fake-cluster',
+      'us-central1-a',
+    );
+    await createTable(bigtable, INSTANCE_ID, TABLE_ID, columnFamilies);
     mockBigtableService = new BigtableClientMockService(mockServer);
     mockBigtableService.setService({
-      ReadModifyWriteRow: readModifyWriteRowService,
+      // ReadModifyWriteRow: readModifyWriteRowService,
+      readModifyWriteRow: readModifyWriteRowService,
     });
     testMetricsHandler = getTestMetricsHandler();
     bigtable._metricsConfigManager = new ClientSideMetricsConfigManager([
@@ -209,6 +270,7 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
 
   it('should record and export correct metrics for ReadModifyWriteRow via interceptors', async () => {
     const instance = bigtable.instance('some-instance');
+
     const table = instance.table('some-table');
     const tabularApiSurface: ITabularApiSurface = {
       instance: {id: (table as any).instance.id},
@@ -238,9 +300,15 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
 
       const reqOpts = {
         tableName: table.name,
-        rowKey,
-        rules,
-        appProfileId: (table as any).bigtable.appProfileId_,
+        rowKey: Buffer.from('some-string'),
+        rules: [
+          {
+            familyName: 'traits',
+            columnQualifier: Buffer.from('some-string'), // Fn of {column: 'traits:teeth', append: '-wood'}
+            appendValue: Buffer.from('some-string'), // Fn of {column: 'traits:teeth', append: '-wood'}
+          },
+        ],
+        appProfileId: undefined,
       };
 
       const gaxOptions: CallOptions = {
