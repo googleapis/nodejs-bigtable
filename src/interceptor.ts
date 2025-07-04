@@ -6,7 +6,6 @@ import {InterceptorOptions, Metadata, NextCall} from '@grpc/grpc-js';
 import * as grpcJs from '@grpc/grpc-js';
 import {status as GrpcStatus} from '@grpc/grpc-js';
 
-// TODO: Put this in more places
 export type ServerStatus = {
   metadata: Metadata;
   code: number;
