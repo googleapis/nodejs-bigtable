@@ -18,7 +18,8 @@ import {
   CallOptions,
   ClientConfig,
   GoogleError,
-  grpc, ServiceError,
+  grpc,
+  ServiceError,
 } from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
@@ -50,7 +51,8 @@ import * as protoLoader from '@grpc/proto-loader';
 import * as grpcJs from '@grpc/grpc-js';
 import {MockServer} from '../src/util/mock-servers/mock-server'; // Adjust path if necessary
 import {MockService} from '../src/util/mock-servers/mock-service'; // Adjust path if necessary
-import * as jsonProtos from '../protos/protos.json'; // Adjust path to your protos.json
+import * as jsonProtos from '../protos/protos.json';
+import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service'; // Adjust path to your protos.json
 
 const packageDefinition = protoLoader.fromJSON(jsonProtos, {
   keepCase: true,
@@ -60,8 +62,55 @@ const packageDefinition = protoLoader.fromJSON(jsonProtos, {
   oneofs: true,
 });
 const bigtableProto = grpcJs.loadPackageDefinition(packageDefinition) as any;
-const bigtableServiceDef =
-  bigtableProto.google.bigtable.v2.Bigtable.service;
+const bigtableServiceDef = bigtableProto.google.bigtable.v2.Bigtable.service;
+
+const readModifyWriteRowService = (
+  call: grpcJs.ServerUnaryCall<
+    google.bigtable.v2.IReadModifyWriteRowRequest,
+    google.bigtable.v2.IReadModifyWriteRowResponse
+  >,
+  callback: grpcJs.sendUnaryData<google.bigtable.v2.IReadModifyWriteRowResponse>,
+) => {
+  console.log('readModifyWriteRow get call');
+  const initialMetadata = new grpcJs.Metadata();
+  initialMetadata.set('server-timing', 'gfet4t7; dur=123');
+  call.sendMetadata(initialMetadata);
+
+  const trailingMetadata = new grpcJs.Metadata();
+  const responseParamsProto = Buffer.from([
+    10, 9, 102, 97, 107, 101, 45, 122, 111, 110, 101, 18, 12, 102, 97, 107, 101,
+    45, 99, 108, 117, 115, 116, 101, 114,
+  ]);
+  trailingMetadata.set('x-goog-ext-425905942-bin', responseParamsProto);
+
+  /*
+  const errorToSend = {...this.mockReadModifyWriteRowError}; // Clone to avoid modifying original
+  errorToSend.metadata = errorToSend.metadata || new grpcJs.Metadata();
+  if (trailingMetadata) {
+    const trailerObject = trailingMetadata.getMap(); // Returns { [key: string]: MetadataValue }
+    for (const key in trailerObject) {
+      if (Object.prototype.hasOwnProperty.call(trailerObject, key)) {
+        const values = arrify(trailerObject[key]) as (string | Buffer)[]; // Ensure it's an array
+        values.forEach((v: string | Buffer) => {
+          errorToSend.metadata!.add(key, v);
+        });
+      }
+    }
+  }
+  callback(errorToSend, null);
+   */
+  const mockReadModifyWriteRowResponse = {
+    row: {
+      key: Buffer.from(ROW_KEY),
+      families: [],
+    },
+  };
+  callback(
+    null,
+    mockReadModifyWriteRowResponse,
+    trailingMetadata || undefined, // Ensure undefined if null
+  );
+};
 
 class MockBigtableService extends MockService {
   service = bigtableServiceDef;
@@ -74,12 +123,12 @@ class MockBigtableService extends MockService {
 
   constructor(server: MockServer) {
     super(server);
-    this.server.setService(this.service, {
+    this.setService({
       ReadModifyWriteRow: this.ReadModifyWriteRow.bind(this),
       // Add other methods if needed, or have them return Unimplemented
       ReadRows: (
         call: grpcJs.ServerReadableStream<any, any>,
-        callback: grpcJs.sendUnaryData<any>
+        callback: grpcJs.sendUnaryData<any>,
       ) => {
         // For ReadRows, we'd typically use call.write() for each row
         // and call.end() when done. Or send an error via callback for unary part.
@@ -102,18 +151,23 @@ class MockBigtableService extends MockService {
       google.bigtable.v2.IReadModifyWriteRowRequest,
       google.bigtable.v2.IReadModifyWriteRowResponse
     >,
-    callback: grpcJs.sendUnaryData<google.bigtable.v2.IReadModifyWriteRowResponse>
+    callback: grpcJs.sendUnaryData<google.bigtable.v2.IReadModifyWriteRowResponse>,
   ) {
     console.log('readModifyWriteRow get call');
     if (this.mockInitialMetadata) {
       call.sendMetadata(this.mockInitialMetadata);
     }
-
+    const trailingMetadata = new grpcJs.Metadata();
+    const responseParamsProto = Buffer.from([
+      10, 9, 102, 97, 107, 101, 45, 122, 111, 110, 101, 18, 12, 102, 97, 107,
+      101, 45, 99, 108, 117, 115, 116, 101, 114,
+    ]);
+    trailingMetadata.set('x-goog-ext-425905942-bin', responseParamsProto);
     if (this.mockReadModifyWriteRowError) {
       const errorToSend = {...this.mockReadModifyWriteRowError}; // Clone to avoid modifying original
       errorToSend.metadata = errorToSend.metadata || new grpcJs.Metadata();
-      if (this.mockTrailingMetadata) {
-        const trailerObject = this.mockTrailingMetadata.getMap(); // Returns { [key: string]: MetadataValue }
+      if (trailingMetadata) {
+        const trailerObject = trailingMetadata.getMap(); // Returns { [key: string]: MetadataValue }
         for (const key in trailerObject) {
           if (Object.prototype.hasOwnProperty.call(trailerObject, key)) {
             const values = arrify(trailerObject[key]) as (string | Buffer)[]; // Ensure it's an array
@@ -128,7 +182,7 @@ class MockBigtableService extends MockService {
       callback(
         null,
         this.mockReadModifyWriteRowResponse,
-        this.mockTrailingMetadata || undefined // Ensure undefined if null
+        trailingMetadata, // Ensure undefined if null
       );
     }
   }
@@ -143,33 +197,17 @@ class MockBigtableService extends MockService {
 }
 
 // Helper function to create a Bigtable client with a TestMetricsHandler
-function getBigtableClientWithTestMetricsHandler(
-  projectId: string,
-  port: string, // Port for the mock server
-  options?: BigtableOptions
-) {
+function getTestMetricsHandler() {
   const testMetricsHandler = new TestMetricsHandler();
-  testMetricsHandler.projectId = projectId;
-  // Forcing insecure by not providing sslCreds and using a non-HTTPS endpoint.
-  // google-gax defaults to insecure if apiEndpoint doesn't start with "grpcs://"
-  // and no sslCreds are provided.
-  const clientOptions: BigtableOptions & ClientConfig = {
-    // projectId,
-    // apiEndpoint: `localhost:${port}`, // Point to mock server
-    ...options,
-  };
-  const client = new Bigtable(clientOptions);
-  client._metricsConfigManager = new ClientSideMetricsConfigManager([
-    testMetricsHandler,
-  ]);
-  return {client, testMetricsHandler};
+  testMetricsHandler.projectId = 'test-project-id';
+  return testMetricsHandler;
 }
 
 // Helper function to wait for metrics to be processed
 async function waitForMetrics(
   testMetricsHandler: TestMetricsHandler,
   expectedCount: number,
-  timeout = 5000 // 5 seconds timeout
+  timeout = 5000, // 5 seconds timeout
 ) {
   return new Promise<void>((resolve, reject) => {
     const startTime = Date.now();
@@ -181,8 +219,8 @@ async function waitForMetrics(
         clearInterval(interval);
         reject(
           new Error(
-            `Timeout waiting for ${expectedCount} metrics. Received ${testMetricsHandler.requestsHandled.length}`
-          )
+            `Timeout waiting for ${expectedCount} metrics. Received ${testMetricsHandler.requestsHandled.length}`,
+          ),
         );
       }
     }, 100); // Check every 100ms
@@ -190,7 +228,9 @@ async function waitForMetrics(
 }
 
 // Helper to create interceptor provider for OperationMetricsCollector
-function createMetricsInterceptorProvider(collector: OperationMetricsCollector) {
+function createMetricsInterceptorProvider(
+  collector: OperationMetricsCollector,
+) {
   return (options: grpcJs.InterceptorOptions, nextCall: grpcJs.NextCall) => {
     let savedReceiveMessage: any;
     // savedReceiveMetadata and savedReceiveStatus are not strictly needed here anymore for the interceptor's own state
@@ -211,7 +251,7 @@ function createMetricsInterceptorProvider(collector: OperationMetricsCollector) 
             nextMsg(message);
           },
           onReceiveStatus: (status, nextStat) => {
-             if (status.code === GrpcStatus.OK && savedReceiveMessage) {
+            if (status.code === GrpcStatus.OK && savedReceiveMessage) {
               collector.onResponse(); // Call onResponse for successful unary calls with a message
             }
             collector.onStatusMetadataReceived(status as ServerStatus);
@@ -228,29 +268,29 @@ function createMetricsInterceptorProvider(collector: OperationMetricsCollector) 
   };
 }
 
-describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
+describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   let bigtable: Bigtable;
   let table: Table;
   let testMetricsHandler: TestMetricsHandler;
   let mockServer: MockServer;
-  let mockBigtableService: MockBigtableService;
+  let mockBigtableService: BigtableClientMockService;
   let serverPort: string;
 
-  before(done => {
-    mockServer = new MockServer(port => {
-      serverPort = port;
-      mockBigtableService = new MockBigtableService(mockServer);
-
-      const {client: testClient, testMetricsHandler: handler} =
-        getBigtableClientWithTestMetricsHandler(
-          DUMMY_PROJECT_ID,
-          serverPort
-        );
-      bigtable = testClient;
-      testMetricsHandler = handler;
-      table = bigtable.instance(INSTANCE_ID).table(TABLE_ID);
-      done();
+  before(async () => {
+    const port = await new Promise<string>(resolve => {
+      mockServer = new MockServer(resolve);
     });
+    bigtable = new Bigtable({
+      apiEndpoint: `localhost:${port}`,
+    });
+    mockBigtableService = new BigtableClientMockService(mockServer);
+    mockBigtableService.setService({
+      ReadModifyWriteRow: readModifyWriteRowService,
+    });
+    testMetricsHandler = getTestMetricsHandler();
+    bigtable._metricsConfigManager = new ClientSideMetricsConfigManager([
+      testMetricsHandler,
+    ]);
   });
 
   after(done => {
@@ -272,34 +312,20 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
       tabularApiSurface,
       MethodName.READ_MODIFY_WRITE_ROW,
       StreamingState.UNARY,
-      (table as any).bigtable._metricsConfigManager!.handlers
+      (table as any).bigtable._metricsConfigManager!.handlers,
     );
 
     // This is the "fake" method on the table for testing purposes
     // This is the "fake" method on the table for testing purposes
     (table as any).fakeReadModifyWriteRow = async (
       rowKey: string,
-      rules: any[]
+      rules: any[],
     ): Promise<google.bigtable.v2.IReadModifyWriteRowResponse> => {
       metricsCollector.onOperationStart();
       metricsCollector.onAttemptStart();
 
       // Prepare mock server response
       mockBigtableService.reset(); // Clear previous mock settings
-      mockBigtableService.mockReadModifyWriteRowResponse = {
-        row: {key: Buffer.from(rowKey), families: []},
-      };
-      const initialMetadata = new grpcJs.Metadata();
-      initialMetadata.set('server-timing', 'gfet4t7; dur=123');
-      mockBigtableService.mockInitialMetadata = initialMetadata;
-
-      const trailingMetadata = new grpcJs.Metadata();
-      const responseParamsProto = Buffer.from([
-        10, 9, 102, 97, 107, 101, 45, 122, 111, 110, 101, 18, 12, 102, 97,
-        107, 101, 45, 99, 108, 117, 115, 116, 101, 114,
-      ]);
-      trailingMetadata.set('x-goog-ext-425905942-bin', responseParamsProto);
-      mockBigtableService.mockTrailingMetadata = trailingMetadata;
 
       const reqOpts = {
         tableName: table.name,
@@ -349,7 +375,7 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
       }
     };
 
-    const rules = [{rule: 'append', column: `cf1:c1`, value: '-appended'}];
+    const rules = [{rule: 'append', column: 'cf1:c1', value: '-appended'}];
     await (table as any).fakeReadModifyWriteRow(ROW_KEY, rules);
 
     await waitForMetrics(testMetricsHandler, 2);
@@ -357,14 +383,17 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
     assert.strictEqual(testMetricsHandler.requestsHandled.length, 2);
 
     const attemptCompleteData = testMetricsHandler.requestsHandled.find(
-      m => (m as {attemptLatency?: number}).attemptLatency !== undefined
+      m => (m as {attemptLatency?: number}).attemptLatency !== undefined,
     ) as OnAttemptCompleteData | undefined;
     const operationCompleteData = testMetricsHandler.requestsHandled.find(
-      m => (m as {operationLatency?: number}).operationLatency !== undefined
+      m => (m as {operationLatency?: number}).operationLatency !== undefined,
     ) as OnOperationCompleteData | undefined;
 
     assert.ok(attemptCompleteData, 'OnAttemptCompleteData should be present');
-    assert.ok(operationCompleteData, 'OnOperationCompleteData should be present');
+    assert.ok(
+      operationCompleteData,
+      'OnOperationCompleteData should be present',
+    );
 
     if (!attemptCompleteData || !operationCompleteData) {
       throw new Error('Metrics data is missing'); // Should be caught by asserts above
@@ -372,28 +401,52 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
 
     assert.strictEqual(
       attemptCompleteData.metricsCollectorData.method,
-      MethodName.READ_MODIFY_WRITE_ROW
+      MethodName.READ_MODIFY_WRITE_ROW,
     );
     assert.strictEqual(attemptCompleteData.status, '0');
-    assert.strictEqual(attemptCompleteData.metricsCollectorData.table, TABLE_ID);
-    assert.strictEqual(attemptCompleteData.metricsCollectorData.instanceId, INSTANCE_ID);
+    assert.strictEqual(
+      attemptCompleteData.metricsCollectorData.table,
+      TABLE_ID,
+    );
+    assert.strictEqual(
+      attemptCompleteData.metricsCollectorData.instanceId,
+      INSTANCE_ID,
+    );
     assert.ok(attemptCompleteData.attemptLatency >= 0);
     assert.strictEqual(attemptCompleteData.serverLatency, 123);
-    assert.strictEqual(attemptCompleteData.metricsCollectorData.zone, 'fake-zone');
-    assert.strictEqual(attemptCompleteData.metricsCollectorData.cluster, 'fake-cluster');
+    assert.strictEqual(
+      attemptCompleteData.metricsCollectorData.zone,
+      'fake-zone',
+    );
+    assert.strictEqual(
+      attemptCompleteData.metricsCollectorData.cluster,
+      'fake-cluster',
+    );
     assert.strictEqual(attemptCompleteData.streaming, StreamingState.UNARY);
 
     assert.strictEqual(
       operationCompleteData.metricsCollectorData.method,
-      MethodName.READ_MODIFY_WRITE_ROW
+      MethodName.READ_MODIFY_WRITE_ROW,
     );
     assert.strictEqual(operationCompleteData.status, '0');
-    assert.strictEqual(operationCompleteData.metricsCollectorData.table, TABLE_ID);
-    assert.strictEqual(operationCompleteData.metricsCollectorData.instanceId, INSTANCE_ID);
+    assert.strictEqual(
+      operationCompleteData.metricsCollectorData.table,
+      TABLE_ID,
+    );
+    assert.strictEqual(
+      operationCompleteData.metricsCollectorData.instanceId,
+      INSTANCE_ID,
+    );
     assert.ok(operationCompleteData.operationLatency >= 0);
     assert.strictEqual(operationCompleteData.retryCount, 0);
-    assert.strictEqual(operationCompleteData.metricsCollectorData.zone, 'fake-zone');
-    assert.strictEqual(operationCompleteData.metricsCollectorData.cluster, 'fake-cluster');
+    assert.strictEqual(
+      operationCompleteData.metricsCollectorData.zone,
+      'fake-zone',
+    );
+    assert.strictEqual(
+      operationCompleteData.metricsCollectorData.cluster,
+      'fake-cluster',
+    );
     assert.strictEqual(operationCompleteData.streaming, StreamingState.UNARY);
   });
 });
