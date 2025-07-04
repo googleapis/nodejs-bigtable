@@ -36,8 +36,6 @@ const TABLE_ID = 'isolated-rmw-table';
 
 // Mock Server Implementation
 import * as grpcJs from '@grpc/grpc-js';
-import {MockServer} from '../src/util/mock-servers/mock-server'; // Adjust path if necessary
-import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service'; // Adjust path to your protos.json
 
 const ZONE = 'us-central1-a';
 const CLUSTER = 'fake-cluster';
@@ -109,9 +107,7 @@ function createMetricsInterceptorProvider(
   return (options: grpcJs.InterceptorOptions, nextCall: grpcJs.NextCall) => {
     let savedReceiveMessage: any;
     // savedReceiveMetadata and savedReceiveStatus are not strictly needed here anymore for the interceptor's own state
-
     // OperationStart and AttemptStart will be called by the calling code (`fakeReadModifyWriteRow`)
-
     return new grpcJs.InterceptingCall(nextCall(options), {
       start: (metadata, listener, next) => {
         // AttemptStart is called by the orchestrating code
@@ -160,26 +156,12 @@ const columnFamilies = ['cf1', 'cf2', 'data', 'metrics', 'logs', 'traits'];
 describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   let bigtable: Bigtable;
   let testMetricsHandler: TestMetricsHandler;
-  let mockServer: MockServer;
-  let mockBigtableService: BigtableClientMockService;
 
   before(async () => {
-    /*
-    const port = await new Promise<string>(resolve => {
-      mockServer = new MockServer(resolve);
-    });
-     */
     bigtable = new Bigtable();
     await getProjectIdFromClient(bigtable);
     await createInstance(bigtable, INSTANCE_ID, CLUSTER, ZONE);
     await createTable(bigtable, INSTANCE_ID, TABLE_ID, columnFamilies);
-    /*
-    mockBigtableService = new BigtableClientMockService(mockServer);
-    mockBigtableService.setService({
-      // ReadModifyWriteRow: readModifyWriteRowService,
-      readModifyWriteRow: readModifyWriteRowService,
-    });
-     */
     testMetricsHandler = getTestMetricsHandler();
     bigtable._metricsConfigManager = new ClientSideMetricsConfigManager([
       testMetricsHandler,
@@ -187,7 +169,6 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   });
 
   after(done => {
-    // mockServer.shutdown(() => done());
     done();
   });
 
@@ -226,86 +207,8 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
       metricsCollector.onAttemptComplete(GrpcStatus.OK);
       metricsCollector.onOperationComplete(GrpcStatus.OK);
     };
-    // This is the "fake" method on the table for testing purposes
-    // This is the "fake" method on the table for testing purposes
-    /*
-    (table as any).fakeReadModifyWriteRow = async (
-      rowKey: string,
-      rules: any[],
-    ): Promise<google.bigtable.v2.IReadModifyWriteRowResponse> => {
-      metricsCollector.onOperationStart();
-      metricsCollector.onAttemptStart();
-      const column = {
-        family: 'traits',
-        qualifier: 'teeth',
-      };
 
-      const row = table.row('gwashington');
-      await row.save({
-        traits: {
-          teeth: 'shiny',
-        },
-      });
-
-      const reqOpts = {
-        tableName: table.name,
-        rowKey: Buffer.from('gwashington'),
-        rules: [
-          {
-            familyName: column.family,
-            columnQualifier: Buffer.from(column.qualifier!), // Fn of {column: 'traits:teeth', append: '-wood'}
-            appendValue: Buffer.from('-wood'), // Fn of {column: 'traits:teeth', append: '-wood'}
-          },
-        ],
-        appProfileId: undefined,
-      };
-
-      const gaxOptions: CallOptions = {
-        otherArgs: {
-          options: {
-            interceptors: [createMetricsInterceptorProvider(metricsCollector)],
-          },
-        },
-      };
-
-      try {
-        // Make the request using bigtable.request, which will hit the mock server
-        const myPromise = new Promise((resolve, reject) => {
-          bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
-            {
-              client: 'BigtableClient',
-              method: 'readModifyWriteRow',
-              reqOpts,
-              gaxOpts: gaxOptions,
-            },
-            (err: ServiceError | null, resp?: any) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(resp);
-              }
-            },
-          ) as unknown as [google.bigtable.v2.IReadModifyWriteRowResponse];
-        });
-        const responseArray = await myPromise;
-        metricsCollector.onAttemptComplete(GrpcStatus.OK);
-        metricsCollector.onOperationComplete(GrpcStatus.OK);
-        // @ts-ignore
-        return responseArray[0];
-      } catch (err) {
-        const googleError = err as GoogleError;
-        const status = googleError.code || GrpcStatus.UNKNOWN;
-        metricsCollector.onAttemptComplete(status);
-        metricsCollector.onOperationComplete(status);
-        throw googleError;
-      }
-    };
-     */
-
-    // const rules = [{rule: 'append', column: 'cf1:c1', value: '-appended'}];
     await (table as any).fakeReadModifyWriteRowMethod();
-
-    // await waitForMetrics(testMetricsHandler, 2);
 
     assert.strictEqual(testMetricsHandler.requestsHandled.length, 2);
 
