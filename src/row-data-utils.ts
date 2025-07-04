@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {getInterceptor, loggingInterceptor, withInterceptors} from './interceptor';
-
 const dotProp = require('dot-prop');
 import {Filter, RawFilter} from './filter';
 import {
@@ -32,11 +30,6 @@ import {TabularApiSurface} from './tabular-api-surface';
 import arrify = require('arrify');
 import {Bigtable} from './index';
 import {CallOptions} from 'google-gax';
-import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
-import {
-  MethodName,
-  StreamingState,
-} from './client-side-metrics/client-side-metrics-attributes';
 
 interface TabularApiSurfaceRequest {
   tableName?: string;
@@ -168,12 +161,6 @@ class RowDataUtils {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    const metricsCollector =
-      properties.requestData.bigtable._metricsConfigManager.createOperation(
-        MethodName.READ_ROWS,
-        StreamingState.STREAMING,
-        properties.requestData.table,
-      );
     if (!rules || (rules as Rule[]).length === 0) {
       throw new Error('At least one rule must be provided.');
     }
@@ -211,7 +198,7 @@ class RowDataUtils {
         client: 'BigtableClient',
         method: 'readModifyWriteRow',
         reqOpts,
-        gaxOpts: withInterceptors(gaxOptions, metricsCollector),
+        gaxOpts: gaxOptions,
       },
       callback,
     );
