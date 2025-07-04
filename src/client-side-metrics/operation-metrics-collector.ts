@@ -115,8 +115,10 @@ export class OperationMetricsCollector {
   private serverTime: number | null;
   private connectivityErrorCount: number;
   private streamingOperation: StreamingState;
+  private totalApplicationBlockingTimeNs: bigint;
+  private currentBlockStartTimeNs: bigint | null;
+  // This will store the final total in milliseconds, as a single element array.
   private applicationLatencies: number[];
-  private lastRowReceivedTime: bigint | null;
   private handlers: IMetricsHandler[];
 
   /**
@@ -143,9 +145,10 @@ export class OperationMetricsCollector {
     this.serverTime = null;
     this.connectivityErrorCount = 0;
     this.streamingOperation = streamingOperation;
-    this.lastRowReceivedTime = null;
     this.applicationLatencies = [];
     this.handlers = handlers;
+    this.totalApplicationBlockingTimeNs = 0n;
+    this.currentBlockStartTimeNs = null;
   }
 
   private getMetricsCollectorData() {
@@ -194,7 +197,9 @@ export class OperationMetricsCollector {
       checkState(this.state, [MetricsCollectorState.OPERATION_NOT_STARTED]);
       this.operationStartTime = hrtime.bigint();
       this.firstResponseLatency = null;
-      this.applicationLatencies = [];
+      this.applicationLatencies = []; // Reset for the operation
+      this.totalApplicationBlockingTimeNs = 0n; // Reset for the operation
+      this.currentBlockStartTimeNs = null; // Reset for the operation
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
     });
@@ -251,7 +256,9 @@ export class OperationMetricsCollector {
       this.serverTime = null;
       this.serverTimeRead = false;
       this.connectivityErrorCount = 0;
-      this.lastRowReceivedTime = null;
+      // currentBlockStartTimeNs is managed per block, not reset per attempt,
+      // as a block might span attempts if we were to support that (though unlikely for this metric).
+      // totalApplicationBlockingTimeNs is accumulated across the entire operation.
     });
   }
 
@@ -297,24 +304,32 @@ export class OperationMetricsCollector {
         const totalMilliseconds = Number(
           (endTime - this.operationStartTime) / BigInt(1000000),
         );
-        {
-          this.handlers.forEach(metricsHandler => {
-            if (metricsHandler.onOperationComplete) {
-              metricsHandler.onOperationComplete({
-                status: finalOperationStatus.toString(),
-                streaming: this.streamingOperation,
-                metricsCollectorData: this.getMetricsCollectorData(),
-                client_name: `nodejs-bigtable/${version}`,
-                operationLatency: totalMilliseconds,
-                retryCount: this.attemptCount - 1,
-                firstResponseLatency: this.firstResponseLatency ?? undefined,
-                applicationLatencies: this.applicationLatencies,
-              });
-            }
-          });
+        // Finalize application blocking latency
+        if (this.currentBlockStartTimeNs) {
+          // If a block was started but not ended (e.g. stream cut short), count time until now.
+          const blockEndTimeNs = hrtime.bigint();
+          this.totalApplicationBlockingTimeNs += blockEndTimeNs - this.currentBlockStartTimeNs;
+          this.currentBlockStartTimeNs = null;
         }
+        const totalApplicationBlockingTimeMs = Number(this.totalApplicationBlockingTimeNs / BigInt(1000000));
+        this.applicationLatencies = [totalApplicationBlockingTimeMs];
+
+        this.handlers.forEach(metricsHandler => {
+          if (metricsHandler.onOperationComplete) {
+            metricsHandler.onOperationComplete({
+              status: finalOperationStatus.toString(),
+              streaming: this.streamingOperation,
+              metricsCollectorData: this.getMetricsCollectorData(),
+              client_name: `nodejs-bigtable/${version}`,
+              operationLatency: totalMilliseconds,
+              retryCount: this.attemptCount - 1,
+              firstResponseLatency: this.firstResponseLatency ?? undefined,
+              applicationLatencies: this.applicationLatencies, // Now contains the single total
+            });
+          }
+        });
       } else {
-        console.warn('operation start time should always be available here');
+        console.warn('Operation start time should always be available here');
       }
     });
   }
@@ -361,27 +376,66 @@ export class OperationMetricsCollector {
    * latencies are then collected and reported as `applicationBlockingLatencies`
    * when the operation completes.
    */
-  onRowReachesUser() {
-    if (
-      this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
-      this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED ||
-      this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
-    ) {
-      const currentTime = hrtime.bigint();
-      if (this.lastRowReceivedTime) {
-        // application latency is measured in total milliseconds.
-        const applicationLatency = Number(
-          (currentTime - this.lastRowReceivedTime) / BigInt(1000000),
-        );
-        this.applicationLatencies.push(applicationLatency);
+  // This method is DEPRECATED in favor of startUserCodeBlock / endUserCodeBlock
+  // onRowReachesUser() {
+  //   if (
+  //     this.state ===
+  //       MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
+  //     this.state ===
+  //       MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED ||
+  //     this.state ===
+  //       MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
+  //   ) {
+  //     const currentTime = hrtime.bigint();
+  //     if (this.lastRowReceivedTime) {
+  //       // application latency is measured in total milliseconds.
+  //       const applicationLatency = Number(
+  //         (currentTime - this.lastRowReceivedTime) / BigInt(1000000),
+  //       );
+  //       this.applicationLatencies.push(applicationLatency);
+  //     }
+  //     this.lastRowReceivedTime = currentTime;
+  //   } else {
+  //     console.warn('Invalid state transition attempted');
+  //   }
+  // }
+
+  /**
+   * Called immediately before user code is about to execute with a row (or batch of rows).
+   */
+  startUserCodeBlock(): void {
+    withMetricsDebug(() => {
+      // This can be called multiple times if user processes multiple rows without yielding significantly.
+      // We only start the timer if it's not already started.
+      if (this.currentBlockStartTimeNs === null) {
+         // Ensure state is valid for processing rows
+        checkState(this.state, [
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED,
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS, // Possible if called right before operation completes
+        ]);
+        this.currentBlockStartTimeNs = hrtime.bigint();
       }
-      this.lastRowReceivedTime = currentTime;
-    } else {
-      console.warn('Invalid state transition attempted');
-    }
+    });
+  }
+
+  /**
+   * Called immediately after user code finishes executing with a row (or batch of rows).
+   */
+  endUserCodeBlock(): void {
+    withMetricsDebug(() => {
+      if (this.currentBlockStartTimeNs !== null) {
+        // Ensure state is valid
+        checkState(this.state, [
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET, // Should ideally have received a row first
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED,
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS, // Possible if called right before operation completes
+        ]);
+        const endTimeNs = hrtime.bigint();
+        this.totalApplicationBlockingTimeNs += endTimeNs - this.currentBlockStartTimeNs;
+        this.currentBlockStartTimeNs = null;
+      }
+    });
   }
 
   /**

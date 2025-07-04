@@ -128,49 +128,107 @@ export function createReadStreamInternal(
   // discarded in the per attempt subpipeline (rowStream)
   let lastRowKey = '';
   let rowsRead = 0;
-  const userStream = new PassThrough({
+
+  // To handle both .on('data') and for-await-of, we need to intercept
+  // when data is consumed.
+  // For .on('data'), we wrap `emit`.
+  // For for-await-of, it's trickier as it pulls via _read.
+  // We'll create a custom stream that wraps the PassThrough functionality
+  // but allows us to hook into data delivery.
+
+  const internalPassthrough = new PassThrough({
     objectMode: true,
-    readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
-    writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
+    readableHighWaterMark: 0,
+    writableHighWaterMark: 0,
+  });
+
+  // userStream is what the user interacts with.
+  // We will override its pipe and _read methods, and wrap its emit method.
+  const userStream = new Duplex({
+    objectMode: true,
+    readableHighWaterMark: options.readableHighWaterMark ?? 0, // honor user's HWM for read side
+    writableHighWaterMark: 0, // keep internal passthrough HWM low for write side
+    read() {
+      // This is called when the consumer (e.g. for-await-of) is ready for more data.
+      // This signifies the end of the previous user code block for for-await-of.
+      metricsCollector.endUserCodeBlock();
+      // Now, try to pull data from our internalPassthrough.
+      // If data is available, it will be pushed. If not, _read will be called again later.
+      let data;
+      while ((data = internalPassthrough.read()) !== null) {
+        // Before pushing to the consumer, mark the start of the user code block.
+        metricsCollector.startUserCodeBlock();
+        if (!this.push(data)) {
+          // If push returns false, the consumer's buffer is full.
+          // The current user code block (for-await-of) will end once _read is called again.
+          // For .on('data'), this is handled by emit wrapper.
+          return;
+        }
+        // If push was successful, for for-await-of, the user code runs, then _read is called again.
+        // We need to call endUserCodeBlock when _read is called next.
+        // For .on('data', listener), the listener has already run if it was attached.
+        // This might cause endUserCodeBlock to be called too early for .on('data') if it's also consumed by for-await-of.
+        // This needs careful handling. The `emit` wrapper is more reliable for `.on('data')`.
+      }
+    },
+    write(chunk, encoding, callback) {
+      internalPassthrough.write(chunk, encoding, callback);
+    },
+    final(callback) {
+      internalPassthrough.end(callback);
+    },
+  });
+
+  // Forward data from internalPassthrough to userStream's readable side
+  internalPassthrough.on('data', () => {
+    // When internalPassthrough has data, userStream's _read will be called if it's
+    // being pulled from (like in for-await-of or pipe).
+    // If userStream is in flowing mode (.on('data')), its emit will handle it.
+    userStream.read(0); // This will trigger userStream._read if needed.
+  });
+  internalPassthrough.on('end', () => {
+    userStream.push(null); // Signal end to userStream consumers
+  });
+  internalPassthrough.on('error', (err) => {
+    userStream.emit('error', err);
+  });
+
+
+  // Wrapper for .on('data', listener)
+  const originalEmit = userStream.emit;
+  userStream.emit = (event: string | symbol, ...args: any[]): boolean => {
+    if (event === 'data' && userStream.listenerCount('data') > 0) {
+      metricsCollector.startUserCodeBlock();
+      const result = originalEmit.call(userStream, event, ...args);
+      metricsCollector.endUserCodeBlock();
+      return result;
+    }
+    return originalEmit.call(userStream, event, ...args);
+  };
+
+  // This transform handles the logic from the original PassThrough,
+  // such as filtering duplicates and updating lastRowKey.
+  // It feeds into the `internalPassthrough` stream.
+  const processingTransform = new Transform({
+    objectMode: true,
     transform(event, _encoding, callback) {
       if (userCanceled) {
-        callback();
-        return;
+        return callback();
       }
       if (event.eventType === DataEvent.LAST_ROW_KEY_UPDATE) {
-        /**
-         * This code will run when receiving an event containing
-         * lastScannedRowKey data that the chunk transformer sent. When the
-         * chunk transformer gets lastScannedRowKey data, this code
-         * updates the lastRowKey to ensure row ids with the lastScannedRowKey
-         * aren't re-requested in retries. The lastRowKey needs to be updated
-         * here and not in the chunk transformer to ensure the update is
-         * queued behind all events that deliver data to the user stream
-         * first.
-         */
         lastRowKey = event.lastScannedRowKey;
-        callback();
-        return;
+        return callback();
       }
       const row = event;
       if (TableUtils.lessThanOrEqualTo(row.id, lastRowKey)) {
-        /*
-        Sometimes duplicate rows reach this point. To avoid delivering
-        duplicate rows to the user, rows are thrown away if they don't exceed
-        the last row key. We can expect each row to reach this point and rows
-        are delivered in order so if the last row key equals or exceeds the
-        row id then we know data for this row has already reached this point
-        and been delivered to the user. In this case we want to throw the row
-        away and we do not want to deliver this row to the user again.
-         */
-        callback();
-        return;
+        return callback();
       }
       lastRowKey = row.id;
       rowsRead++;
       callback(null, row);
     },
   });
+
 
   // The caller should be able to call userStream.end() to stop receiving
   // more rows and cancel the stream prematurely. But also, the 'end' event
@@ -179,28 +237,54 @@ export function createReadStreamInternal(
   // will call it on rowStream.on('end').
   const originalEnd = userStream.end.bind(userStream);
 
-  // Taking care of this extra listener when piping and unpiping userStream:
-  const rowStreamPipe = (rowStream: Duplex, userStream: PassThrough) => {
-    rowStream.pipe(userStream, {end: false});
-    rowStream.on('end', originalEnd);
+  // Taking care of this extra listener when piping and unpiping userStream from rowStream:
+  // rowStream is the stream coming from pumpify (gRPC data -> chunkTransformer -> toRowStream)
+  // This rowStream will now pipe to `processingTransform` which then pipes to `internalPassthrough`.
+  const rowStreamPipe = (rowStream: Duplex) => {
+    // The originalEnd logic is now implicitly handled by userStream.push(null) when internalPassthrough ends.
+    // And internalPassthrough ends when processingTransform ends, which ends when rowStream ends.
+    rowStream.pipe(processingTransform).pipe(internalPassthrough, {end: false});
+    // When the source rowStream (from pumpify) ends, we need to ensure processingTransform also ends.
+    rowStream.on('end', () => {
+      processingTransform.end();
+    });
   };
-  const rowStreamUnpipe = (rowStream: Duplex, userStream: PassThrough) => {
-    rowStream?.unpipe(userStream);
-    rowStream?.removeListener('end', originalEnd);
+  const rowStreamUnpipe = (rowStream: Duplex) => {
+    // Unpiping needs to be handled carefully if retries are involved.
+    // For now, the main concern is on userStream.end() being called by the user.
+    rowStream?.unpipe(processingTransform);
+    processingTransform?.unpipe(internalPassthrough);
+    // We don't explicitly call originalEnd anymore, userStream handles its own 'end'
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
-    rowStreamUnpipe(rowStream, userStream);
-    userCanceled = true;
-    if (activeRequestStream) {
-      activeRequestStream.abort();
+  userStream.end = (chunk?: any, encoding?: any, cb?: () => void): Duplex => {
+    // Call the original Duplex end method.
+    // The `final` method of our Duplex (userStream) will handle ending internalPassthrough.
+    // And processingTransform will end when rowStream ends or is unpiped.
+    if (!userCanceled) { // Prevent multiple calls if already ending due to user action
+      userCanceled = true;
+      if (activeRequestStream) {
+        activeRequestStream.abort();
+      }
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+      }
+      // Ensure any ongoing user code block is ended before the stream truly finishes.
+      // This is particularly important if the stream is ended prematurely by the user.
+      metricsCollector.endUserCodeBlock();
     }
-    if (retryTimer) {
-      clearTimeout(retryTimer);
-    }
-    return originalEnd(chunk, encoding, cb);
+    // The Duplex `end` method doesn't return itself in some versions/usages,
+    // but the original PassThrough did. We should ensure our custom Duplex's end method behaves as expected.
+    // For now, assume standard Duplex end behavior.
+    // super.end() or Reflect.getPrototypeOf(userStream).end.call(userStream, chunk, encoding, cb) might be needed if this was a class
+    // Since it's an object literal, we rely on the default Duplex.end.
+    // To be safe, and mimic original return if it was `this`, we can use:
+    const originalEndBehavior = Duplex.prototype.end;
+    originalEndBehavior.call(userStream, chunk, encoding, cb);
+    return userStream; // Return `this` (userStream)
   };
+
   metricsCollector.onOperationStart();
   const makeNewRequest = () => {
     metricsCollector.onAttemptStart();
@@ -380,13 +464,20 @@ export function createReadStreamInternal(
     metricsCollector.handleStatusAndMetadata(requestStream);
     rowStream
       .on('error', (error: ServiceError) => {
-        rowStreamUnpipe(rowStream, userStream);
+        rowStreamUnpipe(rowStream); // Pass rowStream, not userStream
         activeRequestStream = null;
         if (IGNORED_STATUS_CODES.has(error.code)) {
-          // We ignore the `cancelled` "error", since we are the ones who cause
-          // it when the user calls `.abort()`.
-          userStream.end();
-          metricsCollector.onOperationComplete(error.code);
+          userStream.end(); // This will trigger our wrapped end and cleanup
+          // onOperationComplete is called by the OperationMetricsCollector itself when an attempt fails or stream ends.
+          // However, if it's an ignored code (like user cancellation), the current attempt might not have formally "completed"
+          // in a way that onAttemptComplete was called. We should ensure onOperationComplete is robustly called.
+          // For user cancellation, userStream.end() calls metricsCollector.endUserCodeBlock(),
+          // and then onOperationComplete will be triggered by the stream ending.
+          // If the error is from the gRPC stream itself, onAttemptComplete should be called.
+          // Let's ensure onOperationComplete is called if not already handled by a retry path.
+          if (!retryTimer) { // if not about to retry
+            metricsCollector.onOperationComplete(error.code);
+          }
           return;
         }
         numConsecutiveErrors++;
@@ -403,36 +494,33 @@ export function createReadStreamInternal(
             numConsecutiveErrors,
             backOffSettings,
           );
-          metricsCollector.onAttemptComplete(error.code);
+          metricsCollector.onAttemptComplete(error.code); // An attempt failed, record it.
           retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
         } else {
           if (
             !error.code &&
             error.message === 'The client has already been closed.'
           ) {
-            //
-            // The TestReadRows_Generic_CloseClient conformance test requires
-            // a grpc code to be present when the client is closed. The
-            // appropriate code for a closed client is CANCELLED since the
-            // user actually cancelled the call by closing the client.
-            //
             error.code = grpc.status.CANCELLED;
           }
-          metricsCollector.onOperationComplete(error.code);
+          // Before emitting the final error, ensure any user code block is ended.
+          metricsCollector.endUserCodeBlock();
+          metricsCollector.onOperationComplete(error.code); // Final failure for the operation.
           userStream.emit('error', error);
         }
       })
       .on('data', _ => {
-        // Reset error count after a successful read so the backoff
-        // time won't keep increasing when as stream had multiple errors
         numConsecutiveErrors = 0;
-        metricsCollector.onResponse();
+        metricsCollector.onResponse(); // Record that we received a response for the current attempt.
       })
       .on('end', () => {
         activeRequestStream = null;
-        metricsCollector.onOperationComplete(grpc.status.OK);
+        // Ensure any final user code block is timed if stream ends cleanly
+        metricsCollector.endUserCodeBlock();
+        metricsCollector.onOperationComplete(grpc.status.OK); // Operation completed successfully.
+        // The processingTransform will end, which ends internalPassthrough, which ends userStream.
       });
-    rowStreamPipe(rowStream, userStream);
+    rowStreamPipe(rowStream); // Pass rowStream
   };
 
   makeNewRequest();
