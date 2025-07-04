@@ -28,14 +28,11 @@ import {
 } from '../src/client-side-metrics/client-side-metrics-attributes';
 import * as assert from 'assert';
 import {status as GrpcStatus} from '@grpc/grpc-js';
-import {ServerStatus} from '../src/interceptor';
+import {createMetricsInterceptorProvider} from '../src/interceptor';
 
 const INSTANCE_ID = 'isolated-rmw-instance';
 const TABLE_ID = 'isolated-rmw-table';
 // TODO: Add after hook to delete instance
-
-// Mock Server Implementation
-import * as grpcJs from '@grpc/grpc-js';
 
 const ZONE = 'us-central1-a';
 const CLUSTER = 'fake-cluster';
@@ -98,45 +95,6 @@ function getTestMetricsHandler() {
   const testMetricsHandler = new TestMetricsHandler();
   testMetricsHandler.projectId = 'test-project-id';
   return testMetricsHandler;
-}
-
-// Helper to create interceptor provider for OperationMetricsCollector
-function createMetricsInterceptorProvider(
-  collector: OperationMetricsCollector,
-) {
-  return (options: grpcJs.InterceptorOptions, nextCall: grpcJs.NextCall) => {
-    let savedReceiveMessage: any;
-    // savedReceiveMetadata and savedReceiveStatus are not strictly needed here anymore for the interceptor's own state
-    // OperationStart and AttemptStart will be called by the calling code (`fakeReadModifyWriteRow`)
-    return new grpcJs.InterceptingCall(nextCall(options), {
-      start: (metadata, listener, next) => {
-        // AttemptStart is called by the orchestrating code
-        const newListener: grpcJs.Listener = {
-          onReceiveMetadata: (metadata, nextMd) => {
-            console.log('metadata encountered');
-            collector.onMetadataReceived(metadata);
-            nextMd(metadata);
-          },
-          onReceiveMessage: (message, nextMsg) => {
-            savedReceiveMessage = message; // Still need to know if a message was received for onResponse
-            nextMsg(message);
-          },
-          onReceiveStatus: (status, nextStat) => {
-            if (status.code === GrpcStatus.OK && savedReceiveMessage) {
-              collector.onResponse(); // Call onResponse for successful unary calls with a message
-            }
-            collector.onStatusMetadataReceived(status as ServerStatus);
-            // AttemptComplete and OperationComplete will be called by the calling code
-            nextStat(status);
-          },
-        };
-        next(metadata, newListener);
-      },
-      sendMessage: (message, next) => next(message),
-      halfClose: next => next(),
-      cancel: next => next(),
-    });
-  };
 }
 
 async function getProjectIdFromClient(bigtable: Bigtable): Promise<string> {
