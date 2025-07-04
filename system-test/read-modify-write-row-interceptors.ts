@@ -36,6 +36,7 @@ const TABLE_ID = 'isolated-rmw-table';
 
 const ZONE = 'us-central1-a';
 const CLUSTER = 'fake-cluster';
+const COLUMN_FAMILIES = ['cf1', 'cf2', 'data', 'metrics', 'logs', 'traits'];
 
 /**
  * Creates a Bigtable instance if it does not already exist.
@@ -144,8 +145,6 @@ async function getProjectIdFromClient(bigtable: Bigtable): Promise<string> {
   });
 }
 
-const COLUMN_FAMILIES = ['cf1', 'cf2', 'data', 'metrics', 'logs', 'traits'];
-
 describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
   let bigtable: Bigtable;
   let testMetricsHandler: TestMetricsHandler;
@@ -161,8 +160,9 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
     ]);
   });
 
-  after(done => {
-    done();
+  after(async () => {
+    const instance = bigtable.instance(INSTANCE_ID);
+    await instance.delete();
   });
 
   it('should record and export correct metrics for ReadModifyWriteRow via interceptors', async () => {
