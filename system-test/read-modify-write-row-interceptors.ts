@@ -14,7 +14,7 @@
 
 import {describe, it, before, after} from 'mocha';
 import {Bigtable} from '../src';
-import {CallOptions, ServiceError} from 'google-gax';
+import {ServiceError} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {
@@ -149,44 +149,45 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
     the extracted information can be recorded in client side metrics.
      */
     (table as any).fakeReadModifyWriteRowMethod = async () => {
+      // 1. Create a metrics collector.
       const metricsCollector = new OperationMetricsCollector(
         table,
         MethodName.READ_MODIFY_WRITE_ROW,
         StreamingState.UNARY,
         (table as any).bigtable._metricsConfigManager!.metricsHandlers,
       );
+      // 2. Tell the metrics collector an attempt has been started.
       metricsCollector.onOperationStart();
       metricsCollector.onAttemptStart();
-      const column = {
-        family: 'traits',
-        qualifier: 'teeth',
-      };
-      const reqOpts = {
-        tableName: table.name,
-        rowKey: Buffer.from('gwashington'),
-        rules: [
-          {
-            familyName: column.family,
-            columnQualifier: Buffer.from(column.qualifier!), // Fn of {column: 'traits:teeth', append: '-wood'}
-            appendValue: Buffer.from('-wood'), // Fn of {column: 'traits:teeth', append: '-wood'}
-          },
-        ],
-        appProfileId: undefined,
-      };
-      const gaxOptions: CallOptions = {
-        otherArgs: {
-          options: {
-            interceptors: [createMetricsInterceptorProvider(metricsCollector)],
-          },
-        },
-      };
-      const myPromise = new Promise((resolve, reject) => {
+      // 3. Make a unary call with gax options that include interceptors. The
+      // interceptors are built from a method that hooks them up to the
+      // metrics collector
+      const responseArray = await new Promise((resolve, reject) => {
         bigtable.request(
           {
             client: 'BigtableClient',
             method: 'readModifyWriteRow',
-            reqOpts,
-            gaxOpts: gaxOptions,
+            reqOpts: {
+              tableName: table.name,
+              rowKey: Buffer.from('gwashington'),
+              rules: [
+                {
+                  familyName: 'traits',
+                  columnQualifier: Buffer.from('teeth'), // Fn of {column: 'traits:teeth', append: '-wood'}
+                  appendValue: Buffer.from('-wood'), // Fn of {column: 'traits:teeth', append: '-wood'}
+                },
+              ],
+              appProfileId: undefined,
+            },
+            gaxOpts: {
+              otherArgs: {
+                options: {
+                  interceptors: [
+                    createMetricsInterceptorProvider(metricsCollector),
+                  ],
+                },
+              },
+            },
           },
           (err: ServiceError | null, resp?: any) => {
             if (err) {
@@ -197,9 +198,10 @@ describe.only('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
           },
         );
       });
-      const responseArray = await myPromise;
+      // 4. Tell the metrics collector the attempt is over
       metricsCollector.onAttemptComplete(GrpcStatus.OK);
       metricsCollector.onOperationComplete(GrpcStatus.OK);
+      // 5. Return results of method call to the user
       return responseArray;
     };
 
