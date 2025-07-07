@@ -30,7 +30,7 @@ import {
   OnAttemptCompleteData,
   OnOperationCompleteData,
 } from '../src/client-side-metrics/metrics-handler';
-import {ClientOptions, ServiceError} from 'google-gax';
+import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 
@@ -43,13 +43,17 @@ function getFakeBigtable(
   metricsHandlerClass: typeof GCPMetricsHandler | typeof TestMetricsHandler,
   apiEndpoint?: string,
 ) {
-  const metricHandler = new metricsHandlerClass({
-    apiEndpoint,
-  } as unknown as ClientOptions & {value: string});
-  const newClient = new Bigtable({
+  // Normally the options passed into the client are passed into the metrics
+  // handler so when we mock out the metrics handler, it really should have
+  // the same options that are passed into the client.
+  const options = {
     projectId,
     apiEndpoint,
-  });
+  };
+  const metricHandler = new metricsHandlerClass(
+    options as unknown as ClientOptions & {value: string},
+  );
+  const newClient = new Bigtable(options);
   newClient._metricsConfigManager = new ClientSideMetricsConfigManager([
     metricHandler,
   ]);
