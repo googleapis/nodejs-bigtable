@@ -240,7 +240,7 @@ async function checkForPublishedMetrics(projectId: string) {
   }
 }
 
-describe.only('Bigtable/ClientSideMetrics', () => {
+describe('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -414,7 +414,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
-    it.only('should send the metrics to Google Cloud Monitoring for a ReadRows call with a second project', done => {
+    it('should send the metrics to Google Cloud Monitoring for a ReadRows call with a second project', done => {
       (async () => {
         try {
           // This is the second project the test is configured to work with:
