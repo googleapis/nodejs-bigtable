@@ -207,7 +207,7 @@ function checkSingleRowCall(
  *   Cloud Monitoring.
  */
 async function checkForPublishedMetrics(projectId: string) {
-  const monitoringClient = new MetricServiceClient(); // Correct instantiation
+  const monitoringClient = new MetricServiceClient({projectId}); // Correct instantiation
   const now = Math.floor(Date.now() / 1000);
   const filters = [
     'metric.type="bigtable.googleapis.com/client/attempt_latencies"',
