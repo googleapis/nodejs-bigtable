@@ -34,8 +34,6 @@ import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 
-// One comment
-
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
 function getFakeBigtable(
