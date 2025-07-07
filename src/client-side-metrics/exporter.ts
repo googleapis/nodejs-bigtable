@@ -19,11 +19,10 @@ import {
   Histogram,
   ResourceMetrics,
 } from '@opentelemetry/sdk-metrics';
-import {grpc, ServiceError} from 'google-gax';
+import {ClientOptions, ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
-import {RetryOptions} from 'google-gax';
 
 export interface ExportResult {
   code: number;
@@ -119,7 +118,7 @@ function getIntegerPoints(dataPoint: DataPoint<number>) {
  * getResource gets the resource object which is used for building the timeseries
  * object that will be sent to Google Cloud Monitoring dashboard
  *
- * @param {string} metricName The backend name of the metric that we want to record
+ * @param {string} projectId The name of the project
  * @param {DataPoint} dataPoint The datapoint containing the data we wish to
  * send to the Google Cloud Monitoring dashboard
  */
@@ -160,15 +159,16 @@ function getMetric(
 ) {
   const streaming = dataPoint.attributes.streaming;
   const app_profile = dataPoint.attributes.app_profile;
+  const status = dataPoint.attributes.status;
   return {
     type: metricName,
     labels: Object.assign(
       {
         method: dataPoint.attributes.method,
         client_uid: dataPoint.attributes.client_uid,
-        status: dataPoint.attributes.status,
         client_name: dataPoint.attributes.client_name,
       },
+      status ? {status} : null,
       streaming ? {streaming} : null,
       app_profile ? {app_profile} : null,
     ),
@@ -183,6 +183,7 @@ function getMetric(
  * metric attributes, data points, and aggregation information, into an object
  * that conforms to the expected request format of the Cloud Monitoring API.
  *
+ * @param projectId
  * @param {ResourceMetrics} exportArgs - The OpenTelemetry metrics data to be converted. This
  *   object contains resource attributes, scope information, and a list of
  *   metrics with their associated data points.
@@ -210,14 +211,10 @@ function getMetric(
  *
  *
  */
-export function metricsToRequest(exportArgs: ResourceMetrics) {
-  type WithSyncAttributes = {_syncAttributes: {[index: string]: string}};
-  const resourcesWithSyncAttributes =
-    exportArgs.resource as unknown as WithSyncAttributes;
-  const projectId =
-    resourcesWithSyncAttributes._syncAttributes[
-      'monitored_resource.project_id'
-    ];
+export function metricsToRequest(
+  projectId: string,
+  exportArgs: ResourceMetrics,
+) {
   const timeSeriesArray = [];
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
@@ -296,49 +293,33 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
  * @beta
  */
 export class CloudMonitoringExporter extends MetricExporter {
-  private monitoringClient = new MetricServiceClient();
+  private client: MetricServiceClient;
 
-  export(
+  constructor(options: ClientOptions) {
+    super();
+    if (options && options.apiEndpoint) {
+      // We want the MetricServiceClient to always hit its default endpoint.
+      delete options.apiEndpoint;
+    }
+    this.client = new MetricServiceClient(options);
+  }
+
+  async export(
     metrics: ResourceMetrics,
     resultCallback: (result: ExportResult) => void,
-  ): void {
+  ): Promise<void> {
     (async () => {
       try {
-        const request = metricsToRequest(metrics);
-        // In order to manage the "One or more points were written more
-        // frequently than the maximum sampling period configured for the
-        // metric." error we should have the metric service client retry a few
-        // times to ensure the metrics do get written.
-        //
-        // We use all the usual retry codes plus INVALID_ARGUMENT (code 3)
-        // because INVALID ARGUMENT (code 3) corresponds to the maximum
-        // sampling error.
-        const retry = new RetryOptions(
-          [
-            grpc.status.INVALID_ARGUMENT,
-            grpc.status.DEADLINE_EXCEEDED,
-            grpc.status.RESOURCE_EXHAUSTED,
-            grpc.status.ABORTED,
-            grpc.status.UNAVAILABLE,
-          ],
-          {
-            initialRetryDelayMillis: 5000,
-            retryDelayMultiplier: 2,
-            maxRetryDelayMillis: 50000,
-          },
-        );
-        await this.monitoringClient.createTimeSeries(
+        const projectId = await this.client.getProjectId();
+        const request = metricsToRequest(projectId, metrics);
+        await this.client.createServiceTimeSeries(
           request as ICreateTimeSeriesRequest,
-          {
-            retry,
-          },
         );
         // The resultCallback typically accepts a value equal to {code: x}
         // for some value x along with other info. When the code is equal to 0
         // then the operation completed successfully. When the code is not equal
-        // to 0 then the operation failed. Open telemetry logs errors to the
-        // console when the resultCallback passes in non-zero code values and
-        // logs nothing when the code is 0.
+        // to 0 then the operation failed. The resultCallback will not log
+        // anything to the console whether the error code was 0 or not.
         resultCallback({code: 0});
       } catch (error) {
         resultCallback(error as ServiceError);

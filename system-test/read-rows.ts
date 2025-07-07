@@ -25,6 +25,9 @@ import {EventEmitter} from 'events';
 import {Test} from './testTypes';
 import {ServiceError, GrpcClient, GoogleError, CallOptions} from 'google-gax';
 import {PassThrough} from 'stream';
+import * as proxyquire from 'proxyquire';
+import {TabularApiSurface} from '../src/tabular-api-surface';
+import * as mocha from 'mocha';
 
 const {grpc} = new GrpcClient();
 
@@ -76,7 +79,32 @@ function rowResponse(rowKey: {}) {
 }
 
 describe('Bigtable/Table', () => {
-  const bigtable = new Bigtable();
+  /**
+   * We have to mock out the metrics handler because the metrics handler with
+   * open telemetry causes clock.runAll() to throw an infinite loop error. This
+   * is most likely because of the periodic reader as it schedules pending
+   * events on the node event loop which conflicts with the sinon clock.
+   */
+  class TestGCPMetricsHandler {
+    onOperationComplete() {}
+    onAttemptComplete() {}
+  }
+  const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
+    './client-side-metrics/gcp-metrics-handler': {
+      GCPMetricsHandler: TestGCPMetricsHandler,
+    },
+  }).TabularApiSurface;
+  const FakeTable: TabularApiSurface = proxyquire('../src/table.js', {
+    './tabular-api-surface.js': {TabularApiSurface: FakeTabularApiSurface},
+  }).Table;
+  const FakeInstance = proxyquire('../src/instance.js', {
+    './table.js': {Table: FakeTable},
+  }).Instance;
+  const FakeBigtable = proxyquire('../src/index.js', {
+    './instance.js': {Instance: FakeInstance},
+  }).Bigtable;
+
+  const bigtable = new FakeBigtable();
   const INSTANCE_NAME = 'fake-instance2';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (bigtable as any).grpcCredentials = grpc.credentials.createInsecure();
@@ -124,7 +152,6 @@ describe('Bigtable/Table', () => {
   });
 
   describe('createReadStream', () => {
-    let clock: sinon.SinonFakeTimers;
     let endCalled: boolean;
     let error: ServiceError | null;
     let requestedOptions: Array<{}>;
@@ -133,25 +160,13 @@ describe('Bigtable/Table', () => {
     let stub: sinon.SinonStub;
 
     beforeEach(() => {
-      clock = sinon.useFakeTimers({
-        toFake: [
-          'setTimeout',
-          'clearTimeout',
-          'setImmediate',
-          'clearImmediate',
-          'setInterval',
-          'clearInterval',
-          'Date',
-          'nextTick',
-        ],
-      });
       endCalled = false;
       error = null;
       responses = null;
       rowKeysRead = [];
       requestedOptions = [];
       stub = sinon.stub(bigtable, 'request').callsFake(cfg => {
-        const reqOpts = cfg.reqOpts;
+        const reqOpts = (cfg as any).reqOpts;
         const requestOptions = {} as google.bigtable.v2.IRowSet;
         if (reqOpts.rows && reqOpts.rows.rowRanges) {
           requestOptions.rowRanges = reqOpts.rows.rowRanges.map(
@@ -186,34 +201,48 @@ describe('Bigtable/Table', () => {
     });
 
     afterEach(() => {
-      clock.restore();
       stub.restore();
     });
 
     tests.forEach(test => {
-      it(test.name, () => {
+      it(test.name, (done: mocha.Done) => {
         responses = test.responses;
         TABLE.maxRetries = test.max_retries;
         TABLE.createReadStream(test.createReadStream_options)
-          .on('data', row => rowKeysRead[rowKeysRead.length - 1].push(row.id))
-          .on('end', () => (endCalled = true))
-          .on('error', err => (error = err as ServiceError));
-        clock.runAll();
+          .on('data', (row: any) =>
+            rowKeysRead[rowKeysRead.length - 1].push(row.id),
+          )
+          .on('end', () => {
+            endCalled = true;
+            doAssertionChecks();
+          })
+          .on('error', (err: any) => {
+            error = err as ServiceError;
+            doAssertionChecks();
+          });
 
-        if (test.error) {
-          assert(!endCalled, ".on('end') should not have been invoked");
-          assert.strictEqual(error!.code, test.error);
-        } else {
-          assert(endCalled, ".on('end') shoud have been invoked");
-          assert.ifError(error);
+        function doAssertionChecks() {
+          try {
+            if (test.error) {
+              assert(!endCalled, ".on('end') should not have been invoked");
+              assert.strictEqual(error!.code, test.error);
+            } else {
+              assert(endCalled, ".on('end') shoud have been invoked");
+              assert.ifError(error);
+            }
+            assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
+            assert(responses);
+            assert.strictEqual(
+              responses.length,
+              0,
+              'not all the responses were used',
+            );
+            assert.deepStrictEqual(requestedOptions, test.request_options);
+            done();
+          } catch (e) {
+            done(e);
+          }
         }
-        assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
-        assert.strictEqual(
-          responses.length,
-          0,
-          'not all the responses were used',
-        );
-        assert.deepStrictEqual(requestedOptions, test.request_options);
       });
     });
   });
