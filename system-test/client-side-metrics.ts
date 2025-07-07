@@ -48,9 +48,7 @@ function getFakeBigtable(
     projectId,
     apiEndpoint,
   };
-  const metricHandler = new metricsHandlerClass(
-    options as unknown as ClientOptions & {value: string},
-  );
+  const metricHandler = new metricsHandlerClass(options);
   const newClient = new Bigtable(options);
   newClient._metricsConfigManager = new ClientSideMetricsConfigManager([
     metricHandler,
