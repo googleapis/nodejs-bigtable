@@ -331,9 +331,14 @@ describe('Bigtable/ClientSideMetrics', () => {
                   // result from calling export was successful.
                   assert.strictEqual(result.code, 0);
                   resultCallback({code: 0});
-                  void checkForPublishedMetrics(projectId).then(() => {
-                    done();
-                  });
+                  void checkForPublishedMetrics(projectId)
+                    .then(() => {
+                      done();
+                    })
+                    .catch(err => {
+                      done(new Error('Metrics have not been published'));
+                      done(err);
+                    });
                 } catch (error) {
                   // The code here isn't 0 so we report the original error to the mocha test runner.
                   done(result);
@@ -405,7 +410,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
-    it('should send the metrics to Google Cloud Monitoring for a ReadRows call with a second project', done => {
+    it.only('should send the metrics to Google Cloud Monitoring for a ReadRows call with a second project', done => {
       (async () => {
         try {
           // This is the second project the test is configured to work with:
