@@ -171,11 +171,11 @@ export class EncodedKeyMap
     return this.map_impl.size;
   }
 
-  entries(): IterableIterator<[string | bigint | Uint8Array | null, SqlValue]> {
+  entries(): MapIterator<[string | bigint | Uint8Array | null, SqlValue]> {
     return this.map_impl.values();
   }
 
-  keys(): IterableIterator<string | bigint | Uint8Array | null> {
+  keys(): MapIterator<string | bigint | Uint8Array | null> {
     const iterator = this.map_impl.values();
     return {
       next: () => {
@@ -189,7 +189,7 @@ export class EncodedKeyMap
     };
   }
 
-  values(): IterableIterator<SqlValue> {
+  values(): MapIterator<SqlValue> {
     const iterator = this.map_impl.values();
     return {
       next: () => {
@@ -203,7 +203,7 @@ export class EncodedKeyMap
     };
   }
 
-  [Symbol.iterator](): IterableIterator<
+  [Symbol.iterator](): MapIterator<
     [string | bigint | Uint8Array | null, SqlValue]
   > {
     return this.entries();
