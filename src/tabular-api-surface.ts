@@ -342,6 +342,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       [],
     );
 
+    const metricsCollector =
+      this.bigtable._metricsConfigManager.createOperation(
+        MethodName.MUTATE_ROWS,
+        StreamingState.STREAMING,
+        this,
+      );
     /*
     The following line of code sets the timeout if it was provided while
     creating the client. This will be used to determine if the client should
@@ -388,6 +394,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // Return if the error happened before a request was made
       if (numRequestsMade === 0) {
         callback(err);
+        metricsCollector.onOperationComplete(err ? err.code : 0);
         return;
       }
 
@@ -399,9 +406,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           options.gaxOptions?.retry?.backoffSettings ||
           DEFAULT_BACKOFF_SETTINGS;
         const nextDelay = getNextDelay(numRequestsMade, backOffSettings);
+        metricsCollector.onAttemptComplete(err ? err.code : 0);
         setTimeout(makeNextBatchRequest, nextDelay);
         return;
       }
+      metricsCollector.onOperationComplete(err ? err.code : 0);
 
       // If there's no more pending mutations, set the error
       // to null
@@ -431,7 +440,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       callback(err);
     };
 
+    metricsCollector.onOperationStart();
     const makeNextBatchRequest = () => {
+      metricsCollector.onAttemptStart();
       const entryBatch = entries.filter((entry: Entry, index: number) => {
         return pendingEntryIndices.has(index);
       });
@@ -469,14 +480,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         options.gaxOptions,
       );
 
-      this.bigtable
-        .request<google.bigtable.v2.MutateRowsResponse>({
+      const requestStream =
+        this.bigtable.request<google.bigtable.v2.MutateRowsResponse>({
           client: 'BigtableClient',
           method: 'mutateRows',
           reqOpts,
           gaxOpts: options.gaxOptions,
           retryOpts,
-        })
+        });
+      metricsCollector.handleStatusAndMetadata(requestStream);
+      requestStream
         .on('error', (err: ServiceError) => {
           onBatchResponse(err);
         })
@@ -498,6 +511,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (errorDetails as any).entry = originalEntry;
             mutationErrorsByEntryIndex.set(originalEntriesIndex, errorDetails);
+            metricsCollector.onResponse();
           });
         })
         .on('end', onBatchResponse);
