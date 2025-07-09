@@ -23,6 +23,7 @@ import * as assert from 'assert';
 import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 import * as proxyquire from 'proxyquire';
 import {Bigtable} from '../src';
+import {Mutation} from '../src/mutation';
 import {Row} from '../src/row';
 import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
@@ -30,7 +31,7 @@ import {
   OnAttemptCompleteData,
   OnOperationCompleteData,
 } from '../src/client-side-metrics/metrics-handler';
-import {ClientOptions, ServiceError} from 'google-gax';
+import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 
@@ -175,6 +176,18 @@ function checkMultiRowCall(
   );
 }
 
+function checkMutateRowsCall(
+  projectId: string,
+  requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
+) {
+  readRowsAssertionCheck(
+    projectId,
+    requestsHandled,
+    'Bigtable.MutateRows',
+    'true',
+  );
+}
+
 function checkSingleRowCall(
   projectId: string,
   requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
@@ -186,6 +199,16 @@ function checkSingleRowCall(
     'false',
   );
 }
+
+const mutation = {
+  key: 'rowId',
+  data: {
+    cf1: {
+      column: 1,
+    },
+  },
+  method: Mutation.methods.INSERT,
+};
 
 /**
  * Checks if metrics have been published to Google Cloud Monitoring.
@@ -430,6 +453,82 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
+    describe.only('MutateRows', () => {
+      it('should send the metrics to Google Cloud Monitoring for a MutateRows call', done => {
+        (async () => {
+          try {
+            const bigtable = await mockBigtable(defaultProjectId, done);
+            for (const instanceId of [instanceId1, instanceId2]) {
+              await setupBigtable(bigtable, columnFamilyId, instanceId, [
+                tableId1,
+                tableId2,
+              ]);
+              const instance = bigtable.instance(instanceId);
+              const table = instance.table(tableId1);
+              await table.mutate(mutation);
+              const table2 = instance.table(tableId2);
+              await table2.mutate(mutation);
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a custom endpoint', done => {
+        (async () => {
+          try {
+            const bigtable = await mockBigtable(
+              defaultProjectId,
+              done,
+              'bogus-endpoint',
+            );
+            const instance = bigtable.instance(instanceId1);
+            const table = instance.table(tableId1);
+            try {
+              // This call will fail because we are trying to hit a bogus endpoint.
+              // The idea here is that we just want to record at least one metric
+              // so that the exporter gets executed.
+              await table.mutate(mutation);
+            } catch (e: unknown) {
+              // Try blocks just need a catch/finally block.
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a MutateRows call with a second project', done => {
+        (async () => {
+          try {
+            // This is the second project the test is configured to work with:
+            const projectId = SECOND_PROJECT_ID;
+            const bigtable = await mockBigtable(projectId, done);
+            for (const instanceId of [instanceId1, instanceId2]) {
+              await setupBigtable(bigtable, columnFamilyId, instanceId, [
+                tableId1,
+                tableId2,
+              ]);
+              const instance = bigtable.instance(instanceId);
+              const table = instance.table(tableId1);
+              await table.mutate(mutation);
+              const table2 = instance.table(tableId2);
+              await table2.mutate(mutation);
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
   });
   describe('Bigtable/ClientSideMetricsToGCMTimeout', () => {
     // This test suite simulates a situation where the user creates multiple
@@ -582,6 +681,103 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
+    describe.only('MutateRows', () => {
+      it('should send the metrics to Google Cloud Monitoring for a MutateRows call', done => {
+        let testFinished = false;
+        /*
+        We need to create a timeout here because if we don't then mocha shuts down
+        the test as it is sleeping before the GCPMetricsHandler has a chance to
+        export the data. When the timeout is finished, if there were no export
+        errors then the test passes.
+        */
+        setTimeout(() => {
+          testFinished = true;
+          done();
+        }, 120000);
+        (async () => {
+          try {
+            const bigtable1 = await mockBigtable(defaultProjectId, done);
+            const bigtable2 = await mockBigtable(defaultProjectId, done);
+            for (const bigtable of [bigtable1, bigtable2]) {
+              for (const instanceId of [instanceId1, instanceId2]) {
+                await setupBigtable(bigtable, columnFamilyId, instanceId, [
+                  tableId1,
+                  tableId2,
+                ]);
+                const instance = bigtable.instance(instanceId);
+                const table = instance.table(tableId1);
+                await table.mutate(mutation);
+                const table2 = instance.table(tableId2);
+                await table2.mutate(mutation);
+              }
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a MutateRows call with thirty clients', done => {
+        /*
+        We need to create a timeout here because if we don't then mocha shuts down
+        the test as it is sleeping before the GCPMetricsHandler has a chance to
+        export the data. When the timeout is finished, if there were no export
+        errors then the test passes.
+        */
+        const testTimeout = setTimeout(() => {
+          done(new Error('The test timed out'));
+        }, 480000);
+        let testComplete = false;
+        const numClients = 30;
+        (async () => {
+          try {
+            const bigtableList = [];
+            const completedSet = new Set();
+            for (
+              let bigtableCount = 0;
+              bigtableCount < numClients;
+              bigtableCount++
+            ) {
+              const currentCount = bigtableCount;
+              const onExportSuccess = () => {
+                completedSet.add(currentCount);
+                if (completedSet.size === numClients) {
+                  // If every client has completed the export then pass the test.
+                  clearTimeout(testTimeout);
+                  if (!testComplete) {
+                    testComplete = true;
+                    done();
+                  }
+                }
+              };
+              bigtableList.push(
+                await mockBigtable(defaultProjectId, done, onExportSuccess),
+              );
+            }
+            for (const bigtable of bigtableList) {
+              for (const instanceId of [instanceId1, instanceId2]) {
+                await setupBigtable(bigtable, columnFamilyId, instanceId, [
+                  tableId1,
+                  tableId2,
+                ]);
+                const instance = bigtable.instance(instanceId);
+                const table = instance.table(tableId1);
+                await table.mutate(mutation);
+                const table2 = instance.table(tableId2);
+                await table2.mutate(mutation);
+              }
+            }
+          } catch (e) {
+            done(e);
+            done(new Error('An error occurred while running the script'));
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
   });
   describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     async function mockBigtable(
@@ -669,6 +865,40 @@ describe('Bigtable/ClientSideMetrics', () => {
           } catch (e) {
             done(e);
           }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
+    describe.only('MutateRows', () => {
+      it('should send the metrics to the metrics handler for a MutateRows call', done => {
+        (async () => {
+          const bigtable = await mockBigtable(
+            defaultProjectId,
+            done,
+            checkMutateRowsCall,
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          await table.mutate(mutation);
+          const table2 = instance.table(tableId2);
+          await table2.mutate(mutation);
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should pass the projectId to the metrics handler properly', done => {
+        (async () => {
+          const bigtable = await mockBigtable(
+            defaultProjectId,
+            done,
+            checkMutateRowsCall,
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          await table.mutate(mutation);
+          const table2 = instance.table(tableId2);
+          await table2.mutate(mutation);
         })().catch(err => {
           throw err;
         });
