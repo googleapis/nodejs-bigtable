@@ -513,6 +513,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             mutationErrorsByEntryIndex.set(originalEntriesIndex, errorDetails);
             metricsCollector.onResponse();
           });
+          metricsCollector.onResponse();
         })
         .on('end', onBatchResponse);
       numRequestsMade++;

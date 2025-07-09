@@ -453,7 +453,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
-    describe.only('MutateRows', () => {
+    describe('MutateRows', () => {
       it('should send the metrics to Google Cloud Monitoring for a MutateRows call', done => {
         (async () => {
           try {
@@ -681,7 +681,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
-    describe.only('MutateRows', () => {
+    describe('MutateRows', () => {
       it('should send the metrics to Google Cloud Monitoring for a MutateRows call', done => {
         let testFinished = false;
         /*
