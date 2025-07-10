@@ -25,7 +25,7 @@ import * as proxyquire from 'proxyquire';
 import {Bigtable} from '../src';
 import {Mutation} from '../src/mutation';
 import {Row} from '../src/row';
-import {setupBigtable} from './client-side-metrics-setup-table';
+import {setupBigtable, setupBigtableWithoutInsert} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {
   OnAttemptCompleteData,
@@ -257,7 +257,7 @@ async function checkForPublishedMetrics(projectId: string) {
   }
 }
 
-describe('Bigtable/ClientSideMetrics', () => {
+describe.only('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -784,7 +784,7 @@ describe('Bigtable/ClientSideMetrics', () => {
     });
   });
   describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
-    async function mockBigtable(
+    async function getFakeBigtableWithHandler(
       projectId: string,
       done: mocha.Done,
       checkFn: (
@@ -808,9 +808,53 @@ describe('Bigtable/ClientSideMetrics', () => {
           }
         }
       }
+      return getFakeBigtable(projectId, TestGCPMetricsHandler);
+    }
 
-      const bigtable = getFakeBigtable(projectId, TestGCPMetricsHandler);
+    async function mockBigtableWithInserts(
+      projectId: string,
+      done: mocha.Done,
+      checkFn: (
+        projectId: string,
+        requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
+      ) => void,
+    ) {
+      const bigtable = await getFakeBigtableWithHandler(
+        projectId,
+        done,
+        checkFn,
+      );
       await setupBigtable(bigtable, columnFamilyId, instanceId1, [
+        tableId1,
+        tableId2,
+      ]);
+      return bigtable;
+    }
+
+    /**
+     * Returns a bigtable client with a test metrics handler that will check
+     * the metrics it receives and pass/fail the test if we get the right
+     * metrics. This method doesn't insert data so that extra mutateRows calls
+     * don't get made because those extra calls will produce different metrics.
+     *
+     * @param projectId
+     * @param done
+     * @param checkFn
+     */
+    async function mockBigtableWithNoInserts(
+      projectId: string,
+      done: mocha.Done,
+      checkFn: (
+        projectId: string,
+        requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
+      ) => void,
+    ) {
+      const bigtable = await getFakeBigtableWithHandler(
+        projectId,
+        done,
+        checkFn,
+      );
+      await setupBigtableWithoutInsert(bigtable, columnFamilyId, instanceId1, [
         tableId1,
         tableId2,
       ]);
@@ -820,7 +864,7 @@ describe('Bigtable/ClientSideMetrics', () => {
     describe('ReadRows', () => {
       it('should send the metrics to the metrics handler for a ReadRows call', done => {
         (async () => {
-          const bigtable = await mockBigtable(
+          const bigtable = await mockBigtableWithInserts(
             defaultProjectId,
             done,
             checkMultiRowCall,
@@ -836,7 +880,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
       it('should pass the projectId to the metrics handler properly', done => {
         (async () => {
-          const bigtable = await mockBigtable(
+          const bigtable = await mockBigtableWithInserts(
             defaultProjectId,
             done,
             checkMultiRowCall,
@@ -854,7 +898,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         (async () => {
           try {
             const projectId = SECOND_PROJECT_ID;
-            const bigtable = await mockBigtable(
+            const bigtable = await mockBigtableWithInserts(
               projectId,
               done,
               checkSingleRowCall,
@@ -875,9 +919,9 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
     describe('MutateRows', () => {
-      it.only('should send the metrics to the metrics handler for a MutateRows call', done => {
+      it('should send the metrics to the metrics handler for a MutateRows call', done => {
         (async () => {
-          const bigtable = await mockBigtable(
+          const bigtable = await mockBigtableWithNoInserts(
             defaultProjectId,
             done,
             checkMutateRowsCall,
@@ -893,7 +937,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
       it('should pass the projectId to the metrics handler properly', done => {
         (async () => {
-          const bigtable = await mockBigtable(
+          const bigtable = await mockBigtableWithNoInserts(
             defaultProjectId,
             done,
             checkMutateRowsCall,

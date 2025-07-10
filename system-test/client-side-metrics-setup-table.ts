@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {Bigtable} from '../src';
-export async function setupBigtable(
+export async function setupBigtableWithoutInsert(
   bigtable: Bigtable,
   columnFamilyId: string,
   instanceId: string,
@@ -56,8 +56,24 @@ export async function setupBigtable(
       }
     }
     // Add some data so that a firstResponseLatency is recorded.
-    /*
-    TODO: Add this back in later
+  }
+}
+
+export async function setupBigtable(
+  bigtable: Bigtable,
+  columnFamilyId: string,
+  instanceId: string,
+  tableIds: string[],
+) {
+  await setupBigtableWithoutInsert(
+    bigtable,
+    columnFamilyId,
+    instanceId,
+    tableIds,
+  );
+  const instance = bigtable.instance(instanceId);
+  const tables = tableIds.map(tableId => instance.table(tableId));
+  for (const currentTable of tables) {
     await currentTable.insert([
       {
         key: 'rowId',
@@ -69,6 +85,5 @@ export async function setupBigtable(
         },
       },
     ]);
-     */
   }
 }
