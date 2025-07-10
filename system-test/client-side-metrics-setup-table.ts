@@ -56,6 +56,8 @@ export async function setupBigtable(
       }
     }
     // Add some data so that a firstResponseLatency is recorded.
+    /*
+    TODO: Add this back in later
     await currentTable.insert([
       {
         key: 'rowId',
@@ -67,5 +69,6 @@ export async function setupBigtable(
         },
       },
     ]);
+     */
   }
 }

@@ -267,6 +267,10 @@ describe('Bigtable/ClientSideMetrics', () => {
 
   before(async () => {
     const bigtable = new Bigtable();
+    // For easier debugging, don't include metrics handlers in the config
+    // manager. This helps us step through the metrics handler for an individual
+    // test more easily.
+    bigtable._metricsConfigManager = new ClientSideMetricsConfigManager([]);
     for (const instanceId of [instanceId1, instanceId2]) {
       await setupBigtable(bigtable, columnFamilyId, instanceId, [
         tableId1,
@@ -870,8 +874,8 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
-    describe.only('MutateRows', () => {
-      it('should send the metrics to the metrics handler for a MutateRows call', done => {
+    describe('MutateRows', () => {
+      it.only('should send the metrics to the metrics handler for a MutateRows call', done => {
         (async () => {
           const bigtable = await mockBigtable(
             defaultProjectId,
