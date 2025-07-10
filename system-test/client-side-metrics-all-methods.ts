@@ -25,7 +25,10 @@ import * as proxyquire from 'proxyquire';
 import {Bigtable} from '../src';
 import {Mutation} from '../src/mutation';
 import {Row} from '../src/row';
-import {setupBigtable, setupBigtableWithoutInsert} from './client-side-metrics-setup-table';
+import {
+  setupBigtable,
+  setupBigtableWithoutInsert,
+} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {
   OnAttemptCompleteData,
@@ -783,7 +786,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     async function getFakeBigtableWithHandler(
       projectId: string,
       done: mocha.Done,
@@ -864,7 +867,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
     describe('ReadRows', () => {
       it('should send the metrics to the metrics handler for a ReadRows call', done => {
         (async () => {
-          const bigtable = await mockBigtableWithInserts(
+          const bigtable = await mockBigtableWithNoInserts(
             defaultProjectId,
             done,
             checkMultiRowCall,
@@ -880,7 +883,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
       });
       it('should pass the projectId to the metrics handler properly', done => {
         (async () => {
-          const bigtable = await mockBigtableWithInserts(
+          const bigtable = await mockBigtableWithNoInserts(
             defaultProjectId,
             done,
             checkMultiRowCall,
@@ -898,7 +901,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
         (async () => {
           try {
             const projectId = SECOND_PROJECT_ID;
-            const bigtable = await mockBigtableWithInserts(
+            const bigtable = await mockBigtableWithNoInserts(
               projectId,
               done,
               checkSingleRowCall,
