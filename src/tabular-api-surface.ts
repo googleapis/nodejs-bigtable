@@ -511,7 +511,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (errorDetails as any).entry = originalEntry;
             mutationErrorsByEntryIndex.set(originalEntriesIndex, errorDetails);
-            metricsCollector.onResponse();
           });
           metricsCollector.onResponse();
         })
