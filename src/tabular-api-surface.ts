@@ -491,7 +491,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       metricsCollector.handleStatusAndMetadata(requestStream);
       requestStream
         .on('error', (err: ServiceError) => {
-          console.log('error');
           onBatchResponse(err);
         })
         .on('data', (obj: google.bigtable.v2.IMutateRowsResponse) => {
