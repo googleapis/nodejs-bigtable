@@ -333,7 +333,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     optionsOrCallback?: MutateOptions | MutateCallback,
     cb?: MutateCallback,
   ): void | Promise<MutateResponse> {
-    console.trace('calling mutate');
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const options =
@@ -392,7 +391,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
 
     const onBatchResponse = (err: ServiceError | null) => {
-      console.trace('onBatchResponse');
       // Return if the error happened before a request was made
       if (numRequestsMade === 0) {
         callback(err);
