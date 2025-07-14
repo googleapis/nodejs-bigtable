@@ -14,7 +14,7 @@
 
 import {describe, it} from 'mocha';
 import {PassThrough, Readable} from 'stream';
-import {TimedStream} from '../src/timed-stream';
+import {TimedStream} from '../src/timed-stream-new';
 import * as assert from 'assert';
 
 // set up streams
@@ -24,7 +24,7 @@ function* numberGenerator(n: number) {
   }
 }
 
-describe('Bigtable/TimedStream', () => {
+describe.only('Bigtable/TimedStream', () => {
   describe('with handlers', () => {
     describe('with no delay from server', () => {
       it('should measure the total time accurately for a series of 30 rows', function (done) {
@@ -58,7 +58,7 @@ describe('Bigtable/TimedStream', () => {
       });
     });
     describe('with delay from server', () => {
-      it.skip('should measure the total time accurately for a series of 10 rows', done => {
+      it('should measure the total time accurately for a series of 10 rows', done => {
         const dataEvents = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i =>
           i.toString(),
         );
