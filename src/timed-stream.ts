@@ -30,6 +30,8 @@ export class TimedStream extends PassThrough {
       highWaterMark: 1,
       transform: (chunk: any, encoding: any, callback: any) => {
         this.events.push({name: '_read called', time: Date.now()});
+        this.handleBeforeRow();
+        this.handleAfterRow();
         callback(null, chunk);
       },
     });
