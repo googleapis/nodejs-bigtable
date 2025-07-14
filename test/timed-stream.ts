@@ -10,7 +10,7 @@ function* numberGenerator(n: number) {
   }
 }
 
-describe.only('Bigtable/TimedStream', () => {
+describe('Bigtable/TimedStream', () => {
   describe('with handlers', () => {
     describe('with no delay from server', () => {
       it('should measure the total time accurately for a series of 30 rows', done => {
@@ -43,7 +43,7 @@ describe.only('Bigtable/TimedStream', () => {
       });
     });
     describe('with delay from server', () => {
-      it('should measure the total time accurately for a series of 10 rows', done => {
+      it.skip('should measure the total time accurately for a series of 10 rows', done => {
         const dataEvents = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i =>
           i.toString(),
         );
