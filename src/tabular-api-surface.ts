@@ -402,7 +402,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // Return if the error happened before a request was made
       if (numRequestsMade === 0) {
         collectMetricsCallback(err ? err.code : 0, err);
-        metricsCollector.onOperationComplete(err ? err.code : 0);
         return;
       }
 
