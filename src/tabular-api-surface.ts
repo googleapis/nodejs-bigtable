@@ -341,6 +341,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       (a, b) => a.concat(b),
       [],
     );
+    const collectMetricsCallback = (
+      code: number,
+      err: ServiceError | PartialFailureError | null,
+      apiResponse?: google.protobuf.Empty,
+    ) => {
+      metricsCollector.onOperationComplete(code ? code : 0);
+      callback(err, apiResponse);
+    };
 
     const metricsCollector =
       this.bigtable._metricsConfigManager.createOperation(
@@ -393,7 +401,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const onBatchResponse = (err: ServiceError | null) => {
       // Return if the error happened before a request was made
       if (numRequestsMade === 0) {
-        callback(err);
+        collectMetricsCallback(err ? err.code : 0, err);
         metricsCollector.onOperationComplete(err ? err.code : 0);
         return;
       }
@@ -410,7 +418,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         setTimeout(makeNextBatchRequest, nextDelay);
         return;
       }
-      metricsCollector.onOperationComplete(err ? err.code : 0);
 
       // If there's no more pending mutations, set the error
       // to null
@@ -420,7 +427,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
       if (mutationErrorsByEntryIndex.size !== 0) {
-        callback(new PartialFailureError(mutationErrors, err));
+        collectMetricsCallback(
+          err ? err.code : 0,
+          new PartialFailureError(mutationErrors, err),
+        );
         return;
       }
       if (err) {
@@ -434,10 +444,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               .filter(index => !mutationErrorsByEntryIndex.has(index))
               .map(() => err),
           );
-        callback(err);
+        collectMetricsCallback(err ? err.code : 0, err);
         return;
       }
-      callback(err);
+      collectMetricsCallback(0, err);
     };
 
     metricsCollector.onOperationStart();
