@@ -38,6 +38,8 @@ import {
   StreamingState,
 } from './client-side-metrics/client-side-metrics-attributes';
 
+// Some comment
+
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
 export const RETRYABLE_STATUS_CODES = new Set([4, 8, 10, 14]);
