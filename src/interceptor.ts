@@ -14,13 +14,14 @@
 
 import {CallOptions} from 'google-gax';
 import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
+import {Metadata} from '@grpc/grpc-js';
 
 // Mock Server Implementation
 import * as grpcJs from '@grpc/grpc-js';
 import {status as GrpcStatus} from '@grpc/grpc-js';
 
 export type ServerStatus = {
-  metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
+  metadata: Metadata;
   code: number;
   details: string;
 };
@@ -39,12 +40,7 @@ function createMetricsInterceptorProvider(
         const newListener: grpcJs.Listener = {
           onReceiveMetadata: (metadata, nextMd) => {
             console.log('metadata encountered');
-            collector.onMetadataReceived(
-              metadata as unknown as {
-                internalRepr: Map<string, string[]>;
-                options: {};
-              },
-            );
+            collector.onMetadataReceived(metadata);
             nextMd(metadata);
           },
           onReceiveMessage: (message, nextMsg) => {
@@ -55,9 +51,7 @@ function createMetricsInterceptorProvider(
             if (status.code === GrpcStatus.OK && savedReceiveMessage) {
               collector.onResponse(); // Call onResponse for successful unary calls with a message
             }
-            collector.onStatusMetadataReceived(
-              status as unknown as ServerStatus,
-            );
+            collector.onStatusMetadataReceived(status as ServerStatus);
             // AttemptComplete and OperationComplete will be called by the calling code
             nextStat(status);
           },
