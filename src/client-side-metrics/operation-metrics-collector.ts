@@ -19,8 +19,6 @@ import * as gax from 'google-gax';
 import {AbortableDuplex, BigtableOptions} from '../index';
 import * as path from 'path';
 import {IMetricsHandler} from './metrics-handler';
-import {Metadata} from '@grpc/grpc-js';
-import {ServerStatus} from '../interceptor';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
