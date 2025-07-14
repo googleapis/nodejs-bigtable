@@ -27,13 +27,8 @@ export class TimedStream extends PassThrough {
     // highWaterMark of 1 is needed to respond to each row
     super({
       ...options,
-      highWaterMark: 1,
-      transform: (chunk: any, encoding: any, callback: any) => {
-        this.events.push({name: '_read called', time: Date.now()});
-        this.handleBeforeRow();
-        this.handleAfterRow();
-        callback(null, chunk);
-      },
+      highWaterMark: 0,
+      objectMode: true,
     });
     this.startTime = 0n;
     this.totalDuration = 0n;
@@ -43,16 +38,26 @@ export class TimedStream extends PassThrough {
     this.on('after_row', this.handleAfterRow);
   }
 
-  _read(size: any) {
+  read(size: any) {
+    this.events.push({name: 'read called', time: Date.now()});
+    const chunk = super.read(size);
+    if (chunk) {
+      this.events.push({name: 'emit before_row', time: Date.now()});
+      this.emit('before_row');
+      process.nextTick(() => {
+        this.events.push({name: 'emit after_row', time: Date.now()});
+        this.emit('after_row');
+      });
+      // Defer the after call to the next tick of the event loop
+    }
+  }
+
+  _transform(chunk: any, encoding: any, callback: any) {
+    // calculate the time spent in the callback (i.e. on("data") handlers)
     this.events.push({name: '_read called', time: Date.now()});
-    super._read(size);
-    this.events.push({name: 'emit before_row', time: Date.now()});
-    this.emit('before_row');
-    process.nextTick(() => {
-      this.events.push({name: 'emit after_row', time: Date.now()});
-      this.emit('after_row');
-    });
-    // Defer the after call to the next tick of the event loop
+    this.handleBeforeRow();
+    this.handleAfterRow();
+    callback(null, chunk);
   }
 
   handleBeforeRow() {
