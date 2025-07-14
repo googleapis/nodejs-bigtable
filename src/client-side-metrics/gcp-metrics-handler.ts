@@ -97,7 +97,7 @@ function createInstruments(exporter: PushMetricExporter): MetricsInstruments {
       new View({
         instrumentName: name,
         name,
-        aggregation: name.endsWith('latencies')
+        aggregation: !name.endsWith('latencies')
           ? Aggregation.Sum()
           : new ExplicitBucketHistogramAggregation(latencyBuckets),
       }),
