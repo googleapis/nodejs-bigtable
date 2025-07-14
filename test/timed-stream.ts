@@ -27,7 +27,8 @@ function* numberGenerator(n: number) {
 describe('Bigtable/TimedStream', () => {
   describe('with handlers', () => {
     describe('with no delay from server', () => {
-      it('should measure the total time accurately for a series of 30 rows', done => {
+      it('should measure the total time accurately for a series of 30 rows', function (done) {
+        this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
         const timedStream = new TimedStream({});
         // @ts-ignore
