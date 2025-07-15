@@ -128,7 +128,7 @@ describe('Bigtable/TimedStream', () => {
           }
         }, 5000);
       });
-      it.only('should measure the total time accurately for a series of 30 rows with backpressure and a delay', function (done) {
+      it('should measure the total time accurately for a series of 30 rows with backpressure and a delay', function (done) {
         this.timeout(200000);
         const eventNumbers = [];
         for (let i = 0; i < 40; i++) {
