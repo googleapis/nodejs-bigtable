@@ -35,7 +35,7 @@ export class TimedStream extends PassThrough {
   }
 
   handleBeforeRow() {
-    console.log(`[START TIMER]`);
+    console.log('[START TIMER]');
     this.startTime = process.hrtime.bigint();
   }
 
