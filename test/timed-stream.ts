@@ -24,17 +24,44 @@ function* numberGenerator(n: number) {
   }
 }
 
-describe.only('Bigtable/TimedStream', () => {
+describe('Bigtable/TimedStream', () => {
   describe('with handlers', () => {
     describe('with no delay from server', () => {
-      it('should measure the total time accurately for a series of 30 rows', function (done) {
+      it.only('should measure the total time accurately for a series of 30 rows', function (done) {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
         const timedStream = new TimedStream({});
         // @ts-ignore
         sourceStream.pipe(timedStream as unknown as WritableStream);
+        // iterate stream
+        timedStream.on('data', async (chunk: any) => {
+          process.stdout.write(chunk.toString());
+          // Simulate 1 second of busy work
+          const startTime = Date.now();
+          while (Date.now() - startTime < 1000) {
+            /* empty */
+          }
+        });
+        timedStream.on('end', () => {
+          const totalMilliseconds = timedStream.getTotalDurationMs();
+          try {
+            assert(totalMilliseconds > 29000);
+            assert(totalMilliseconds < 31000);
+            // TODO: Add check for 30 BEFORE events. I only see a couple
+            done();
+          } catch (e) {
+            done(e);
+          }
+        });
+      });
+      it.only('should measure the total time accurately for a series of 30 rows with setTimeout', function (done) {
+        this.timeout(200000);
+        const sourceStream = Readable.from(numberGenerator(30));
+        const timedStream = new TimedStream({});
+        // @ts-ignore
+        sourceStream.pipe(timedStream as unknown as WritableStream);
+        // iterate stream
         setTimeout(async () => {
-          // iterate stream
           timedStream.on('data', async (chunk: any) => {
             process.stdout.write(chunk.toString());
             // Simulate 1 second of busy work

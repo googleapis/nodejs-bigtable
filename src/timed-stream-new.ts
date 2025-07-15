@@ -3,7 +3,7 @@ import {TransformOptions} from 'stream';
 const {PassThrough, Readable} = require('stream');
 
 export class TimedStream extends PassThrough {
-  constructor(options: TransformOptions) {
+  constructor(options?: TransformOptions) {
     // highWaterMark of 1 is needed to respond to each row
     super({...options, objectMode: true, highWaterMark: 0});
     this.startTime = 0n;
