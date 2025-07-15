@@ -59,7 +59,7 @@ export const isExpiredQueryError = (
 ): boolean => {
   if (
     error.code === grpc.status.FAILED_PRECONDITION &&
-    Object.hasOwn(error, 'statusDetails')
+    Object.prototype.hasOwnProperty.call(error, 'statusDetails')
   ) {
     const statusDetails = (error as GoogleError)
       .statusDetails as ViolationsList[];
