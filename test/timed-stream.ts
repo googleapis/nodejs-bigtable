@@ -14,7 +14,7 @@
 
 import {describe, it} from 'mocha';
 import {PassThrough, Readable} from 'stream';
-import {TimedStream} from '../src/timed-stream-new';
+import {TimedStreamWithEvents as TimedStream} from '../src/timed-stream-new';
 import * as assert from 'assert';
 
 // set up streams
@@ -173,6 +173,129 @@ describe('Bigtable/TimedStream', () => {
             sourceStream.emit('end');
           }
         }, 5000);
+      });
+    });
+  });
+  describe.only('while iterating through a stream loop', () => {
+    describe('with no delay from server', () => {
+      it('should measure the total time accurately for a series of 30 rows', async function () {
+        this.timeout(200000);
+        const sourceStream = Readable.from(numberGenerator(30));
+        const timedStream = new TimedStream({});
+        // @ts-ignore
+        sourceStream.pipe(timedStream as unknown as WritableStream);
+        // iterate stream
+        for await (const chunk of timedStream as unknown as PassThrough) {
+          process.stdout.write(chunk.toString());
+          // Simulate 1 second of busy work
+          const startTime = Date.now();
+          while (Date.now() - startTime < 1000) {
+            /* empty */
+          }
+        }
+        const totalMilliseconds = timedStream.getTotalDurationMs();
+        assert(totalMilliseconds > 29000);
+        assert(totalMilliseconds < 31000);
+      });
+      it('should measure the total time accurately for a series of 30 rows with setTimeout', async function () {
+        this.timeout(200000);
+        const sourceStream = Readable.from(numberGenerator(30));
+        const timedStream = new TimedStream({});
+        // @ts-ignore
+        sourceStream.pipe(timedStream as unknown as WritableStream);
+        setTimeout(async () => {
+          // iterate stream
+          for await (const chunk of timedStream as unknown as PassThrough) {
+            process.stdout.write(chunk.toString());
+            // Simulate 1 second of busy work
+            const startTime = Date.now();
+            while (Date.now() - startTime < 1000) {
+              /* empty */
+            }
+          }
+          const totalMilliseconds = timedStream.getTotalDurationMs();
+          assert(totalMilliseconds > 29000);
+          assert(totalMilliseconds < 31000);
+        }, 500);
+      });
+    });
+    describe('with delay from server', () => {
+      it('should measure the total time accurately for a series of 10 rows', done => {
+        const dataEvents = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i =>
+          i.toString(),
+        );
+        const sourceStream = new PassThrough();
+        const timedStream = new TimedStream({});
+        // @ts-ignore
+        sourceStream.pipe(timedStream);
+
+        setTimeout(async () => {
+          try {
+            // iterate stream
+            for await (const chunk of timedStream as unknown as PassThrough) {
+              process.stdout.write(chunk.toString());
+              // Simulate 1 second of busy work
+              const startTime = Date.now();
+              while (Date.now() - startTime < 1000) {
+                /* empty */
+              }
+            }
+            const totalMilliseconds = timedStream.getTotalDurationMs();
+            // totalMilliseconds should be around 10 seconds, 1 per row
+            assert(totalMilliseconds > 9000);
+            assert(totalMilliseconds < 11000);
+            done();
+          } catch (e) {
+            done(e);
+          }
+        }, 500);
+
+        setInterval(() => {
+          if (dataEvents.length > 0) {
+            const dataEvent = dataEvents.shift();
+            sourceStream.write(dataEvent);
+          } else {
+            sourceStream.emit('end');
+          }
+        }, 5000);
+      });
+      it('should measure the total time accurately for a series of 30 rows with backpressure and a delay', async function () {
+        this.timeout(200000);
+        const eventNumbers = [];
+        for (let i = 0; i < 40; i++) {
+          eventNumbers.push(i);
+        }
+        const dataEvents = eventNumbers.map(i => i.toString());
+        const sourceStream = new PassThrough();
+        const timedStream = new TimedStream({});
+        // @ts-ignore
+        sourceStream.pipe(timedStream as unknown as WritableStream);
+        // First load the stream with events.
+        for (let i = 0; i < 20; i++) {
+          const dataEvent = dataEvents.shift();
+          sourceStream.write(dataEvent);
+        }
+        // Then rows get sent every 5 seconds.
+        setInterval(() => {
+          if (dataEvents.length > 0) {
+            const dataEvent = dataEvents.shift();
+            sourceStream.write(dataEvent);
+          } else {
+            sourceStream.emit('end');
+          }
+        }, 5000);
+        // iterate stream
+        for await (const chunk of timedStream as unknown as PassThrough) {
+          process.stdout.write(chunk.toString());
+          // Simulate 1 second of busy work
+          const startTime = Date.now();
+          while (Date.now() - startTime < 1000) {
+            /* empty */
+          }
+        }
+        const totalMilliseconds = timedStream.getTotalDurationMs();
+        assert(totalMilliseconds > 39000);
+        assert(totalMilliseconds < 41000);
       });
     });
   });

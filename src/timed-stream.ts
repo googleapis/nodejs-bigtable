@@ -22,7 +22,7 @@ interface Event {
 }
 
 export class TimedStream extends PassThrough {
-  events: Event[] = [];
+  private events: Event[] = [];
   constructor(options: TransformOptions) {
     // highWaterMark of 1 is needed to respond to each row
     super({

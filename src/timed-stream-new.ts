@@ -1,6 +1,11 @@
 import {TransformOptions} from 'stream';
 
-const {PassThrough, Readable} = require('stream');
+const {PassThrough} = require('stream');
+
+interface Event {
+  name: string;
+  time: number;
+}
 
 export class TimedStream extends PassThrough {
   constructor(options?: TransformOptions) {
@@ -35,7 +40,6 @@ export class TimedStream extends PassThrough {
   }
 
   handleBeforeRow() {
-    console.log(`[START TIMER]`);
     this.startTime = process.hrtime.bigint();
   }
 
@@ -44,12 +48,33 @@ export class TimedStream extends PassThrough {
     const duration = endTime - this.startTime;
     this.totalDuration += duration;
     this.startTime = process.hrtime.bigint();
-    console.log(
-      `[END TIMER] - Added ${duration / 1_000_000n} ms to processing time.`,
-    );
   }
 
   getTotalDurationMs() {
     return Number(this.totalDuration / 1_000_000n);
+  }
+}
+
+export class TimedStreamWithEvents extends TimedStream {
+  events: Event[] = [];
+
+  read(size: any) {
+    this.events.push({name: 'read called', time: Date.now()});
+    return super.read(size);
+  }
+
+  _transform(chunk: any, encoding: any, callback: any) {
+    this.events.push({name: '_transform', time: Date.now()});
+    return super._transform(chunk, encoding, callback);
+  }
+
+  handleBeforeRow() {
+    this.events.push({name: 'handle before_row', time: Date.now()});
+    return super.handleBeforeRow();
+  }
+
+  handleAfterRow() {
+    this.events.push({name: 'handle after_row', time: Date.now()});
+    return super.handleAfterRow();
   }
 }
