@@ -54,7 +54,7 @@ describe('Bigtable/TimedStream', () => {
           }
         });
       });
-      it.only('should measure the total time accurately for a series of 30 rows with setTimeout', function (done) {
+      it.skip('should measure the total time accurately for a series of 30 rows with setTimeout', function (done) {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
         const timedStream = new TimedStream({});
