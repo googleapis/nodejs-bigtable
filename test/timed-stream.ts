@@ -27,7 +27,7 @@ function* numberGenerator(n: number) {
 describe('Bigtable/TimedStream', () => {
   describe('with handlers', () => {
     describe('with no delay from server', () => {
-      it.only('should measure the total time accurately for a series of 30 rows', function (done) {
+      it('should measure the total time accurately for a series of 30 rows', function (done) {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
         const timedStream = new TimedStream({});
@@ -119,6 +119,52 @@ describe('Bigtable/TimedStream', () => {
           });
         }, 500);
 
+        setInterval(() => {
+          if (dataEvents.length > 0) {
+            const dataEvent = dataEvents.shift();
+            sourceStream.write(dataEvent);
+          } else {
+            sourceStream.emit('end');
+          }
+        }, 5000);
+      });
+      it.only('should measure the total time accurately for a series of 30 rows with backpressure and a delay', function (done) {
+        this.timeout(200000);
+        const eventNumbers = [];
+        for (let i = 0; i < 40; i++) {
+          eventNumbers.push(i);
+        }
+        const dataEvents = eventNumbers.map(i => i.toString());
+        const sourceStream = new PassThrough();
+        const timedStream = new TimedStream({});
+        // @ts-ignore
+        sourceStream.pipe(timedStream as unknown as WritableStream);
+        // iterate stream
+        timedStream.on('data', async (chunk: any) => {
+          process.stdout.write(chunk.toString());
+          // Simulate 1 second of busy work
+          const startTime = Date.now();
+          while (Date.now() - startTime < 1000) {
+            /* empty */
+          }
+        });
+        timedStream.on('end', () => {
+          const totalMilliseconds = timedStream.getTotalDurationMs();
+          try {
+            assert(totalMilliseconds > 39000);
+            assert(totalMilliseconds < 41000);
+            // TODO: Add check for 40 BEFORE events. I only see a couple
+            done();
+          } catch (e) {
+            done(e);
+          }
+        });
+        // First load the stream with events.
+        for (let i = 0; i < 20; i++) {
+          const dataEvent = dataEvents.shift();
+          sourceStream.write(dataEvent);
+        }
+        // Then rows get sent every 5 seconds.
         setInterval(() => {
           if (dataEvents.length > 0) {
             const dataEvent = dataEvents.shift();
