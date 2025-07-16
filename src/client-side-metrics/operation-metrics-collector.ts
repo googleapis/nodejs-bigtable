@@ -19,6 +19,8 @@ import * as gax from 'google-gax';
 import {AbortableDuplex, BigtableOptions} from '../index';
 import * as path from 'path';
 import {IMetricsHandler} from './metrics-handler';
+import {Metadata} from '@grpc/grpc-js';
+import {ServerStatus} from '../interceptor';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
@@ -170,20 +172,12 @@ export class OperationMetricsCollector {
    */
   handleStatusAndMetadata(stream: AbortableDuplex) {
     stream
-      .on(
-        'metadata',
-        (metadata: {internalRepr: Map<string, string[]>; options: {}}) => {
-          this.onMetadataReceived(metadata);
-        },
-      )
-      .on(
-        'status',
-        (status: {
-          metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
-        }) => {
-          this.onStatusMetadataReceived(status);
-        },
-      );
+      .on('metadata', (metadata: Metadata) => {
+        this.onMetadataReceived(metadata);
+      })
+      .on('status', (status: ServerStatus) => {
+        this.onStatusMetadataReceived(status);
+      });
   }
 
   /**
@@ -323,17 +317,20 @@ export class OperationMetricsCollector {
    * Called when metadata is received. Extracts server timing information if available.
    * @param {object} metadata The received metadata.
    */
-  onMetadataReceived(metadata: {
-    internalRepr: Map<string, string[]>;
-    options: {};
-  }) {
+  onMetadataReceived(metadata: Metadata) {
     if (!this.serverTimeRead && this.connectivityErrorCount < 1) {
       // Check serverTimeRead, connectivityErrorCount here to reduce latency.
       const mappedEntries = new Map(
-        Array.from(metadata.internalRepr.entries(), ([key, value]) => [
-          key,
-          value.toString(),
-        ]),
+        // Note: The cast on metadata is required to satisfy the compiler.
+        // In practice the internalRepr property is available for us to read.
+        // But the internalRepr is protected on the Metadata type so we need
+        // to cast.
+        Array.from(
+          (
+            metadata as unknown as {internalRepr: Map<string, Uint8Array[]>}
+          ).internalRepr.entries(),
+          ([key, value]) => [key, value.toString()],
+        ),
       );
       const SERVER_TIMING_REGEX = /.*gfet4t7;\s*dur=(\d+\.?\d*).*/;
       const SERVER_TIMING_KEY = 'server-timing';
@@ -388,14 +385,14 @@ export class OperationMetricsCollector {
    * Called when status information is received. Extracts zone and cluster information.
    * @param {object} status The received status information.
    */
-  onStatusMetadataReceived(status: {
-    metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
-  }) {
+  onStatusMetadataReceived(status: ServerStatus) {
     withMetricsDebug(() => {
       if (!this.zone || !this.cluster) {
-        const mappedValue = status.metadata.internalRepr.get(
-          this.INSTANCE_INFORMATION_KEY,
-        ) as Buffer[];
+        const mappedValue = (
+          status.metadata as unknown as {
+            internalRepr: Map<string, Uint8Array[]>;
+          }
+        ).internalRepr.get(this.INSTANCE_INFORMATION_KEY) as Buffer[];
         if (mappedValue && mappedValue[0] && ResponseParams) {
           const decodedValue = ResponseParams.decode(
             mappedValue[0],
