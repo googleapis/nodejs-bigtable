@@ -54,6 +54,32 @@ describe('Bigtable/TimedStream', () => {
           }
         });
       });
+      it.only('should measure the total time accurately for a series of 30 rows', function (done) {
+        this.timeout(200000);
+        const sourceStream = Readable.from(numberGenerator(30));
+        const timedStream = new TimedStream({});
+        // @ts-ignore
+        sourceStream.pipe(timedStream as unknown as WritableStream);
+        // iterate stream
+        timedStream.on('data', async (chunk: any) => {
+          process.stdout.write(chunk.toString());
+          // Simulate 1 second of busy work
+          const sleep = (ms: number) =>
+            new Promise(resolve => setTimeout(resolve, ms));
+          await sleep(1000);
+        });
+        timedStream.on('end', () => {
+          const totalMilliseconds = timedStream.getTotalDurationMs();
+          try {
+            assert(totalMilliseconds > 29000);
+            assert(totalMilliseconds < 31000);
+            // TODO: Add check for 30 BEFORE events. I only see a couple
+            done();
+          } catch (e) {
+            done(e);
+          }
+        });
+      });
       it.skip('should measure the total time accurately for a series of 30 rows with setTimeout', function (done) {
         // NOTE: It is now understood we only should support use cases where the
         // pipe and the `on('data'` calls are made synchronously ie. both in the
