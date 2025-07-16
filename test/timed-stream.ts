@@ -55,6 +55,11 @@ describe('Bigtable/TimedStream', () => {
         });
       });
       it.skip('should measure the total time accurately for a series of 30 rows with setTimeout', function (done) {
+        // NOTE: It is now understood we only should support use cases where the
+        // pipe and the `on('data'` calls are made synchronously ie. both in the
+        // same node event as Node documentation says handlers should be
+        // attached when events are emitted. Therefore, we don't need to
+        // support this test.
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
         const timedStream = new TimedStream({});
@@ -62,6 +67,7 @@ describe('Bigtable/TimedStream', () => {
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // iterate stream
         setTimeout(async () => {
+          // @ts-ignore
           timedStream.on('data', async (chunk: any) => {
             process.stdout.write(chunk.toString());
             // Simulate 1 second of busy work
@@ -197,7 +203,7 @@ describe('Bigtable/TimedStream', () => {
         assert(totalMilliseconds > 29000);
         assert(totalMilliseconds < 31000);
       });
-      it.only('should measure the total time accurately for a series of 30 rows with setTimeout', async function(done) {
+      it('should measure the total time accurately for a series of 30 rows with setTimeout', async function(done) {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
         const timedStream = new TimedStream({});
