@@ -35,7 +35,6 @@ describe.only('Bigtable/TimedStream', () => {
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // iterate stream
         timedStream.on('data', async (chunk: any) => {
-          process.stdout.write(chunk.toString());
           // Simulate 1 second of busy work
           const startTime = Date.now();
           while (Date.now() - startTime < 1000) {
@@ -47,7 +46,6 @@ describe.only('Bigtable/TimedStream', () => {
           try {
             assert(totalMilliseconds > 29000);
             assert(totalMilliseconds < 31000);
-            // TODO: Add check for 30 BEFORE events. I only see a couple
             done();
           } catch (e) {
             done(e);
@@ -62,7 +60,6 @@ describe.only('Bigtable/TimedStream', () => {
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // iterate stream
         timedStream.on('data', async (chunk: any) => {
-          process.stdout.write(chunk.toString());
           // Simulate 1 second of busy work
           const sleep = (ms: number) =>
             new Promise(resolve => setTimeout(resolve, ms));
@@ -92,7 +89,6 @@ describe.only('Bigtable/TimedStream', () => {
         setTimeout(async () => {
           // iterate stream
           timedStream.on('data', async (chunk: any) => {
-            process.stdout.write(chunk.toString());
             // Simulate 1 second of busy work
             const startTime = Date.now();
             while (Date.now() - startTime < 1000) {
@@ -136,7 +132,6 @@ describe.only('Bigtable/TimedStream', () => {
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // iterate stream
         timedStream.on('data', async (chunk: any) => {
-          process.stdout.write(chunk.toString());
           // Simulate 1 second of busy work
           const startTime = Date.now();
           while (Date.now() - startTime < 1000) {
@@ -148,7 +143,6 @@ describe.only('Bigtable/TimedStream', () => {
           try {
             assert(totalMilliseconds > 39000);
             assert(totalMilliseconds < 41000);
-            // TODO: Add check for 40 BEFORE events. I only see a couple
             done();
           } catch (e) {
             done(e);
@@ -181,7 +175,6 @@ describe.only('Bigtable/TimedStream', () => {
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // iterate stream
         for await (const chunk of timedStream as unknown as PassThrough) {
-          process.stdout.write(chunk.toString());
           // Simulate 1 second of busy work
           const startTime = Date.now();
           while (Date.now() - startTime < 1000) {
@@ -200,7 +193,6 @@ describe.only('Bigtable/TimedStream', () => {
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // iterate stream
         for await (const chunk of timedStream as unknown as PassThrough) {
-          process.stdout.write(chunk.toString());
           // Simulate 1 second of busy work
           const sleep = (ms: number) =>
             new Promise(resolve => setTimeout(resolve, ms));
@@ -224,7 +216,6 @@ describe.only('Bigtable/TimedStream', () => {
           try {
             // iterate stream
             for await (const chunk of timedStream as unknown as PassThrough) {
-              process.stdout.write(chunk.toString());
               // Simulate 1 second of busy work
               const startTime = Date.now();
               while (Date.now() - startTime < 1000) {
@@ -277,7 +268,6 @@ describe.only('Bigtable/TimedStream', () => {
         }, 5000);
         // iterate stream
         for await (const chunk of timedStream as unknown as PassThrough) {
-          process.stdout.write(chunk.toString());
           // Simulate 1 second of busy work
           const startTime = Date.now();
           while (Date.now() - startTime < 1000) {
