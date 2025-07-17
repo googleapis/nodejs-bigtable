@@ -99,7 +99,6 @@ describe.only('Bigtable/TimedStream', () => {
             // print results
             try {
               const totalMilliseconds = timedStream.getTotalDurationMs();
-              console.log(totalMilliseconds);
               // totalMilliseconds should be around 10 seconds, 1 per row
               assert(totalMilliseconds > 9000);
               assert(totalMilliseconds < 11000);
