@@ -103,7 +103,7 @@ describe.only('Bigtable/TimedStream', () => {
           }
         });
       });
-      it.only('should measure the total time accurately for a series of 30 rows with an async call then a sync call', function (done) {
+      it('should measure the total time accurately for a series of 30 rows with an async call then a sync call', function (done) {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
         const timedStream = new TimedStream({});
