@@ -1,5 +1,6 @@
 import {PassThrough, Readable, TransformOptions} from 'stream';
 import * as assert from 'assert';
+// import {TimedStreamWithEvents as TimedStream} from '../src/timed-stream-new';
 
 class TimedStream extends PassThrough {
   private startTime;
@@ -16,6 +17,7 @@ class TimedStream extends PassThrough {
   }
 
   _transform(chunk: any, encoding: any, callback: any) {
+    console.log('run transform');
     // calculate the time spent in the callback (i.e. on("data") handlers)
     this.handleBeforeRow();
     callback(null, chunk);
@@ -23,6 +25,7 @@ class TimedStream extends PassThrough {
   }
 
   read(size: number) {
+    console.log('run read');
     // calculate the time spent between iterations of read (i.e. processing the stream in a for loop)
     const chunk = super.read(size);
     if (chunk) {
@@ -36,10 +39,12 @@ class TimedStream extends PassThrough {
   }
 
   handleBeforeRow() {
+    console.log('handleBeforeRow');
     this.startTime = process.hrtime.bigint();
   }
 
   handleAfterRow() {
+    console.log('handleAfterRow');
     const endTime = process.hrtime.bigint();
     const duration = endTime - this.startTime;
     this.totalDuration += duration;
@@ -71,9 +76,11 @@ describe('while iterating through a stream loop', () => {
         process.stdout.write(chunk.toString());
         // Simulate 1 second of busy work
         const startTime = Date.now();
+        console.log(`Before while: ${chunk.toString()}`);
         while (Date.now() - startTime < 1000) {
           /* empty */
         }
+        console.log(`After while: ${chunk.toString()}`);
       }
       const totalMilliseconds = timedStream.getTotalDurationMs();
       assert(totalMilliseconds > 29000);

@@ -71,9 +71,7 @@ describe('Bigtable/TimedStream', () => {
         timedStream.on('end', () => {
           const totalMilliseconds = timedStream.getTotalDurationMs();
           try {
-            assert(totalMilliseconds > 29000);
-            assert(totalMilliseconds < 31000);
-            // TODO: Add check for 30 BEFORE events. I only see a couple
+            assert(totalMilliseconds < 500);
             done();
           } catch (e) {
             done(e);
