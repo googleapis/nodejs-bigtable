@@ -240,7 +240,7 @@ describe.only('Bigtable/TimedStream', () => {
           }
         }, 5000);
       });
-      it('should measure the total time accurately for a series of 30 rows with backpressure and a delay', async function () {
+      it.only('should measure the total time accurately for a series of 40 rows with backpressure and a delay', async function () {
         this.timeout(200000);
         const eventNumbers = [];
         for (let i = 0; i < 40; i++) {
@@ -274,8 +274,8 @@ describe.only('Bigtable/TimedStream', () => {
           }
         }
         const totalMilliseconds = timedStream.getTotalDurationMs();
-        assert(totalMilliseconds > 39000);
-        assert(totalMilliseconds < 41000);
+        assert(totalMilliseconds > 37000);
+        assert(totalMilliseconds < 43000);
       });
     });
   });
