@@ -14,7 +14,7 @@
 
 import {describe, it} from 'mocha';
 import {PassThrough, Readable} from 'stream';
-import {TimedStreamWithEvents as TimedStream} from '../src/timed-stream-new';
+import {TimedStream} from '../src/timed-stream-separated';
 import * as assert from 'assert';
 
 // set up streams
@@ -24,10 +24,10 @@ function* numberGenerator(n: number) {
   }
 }
 
-describe('Bigtable/TimedStream', () => {
+describe.only('Bigtable/TimedStream', () => {
   describe('with handlers', () => {
     describe('with no delay from server', () => {
-      it('should measure the total time accurately for a series of 30 rows', function (done) {
+      it('should measure the total time accurately for a series of 30 rows with a synchronous call', function (done) {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
         const timedStream = new TimedStream({});
@@ -54,7 +54,7 @@ describe('Bigtable/TimedStream', () => {
           }
         });
       });
-      it.only('should measure the total time accurately for a series of 30 rows', function (done) {
+      it('should measure the total time accurately for a series of 30 rows with an async call', function (done) {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
         const timedStream = new TimedStream({});
@@ -77,41 +77,6 @@ describe('Bigtable/TimedStream', () => {
             done(e);
           }
         });
-      });
-      it.skip('should measure the total time accurately for a series of 30 rows with setTimeout', function (done) {
-        // NOTE: It is now understood we only should support use cases where the
-        // pipe and the `on('data'` calls are made synchronously ie. both in the
-        // same node event as Node documentation says handlers should be
-        // attached when events are emitted. Therefore, we don't need to
-        // support this test.
-        this.timeout(200000);
-        const sourceStream = Readable.from(numberGenerator(30));
-        const timedStream = new TimedStream({});
-        // @ts-ignore
-        sourceStream.pipe(timedStream as unknown as WritableStream);
-        // iterate stream
-        setTimeout(async () => {
-          // @ts-ignore
-          timedStream.on('data', async (chunk: any) => {
-            process.stdout.write(chunk.toString());
-            // Simulate 1 second of busy work
-            const startTime = Date.now();
-            while (Date.now() - startTime < 1000) {
-              /* empty */
-            }
-          });
-          timedStream.on('end', () => {
-            const totalMilliseconds = timedStream.getTotalDurationMs();
-            try {
-              assert(totalMilliseconds > 29000);
-              assert(totalMilliseconds < 31000);
-              // TODO: Add check for 30 BEFORE events. I only see a couple
-              done();
-            } catch (e) {
-              done(e);
-            }
-          });
-        }, 500);
       });
     });
     describe('with delay from server', () => {
@@ -227,31 +192,22 @@ describe('Bigtable/TimedStream', () => {
         assert(totalMilliseconds > 29000);
         assert(totalMilliseconds < 31000);
       });
-      it('should measure the total time accurately for a series of 30 rows with setTimeout', async function(done) {
+      it('should measure the total time accurately for a series of 30 rows with an async call', async function () {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
         const timedStream = new TimedStream({});
         // @ts-ignore
         sourceStream.pipe(timedStream as unknown as WritableStream);
-        setTimeout(async () => {
-          try {
-            // iterate stream
-            for await (const chunk of timedStream as unknown as PassThrough) {
-              process.stdout.write(chunk.toString());
-              // Simulate 1 second of busy work
-              const startTime = Date.now();
-              while (Date.now() - startTime < 1000) {
-                /* empty */
-              }
-            }
-            const totalMilliseconds = timedStream.getTotalDurationMs();
-            assert(totalMilliseconds > 29000);
-            assert(totalMilliseconds < 31000);
-            done();
-          } catch (e) {
-            done(e);
-          }
-        }, 500);
+        // iterate stream
+        for await (const chunk of timedStream as unknown as PassThrough) {
+          process.stdout.write(chunk.toString());
+          // Simulate 1 second of busy work
+          const sleep = (ms: number) =>
+            new Promise(resolve => setTimeout(resolve, ms));
+          await sleep(1000);
+        }
+        const totalMilliseconds = timedStream.getTotalDurationMs();
+        assert(totalMilliseconds < 500);
       });
     });
     describe('with delay from server', () => {

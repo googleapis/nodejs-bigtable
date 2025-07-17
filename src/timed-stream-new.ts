@@ -13,17 +13,17 @@ export class TimedStream extends PassThrough {
     super({...options, objectMode: true, highWaterMark: 0});
     this.startTime = 0n;
     this.totalDuration = 0n;
-    this.handleBeforeRow = this.handleBeforeRow.bind(this);
-    this.handleAfterRow = this.handleAfterRow.bind(this);
-    this.on('before_row', this.handleBeforeRow);
-    this.on('after_row', this.handleAfterRow);
+    this.handleBeforeRowRead = this.handleBeforeRowRead.bind(this);
+    this.handleAfterRowRead = this.handleAfterRowRead.bind(this);
+    this.on('before_row', this.handleBeforeRowRead);
+    this.on('after_row', this.handleAfterRowRead);
   }
 
   _transform(chunk: any, encoding: any, callback: any) {
     // calculate the time spent in the callback (i.e. on("data") handlers)
-    this.handleBeforeRow();
+    this.handleBeforeRowRead();
     callback(null, chunk);
-    this.handleAfterRow();
+    this.handleAfterRowRead();
   }
 
   read(size: number) {
@@ -39,11 +39,11 @@ export class TimedStream extends PassThrough {
     return chunk;
   }
 
-  handleBeforeRow() {
+  handleBeforeRowRead() {
     this.startTime = process.hrtime.bigint();
   }
 
-  handleAfterRow() {
+  handleAfterRowRead() {
     const endTime = process.hrtime.bigint();
     const duration = endTime - this.startTime;
     this.totalDuration += duration;
@@ -68,13 +68,13 @@ export class TimedStreamWithEvents extends TimedStream {
     return super._transform(chunk, encoding, callback);
   }
 
-  handleBeforeRow() {
+  handleBeforeRowRead() {
     this.events.push({name: 'handle before_row', time: Date.now()});
-    return super.handleBeforeRow();
+    return super.handleBeforeRowRead();
   }
 
-  handleAfterRow() {
+  handleAfterRowRead() {
     this.events.push({name: 'handle after_row', time: Date.now()});
-    return super.handleAfterRow();
+    return super.handleAfterRowRead();
   }
 }
