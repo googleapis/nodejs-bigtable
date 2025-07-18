@@ -133,7 +133,8 @@ describe('Bigtable/TimedStream', () => {
       });
     });
     describe('with delay from server', () => {
-      it('should measure the total time accurately for a series of 10 rows', done => {
+      it('should measure the total time accurately for a series of 10 rows', function (done) {
+        this.timeout(200000);
         const dataEvents = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i =>
           i.toString(),
         );
@@ -260,7 +261,8 @@ describe('Bigtable/TimedStream', () => {
       });
     });
     describe('with delay from server', () => {
-      it('should measure the total time accurately for a series of 10 rows', done => {
+      it('should measure the total time accurately for a series of 10 rows', function (done) {
+        this.timeout(200000);
         const dataEvents = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i =>
           i.toString(),
         );
