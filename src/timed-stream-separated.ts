@@ -21,11 +21,11 @@ type TimedStreamOptions = TransformOptions & {
  */
 export class TimedStream extends PassThrough {
   private startTimeRead;
-  private startTimeTransform;
   private totalDurationRead;
   private totalDurationTransform;
   constructor(options?: TimedStreamOptions) {
     // highWaterMark of 1 is needed to respond to each row
+    let startTimeTransform = 0n;
     super({
       ...options,
       objectMode: true,
@@ -33,7 +33,7 @@ export class TimedStream extends PassThrough {
       transform: (event, _encoding, callback) => {
         // First run code for time measurement before the transform callback is
         // invoked. ie. Ensure that the timer is started.
-        this.startTimeTransform = process.hrtime.bigint();
+        startTimeTransform = process.hrtime.bigint();
         // Then run method specific code and the transform callback.
         if (options?.transformHook) {
           options?.transformHook(event, _encoding, callback);
@@ -43,13 +43,12 @@ export class TimedStream extends PassThrough {
         // invoked. ie. Ensure that the timer is stopped and elapsed time is
         // recorded.
         const endTime = process.hrtime.bigint();
-        const duration = endTime - this.startTimeTransform;
+        const duration = endTime - startTimeTransform;
         this.totalDurationTransform += duration;
-        this.startTimeTransform = process.hrtime.bigint();
+        startTimeTransform = process.hrtime.bigint();
       },
     });
     this.startTimeRead = 0n;
-    this.startTimeTransform = 0n;
     this.totalDurationRead = 0n;
     this.totalDurationTransform = 0n;
     this.handleBeforeRowRead = this.handleBeforeRowRead.bind(this);
