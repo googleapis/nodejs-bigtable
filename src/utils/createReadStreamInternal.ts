@@ -413,7 +413,6 @@ export function createReadStreamInternal(
         // Reset error count after a successful read so the backoff
         // time won't keep increasing when as stream had multiple errors
         numConsecutiveErrors = 0;
-        metricsCollector.onResponse();
       })
       .on('end', () => {
         activeRequestStream = null;
