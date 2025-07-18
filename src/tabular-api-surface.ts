@@ -341,7 +341,22 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       (a, b) => a.concat(b),
       [],
     );
+    const collectMetricsCallback = (
+      originalError: ServiceError | null,
+      err: ServiceError | PartialFailureError | null,
+      apiResponse?: google.protobuf.Empty,
+    ) => {
+      const code = originalError ? originalError.code : 0;
+      metricsCollector.onOperationComplete(code ? code : 0);
+      callback(err, apiResponse);
+    };
 
+    const metricsCollector =
+      this.bigtable._metricsConfigManager.createOperation(
+        MethodName.MUTATE_ROWS,
+        StreamingState.STREAMING,
+        this,
+      );
     /*
     The following line of code sets the timeout if it was provided while
     creating the client. This will be used to determine if the client should
@@ -387,7 +402,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const onBatchResponse = (err: ServiceError | null) => {
       // Return if the error happened before a request was made
       if (numRequestsMade === 0) {
-        callback(err);
+        collectMetricsCallback(err, err);
         return;
       }
 
@@ -399,6 +414,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           options.gaxOptions?.retry?.backoffSettings ||
           DEFAULT_BACKOFF_SETTINGS;
         const nextDelay = getNextDelay(numRequestsMade, backOffSettings);
+        metricsCollector.onAttemptComplete(err ? err.code : 0);
         setTimeout(makeNextBatchRequest, nextDelay);
         return;
       }
@@ -411,7 +427,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
       if (mutationErrorsByEntryIndex.size !== 0) {
-        callback(new PartialFailureError(mutationErrors, err));
+        collectMetricsCallback(
+          err,
+          new PartialFailureError(mutationErrors, err),
+        );
         return;
       }
       if (err) {
@@ -425,13 +444,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               .filter(index => !mutationErrorsByEntryIndex.has(index))
               .map(() => err),
           );
-        callback(err);
+        collectMetricsCallback(err, err);
         return;
       }
-      callback(err);
+      collectMetricsCallback(err, err);
     };
 
+    metricsCollector.onOperationStart();
     const makeNextBatchRequest = () => {
+      metricsCollector.onAttemptStart();
       const entryBatch = entries.filter((entry: Entry, index: number) => {
         return pendingEntryIndices.has(index);
       });
@@ -469,14 +490,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         options.gaxOptions,
       );
 
-      this.bigtable
-        .request<google.bigtable.v2.MutateRowsResponse>({
+      const requestStream =
+        this.bigtable.request<google.bigtable.v2.MutateRowsResponse>({
           client: 'BigtableClient',
           method: 'mutateRows',
           reqOpts,
           gaxOpts: options.gaxOptions,
           retryOpts,
-        })
+        });
+      metricsCollector.handleStatusAndMetadata(requestStream);
+      requestStream
         .on('error', (err: ServiceError) => {
           onBatchResponse(err);
         })
