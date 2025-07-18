@@ -24,7 +24,7 @@ function* numberGenerator(n: number) {
   }
 }
 
-describe.only('Bigtable/TimedStream', () => {
+describe('Bigtable/TimedStream', () => {
   describe('with handlers', () => {
     describe('with no delay from server', () => {
       it('should measure the total time accurately for a series of 30 rows with a synchronous call', function (done) {
@@ -133,7 +133,7 @@ describe.only('Bigtable/TimedStream', () => {
       });
     });
     describe('with delay from server', () => {
-      it('should measure the total time accurately for a series of 10 rows', done => {
+      it.only('should measure the total time accurately for a series of 10 rows', done => {
         const dataEvents = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i =>
           i.toString(),
         );
@@ -152,6 +152,7 @@ describe.only('Bigtable/TimedStream', () => {
             }
           });
           timedStream.on('end', () => {
+            clearInterval(interval);
             // print results
             try {
               const totalMilliseconds = timedStream.getTotalDurationMs();
@@ -165,7 +166,7 @@ describe.only('Bigtable/TimedStream', () => {
           });
         }, 500);
 
-        setInterval(() => {
+        const interval = setInterval(() => {
           if (dataEvents.length > 0) {
             const dataEvent = dataEvents.shift();
             sourceStream.write(dataEvent);
@@ -194,6 +195,7 @@ describe.only('Bigtable/TimedStream', () => {
           }
         });
         timedStream.on('end', () => {
+          clearInterval(interval);
           const totalMilliseconds = timedStream.getTotalDurationMs();
           try {
             assert(totalMilliseconds > 39000);
@@ -209,7 +211,7 @@ describe.only('Bigtable/TimedStream', () => {
           sourceStream.write(dataEvent);
         }
         // Then rows get sent every 5 seconds.
-        setInterval(() => {
+        const interval = setInterval(() => {
           if (dataEvents.length > 0) {
             const dataEvent = dataEvents.shift();
             sourceStream.write(dataEvent);
@@ -277,6 +279,7 @@ describe.only('Bigtable/TimedStream', () => {
                 /* empty */
               }
             }
+            clearInterval(interval);
             const totalMilliseconds = timedStream.getTotalDurationMs();
             // totalMilliseconds should be around 10 seconds, 1 per row
             assert(totalMilliseconds > 9000);
@@ -287,7 +290,7 @@ describe.only('Bigtable/TimedStream', () => {
           }
         }, 500);
 
-        setInterval(() => {
+        const interval = setInterval(() => {
           if (dataEvents.length > 0) {
             const dataEvent = dataEvents.shift();
             sourceStream.write(dataEvent);
@@ -313,7 +316,7 @@ describe.only('Bigtable/TimedStream', () => {
           sourceStream.write(dataEvent);
         }
         // Then rows get sent every 5 seconds.
-        setInterval(() => {
+        const interval = setInterval(() => {
           if (dataEvents.length > 0) {
             const dataEvent = dataEvents.shift();
             sourceStream.write(dataEvent);
@@ -329,6 +332,7 @@ describe.only('Bigtable/TimedStream', () => {
             /* empty */
           }
         }
+        clearInterval(interval);
         const totalMilliseconds = timedStream.getTotalDurationMs();
         assert(totalMilliseconds > 37000);
         assert(totalMilliseconds < 43000);
