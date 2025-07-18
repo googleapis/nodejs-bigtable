@@ -52,9 +52,6 @@ function createMetricsInterceptorProvider(
             nextMsg(message);
           },
           onReceiveStatus: (status, nextStat) => {
-            if (status.code === GrpcStatus.OK && savedReceiveMessage) {
-              collector.onResponse(); // Call onResponse for successful unary calls with a message
-            }
             collector.onStatusMetadataReceived(
               status as unknown as ServerStatus,
             );
