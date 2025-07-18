@@ -14,7 +14,7 @@
 
 import {describe, it} from 'mocha';
 import {PassThrough, Readable} from 'stream';
-import {TimedStream} from '../src/timed-stream-separated';
+import {TimedStream} from '../src/timed-stream';
 import * as assert from 'assert';
 
 // set up streams
