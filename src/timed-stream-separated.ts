@@ -19,7 +19,6 @@ export class TimedStream extends PassThrough {
   }
 
   _transform(chunk: any, encoding: any, callback: any) {
-    console.log('_transform');
     // calculate the time spent in the callback (i.e. on("data") handlers)
     this.handleBeforeRowTransform();
     callback(null, chunk);
@@ -27,7 +26,6 @@ export class TimedStream extends PassThrough {
   }
 
   read(size: number) {
-    console.log('read row');
     // calculate the time spent between iterations of read (i.e. processing the stream in a for loop)
     const chunk = super.read(size);
     if (chunk) {
@@ -41,12 +39,10 @@ export class TimedStream extends PassThrough {
   }
 
   handleBeforeRowRead() {
-    console.log('handleBeforeRowRead');
     this.startTimeRead = process.hrtime.bigint();
   }
 
   handleAfterRowRead() {
-    console.log('handleAfterRowRead');
     const endTime = process.hrtime.bigint();
     const duration = endTime - this.startTimeRead;
     this.totalDurationRead += duration;
@@ -54,12 +50,10 @@ export class TimedStream extends PassThrough {
   }
 
   handleBeforeRowTransform() {
-    console.log('handleBeforeRowTransform');
     this.startTimeTransform = process.hrtime.bigint();
   }
 
   handleAfterRowTransform() {
-    console.log('handleAfterRowTransform');
     const endTime = process.hrtime.bigint();
     const duration = endTime - this.startTimeTransform;
     this.totalDurationTransform += duration;
