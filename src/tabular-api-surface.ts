@@ -342,10 +342,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       [],
     );
     const collectMetricsCallback = (
-      code: number,
+      originalError: ServiceError | null,
       err: ServiceError | PartialFailureError | null,
       apiResponse?: google.protobuf.Empty,
     ) => {
+      const code = originalError ? originalError.code : 0;
       metricsCollector.onOperationComplete(code ? code : 0);
       callback(err, apiResponse);
     };
@@ -401,7 +402,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const onBatchResponse = (err: ServiceError | null) => {
       // Return if the error happened before a request was made
       if (numRequestsMade === 0) {
-        collectMetricsCallback(err ? err.code : 0, err);
+        collectMetricsCallback(err, err);
         return;
       }
 
@@ -427,7 +428,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
       if (mutationErrorsByEntryIndex.size !== 0) {
         collectMetricsCallback(
-          err ? err.code : 0,
+          err,
           new PartialFailureError(mutationErrors, err),
         );
         return;
@@ -443,10 +444,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               .filter(index => !mutationErrorsByEntryIndex.has(index))
               .map(() => err),
           );
-        collectMetricsCallback(err ? err.code : 0, err);
+        collectMetricsCallback(err, err);
         return;
       }
-      collectMetricsCallback(0, err);
+      collectMetricsCallback(err, err);
     };
 
     metricsCollector.onOperationStart();
