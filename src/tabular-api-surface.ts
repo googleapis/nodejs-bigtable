@@ -346,8 +346,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       err: ServiceError | PartialFailureError | null,
       apiResponse?: google.protobuf.Empty,
     ) => {
+      // originalError is the error that was sent from the gapic layer. The
+      // compiler guarantees that it contains a code which needs to be
+      // provided when an operation is marked complete.
+      //
+      // err is the error we intend to send back to the user. Often it is the
+      // same as originalError, but in one case we construct a
+      // PartialFailureError and send that back to the user instead. In this
+      // case, we still need to pass the originalError into the method
+      // because the PartialFailureError doesn't have a code, but we need to
+      // communicate a code to the metrics collector.
+      //
       const code = originalError ? originalError.code : 0;
-      metricsCollector.onOperationComplete(code ? code : 0);
+      metricsCollector.onOperationComplete(code);
       callback(err, apiResponse);
     };
 
