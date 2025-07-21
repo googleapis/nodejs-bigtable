@@ -421,6 +421,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         timeout && timeout < new Date().getTime() - callTimeMillis
       );
       if (isRetryable(err, timeoutExceeded)) {
+        // If the timeout or max retries is exceeded or if there are no
+        // pending indices left then the client doesn't retry.
+        // Otherwise, the client will retry if there is no error or if the
+        // error has a retryable status code.
         const backOffSettings =
           options.gaxOptions?.retry?.backoffSettings ||
           DEFAULT_BACKOFF_SETTINGS;
