@@ -811,7 +811,8 @@ export class BigtableClient {
  * @param {number[]} request.rules
  *   Required. Rules specifying how the specified row's contents are to be
  *   transformed into writes. Entries are applied in order, meaning that earlier
- *   rules will affect the results of later ones.
+ *   rules will affect the results of later ones. At least one entry must be
+ *   specified, and there can be at most 100000 rules.
  * @param {object} [options]
  *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
  * @returns {Promise} - The promise which resolves to an array.
@@ -1341,10 +1342,10 @@ export class BigtableClient {
   }
 
 /**
- * NOTE: This API is intended to be used by Apache Beam BigtableIO.
  * Returns the current list of partitions that make up the table's
  * change stream. The union of partitions will cover the entire keyspace.
  * Partitions can be read with `ReadChangeStream`.
+ * NOTE: This API is only intended to be used by Apache Beam BigtableIO.
  *
  * @param {Object} request
  *   The request object that will be sent.
@@ -1383,10 +1384,10 @@ export class BigtableClient {
   }
 
 /**
- * NOTE: This API is intended to be used by Apache Beam BigtableIO.
  * Reads changes from a table's change stream. Changes will
  * reflect both user-initiated mutations and mutations that are caused by
  * garbage collection.
+ * NOTE: This API is only intended to be used by Apache Beam BigtableIO.
  *
  * @param {Object} request
  *   The request object that will be sent.
@@ -1412,10 +1413,10 @@ export class BigtableClient {
  *   the position. Tokens are delivered on the stream as part of `Heartbeat`
  *   and `CloseStream` messages.
  *
- *   If a single token is provided, the token’s partition must exactly match
- *   the request’s partition. If multiple tokens are provided, as in the case
+ *   If a single token is provided, the token's partition must exactly match
+ *   the request's partition. If multiple tokens are provided, as in the case
  *   of a partition merge, the union of the token partitions must exactly
- *   cover the request’s partition. Otherwise, INVALID_ARGUMENT will be
+ *   cover the request's partition. Otherwise, INVALID_ARGUMENT will be
  *   returned.
  * @param {google.protobuf.Timestamp} request.endTime
  *   If specified, OK will be returned when the stream advances beyond
