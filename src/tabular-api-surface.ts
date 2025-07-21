@@ -458,7 +458,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         collectMetricsCallback(err, err);
         return;
       }
-      collectMetricsCallback(err, err);
+      collectMetricsCallback(null, null);
     };
 
     metricsCollector.onOperationStart();
