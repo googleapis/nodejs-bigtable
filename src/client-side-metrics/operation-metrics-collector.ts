@@ -168,7 +168,7 @@ export class OperationMetricsCollector {
    *
    * @param stream
    */
-  handleStatusAndMetadata(stream: AbortableDuplex) {
+  wrapRequest(stream: AbortableDuplex) {
     stream
       .on(
         'metadata',

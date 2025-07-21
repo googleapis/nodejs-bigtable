@@ -498,7 +498,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           gaxOpts: options.gaxOptions,
           retryOpts,
         });
-      metricsCollector.handleStatusAndMetadata(requestStream);
+      metricsCollector.wrapRequest(requestStream);
       requestStream
         .on('error', (err: ServiceError) => {
           onBatchResponse(err);

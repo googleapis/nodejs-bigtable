@@ -364,7 +364,7 @@ export function createReadStreamInternal(
 
     rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
-    metricsCollector.handleStatusAndMetadata(requestStream);
+    metricsCollector.wrapRequest(requestStream);
     rowStream
       .on('error', (error: ServiceError) => {
         rowStreamUnpipe(rowStream, userStream);
