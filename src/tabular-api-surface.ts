@@ -490,15 +490,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         options.gaxOptions,
       );
 
-      const requestStream =
+      const requestStream = metricsCollector.handleStatusAndMetadata(
         this.bigtable.request<google.bigtable.v2.MutateRowsResponse>({
           client: 'BigtableClient',
           method: 'mutateRows',
           reqOpts,
           gaxOpts: options.gaxOptions,
           retryOpts,
-        });
-      metricsCollector.handleStatusAndMetadata(requestStream);
+        }),
+      );
       requestStream
         .on('error', (err: ServiceError) => {
           onBatchResponse(err);

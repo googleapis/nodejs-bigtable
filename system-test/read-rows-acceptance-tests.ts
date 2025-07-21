@@ -41,7 +41,9 @@ class FakeOperationMetricsCollector extends OperationMetricsCollector {
   onAttemptStart() {}
   onAttemptComplete() {}
   onOperationStart() {}
-  handleStatusAndMetadata() {}
+  handleStatusAndMetadata(stream: AbortableDuplex) {
+    return stream;
+  }
   onMetadataReceived() {}
   onRowReachesUser() {}
   onStatusMetadataReceived() {}

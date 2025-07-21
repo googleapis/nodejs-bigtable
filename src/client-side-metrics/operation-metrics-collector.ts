@@ -187,6 +187,7 @@ export class OperationMetricsCollector {
       .on('data', () => {
         this.onResponse();
       });
+    return stream;
   }
 
   /**
