@@ -30,7 +30,6 @@ function createMetricsInterceptorProvider(
   collector: OperationMetricsCollector,
 ) {
   return (options: grpcJs.InterceptorOptions, nextCall: grpcJs.NextCall) => {
-    let savedReceiveMessage: any;
     // savedReceiveMetadata and savedReceiveStatus are not strictly needed here anymore for the interceptor's own state
     // OperationStart and AttemptStart will be called by the calling code (`fakeReadModifyWriteRow`)
     return new grpcJs.InterceptingCall(nextCall(options), {
@@ -48,7 +47,6 @@ function createMetricsInterceptorProvider(
             nextMd(metadata);
           },
           onReceiveMessage: (message, nextMsg) => {
-            savedReceiveMessage = message; // Still need to know if a message was received for onResponse
             nextMsg(message);
           },
           onReceiveStatus: (status, nextStat) => {
