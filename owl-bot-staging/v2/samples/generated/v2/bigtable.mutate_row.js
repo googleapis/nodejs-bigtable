@@ -62,8 +62,8 @@ function main(rowKey, mutations) {
    */
   // const mutations = [1,2,3,4]
   /**
-   *  Optional parameter for ensuring a MutateRow request is only applied once.
-   *  Currently applicable only for certain aggregate types.
+   *  If set consistently across retries, prevents this mutation from being
+   *  double applied to aggregate column families within a 15m window.
    */
   // const idempotency = {}
 

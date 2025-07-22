@@ -3034,6 +3034,7 @@
                          * @interface IEntry
                          * @property {Uint8Array|null} [rowKey] Entry rowKey
                          * @property {Array.<google.bigtable.v2.IMutation>|null} [mutations] Entry mutations
+                         * @property {google.bigtable.v2.IIdempotency|null} [idempotency] Entry idempotency
                          */
     
                         /**
@@ -3069,6 +3070,14 @@
                         Entry.prototype.mutations = $util.emptyArray;
     
                         /**
+                         * Entry idempotency.
+                         * @member {google.bigtable.v2.IIdempotency|null|undefined} idempotency
+                         * @memberof google.bigtable.v2.MutateRowsRequest.Entry
+                         * @instance
+                         */
+                        Entry.prototype.idempotency = null;
+    
+                        /**
                          * Creates a new Entry instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.v2.MutateRowsRequest.Entry
@@ -3097,6 +3106,8 @@
                             if (message.mutations != null && message.mutations.length)
                                 for (var i = 0; i < message.mutations.length; ++i)
                                     $root.google.bigtable.v2.Mutation.encode(message.mutations[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.idempotency != null && Object.hasOwnProperty.call(message, "idempotency"))
+                                $root.google.bigtable.v2.Idempotency.encode(message.idempotency, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                             return writer;
                         };
     
@@ -3141,6 +3152,10 @@
                                         if (!(message.mutations && message.mutations.length))
                                             message.mutations = [];
                                         message.mutations.push($root.google.bigtable.v2.Mutation.decode(reader, reader.uint32()));
+                                        break;
+                                    }
+                                case 3: {
+                                        message.idempotency = $root.google.bigtable.v2.Idempotency.decode(reader, reader.uint32());
                                         break;
                                     }
                                 default:
@@ -3190,6 +3205,11 @@
                                         return "mutations." + error;
                                 }
                             }
+                            if (message.idempotency != null && message.hasOwnProperty("idempotency")) {
+                                var error = $root.google.bigtable.v2.Idempotency.verify(message.idempotency);
+                                if (error)
+                                    return "idempotency." + error;
+                            }
                             return null;
                         };
     
@@ -3220,6 +3240,11 @@
                                     message.mutations[i] = $root.google.bigtable.v2.Mutation.fromObject(object.mutations[i]);
                                 }
                             }
+                            if (object.idempotency != null) {
+                                if (typeof object.idempotency !== "object")
+                                    throw TypeError(".google.bigtable.v2.MutateRowsRequest.Entry.idempotency: object expected");
+                                message.idempotency = $root.google.bigtable.v2.Idempotency.fromObject(object.idempotency);
+                            }
                             return message;
                         };
     
@@ -3238,7 +3263,7 @@
                             var object = {};
                             if (options.arrays || options.defaults)
                                 object.mutations = [];
-                            if (options.defaults)
+                            if (options.defaults) {
                                 if (options.bytes === String)
                                     object.rowKey = "";
                                 else {
@@ -3246,6 +3271,8 @@
                                     if (options.bytes !== Array)
                                         object.rowKey = $util.newBuffer(object.rowKey);
                                 }
+                                object.idempotency = null;
+                            }
                             if (message.rowKey != null && message.hasOwnProperty("rowKey"))
                                 object.rowKey = options.bytes === String ? $util.base64.encode(message.rowKey, 0, message.rowKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.rowKey) : message.rowKey;
                             if (message.mutations && message.mutations.length) {
@@ -3253,6 +3280,8 @@
                                 for (var j = 0; j < message.mutations.length; ++j)
                                     object.mutations[j] = $root.google.bigtable.v2.Mutation.toObject(message.mutations[j], options);
                             }
+                            if (message.idempotency != null && message.hasOwnProperty("idempotency"))
+                                object.idempotency = $root.google.bigtable.v2.Idempotency.toObject(message.idempotency, options);
                             return object;
                         };
     

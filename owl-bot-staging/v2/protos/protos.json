@@ -739,6 +739,10 @@
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
                           }
+                        },
+                        "idempotency": {
+                          "type": "Idempotency",
+                          "id": 3
                         }
                       }
                     }

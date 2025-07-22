@@ -1254,6 +1254,9 @@ export namespace google {
 
                     /** Entry mutations */
                     mutations?: (google.bigtable.v2.IMutation[]|null);
+
+                    /** Entry idempotency */
+                    idempotency?: (google.bigtable.v2.IIdempotency|null);
                 }
 
                 /** Represents an Entry. */
@@ -1270,6 +1273,9 @@ export namespace google {
 
                     /** Entry mutations. */
                     public mutations: google.bigtable.v2.IMutation[];
+
+                    /** Entry idempotency. */
+                    public idempotency?: (google.bigtable.v2.IIdempotency|null);
 
                     /**
                      * Creates a new Entry instance using the specified properties.
