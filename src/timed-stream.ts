@@ -28,18 +28,40 @@ type TimedStreamOptions = TransformOptions & {
   ) => void;
 };
 
+class StreamTimer {
+  private startTime;
+  private totalDuration;
+
+  constructor() {
+    this.startTime = 0n;
+    this.totalDuration = 0n;
+  }
+
+  getTotalDurationMs() {
+    return Number(this.totalDuration / 1_000_000n);
+  }
+
+  start() {
+    this.startTime = process.hrtime.bigint();
+  }
+
+  stop() {
+    const endTime = process.hrtime.bigint();
+    const duration = endTime - this.startTime;
+    this.totalDuration += duration;
+  }
+}
+
 /**
  * The TimedStream class is used for measuring the time the user spends
  * processing data from the stream. We need to measure this time for use cases
  * like measuring the application latencies for client side metrics.
  */
 export class TimedStream extends PassThrough {
-  private startTimeRead;
-  private totalDurationRead;
-  private totalDurationTransform;
+  private readTimer = new StreamTimer();
+  private transformTimer = new StreamTimer();
   constructor(options?: TimedStreamOptions) {
     // highWaterMark of 1 is needed to respond to each row
-    let startTimeTransform = 0n;
     super({
       ...options,
       objectMode: true,
@@ -53,30 +75,14 @@ export class TimedStream extends PassThrough {
         depending on whether the user is iterating through a stream or using
         timers.
         */
-        // First run code for time measurement before the transform callback is
-        // invoked. ie. Ensure that the timer is started.
-        startTimeTransform = process.hrtime.bigint();
-        // Then run method specific code and the transform callback.
+        this.transformTimer.start();
         if (options?.transformHook) {
           options?.transformHook(event, _encoding, callback);
         }
         callback(null, event);
-        // Last, run code for time measurement after the transform callback is
-        // invoked. ie. Ensure that the timer is stopped and elapsed time is
-        // recorded.
-        const endTime = process.hrtime.bigint();
-        const duration = endTime - startTimeTransform;
-        this.totalDurationTransform += duration;
-        startTimeTransform = process.hrtime.bigint();
+        this.transformTimer.stop();
       },
     });
-    this.startTimeRead = 0n;
-    this.totalDurationRead = 0n;
-    this.totalDurationTransform = 0n;
-    this.handleBeforeRowRead = this.handleBeforeRowRead.bind(this);
-    this.handleAfterRowRead = this.handleAfterRowRead.bind(this);
-    this.on('before_row', this.handleBeforeRowRead);
-    this.on('after_row', this.handleAfterRowRead);
   }
 
   /**
@@ -86,39 +92,22 @@ export class TimedStream extends PassThrough {
     // calculate the time spent between iterations of read (i.e. processing the stream in a for loop)
     const chunk = super.read(size);
     if (chunk) {
-      this.handleBeforeRowRead();
+      this.readTimer.start();
       // Defer the after call to the next tick of the event loop
       process.nextTick(() => {
-        this.handleAfterRowRead();
+        this.readTimer.stop();
       });
     }
     return chunk;
   }
 
   /**
-   * handleBeforeRowRead code is called when the stream processes a before_row
-   * event emitted by the read function.
-   */
-  handleBeforeRowRead() {
-    this.startTimeRead = process.hrtime.bigint();
-  }
-
-  /**
-   * handleAfterRowRead code is called when the stream processes an after_row
-   * event emitted by the read function.
-   */
-  handleAfterRowRead() {
-    const endTime = process.hrtime.bigint();
-    const duration = endTime - this.startTimeRead;
-    this.totalDurationRead += duration;
-  }
-
-  /**
-   *
+   * Returns the total amount of time the user code spends handling data.
    */
   getTotalDurationMs() {
-    return Number(
-      (this.totalDurationRead + this.totalDurationTransform) / 1_000_000n,
+    return (
+      this.readTimer.getTotalDurationMs() +
+      this.transformTimer.getTotalDurationMs()
     );
   }
 }
