@@ -45,6 +45,14 @@ export class TimedStream extends PassThrough {
       objectMode: true,
       highWaterMark: 0,
       transform: (event, _encoding, callback) => {
+        /* When we iterate through a stream, time spent waiting for the user's
+        application is added to totalDurationTransform. When we use handlers,
+        time spent waiting for the user's application is added to
+        totalDurationTransform. We need two different timers to measure total
+        application blocking latencies because the streams behave differently
+        depending on whether the user is iterating through a stream or using
+        timers.
+        */
         // First run code for time measurement before the transform callback is
         // invoked. ie. Ensure that the timer is started.
         startTimeTransform = process.hrtime.bigint();
