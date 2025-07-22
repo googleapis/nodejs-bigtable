@@ -86,10 +86,10 @@ export class TimedStream extends PassThrough {
     // calculate the time spent between iterations of read (i.e. processing the stream in a for loop)
     const chunk = super.read(size);
     if (chunk) {
-      this.emit('before_row');
+      this.handleBeforeRowRead();
       // Defer the after call to the next tick of the event loop
       process.nextTick(() => {
-        this.emit('after_row');
+        this.handleAfterRowRead();
       });
     }
     return chunk;
