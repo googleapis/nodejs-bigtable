@@ -37,7 +37,6 @@ function createMetricsInterceptorProvider(
         // AttemptStart is called by the orchestrating code
         const newListener: grpcJs.Listener = {
           onReceiveMetadata: (metadata, nextMd) => {
-            console.log('metadata encountered');
             collector.onMetadataReceived(
               metadata as unknown as {
                 internalRepr: Map<string, string[]>;
@@ -46,22 +45,15 @@ function createMetricsInterceptorProvider(
             );
             nextMd(metadata);
           },
-          onReceiveMessage: (message, nextMsg) => {
-            nextMsg(message);
-          },
           onReceiveStatus: (status, nextStat) => {
             collector.onStatusMetadataReceived(
               status as unknown as ServerStatus,
             );
-            // AttemptComplete and OperationComplete will be called by the calling code
             nextStat(status);
           },
         };
         next(metadata, newListener);
       },
-      sendMessage: (message, next) => next(message),
-      halfClose: next => next(),
-      cancel: next => next(),
     });
   };
 }
