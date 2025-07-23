@@ -24,13 +24,23 @@ function* numberGenerator(n: number) {
   }
 }
 
+class UserStream extends TimedStream {
+  constructor() {
+    super({
+      transformHook(event, _encoding, callback) {
+        callback(null, event);
+      },
+    });
+  }
+}
+
 describe.only('Bigtable/TimedStream', () => {
   describe('with handlers', () => {
     describe('with no delay from server', () => {
       it('should measure the total time accurately for a series of 30 rows with a synchronous call', function (done) {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
-        const timedStream = new TimedStream({});
+        const timedStream = new UserStream();
         // @ts-ignore
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // iterate stream
@@ -55,7 +65,7 @@ describe.only('Bigtable/TimedStream', () => {
       it('should measure the total time accurately for a series of 30 rows with an async call', function (done) {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
-        const timedStream = new TimedStream({});
+        const timedStream = new UserStream();
         // @ts-ignore
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // iterate stream
@@ -78,7 +88,7 @@ describe.only('Bigtable/TimedStream', () => {
       it('should measure the total time accurately for a series of 30 rows with a sync then an async call', function (done) {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
-        const timedStream = new TimedStream({});
+        const timedStream = new UserStream();
         // @ts-ignore
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // iterate stream
@@ -106,7 +116,7 @@ describe.only('Bigtable/TimedStream', () => {
       it('should measure the total time accurately for a series of 30 rows with an async call then a sync call', function (done) {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
-        const timedStream = new TimedStream({});
+        const timedStream = new UserStream();
         // @ts-ignore
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // iterate stream
@@ -139,7 +149,7 @@ describe.only('Bigtable/TimedStream', () => {
           i.toString(),
         );
         const sourceStream = new PassThrough();
-        const timedStream = new TimedStream({});
+        const timedStream = new UserStream();
         // @ts-ignore
         sourceStream.pipe(timedStream);
 
@@ -184,7 +194,7 @@ describe.only('Bigtable/TimedStream', () => {
         }
         const dataEvents = eventNumbers.map(i => i.toString());
         const sourceStream = new PassThrough();
-        const timedStream = new TimedStream({});
+        const timedStream = new UserStream();
         // @ts-ignore
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // iterate stream
@@ -228,7 +238,7 @@ describe.only('Bigtable/TimedStream', () => {
       it('should measure the total time accurately for a series of 30 rows', async function () {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
-        const timedStream = new TimedStream({});
+        const timedStream = new UserStream();
         // @ts-ignore
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // iterate stream
@@ -246,7 +256,7 @@ describe.only('Bigtable/TimedStream', () => {
       it('should measure the total time accurately for a series of 30 rows with an async call', async function () {
         this.timeout(200000);
         const sourceStream = Readable.from(numberGenerator(30));
-        const timedStream = new TimedStream({});
+        const timedStream = new UserStream();
         // @ts-ignore
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // iterate stream
@@ -267,7 +277,7 @@ describe.only('Bigtable/TimedStream', () => {
           i.toString(),
         );
         const sourceStream = new PassThrough();
-        const timedStream = new TimedStream({});
+        const timedStream = new UserStream();
         // @ts-ignore
         sourceStream.pipe(timedStream);
 
@@ -309,7 +319,7 @@ describe.only('Bigtable/TimedStream', () => {
         }
         const dataEvents = eventNumbers.map(i => i.toString());
         const sourceStream = new PassThrough();
-        const timedStream = new TimedStream({});
+        const timedStream = new UserStream();
         // @ts-ignore
         sourceStream.pipe(timedStream as unknown as WritableStream);
         // First load the stream with events.

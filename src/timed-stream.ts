@@ -80,7 +80,6 @@ export class TimedStream extends PassThrough {
         if (options?.transformHook) {
           options?.transformHook(event, _encoding, callback);
         }
-        callback(null, event);
         this.transformTimer.stop();
       },
     });

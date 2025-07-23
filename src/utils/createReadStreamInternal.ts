@@ -42,6 +42,7 @@ import {
   TabularApiSurface,
 } from '../tabular-api-surface';
 import {OperationMetricsCollector} from '../client-side-metrics/operation-metrics-collector';
+import {TimedStream} from '../timed-stream';
 
 /**
  * Creates a readable stream of rows from a Bigtable table or authorized view.
@@ -128,10 +129,7 @@ export function createReadStreamInternal(
   // discarded in the per attempt subpipeline (rowStream)
   let lastRowKey = '';
   let rowsRead = 0;
-  const userStream = new PassThrough({
-    objectMode: true,
-    readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
-    writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
+  const userStream = new TimedStream({
     transform(event, _encoding, callback) {
       if (userCanceled) {
         callback();
