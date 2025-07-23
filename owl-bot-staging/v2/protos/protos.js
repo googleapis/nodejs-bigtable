@@ -19328,6 +19328,8 @@
                      * @property {google.bigtable.v2.Type.IStruct|null} [structType] Type structType
                      * @property {google.bigtable.v2.Type.IArray|null} [arrayType] Type arrayType
                      * @property {google.bigtable.v2.Type.IMap|null} [mapType] Type mapType
+                     * @property {google.bigtable.v2.Type.IProto|null} [protoType] Type protoType
+                     * @property {google.bigtable.v2.Type.IEnum|null} [enumType] Type enumType
                      */
     
                     /**
@@ -19441,17 +19443,33 @@
                      */
                     Type.prototype.mapType = null;
     
+                    /**
+                     * Type protoType.
+                     * @member {google.bigtable.v2.Type.IProto|null|undefined} protoType
+                     * @memberof google.bigtable.v2.Type
+                     * @instance
+                     */
+                    Type.prototype.protoType = null;
+    
+                    /**
+                     * Type enumType.
+                     * @member {google.bigtable.v2.Type.IEnum|null|undefined} enumType
+                     * @memberof google.bigtable.v2.Type
+                     * @instance
+                     */
+                    Type.prototype.enumType = null;
+    
                     // OneOf field names bound to virtual getters and setters
                     var $oneOfFields;
     
                     /**
                      * Type kind.
-                     * @member {"bytesType"|"stringType"|"int64Type"|"float32Type"|"float64Type"|"boolType"|"timestampType"|"dateType"|"aggregateType"|"structType"|"arrayType"|"mapType"|undefined} kind
+                     * @member {"bytesType"|"stringType"|"int64Type"|"float32Type"|"float64Type"|"boolType"|"timestampType"|"dateType"|"aggregateType"|"structType"|"arrayType"|"mapType"|"protoType"|"enumType"|undefined} kind
                      * @memberof google.bigtable.v2.Type
                      * @instance
                      */
                     Object.defineProperty(Type.prototype, "kind", {
-                        get: $util.oneOfGetter($oneOfFields = ["bytesType", "stringType", "int64Type", "float32Type", "float64Type", "boolType", "timestampType", "dateType", "aggregateType", "structType", "arrayType", "mapType"]),
+                        get: $util.oneOfGetter($oneOfFields = ["bytesType", "stringType", "int64Type", "float32Type", "float64Type", "boolType", "timestampType", "dateType", "aggregateType", "structType", "arrayType", "mapType", "protoType", "enumType"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
     
@@ -19503,6 +19521,10 @@
                             $root.google.bigtable.v2.Type.Date.encode(message.dateType, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
                         if (message.float32Type != null && Object.hasOwnProperty.call(message, "float32Type"))
                             $root.google.bigtable.v2.Type.Float32.encode(message.float32Type, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
+                        if (message.protoType != null && Object.hasOwnProperty.call(message, "protoType"))
+                            $root.google.bigtable.v2.Type.Proto.encode(message.protoType, writer.uint32(/* id 13, wireType 2 =*/106).fork()).ldelim();
+                        if (message.enumType != null && Object.hasOwnProperty.call(message, "enumType"))
+                            $root.google.bigtable.v2.Type.Enum.encode(message.enumType, writer.uint32(/* id 14, wireType 2 =*/114).fork()).ldelim();
                         return writer;
                     };
     
@@ -19585,6 +19607,14 @@
                                 }
                             case 4: {
                                     message.mapType = $root.google.bigtable.v2.Type.Map.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 13: {
+                                    message.protoType = $root.google.bigtable.v2.Type.Proto.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 14: {
+                                    message.enumType = $root.google.bigtable.v2.Type.Enum.decode(reader, reader.uint32());
                                     break;
                                 }
                             default:
@@ -19741,6 +19771,26 @@
                                     return "mapType." + error;
                             }
                         }
+                        if (message.protoType != null && message.hasOwnProperty("protoType")) {
+                            if (properties.kind === 1)
+                                return "kind: multiple values";
+                            properties.kind = 1;
+                            {
+                                var error = $root.google.bigtable.v2.Type.Proto.verify(message.protoType);
+                                if (error)
+                                    return "protoType." + error;
+                            }
+                        }
+                        if (message.enumType != null && message.hasOwnProperty("enumType")) {
+                            if (properties.kind === 1)
+                                return "kind: multiple values";
+                            properties.kind = 1;
+                            {
+                                var error = $root.google.bigtable.v2.Type.Enum.verify(message.enumType);
+                                if (error)
+                                    return "enumType." + error;
+                            }
+                        }
                         return null;
                     };
     
@@ -19815,6 +19865,16 @@
                             if (typeof object.mapType !== "object")
                                 throw TypeError(".google.bigtable.v2.Type.mapType: object expected");
                             message.mapType = $root.google.bigtable.v2.Type.Map.fromObject(object.mapType);
+                        }
+                        if (object.protoType != null) {
+                            if (typeof object.protoType !== "object")
+                                throw TypeError(".google.bigtable.v2.Type.protoType: object expected");
+                            message.protoType = $root.google.bigtable.v2.Type.Proto.fromObject(object.protoType);
+                        }
+                        if (object.enumType != null) {
+                            if (typeof object.enumType !== "object")
+                                throw TypeError(".google.bigtable.v2.Type.enumType: object expected");
+                            message.enumType = $root.google.bigtable.v2.Type.Enum.fromObject(object.enumType);
                         }
                         return message;
                     };
@@ -19891,6 +19951,16 @@
                             object.float32Type = $root.google.bigtable.v2.Type.Float32.toObject(message.float32Type, options);
                             if (options.oneofs)
                                 object.kind = "float32Type";
+                        }
+                        if (message.protoType != null && message.hasOwnProperty("protoType")) {
+                            object.protoType = $root.google.bigtable.v2.Type.Proto.toObject(message.protoType, options);
+                            if (options.oneofs)
+                                object.kind = "protoType";
+                        }
+                        if (message.enumType != null && message.hasOwnProperty("enumType")) {
+                            object.enumType = $root.google.bigtable.v2.Type.Enum.toObject(message.enumType, options);
+                            if (options.oneofs)
+                                object.kind = "enumType";
                         }
                         return object;
                     };
@@ -23357,6 +23427,464 @@
                         })();
     
                         return Struct;
+                    })();
+    
+                    Type.Proto = (function() {
+    
+                        /**
+                         * Properties of a Proto.
+                         * @memberof google.bigtable.v2.Type
+                         * @interface IProto
+                         * @property {string|null} [schemaBundleId] Proto schemaBundleId
+                         * @property {string|null} [messageName] Proto messageName
+                         */
+    
+                        /**
+                         * Constructs a new Proto.
+                         * @memberof google.bigtable.v2.Type
+                         * @classdesc Represents a Proto.
+                         * @implements IProto
+                         * @constructor
+                         * @param {google.bigtable.v2.Type.IProto=} [properties] Properties to set
+                         */
+                        function Proto(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * Proto schemaBundleId.
+                         * @member {string} schemaBundleId
+                         * @memberof google.bigtable.v2.Type.Proto
+                         * @instance
+                         */
+                        Proto.prototype.schemaBundleId = "";
+    
+                        /**
+                         * Proto messageName.
+                         * @member {string} messageName
+                         * @memberof google.bigtable.v2.Type.Proto
+                         * @instance
+                         */
+                        Proto.prototype.messageName = "";
+    
+                        /**
+                         * Creates a new Proto instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.v2.Type.Proto
+                         * @static
+                         * @param {google.bigtable.v2.Type.IProto=} [properties] Properties to set
+                         * @returns {google.bigtable.v2.Type.Proto} Proto instance
+                         */
+                        Proto.create = function create(properties) {
+                            return new Proto(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified Proto message. Does not implicitly {@link google.bigtable.v2.Type.Proto.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.v2.Type.Proto
+                         * @static
+                         * @param {google.bigtable.v2.Type.IProto} message Proto message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Proto.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.schemaBundleId != null && Object.hasOwnProperty.call(message, "schemaBundleId"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.schemaBundleId);
+                            if (message.messageName != null && Object.hasOwnProperty.call(message, "messageName"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.messageName);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified Proto message, length delimited. Does not implicitly {@link google.bigtable.v2.Type.Proto.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.v2.Type.Proto
+                         * @static
+                         * @param {google.bigtable.v2.Type.IProto} message Proto message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Proto.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a Proto message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.v2.Type.Proto
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.v2.Type.Proto} Proto
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Proto.decode = function decode(reader, length, error) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.Type.Proto();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                if (tag === error)
+                                    break;
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.schemaBundleId = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.messageName = reader.string();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a Proto message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.v2.Type.Proto
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.v2.Type.Proto} Proto
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Proto.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a Proto message.
+                         * @function verify
+                         * @memberof google.bigtable.v2.Type.Proto
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        Proto.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.schemaBundleId != null && message.hasOwnProperty("schemaBundleId"))
+                                if (!$util.isString(message.schemaBundleId))
+                                    return "schemaBundleId: string expected";
+                            if (message.messageName != null && message.hasOwnProperty("messageName"))
+                                if (!$util.isString(message.messageName))
+                                    return "messageName: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a Proto message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.v2.Type.Proto
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.v2.Type.Proto} Proto
+                         */
+                        Proto.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.v2.Type.Proto)
+                                return object;
+                            var message = new $root.google.bigtable.v2.Type.Proto();
+                            if (object.schemaBundleId != null)
+                                message.schemaBundleId = String(object.schemaBundleId);
+                            if (object.messageName != null)
+                                message.messageName = String(object.messageName);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a Proto message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.v2.Type.Proto
+                         * @static
+                         * @param {google.bigtable.v2.Type.Proto} message Proto
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        Proto.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.schemaBundleId = "";
+                                object.messageName = "";
+                            }
+                            if (message.schemaBundleId != null && message.hasOwnProperty("schemaBundleId"))
+                                object.schemaBundleId = message.schemaBundleId;
+                            if (message.messageName != null && message.hasOwnProperty("messageName"))
+                                object.messageName = message.messageName;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this Proto to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.v2.Type.Proto
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        Proto.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for Proto
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.v2.Type.Proto
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        Proto.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.v2.Type.Proto";
+                        };
+    
+                        return Proto;
+                    })();
+    
+                    Type.Enum = (function() {
+    
+                        /**
+                         * Properties of an Enum.
+                         * @memberof google.bigtable.v2.Type
+                         * @interface IEnum
+                         * @property {string|null} [schemaBundleId] Enum schemaBundleId
+                         * @property {string|null} [enumName] Enum enumName
+                         */
+    
+                        /**
+                         * Constructs a new Enum.
+                         * @memberof google.bigtable.v2.Type
+                         * @classdesc Represents an Enum.
+                         * @implements IEnum
+                         * @constructor
+                         * @param {google.bigtable.v2.Type.IEnum=} [properties] Properties to set
+                         */
+                        function Enum(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * Enum schemaBundleId.
+                         * @member {string} schemaBundleId
+                         * @memberof google.bigtable.v2.Type.Enum
+                         * @instance
+                         */
+                        Enum.prototype.schemaBundleId = "";
+    
+                        /**
+                         * Enum enumName.
+                         * @member {string} enumName
+                         * @memberof google.bigtable.v2.Type.Enum
+                         * @instance
+                         */
+                        Enum.prototype.enumName = "";
+    
+                        /**
+                         * Creates a new Enum instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.v2.Type.Enum
+                         * @static
+                         * @param {google.bigtable.v2.Type.IEnum=} [properties] Properties to set
+                         * @returns {google.bigtable.v2.Type.Enum} Enum instance
+                         */
+                        Enum.create = function create(properties) {
+                            return new Enum(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified Enum message. Does not implicitly {@link google.bigtable.v2.Type.Enum.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.v2.Type.Enum
+                         * @static
+                         * @param {google.bigtable.v2.Type.IEnum} message Enum message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Enum.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.schemaBundleId != null && Object.hasOwnProperty.call(message, "schemaBundleId"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.schemaBundleId);
+                            if (message.enumName != null && Object.hasOwnProperty.call(message, "enumName"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.enumName);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified Enum message, length delimited. Does not implicitly {@link google.bigtable.v2.Type.Enum.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.v2.Type.Enum
+                         * @static
+                         * @param {google.bigtable.v2.Type.IEnum} message Enum message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Enum.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an Enum message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.v2.Type.Enum
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.v2.Type.Enum} Enum
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Enum.decode = function decode(reader, length, error) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.Type.Enum();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                if (tag === error)
+                                    break;
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.schemaBundleId = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.enumName = reader.string();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an Enum message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.v2.Type.Enum
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.v2.Type.Enum} Enum
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Enum.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an Enum message.
+                         * @function verify
+                         * @memberof google.bigtable.v2.Type.Enum
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        Enum.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.schemaBundleId != null && message.hasOwnProperty("schemaBundleId"))
+                                if (!$util.isString(message.schemaBundleId))
+                                    return "schemaBundleId: string expected";
+                            if (message.enumName != null && message.hasOwnProperty("enumName"))
+                                if (!$util.isString(message.enumName))
+                                    return "enumName: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an Enum message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.v2.Type.Enum
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.v2.Type.Enum} Enum
+                         */
+                        Enum.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.v2.Type.Enum)
+                                return object;
+                            var message = new $root.google.bigtable.v2.Type.Enum();
+                            if (object.schemaBundleId != null)
+                                message.schemaBundleId = String(object.schemaBundleId);
+                            if (object.enumName != null)
+                                message.enumName = String(object.enumName);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an Enum message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.v2.Type.Enum
+                         * @static
+                         * @param {google.bigtable.v2.Type.Enum} message Enum
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        Enum.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.schemaBundleId = "";
+                                object.enumName = "";
+                            }
+                            if (message.schemaBundleId != null && message.hasOwnProperty("schemaBundleId"))
+                                object.schemaBundleId = message.schemaBundleId;
+                            if (message.enumName != null && message.hasOwnProperty("enumName"))
+                                object.enumName = message.enumName;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this Enum to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.v2.Type.Enum
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        Enum.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for Enum
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.v2.Type.Enum
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        Enum.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.v2.Type.Enum";
+                        };
+    
+                        return Enum;
                     })();
     
                     Type.Array = (function() {

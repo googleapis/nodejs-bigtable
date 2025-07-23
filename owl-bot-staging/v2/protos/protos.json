@@ -1973,7 +1973,9 @@
                         "aggregateType",
                         "structType",
                         "arrayType",
-                        "mapType"
+                        "mapType",
+                        "protoType",
+                        "enumType"
                       ]
                     }
                   },
@@ -2025,6 +2027,14 @@
                     "mapType": {
                       "type": "Map",
                       "id": 4
+                    },
+                    "protoType": {
+                      "type": "Proto",
+                      "id": 13
+                    },
+                    "enumType": {
+                      "type": "Enum",
+                      "id": 14
                     }
                   },
                   "nested": {
@@ -2172,6 +2182,30 @@
                               "id": 2
                             }
                           }
+                        }
+                      }
+                    },
+                    "Proto": {
+                      "fields": {
+                        "schemaBundleId": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "messageName": {
+                          "type": "string",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "Enum": {
+                      "fields": {
+                        "schemaBundleId": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "enumName": {
+                          "type": "string",
+                          "id": 2
                         }
                       }
                     },
