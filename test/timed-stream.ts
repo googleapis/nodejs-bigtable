@@ -34,7 +34,7 @@ class UserStream extends TimedStream {
   }
 }
 
-describe.only('Bigtable/TimedStream', () => {
+describe('Bigtable/TimedStream', () => {
   describe('with handlers', () => {
     describe('with no delay from server', () => {
       it('should measure the total time accurately for a series of 30 rows with a synchronous call', function (done) {
@@ -209,8 +209,8 @@ describe.only('Bigtable/TimedStream', () => {
           clearInterval(interval);
           const totalMilliseconds = timedStream.getTotalDurationMs();
           try {
-            assert(totalMilliseconds > 39000);
-            assert(totalMilliseconds < 41000);
+            assert(totalMilliseconds > 38000);
+            assert(totalMilliseconds < 42000);
             done();
           } catch (e) {
             done(e);

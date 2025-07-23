@@ -130,7 +130,7 @@ export function createReadStreamInternal(
   let lastRowKey = '';
   let rowsRead = 0;
   const userStream = new TimedStream({
-    transform(event, _encoding, callback) {
+    transformHook(event, _encoding, callback) {
       if (userCanceled) {
         callback();
         return;
