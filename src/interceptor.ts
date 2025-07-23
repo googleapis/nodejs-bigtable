@@ -72,6 +72,14 @@ export function withInterceptors(
     }
     if (!gaxOptions.otherArgs.options.interceptors) {
       gaxOptions.otherArgs.options.interceptors = [interceptor];
+    } else {
+      if (Array.isArray(gaxOptions.otherArgs.options.interceptors)) {
+        // We check that interceptors is an array so that the code has no
+        // chance of throwing an error.
+        // Then, if the interceptors is an array, make sure it also includes the
+        // client side metrics interceptor.
+        gaxOptions.otherArgs.options.interceptors.push(interceptor);
+      }
     }
   }
   return gaxOptions;
