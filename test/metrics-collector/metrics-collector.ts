@@ -26,7 +26,6 @@ import * as path from 'path'; // Import the 'path' module
 import * as gax from 'google-gax';
 import * as proxyquire from 'proxyquire';
 import {GCPMetricsHandler} from '../../src/client-side-metrics/gcp-metrics-handler';
-import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 const protoPath = path.join(
   __dirname,
   '../../protos/google/bigtable/v2/response_params.proto',
@@ -83,13 +82,19 @@ describe('Bigtable/MetricsCollector', () => {
     stubs,
   ).OperationMetricsCollector;
 
-  it('should record the right metrics with a typical method call', async () => {
+  it.only('should record the right metrics with a typical method call', async () => {
     class FakeTable {
       id = 'fakeTableId';
       instance = new FakeInstance();
       bigtable = new FakeBigtable();
 
       async fakeMethod(): Promise<void> {
+        class FakeUserStream {
+          getTotalDurationMs() {
+            return 1256;
+          }
+        }
+        const userStream = new FakeUserStream();
         function createMetadata(duration: string) {
           return {
             internalRepr: new Map([
@@ -120,6 +125,7 @@ describe('Bigtable/MetricsCollector', () => {
             MethodName.READ_ROWS,
             StreamingState.STREAMING,
             [testHandler as unknown as GCPMetricsHandler],
+            userStream,
           );
           // In this method we simulate a series of events that might happen
           // when a user calls one of the Table methods.

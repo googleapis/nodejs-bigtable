@@ -96,6 +96,17 @@ function checkState<T>(
 }
 
 /**
+ * Describes an object that can provide its total duration in milliseconds.
+ */
+export interface ITimeTrackable {
+  /**
+   * Calculates and returns the total duration in milliseconds.
+   * @returns {number} The total duration in milliseconds.
+   */
+  getTotalDurationMs(): number;
+}
+
+/**
  * A class for tracing and recording client-side metrics related to Bigtable operations.
  */
 export class OperationMetricsCollector {
@@ -118,19 +129,21 @@ export class OperationMetricsCollector {
   private applicationLatency: number | null;
   private lastRowReceivedTime: bigint | null;
   private handlers: IMetricsHandler[];
-  public userStream?: NodeJS.ReadableStream;
+  public userStream?: ITimeTrackable;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
    * @param {MethodName} methodName The name of the method being traced.
    * @param {StreamingState} streamingOperation Whether or not the call is a streaming operation.
    * @param {IMetricsHandler[]} handlers The metrics handlers used to store the record the metrics.
+   * @param {ITimeTrackable} userStream The stream containing information about application latencies.
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
     methodName: MethodName,
     streamingOperation: StreamingState,
     handlers: IMetricsHandler[],
+    userStream?: ITimeTrackable,
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
@@ -146,6 +159,7 @@ export class OperationMetricsCollector {
     this.streamingOperation = streamingOperation;
     this.lastRowReceivedTime = null;
     this.applicationLatency = null;
+    this.userStream = userStream;
     this.handlers = handlers;
   }
 
@@ -340,7 +354,9 @@ export class OperationMetricsCollector {
             const currentTime = hrtime.bigint();
             this.applicationLatency =
               (this.applicationLatency ?? 0) +
-              Number((currentTime - this.lastRowReceivedTime) / BigInt(1000000));
+              Number(
+                (currentTime - this.lastRowReceivedTime) / BigInt(1000000),
+              );
           }
           this.lastRowReceivedTime = hrtime.bigint();
         });
