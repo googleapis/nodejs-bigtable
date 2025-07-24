@@ -14,7 +14,7 @@
 
 export const expectedRequestsHandled = [
   {
-    attemptLatency: 4000,
+    attemptLatency: 2000,
     serverLatency: 101,
     connectivityErrorCount: 0,
     streaming: 'true',
@@ -30,7 +30,7 @@ export const expectedRequestsHandled = [
     projectId: 'my-project',
   },
   {
-    attemptLatency: 3000,
+    attemptLatency: 1000,
     serverLatency: 103,
     connectivityErrorCount: 0,
     streaming: 'true',
@@ -57,8 +57,7 @@ export const expectedRequestsHandled = [
     },
     client_name: 'nodejs-bigtable',
     projectId: 'my-project',
-    operationLatency: 10000,
-    applicationLatency: 1256,
+    operationLatency: 6000,
     retryCount: 1,
     firstResponseLatency: 2000,
   },
