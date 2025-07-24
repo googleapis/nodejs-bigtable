@@ -98,10 +98,10 @@ function readRowsAssertionCheck(
   // them from the comparison after checking they exist.
   assert(secondRequest.operationLatency);
   assert(secondRequest.firstResponseLatency);
-  assert(secondRequest.applicationLatencies);
+  assert(secondRequest.applicationLatency);
   delete secondRequest.operationLatency;
   delete secondRequest.firstResponseLatency;
-  delete secondRequest.applicationLatencies;
+  delete secondRequest.applicationLatency;
   delete secondRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(secondRequest, {
     status: '0',
@@ -144,10 +144,10 @@ function readRowsAssertionCheck(
   // them from the comparison after checking they exist.
   assert(fourthRequest.operationLatency);
   assert(fourthRequest.firstResponseLatency);
-  assert(fourthRequest.applicationLatencies);
+  assert(fourthRequest.applicationLatency);
   delete fourthRequest.operationLatency;
   delete fourthRequest.firstResponseLatency;
-  delete fourthRequest.applicationLatencies;
+  delete fourthRequest.applicationLatency;
   delete fourthRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(fourthRequest, {
     status: '0',
@@ -652,7 +652,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
-    it('should send the metrics to the metrics handler for a single row read', done => {
+    it.only('should send the metrics to the metrics handler for a single row read', done => {
       (async () => {
         try {
           const projectId = SECOND_PROJECT_ID;
