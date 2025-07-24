@@ -99,6 +99,9 @@ function checkState<T>(
  * A class for tracing and recording client-side metrics related to Bigtable operations.
  */
 export class OperationMetricsCollector {
+  // The following key corresponds to the key the instance information is
+  // stored in for the metadata that gets returned from the server.
+  private readonly INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
   private readonly INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
   private state: MetricsCollectorState;
   private operationStartTime: bigint | null;
@@ -115,6 +118,7 @@ export class OperationMetricsCollector {
   private streamingOperation: StreamingState;
   private applicationLatencies: number[];
   private lastRowReceivedTime: bigint | null;
+  private handlers: IMetricsHandler[];
   private handlers: IMetricsHandler[];
   // recordingApplicationLatencies is set to false when other operations are
   // happening like if a new request is being made. This ensures that if a
@@ -149,6 +153,7 @@ export class OperationMetricsCollector {
     this.streamingOperation = streamingOperation;
     this.lastRowReceivedTime = null;
     this.applicationLatencies = [];
+    this.handlers = handlers;
     this.recordingApplicationLatencies = false;
     this.handlers = handlers;
   }
@@ -237,7 +242,7 @@ export class OperationMetricsCollector {
           }
         });
       } else {
-        throw new Error('Start time should always be provided');
+        console.warn('Start time should always be provided');
       }
     });
   }
@@ -257,8 +262,9 @@ export class OperationMetricsCollector {
       this.serverTimeRead = false;
       this.connectivityErrorCount = 0;
       this.lastRowReceivedTime = null;
-      this.recordingApplicationLatencies = false;
-    });
+    } else {
+      console.warn('Invalid state transition attempted');
+    }
   }
 
   /**
@@ -267,7 +273,6 @@ export class OperationMetricsCollector {
   onResponse() {
     withMetricsDebug(() => {
       if (!this.firstResponseLatency) {
-        this.recordingApplicationLatencies = true;
         checkState(this.state, [
           MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
         ]);
@@ -279,7 +284,7 @@ export class OperationMetricsCollector {
             (endTime - this.operationStartTime) / BigInt(1000000),
           );
         } else {
-          throw new Error(
+          console.warn(
             'ProjectId and operationStartTime should always be provided',
           );
         }

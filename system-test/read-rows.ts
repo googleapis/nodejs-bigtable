@@ -27,6 +27,9 @@ import {ServiceError, GrpcClient, GoogleError, CallOptions} from 'google-gax';
 import {PassThrough} from 'stream';
 import * as proxyquire from 'proxyquire';
 import {TabularApiSurface} from '../src/tabular-api-surface';
+import * as mocha from 'mocha';
+import * as proxyquire from 'proxyquire';
+import {TabularApiSurface} from '../src/tabular-api-surface';
 import {Row} from '../src';
 
 const {grpc} = new GrpcClient();
@@ -152,7 +155,6 @@ describe('Bigtable/Table', () => {
   });
 
   describe('createReadStream', () => {
-    let clock: sinon.SinonFakeTimers;
     let endCalled: boolean;
     let error: ServiceError | null;
     let requestedOptions: Array<{}>;
@@ -161,18 +163,6 @@ describe('Bigtable/Table', () => {
     let stub: sinon.SinonStub;
 
     beforeEach(() => {
-      clock = sinon.useFakeTimers({
-        toFake: [
-          'setTimeout',
-          'clearTimeout',
-          'setImmediate',
-          'clearImmediate',
-          'setInterval',
-          'clearInterval',
-          'Date',
-          'nextTick',
-        ],
-      });
       endCalled = false;
       error = null;
       responses = null;
@@ -214,36 +204,48 @@ describe('Bigtable/Table', () => {
     });
 
     afterEach(() => {
-      clock.restore();
       stub.restore();
     });
 
     tests.forEach(test => {
-      it(test.name, () => {
+      it(test.name, (done: mocha.Done) => {
         responses = test.responses;
         TABLE.maxRetries = test.max_retries;
         TABLE.createReadStream(test.createReadStream_options)
-          .on('data', (row: Row) =>
+          .on('data', (row: any) =>
             rowKeysRead[rowKeysRead.length - 1].push(row.id),
           )
-          .on('end', () => (endCalled = true))
-          .on('error', (err: ServiceError) => (error = err as ServiceError));
-        clock.runAll();
+          .on('end', () => {
+            endCalled = true;
+            doAssertionChecks();
+          })
+          .on('error', (err: any) => {
+            error = err as ServiceError;
+            doAssertionChecks();
+          });
 
-        if (test.error) {
-          assert(!endCalled, ".on('end') should not have been invoked");
-          assert.strictEqual(error!.code, test.error);
-        } else {
-          assert(endCalled, ".on('end') shoud have been invoked");
-          assert.ifError(error);
+        function doAssertionChecks() {
+          try {
+            if (test.error) {
+              assert(!endCalled, ".on('end') should not have been invoked");
+              assert.strictEqual(error!.code, test.error);
+            } else {
+              assert(endCalled, ".on('end') shoud have been invoked");
+              assert.ifError(error);
+            }
+            assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
+            assert(responses);
+            assert.strictEqual(
+              responses.length,
+              0,
+              'not all the responses were used',
+            );
+            assert.deepStrictEqual(requestedOptions, test.request_options);
+            done();
+          } catch (e) {
+            done(e);
+          }
         }
-        assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
-        assert.strictEqual(
-          responses.length,
-          0,
-          'not all the responses were used',
-        );
-        assert.deepStrictEqual(requestedOptions, test.request_options);
       });
     });
   });

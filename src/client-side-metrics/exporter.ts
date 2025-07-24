@@ -19,11 +19,10 @@ import {
   Histogram,
   ResourceMetrics,
 } from '@opentelemetry/sdk-metrics';
-import {grpc, ClientOptions, ServiceError} from 'google-gax';
+import {ClientOptions, ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
-import {RetryOptions} from 'google-gax';
 
 export interface ExportResult {
   code: number;
@@ -298,6 +297,10 @@ export class CloudMonitoringExporter extends MetricExporter {
 
   constructor(options: ClientOptions) {
     super();
+    if (options && options.apiEndpoint) {
+      // We want the MetricServiceClient to always hit its default endpoint.
+      delete options.apiEndpoint;
+    }
     this.client = new MetricServiceClient(options);
   }
 
@@ -309,13 +312,14 @@ export class CloudMonitoringExporter extends MetricExporter {
       try {
         const projectId = await this.client.getProjectId();
         const request = metricsToRequest(projectId, metrics);
-        await this.client.createTimeSeries(request as ICreateTimeSeriesRequest);
+        await this.client.createServiceTimeSeries(
+          request as ICreateTimeSeriesRequest,
+        );
         // The resultCallback typically accepts a value equal to {code: x}
         // for some value x along with other info. When the code is equal to 0
         // then the operation completed successfully. When the code is not equal
-        // to 0 then the operation failed. Open telemetry logs errors to the
-        // console when the resultCallback passes in non-zero code values and
-        // logs nothing when the code is 0.
+        // to 0 then the operation failed. The resultCallback will not log
+        // anything to the console whether the error code was 0 or not.
         resultCallback({code: 0});
       } catch (error) {
         resultCallback(error as ServiceError);
