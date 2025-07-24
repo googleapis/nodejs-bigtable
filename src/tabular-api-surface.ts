@@ -341,7 +341,33 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       (a, b) => a.concat(b),
       [],
     );
+    const collectMetricsCallback = (
+      originalError: ServiceError | null,
+      err: ServiceError | PartialFailureError | null,
+      apiResponse?: google.protobuf.Empty,
+    ) => {
+      // originalError is the error that was sent from the gapic layer. The
+      // compiler guarantees that it contains a code which needs to be
+      // provided when an operation is marked complete.
+      //
+      // err is the error we intend to send back to the user. Often it is the
+      // same as originalError, but in one case we construct a
+      // PartialFailureError and send that back to the user instead. In this
+      // case, we still need to pass the originalError into the method
+      // because the PartialFailureError doesn't have a code, but we need to
+      // communicate a code to the metrics collector.
+      //
+      const code = originalError ? originalError.code : 0;
+      metricsCollector.onOperationComplete(code);
+      callback(err, apiResponse);
+    };
 
+    const metricsCollector =
+      this.bigtable._metricsConfigManager.createOperation(
+        MethodName.MUTATE_ROWS,
+        StreamingState.STREAMING,
+        this,
+      );
     /*
     The following line of code sets the timeout if it was provided while
     creating the client. This will be used to determine if the client should
@@ -387,7 +413,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const onBatchResponse = (err: ServiceError | null) => {
       // Return if the error happened before a request was made
       if (numRequestsMade === 0) {
-        callback(err);
+        collectMetricsCallback(err, err);
         return;
       }
 
@@ -395,10 +421,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         timeout && timeout < new Date().getTime() - callTimeMillis
       );
       if (isRetryable(err, timeoutExceeded)) {
+        // If the timeout or max retries is exceeded or if there are no
+        // pending indices left then the client doesn't retry.
+        // Otherwise, the client will retry if there is no error or if the
+        // error has a retryable status code.
         const backOffSettings =
           options.gaxOptions?.retry?.backoffSettings ||
           DEFAULT_BACKOFF_SETTINGS;
         const nextDelay = getNextDelay(numRequestsMade, backOffSettings);
+        metricsCollector.onAttemptComplete(err ? err.code : 0);
         setTimeout(makeNextBatchRequest, nextDelay);
         return;
       }
@@ -411,7 +442,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
       if (mutationErrorsByEntryIndex.size !== 0) {
-        callback(new PartialFailureError(mutationErrors, err));
+        collectMetricsCallback(
+          err,
+          new PartialFailureError(mutationErrors, err),
+        );
         return;
       }
       if (err) {
@@ -425,13 +459,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               .filter(index => !mutationErrorsByEntryIndex.has(index))
               .map(() => err),
           );
-        callback(err);
+        collectMetricsCallback(err, err);
         return;
       }
-      callback(err);
+      collectMetricsCallback(null, null);
     };
 
+    metricsCollector.onOperationStart();
     const makeNextBatchRequest = () => {
+      metricsCollector.onAttemptStart();
       const entryBatch = entries.filter((entry: Entry, index: number) => {
         return pendingEntryIndices.has(index);
       });
@@ -469,14 +505,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         options.gaxOptions,
       );
 
-      this.bigtable
-        .request<google.bigtable.v2.MutateRowsResponse>({
+      const requestStream =
+        this.bigtable.request<google.bigtable.v2.MutateRowsResponse>({
           client: 'BigtableClient',
           method: 'mutateRows',
           reqOpts,
           gaxOpts: options.gaxOptions,
           retryOpts,
-        })
+        });
+      metricsCollector.wrapRequest(requestStream);
+      requestStream
         .on('error', (err: ServiceError) => {
           onBatchResponse(err);
         })
