@@ -126,8 +126,6 @@ export class OperationMetricsCollector {
   private serverTime: number | null;
   private connectivityErrorCount: number;
   private streamingOperation: StreamingState;
-  private applicationLatency: number | null;
-  private lastRowReceivedTime: bigint | null;
   private handlers: IMetricsHandler[];
   public userStream?: ITimeTrackable;
 
@@ -157,8 +155,6 @@ export class OperationMetricsCollector {
     this.serverTime = null;
     this.connectivityErrorCount = 0;
     this.streamingOperation = streamingOperation;
-    this.lastRowReceivedTime = null;
-    this.applicationLatency = null;
     this.userStream = userStream;
     this.handlers = handlers;
   }
@@ -209,7 +205,6 @@ export class OperationMetricsCollector {
       checkState(this.state, [MetricsCollectorState.OPERATION_NOT_STARTED]);
       this.operationStartTime = hrtime.bigint();
       this.firstResponseLatency = null;
-      this.applicationLatency = null;
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
     });
@@ -266,7 +261,6 @@ export class OperationMetricsCollector {
       this.serverTime = null;
       this.serverTimeRead = false;
       this.connectivityErrorCount = 0;
-      this.lastRowReceivedTime = null;
     });
   }
 
@@ -291,6 +285,7 @@ export class OperationMetricsCollector {
         const totalMilliseconds = Number(
           (endTime - this.operationStartTime) / BigInt(1000000),
         );
+        const applicationLatency = this.userStream?.getTotalDurationMs() ?? 0;
         {
           this.handlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
@@ -302,7 +297,7 @@ export class OperationMetricsCollector {
                 operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? undefined,
-                applicationLatency: this.applicationLatency ?? undefined,
+                applicationLatency,
               });
             }
           });
@@ -346,21 +341,11 @@ export class OperationMetricsCollector {
     }
   }
 
+  /**
+   * Called when the first response is received. Records first response latencies.
+   */
   onResponse() {
     withMetricsDebug(() => {
-      if (this.userStream && this.userStream.readable) {
-        this.userStream.on('data', () => {
-          if (this.lastRowReceivedTime) {
-            const currentTime = hrtime.bigint();
-            this.applicationLatency =
-              (this.applicationLatency ?? 0) +
-              Number(
-                (currentTime - this.lastRowReceivedTime) / BigInt(1000000),
-              );
-          }
-          this.lastRowReceivedTime = hrtime.bigint();
-        });
-      }
       if (!this.firstResponseLatency) {
         checkState(this.state, [
           MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
