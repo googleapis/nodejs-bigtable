@@ -437,8 +437,8 @@ export const expectedOtelExportConvertedValue = {
           },
           value: {
             distributionValue: {
-              count: '2',
-              mean: 1000,
+              count: '1',
+              mean: 1256,
               bucketOptions: {
                 explicitBuckets: {
                   bounds: [
@@ -478,8 +478,8 @@ export const expectedOtelExportConvertedValue = {
                 '0',
                 '0',
                 '0',
-                '2',
                 '0',
+                '1',
                 '0',
                 '0',
                 '0',
@@ -1136,9 +1136,9 @@ export const expectedOtelExportInput = {
               startTime: [123, 789],
               endTime: [456, 789],
               value: {
-                min: 1000,
-                max: 1000,
-                sum: 2000,
+                min: 1256,
+                max: 1256,
+                sum: 1256,
                 buckets: {
                   boundaries: [
                     0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65,
@@ -1148,11 +1148,11 @@ export const expectedOtelExportInput = {
                   ],
                   counts: [
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0,
                   ],
                 },
-                count: 2,
+                count: 1,
               },
             },
           ],

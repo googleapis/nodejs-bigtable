@@ -115,9 +115,10 @@ export class OperationMetricsCollector {
   private serverTime: number | null;
   private connectivityErrorCount: number;
   private streamingOperation: StreamingState;
-  private applicationLatencies: number[];
+  private applicationLatency: number | null;
   private lastRowReceivedTime: bigint | null;
   private handlers: IMetricsHandler[];
+  public userStream?: NodeJS.ReadableStream;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -144,7 +145,7 @@ export class OperationMetricsCollector {
     this.connectivityErrorCount = 0;
     this.streamingOperation = streamingOperation;
     this.lastRowReceivedTime = null;
-    this.applicationLatencies = [];
+    this.applicationLatency = null;
     this.handlers = handlers;
   }
 
@@ -194,7 +195,7 @@ export class OperationMetricsCollector {
       checkState(this.state, [MetricsCollectorState.OPERATION_NOT_STARTED]);
       this.operationStartTime = hrtime.bigint();
       this.firstResponseLatency = null;
-      this.applicationLatencies = [];
+      this.applicationLatency = null;
       this.state =
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS;
     });
@@ -258,27 +259,6 @@ export class OperationMetricsCollector {
   /**
    * Called when the first response is received. Records first response latencies.
    */
-  onResponse() {
-    withMetricsDebug(() => {
-      if (!this.firstResponseLatency) {
-        checkState(this.state, [
-          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
-        ]);
-        this.state =
-          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
-        const endTime = hrtime.bigint();
-        if (this.operationStartTime) {
-          this.firstResponseLatency = Number(
-            (endTime - this.operationStartTime) / BigInt(1000000),
-          );
-        } else {
-          console.warn(
-            'ProjectId and operationStartTime should always be provided',
-          );
-        }
-      }
-    });
-  }
 
   /**
    * Called when an operation completes (successfully or unsuccessfully).
@@ -308,7 +288,7 @@ export class OperationMetricsCollector {
                 operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? undefined,
-                applicationLatencies: this.applicationLatencies,
+                applicationLatency: this.applicationLatency ?? undefined,
               });
             }
           });
@@ -352,36 +332,37 @@ export class OperationMetricsCollector {
     }
   }
 
-  /**
-   * Called when a row from the Bigtable stream reaches the application user.
-   *
-   * This method is used to calculate the latency experienced by the application
-   * when reading rows from a Bigtable stream. It records the time between the
-   * previous row being received and the current row reaching the user. These
-   * latencies are then collected and reported as `applicationBlockingLatencies`
-   * when the operation completes.
-   */
-  onRowReachesUser() {
-    if (
-      this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
-      this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED ||
-      this.state ===
-        MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
-    ) {
-      const currentTime = hrtime.bigint();
-      if (this.lastRowReceivedTime) {
-        // application latency is measured in total milliseconds.
-        const applicationLatency = Number(
-          (currentTime - this.lastRowReceivedTime) / BigInt(1000000),
-        );
-        this.applicationLatencies.push(applicationLatency);
+  onResponse() {
+    withMetricsDebug(() => {
+      if (this.userStream && this.userStream.readable) {
+        this.userStream.on('data', () => {
+          if (this.lastRowReceivedTime) {
+            const currentTime = hrtime.bigint();
+            this.applicationLatency =
+              (this.applicationLatency ?? 0) +
+              Number((currentTime - this.lastRowReceivedTime) / BigInt(1000000));
+          }
+          this.lastRowReceivedTime = hrtime.bigint();
+        });
       }
-      this.lastRowReceivedTime = currentTime;
-    } else {
-      console.warn('Invalid state transition attempted');
-    }
+      if (!this.firstResponseLatency) {
+        checkState(this.state, [
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
+        ]);
+        this.state =
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED;
+        const endTime = hrtime.bigint();
+        if (this.operationStartTime) {
+          this.firstResponseLatency = Number(
+            (endTime - this.operationStartTime) / BigInt(1000000),
+          );
+        } else {
+          console.warn(
+            'ProjectId and operationStartTime should always be provided',
+          );
+        }
+      }
+    });
   }
 
   /**
