@@ -25,6 +25,7 @@ import {
 import * as gax from 'google-gax';
 import * as protos from '../protos/protos';
 import * as SqlTypes from './execute-query/types';
+import * as os from 'os';
 
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';

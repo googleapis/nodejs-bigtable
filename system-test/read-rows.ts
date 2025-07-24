@@ -28,6 +28,9 @@ import {PassThrough} from 'stream';
 import * as proxyquire from 'proxyquire';
 import {TabularApiSurface} from '../src/tabular-api-surface';
 import * as mocha from 'mocha';
+import * as proxyquire from 'proxyquire';
+import {TabularApiSurface} from '../src/tabular-api-surface';
+import {Row} from '../src';
 
 const {grpc} = new GrpcClient();
 
