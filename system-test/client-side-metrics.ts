@@ -652,7 +652,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
-    it.only('should send the metrics to the metrics handler for a single row read', done => {
+    it('should send the metrics to the metrics handler for a single row read', done => {
       (async () => {
         try {
           const projectId = SECOND_PROJECT_ID;
