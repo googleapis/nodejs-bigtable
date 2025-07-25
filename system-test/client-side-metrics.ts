@@ -48,6 +48,18 @@ class FakeHRTime {
   }
 }
 
+/**
+ * Retrieves a mocked Bigtable client without a metrics handler attached.
+ *
+ * This function is used for testing purposes to create a Bigtable client
+ * with mocked dependencies, allowing for controlled simulation of stream
+ * behavior and time measurements.  It does not include any metrics
+ * handling.
+ *
+ * @param {BigtableOptions} options Options to configure the Bigtable client.
+ * @param {FakeHRTime} hrtime An instance of FakeHRTime to control time.
+ * @returns {Bigtable} A mocked Bigtable client.
+ */
 function getFakeBigtableWithoutHandler(
   options: BigtableOptions,
   hrtime: FakeHRTime,
@@ -156,10 +168,10 @@ function readRowsAssertionCheck(
   // them from the comparison after checking they exist.
   assert(secondRequest.operationLatency);
   assert(secondRequest.firstResponseLatency);
-  assert(secondRequest.applicationLatencies);
+  assert.strictEqual(secondRequest.applicationLatency, 0);
   delete secondRequest.operationLatency;
   delete secondRequest.firstResponseLatency;
-  delete secondRequest.applicationLatencies;
+  delete secondRequest.applicationLatency;
   delete secondRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(secondRequest, {
     status: '0',
@@ -202,10 +214,10 @@ function readRowsAssertionCheck(
   // them from the comparison after checking they exist.
   assert(fourthRequest.operationLatency);
   assert(fourthRequest.firstResponseLatency);
-  assert(fourthRequest.applicationLatencies);
+  assert.strictEqual(fourthRequest.applicationLatency, 0);
   delete fourthRequest.operationLatency;
   delete fourthRequest.firstResponseLatency;
-  delete fourthRequest.applicationLatencies;
+  delete fourthRequest.applicationLatency;
   delete fourthRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(fourthRequest, {
     status: '0',
