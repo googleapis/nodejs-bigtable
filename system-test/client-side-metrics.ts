@@ -33,6 +33,8 @@ import {ClientOptions} from 'google-gax';
 import {PassThrough} from 'stream';
 import {generateChunksFromRequest} from '../test-common/utils/readRowsImpl';
 import {TabularApiSurface} from '../src/tabular-api-surface';
+import {MetricServiceClient} from '@google-cloud/monitoring';
+import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
@@ -85,33 +87,24 @@ function getFakeBigtableWithoutHandler(projectId: string, hrtime: FakeHRTime) {
  * @param projectId
  * @param metricsHandlerClass
  * @param hrtime
+ * @param apiEndpoint
  */
 function getFakeBigtable(
   projectId: string,
   metricsHandlerClass: typeof GCPMetricsHandler | typeof TestMetricsHandler,
   hrtime: FakeHRTime,
+  apiEndpoint?: string,
 ) {
-  const metricHandler = new metricsHandlerClass(
-    {} as unknown as ClientOptions & {value: string},
-  );
-  const FakeOperationsMetricsCollector = proxyquire(
-    '../src/client-side-metrics/operation-metrics-collector.js',
-    {
-      'node:process': {
-        hrtime,
-      },
-    },
-  ).OperationMetricsCollector;
-  const FakeClientSideMetricsConfigManager = proxyquire(
-    '../src/client-side-metrics/metrics-config-manager.js',
-    {
-      './operation-metrics-collector.js': {
-        OperationMetricsCollector: FakeOperationsMetricsCollector,
-      },
-    },
-  ).ClientSideMetricsConfigManager;
+  // Normally the options passed into the client are passed into the metrics
+  // handler so when we mock out the metrics handler, it really should have
+  // the same options that are passed into the client.
+  const options = {
+    projectId,
+    apiEndpoint,
+  };
+  const metricHandler = new metricsHandlerClass(options);
   const newClient = getFakeBigtableWithoutHandler(projectId, hrtime);
-  newClient._metricsConfigManager = new FakeClientSideMetricsConfigManager([
+  newClient._metricsConfigManager = new ClientSideMetricsConfigManager([
     metricHandler,
   ]);
   return newClient;
@@ -123,6 +116,178 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
       CloudMonitoringExporter: Exporter,
     },
   }).GCPMetricsHandler;
+}
+
+function readRowsAssertionCheck(
+  projectId: string,
+  requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
+  method: string,
+  streaming: string,
+) {
+  assert.strictEqual(requestsHandled.length, 4);
+  const firstRequest = requestsHandled[0] as any;
+  // We would expect these parameters to be different every time so delete
+  // them from the comparison after checking they exist.
+  assert(firstRequest.attemptLatency);
+  assert(firstRequest.serverLatency);
+  delete firstRequest.attemptLatency;
+  delete firstRequest.serverLatency;
+  delete firstRequest.metricsCollectorData.appProfileId;
+  assert.deepStrictEqual(firstRequest, {
+    connectivityErrorCount: 0,
+    streaming,
+    status: '0',
+    client_name: 'nodejs-bigtable',
+    metricsCollectorData: {
+      instanceId: 'emulator-test-instance',
+      table: 'my-table',
+      cluster: 'fake-cluster3',
+      zone: 'us-west1-c',
+      method,
+    },
+    projectId,
+  });
+  const secondRequest = requestsHandled[1] as any;
+  // We would expect these parameters to be different every time so delete
+  // them from the comparison after checking they exist.
+  assert(secondRequest.operationLatency);
+  assert(secondRequest.firstResponseLatency);
+  assert(secondRequest.applicationLatencies);
+  delete secondRequest.operationLatency;
+  delete secondRequest.firstResponseLatency;
+  delete secondRequest.applicationLatencies;
+  delete secondRequest.metricsCollectorData.appProfileId;
+  assert.deepStrictEqual(secondRequest, {
+    status: '0',
+    streaming,
+    client_name: 'nodejs-bigtable',
+    metricsCollectorData: {
+      instanceId: 'emulator-test-instance',
+      cluster: 'fake-cluster3',
+      zone: 'us-west1-c',
+      method,
+      table: 'my-table',
+    },
+    projectId,
+    retryCount: 0,
+  });
+  // We would expect these parameters to be different every time so delete
+  // them from the comparison after checking they exist.
+  const thirdRequest = requestsHandled[2] as any;
+  assert(thirdRequest.attemptLatency);
+  assert(thirdRequest.serverLatency);
+  delete thirdRequest.attemptLatency;
+  delete thirdRequest.serverLatency;
+  delete thirdRequest.metricsCollectorData.appProfileId;
+  assert.deepStrictEqual(thirdRequest, {
+    connectivityErrorCount: 0,
+    streaming,
+    status: '0',
+    client_name: 'nodejs-bigtable',
+    metricsCollectorData: {
+      instanceId: 'emulator-test-instance',
+      table: 'my-table2',
+      cluster: 'fake-cluster3',
+      zone: 'us-west1-c',
+      method,
+    },
+    projectId,
+  });
+  const fourthRequest = requestsHandled[3] as any;
+  // We would expect these parameters to be different every time so delete
+  // them from the comparison after checking they exist.
+  assert(fourthRequest.operationLatency);
+  assert(fourthRequest.firstResponseLatency);
+  assert(fourthRequest.applicationLatencies);
+  delete fourthRequest.operationLatency;
+  delete fourthRequest.firstResponseLatency;
+  delete fourthRequest.applicationLatencies;
+  delete fourthRequest.metricsCollectorData.appProfileId;
+  assert.deepStrictEqual(fourthRequest, {
+    status: '0',
+    streaming,
+    client_name: 'nodejs-bigtable',
+    metricsCollectorData: {
+      instanceId: 'emulator-test-instance',
+      cluster: 'fake-cluster3',
+      zone: 'us-west1-c',
+      method,
+      table: 'my-table2',
+    },
+    projectId,
+    retryCount: 0,
+  });
+}
+
+function checkMultiRowCall(
+  projectId: string,
+  requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
+) {
+  readRowsAssertionCheck(
+    projectId,
+    requestsHandled,
+    'Bigtable.ReadRows',
+    'true',
+  );
+}
+
+function checkSingleRowCall(
+  projectId: string,
+  requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
+) {
+  readRowsAssertionCheck(
+    projectId,
+    requestsHandled,
+    'Bigtable.ReadRow',
+    'false',
+  );
+}
+
+/**
+ * Checks if metrics have been published to Google Cloud Monitoring.
+ *
+ * This asynchronous function queries Google Cloud Monitoring to verify
+ * that the expected metrics from the Bigtable client library have been
+ * successfully published. It constructs a `MetricServiceClient` to
+ * interact with the Cloud Monitoring API and retrieves time series data
+ * for a predefined set of metrics. The test passes if time series data
+ * is found for each of the specified metrics within a defined time
+ * interval.
+ *
+ * @param {string} projectId The Google Cloud project ID where metrics are
+ *   expected to be published.
+ * @throws {Error} If no time series data is found for any of the specified
+ *   metrics, indicating that the metrics were not successfully published to
+ *   Cloud Monitoring.
+ */
+async function checkForPublishedMetrics(projectId: string) {
+  const monitoringClient = new MetricServiceClient({projectId}); // Correct instantiation
+  const now = Math.floor(Date.now() / 1000);
+  const filters = [
+    'metric.type="bigtable.googleapis.com/client/attempt_latencies"',
+    'metric.type="bigtable.googleapis.com/client/operation_latencies"',
+    'metric.type="bigtable.googleapis.com/client/retry_count"',
+    'metric.type="bigtable.googleapis.com/client/server_latencies"',
+    'metric.type="bigtable.googleapis.com/client/first_response_latencies"',
+  ];
+  for (let i = 0; i < filters.length; i++) {
+    const filter = filters[i];
+    const [series] = await monitoringClient.listTimeSeries({
+      name: `projects/${projectId}`,
+      interval: {
+        endTime: {
+          seconds: now,
+          nanos: 0,
+        },
+        startTime: {
+          seconds: now - 1000 * 60 * 60 * 24,
+          nanos: 0,
+        },
+      },
+      filter,
+    });
+    assert(series.length > 0);
+  }
 }
 
 describe('Bigtable/ClientSideMetrics', () => {
@@ -236,6 +401,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         projectId,
         getHandlerFromExporter(TestExporter),
         new FakeHRTime(),
+        apiEndpoint,
       );
     }
 
