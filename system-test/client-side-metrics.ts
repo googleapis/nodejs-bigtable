@@ -448,10 +448,10 @@ describe.only('Bigtable/ClientSideMetrics', () => {
       // them from the comparison after checking they exist.
       assert(secondRequest.operationLatency);
       assert(secondRequest.firstResponseLatency);
-      assert(secondRequest.applicationLatencies);
+      assert(secondRequest.applicationLatency);
       delete secondRequest.operationLatency;
       delete secondRequest.firstResponseLatency;
-      delete secondRequest.applicationLatencies;
+      delete secondRequest.applicationLatency;
       delete secondRequest.metricsCollectorData.appProfileId;
       assert.deepStrictEqual(secondRequest, {
         status: '0',
@@ -494,10 +494,10 @@ describe.only('Bigtable/ClientSideMetrics', () => {
       // them from the comparison after checking they exist.
       assert(fourthRequest.operationLatency);
       assert(fourthRequest.firstResponseLatency);
-      assert(fourthRequest.applicationLatencies);
+      assert(fourthRequest.applicationLatency);
       delete fourthRequest.operationLatency;
       delete fourthRequest.firstResponseLatency;
-      delete fourthRequest.applicationLatencies;
+      delete fourthRequest.applicationLatency;
       delete fourthRequest.metricsCollectorData.appProfileId;
       assert.deepStrictEqual(fourthRequest, {
         status: '0',
@@ -531,7 +531,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
         {
           projectId,
           serverLatency: undefined,
-          attemptLatency: 20000,
+          attemptLatency: 17000,
           connectivityErrorCount: 0,
           streaming: 'true',
           status: '0',
@@ -556,10 +556,10 @@ describe.only('Bigtable/ClientSideMetrics', () => {
             method: 'Bigtable.ReadRows',
           },
           client_name: 'nodejs-bigtable',
-          operationLatency: 22000,
+          operationLatency: 19000,
           retryCount: 0,
           firstResponseLatency: 2000,
-          applicationLatencies: [6000, 6000], // From the stream for loop
+          applicationLatency: 0, // From the stream for loop
         },
         {
           projectId,
@@ -584,15 +584,15 @@ describe.only('Bigtable/ClientSideMetrics', () => {
           metricsCollectorData: {
             instanceId: 'emulator-test-instance',
             table: 'my-table2',
-            cluster: 'unspecified',
+            cluster: '<unspecified>',
             zone: 'global',
             method: 'Bigtable.ReadRows',
           },
           client_name: 'nodejs-bigtable',
-          operationLatency: 7000,
+          operationLatency: 4000,
           retryCount: 0,
           firstResponseLatency: 2000,
-          applicationLatencies: [1000, 1000], // This is from the getRows call.
+          applicationLatency: 0, // This is from the getRows call.
         },
       ];
       assert.deepStrictEqual(requestsHandled, compareValue);

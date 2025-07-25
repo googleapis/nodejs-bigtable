@@ -134,14 +134,12 @@ export class OperationMetricsCollector {
    * @param {MethodName} methodName The name of the method being traced.
    * @param {StreamingState} streamingOperation Whether or not the call is a streaming operation.
    * @param {IMetricsHandler[]} handlers The metrics handlers used to store the record the metrics.
-   * @param {ITimeTrackable} userStream The stream containing information about application latencies.
    */
   constructor(
     tabularApiSurface: ITabularApiSurface,
     methodName: MethodName,
     streamingOperation: StreamingState,
     handlers: IMetricsHandler[],
-    userStream?: ITimeTrackable,
   ) {
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
@@ -155,7 +153,6 @@ export class OperationMetricsCollector {
     this.serverTime = null;
     this.connectivityErrorCount = 0;
     this.streamingOperation = streamingOperation;
-    this.userStream = userStream;
     this.handlers = handlers;
   }
 
@@ -171,6 +168,16 @@ export class OperationMetricsCollector {
       },
       appProfileId ? {app_profile: appProfileId} : {},
     );
+  }
+
+  /**
+   *
+   * @param {ITimeTrackable} userStream The stream containing information about application latencies.
+   */
+  attachUserStream(userStream: ITimeTrackable) {
+    // TODO: Move this back to the constructor
+    // TODO: Only pass metrics collector parameters back into createReadStreamInternal
+    this.userStream = userStream;
   }
 
   /**

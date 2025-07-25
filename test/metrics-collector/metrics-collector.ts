@@ -125,8 +125,8 @@ describe('Bigtable/MetricsCollector', () => {
             MethodName.READ_ROWS,
             StreamingState.STREAMING,
             [testHandler as unknown as GCPMetricsHandler],
-            userStream,
           );
+          metricsCollector.attachUserStream(userStream);
           // In this method we simulate a series of events that might happen
           // when a user calls one of the Table methods.
           // Here is an example of what might happen in a method call:
