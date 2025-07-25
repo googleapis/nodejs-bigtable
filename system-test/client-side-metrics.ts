@@ -593,7 +593,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           operationLatency: 19000,
           retryCount: 0,
           firstResponseLatency: 2000,
-          applicationLatency: 0, // From the stream for loop
+          applicationLatency: 3, // From the stream for loop
         },
         {
           projectId,
@@ -626,7 +626,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           operationLatency: 4000,
           retryCount: 0,
           firstResponseLatency: 2000,
-          applicationLatency: 0, // This is from the getRows call.
+          applicationLatency: 3, // This is from the getRows call.
         },
       ];
       assert.deepStrictEqual(requestsHandled, compareValue);
