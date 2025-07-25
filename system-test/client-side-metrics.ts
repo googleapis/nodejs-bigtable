@@ -33,7 +33,6 @@ import {ClientOptions} from 'google-gax';
 import {PassThrough} from 'stream';
 import {generateChunksFromRequest} from '../test-common/utils/readRowsImpl';
 import {TabularApiSurface} from '../src/tabular-api-surface';
-import {createReadStreamInternal} from '../src/utils/createReadStreamInternal';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
@@ -443,7 +442,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     /**
      * This method is called to do a bunch of basic assertion checks that are
      * expected to pass when a client makes two getRows calls.
@@ -557,7 +556,7 @@ describe('Bigtable/ClientSideMetrics', () => {
      * @param projectId The projectId the request was made with
      * @param requestsHandled The requests handled by the mock metrics handler
      */
-    function applicationLatenciesChecks(
+    function applicationLatenciesChecksHandlers(
       projectId: string,
       requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
     ) {
@@ -565,7 +564,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         {
           projectId,
           serverLatency: undefined,
-          attemptLatency: 17000,
+          attemptLatency: 23000,
           connectivityErrorCount: 0,
           streaming: 'true',
           status: '0',
@@ -590,10 +589,10 @@ describe('Bigtable/ClientSideMetrics', () => {
             method: 'Bigtable.ReadRows',
           },
           client_name: 'nodejs-bigtable',
-          operationLatency: 19000,
+          operationLatency: 25000,
           retryCount: 0,
           firstResponseLatency: 2000,
-          applicationLatency: 3, // From the stream for loop
+          applicationLatency: 18000, // From the stream for loop
         },
         {
           projectId,
@@ -626,7 +625,90 @@ describe('Bigtable/ClientSideMetrics', () => {
           operationLatency: 4000,
           retryCount: 0,
           firstResponseLatency: 2000,
-          applicationLatency: 3, // This is from the getRows call.
+          applicationLatency: 0, // This is from the getRows call.
+        },
+      ];
+      assert.deepStrictEqual(requestsHandled, compareValue);
+    }
+
+    /**
+     * This method is called to check that the requests handled from the
+     * readRows streaming calls have the right application latencies and other
+     * appropriate metrics.
+     *
+     * @param projectId The projectId the request was made with
+     * @param requestsHandled The requests handled by the mock metrics handler
+     */
+    function applicationLatenciesChecksIterative(
+      projectId: string,
+      requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
+    ) {
+      const compareValue = [
+        {
+          projectId,
+          serverLatency: undefined,
+          attemptLatency: 28000,
+          connectivityErrorCount: 0,
+          streaming: 'true',
+          status: '0',
+          client_name: 'nodejs-bigtable',
+          metricsCollectorData: {
+            instanceId: 'emulator-test-instance',
+            table: 'my-table',
+            cluster: '<unspecified>',
+            zone: 'global',
+            method: 'Bigtable.ReadRows',
+          },
+        },
+        {
+          projectId,
+          status: '0',
+          streaming: 'true',
+          metricsCollectorData: {
+            instanceId: 'emulator-test-instance',
+            table: 'my-table',
+            cluster: '<unspecified>',
+            zone: 'global',
+            method: 'Bigtable.ReadRows',
+          },
+          client_name: 'nodejs-bigtable',
+          operationLatency: 30000,
+          retryCount: 0,
+          firstResponseLatency: 2000,
+          applicationLatency: 16000, // From the stream for loop
+        },
+        {
+          projectId,
+          attemptLatency: 2000,
+          serverLatency: undefined,
+          connectivityErrorCount: 0,
+          streaming: 'true',
+          status: '0',
+          client_name: 'nodejs-bigtable',
+          metricsCollectorData: {
+            instanceId: 'emulator-test-instance',
+            table: 'my-table2',
+            cluster: '<unspecified>',
+            zone: 'global',
+            method: 'Bigtable.ReadRows',
+          },
+        },
+        {
+          projectId,
+          status: '0',
+          streaming: 'true',
+          metricsCollectorData: {
+            instanceId: 'emulator-test-instance',
+            table: 'my-table2',
+            cluster: '<unspecified>',
+            zone: 'global',
+            method: 'Bigtable.ReadRows',
+          },
+          client_name: 'nodejs-bigtable',
+          operationLatency: 4000,
+          retryCount: 0,
+          firstResponseLatency: 2000,
+          applicationLatency: 0, // This is from the getRows call.
         },
       ];
       assert.deepStrictEqual(requestsHandled, compareValue);
@@ -718,7 +800,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           const bigtable = await mockBigtable(
             SECOND_PROJECT_ID,
             done,
-            applicationLatenciesChecks,
+            applicationLatenciesChecksHandlers,
             hrtime,
           );
           const instance = bigtable.instance(instanceId1);
@@ -773,14 +855,14 @@ describe('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
-    it.only('should record the right metrics when iterating through readrows stream', done => {
+    it('should record the right metrics when iterating through readrows stream', done => {
       (async () => {
         try {
           const hrtime = new FakeHRTime();
           const bigtable = await mockBigtable(
             SECOND_PROJECT_ID,
             done,
-            applicationLatenciesChecks,
+            applicationLatenciesChecksIterative,
             hrtime,
           );
           const instance = bigtable.instance(instanceId1);

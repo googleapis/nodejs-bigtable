@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import {PassThrough, TransformCallback, TransformOptions} from 'stream';
+const {hrtime} = require('node:process');
 
 /**
  * This interface is the usual options that can be passed into a Transform plus
@@ -42,11 +43,11 @@ class StreamTimer {
   }
 
   start() {
-    this.startTime = process.hrtime.bigint();
+    this.startTime = hrtime.bigint();
   }
 
   stop() {
-    const endTime = process.hrtime.bigint();
+    const endTime = hrtime.bigint();
     const duration = endTime - this.startTime;
     this.totalDuration += duration;
   }
@@ -62,6 +63,7 @@ export class TimedStream extends PassThrough {
   private transformTimer = new StreamTimer();
   constructor(options?: TimedStreamOptions) {
     // highWaterMark of 1 is needed to respond to each row
+    const myTime = process.hrtime.bigint();
     super({
       ...options,
       objectMode: true,
