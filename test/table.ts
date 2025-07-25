@@ -65,6 +65,7 @@ function createFake(klass: any) {
 }
 
 class FakeMetricsCollector {
+  attachUserStream() {}
   onOperationStart() {}
   onOperationComplete() {}
   onResponse() {}
