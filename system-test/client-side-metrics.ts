@@ -32,6 +32,8 @@ import {
 import {ClientOptions} from 'google-gax';
 import {PassThrough} from 'stream';
 import {generateChunksFromRequest} from '../test-common/utils/readRowsImpl';
+import {TabularApiSurface} from '../src/tabular-api-surface';
+import {createReadStreamInternal} from '../src/utils/createReadStreamInternal';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
@@ -44,6 +46,37 @@ class FakeHRTime {
   }
 }
 
+function getFakeBigtableWithoutHandler(projectId: string, hrtime: FakeHRTime) {
+  const FakeTimedStream = proxyquire('../src/timed-stream.js', {
+    'node:process': {
+      hrtime,
+    },
+  }).TimedStream;
+  const FakeCreateReadStreamInternal = proxyquire(
+    '../src/utils/createReadStreamInternal.js',
+    {
+      '../timed-stream.js': {
+        TimedStream: FakeTimedStream,
+      },
+    },
+  ).createReadStreamInternal;
+  const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
+    './utils/createReadStreamInternal.js': {
+      createReadStreamInternal: FakeCreateReadStreamInternal,
+    },
+  }).TabularApiSurface;
+  const FakeTable: TabularApiSurface = proxyquire('../src/table.js', {
+    './tabular-api-surface.js': {TabularApiSurface: FakeTabularApiSurface},
+  }).Table;
+  const FakeInstance = proxyquire('../src/instance.js', {
+    './table.js': {Table: FakeTable},
+  }).Instance;
+  const FakeBigtable = proxyquire('../src/index.js', {
+    './instance.js': {Instance: FakeInstance},
+  }).Bigtable;
+  return new FakeBigtable({projectId});
+}
+
 /**
  * This method retrieves a bigtable client that sends metrics to the metrics
  * handler class. The client also uses metrics collectors that have
@@ -52,6 +85,7 @@ class FakeHRTime {
  *
  * @param projectId
  * @param metricsHandlerClass
+ * @param hrtime
  */
 function getFakeBigtable(
   projectId: string,
@@ -77,7 +111,7 @@ function getFakeBigtable(
       },
     },
   ).ClientSideMetricsConfigManager;
-  const newClient = new Bigtable({projectId});
+  const newClient = getFakeBigtableWithoutHandler(projectId, hrtime);
   newClient._metricsConfigManager = new FakeClientSideMetricsConfigManager([
     metricHandler,
   ]);
@@ -92,7 +126,7 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
   }).GCPMetricsHandler;
 }
 
-describe.only('Bigtable/ClientSideMetrics', () => {
+describe('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -563,7 +597,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
         },
         {
           projectId,
-          attemptLatency: 5000,
+          attemptLatency: 2000,
           serverLatency: undefined,
           connectivityErrorCount: 0,
           streaming: 'true',
@@ -739,7 +773,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
         throw err;
       });
     });
-    it('should record the right metrics when iterating through readrows stream', done => {
+    it.only('should record the right metrics when iterating through readrows stream', done => {
       (async () => {
         try {
           const hrtime = new FakeHRTime();
