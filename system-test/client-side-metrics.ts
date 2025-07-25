@@ -340,7 +340,7 @@ describe('Bigtable/ClientSideMetrics', () => {
   describe('Bigtable/ClientSideMetricsToGCM', () => {
     // This test suite ensures that for each test all the export calls are
     // successful even when multiple instances and tables are created.
-    async function mockBigtable(projectId: string, done: mocha.Done) {
+    async function mockBigtable(projectId: string, done: mocha.Done, apiEndpoint?: string) {
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
@@ -419,6 +419,32 @@ describe('Bigtable/ClientSideMetrics', () => {
             await table.getRows();
             const table2 = instance.table(tableId2);
             await table2.getRows();
+          }
+        } catch (e) {
+          done(new Error('An error occurred while running the script'));
+          done(e);
+        }
+      })().catch(err => {
+        throw err;
+      });
+    });
+    it('should send the metrics to Google Cloud Monitoring for a custom endpoint', done => {
+      (async () => {
+        try {
+          const bigtable = await mockBigtable(
+            defaultProjectId,
+            done,
+            'bogus-endpoint',
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          try {
+            // This call will fail because we are trying to hit a bogus endpoint.
+            // The idea here is that we just want to record at least one metric
+            // so that the exporter gets executed.
+            await table.getRows();
+          } catch (e: unknown) {
+            // Try blocks just need a catch/finally block.
           }
         } catch (e) {
           done(new Error('An error occurred while running the script'));
