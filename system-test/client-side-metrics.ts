@@ -340,7 +340,11 @@ describe('Bigtable/ClientSideMetrics', () => {
   describe('Bigtable/ClientSideMetricsToGCM', () => {
     // This test suite ensures that for each test all the export calls are
     // successful even when multiple instances and tables are created.
-    async function mockBigtable(projectId: string, done: mocha.Done, apiEndpoint?: string) {
+    async function mockBigtable(
+      projectId: string,
+      done: mocha.Done,
+      apiEndpoint?: string,
+    ) {
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
