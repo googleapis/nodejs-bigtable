@@ -63,7 +63,6 @@ export class TimedStream extends PassThrough {
   private transformTimer = new StreamTimer();
   constructor(options?: TimedStreamOptions) {
     // highWaterMark of 1 is needed to respond to each row
-    const myTime = process.hrtime.bigint();
     super({
       ...options,
       objectMode: true,
