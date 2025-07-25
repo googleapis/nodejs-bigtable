@@ -171,16 +171,6 @@ export class OperationMetricsCollector {
   }
 
   /**
-   *
-   * @param {ITimeTrackable} userStream The stream containing information about application latencies.
-   */
-  attachUserStream(userStream: ITimeTrackable) {
-    // TODO: Move this back to the constructor
-    // TODO: Only pass metrics collector parameters back into createReadStreamInternal
-    this.userStream = userStream;
-  }
-
-  /**
    * Called to add handlers to the stream so that we can observe
    * header and trailer data for client side metrics.
    *
@@ -300,8 +290,12 @@ export class OperationMetricsCollector {
    * Called when an operation completes (successfully or unsuccessfully).
    * Records operation latencies, retry counts, and connectivity error counts.
    * @param {grpc.status} finalOperationStatus Information about the completed operation.
+   * @param {number} applicationLatency The application latency measurement.
    */
-  onOperationComplete(finalOperationStatus: grpc.status) {
+  onOperationComplete(
+    finalOperationStatus: grpc.status,
+    applicationLatency: number,
+  ) {
     this.onAttemptComplete(finalOperationStatus);
     withMetricsDebug(() => {
       checkState(this.state, [
@@ -313,7 +307,6 @@ export class OperationMetricsCollector {
         const totalMilliseconds = Number(
           (endTime - this.operationStartTime) / BigInt(1000000),
         );
-        const applicationLatency = this.userStream?.getTotalDurationMs() ?? 0;
         {
           this.handlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {

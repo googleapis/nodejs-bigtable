@@ -126,7 +126,6 @@ describe('Bigtable/MetricsCollector', () => {
             StreamingState.STREAMING,
             [testHandler as unknown as GCPMetricsHandler],
           );
-          metricsCollector.attachUserStream(userStream);
           // In this method we simulate a series of events that might happen
           // when a user calls one of the Table methods.
           // Here is an example of what might happen in a method call:
@@ -164,7 +163,10 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '18. User receives fourth row.\n';
           logger.value += '19. User reads row 1\n';
           logger.value += '20. Stream ends, operation completes\n';
-          metricsCollector.onOperationComplete(grpc.status.OK);
+          metricsCollector.onOperationComplete(
+            grpc.status.OK,
+            userStream.getTotalDurationMs(),
+          );
         }
       }
     }

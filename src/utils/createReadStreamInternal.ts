@@ -169,7 +169,6 @@ export function createReadStreamInternal(
       callback(null, row);
     },
   });
-  metricsCollector.attachUserStream(userStream);
 
   // The caller should be able to call userStream.end() to stop receiving
   // more rows and cancel the stream prematurely. But also, the 'end' event
@@ -372,7 +371,10 @@ export function createReadStreamInternal(
           // We ignore the `cancelled` "error", since we are the ones who cause
           // it when the user calls `.abort()`.
           userStream.end();
-          metricsCollector.onOperationComplete(error.code);
+          metricsCollector.onOperationComplete(
+            error.code,
+            userStream.getTotalDurationMs(),
+          );
           return;
         }
         numConsecutiveErrors++;
@@ -404,7 +406,10 @@ export function createReadStreamInternal(
             //
             error.code = grpc.status.CANCELLED;
           }
-          metricsCollector.onOperationComplete(error.code);
+          metricsCollector.onOperationComplete(
+            error.code,
+            userStream.getTotalDurationMs(),
+          );
           userStream.emit('error', error);
         }
       })
@@ -416,7 +421,11 @@ export function createReadStreamInternal(
       })
       .on('end', () => {
         activeRequestStream = null;
-        metricsCollector.onOperationComplete(grpc.status.OK);
+        const applicationLatency = userStream.getTotalDurationMs();
+        metricsCollector.onOperationComplete(
+          grpc.status.OK,
+          userStream.getTotalDurationMs(),
+        );
       });
     rowStreamPipe(rowStream, userStream);
   };
