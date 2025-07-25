@@ -21,7 +21,7 @@ import {GoogleError} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
-import {ReadRowsImpl} from './utils/readRowsImpl';
+import {ReadRowsImpl} from '../test-common/utils/readRowsImpl';
 
 import {
   ReadRowsServiceParameters,
