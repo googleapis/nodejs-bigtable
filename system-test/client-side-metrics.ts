@@ -22,7 +22,7 @@ import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 import * as proxyquire from 'proxyquire';
-import {Bigtable, BigtableOptions} from '../src';
+import {Bigtable, BigtableOptions, Row} from '../src';
 import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {
@@ -992,6 +992,30 @@ describe.only('Bigtable/ClientSideMetrics', () => {
           await table.getRows();
           const table2 = instance.table(tableId2);
           await table2.getRows();
+        } catch (e) {
+          done(e);
+        }
+      })().catch(err => {
+        throw err;
+      });
+    });
+    it('should send the metrics to the metrics handler for a single row read', done => {
+      (async () => {
+        try {
+          const projectId = SECOND_PROJECT_ID;
+          const bigtable = await mockBigtable(
+            projectId,
+            done,
+            checkSingleRowCall,
+            new FakeHRTime(),
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          const row = new Row(table, 'rowId');
+          await row.get();
+          const table2 = instance.table(tableId2);
+          const row2 = new Row(table2, 'rowId');
+          await row2.get();
         } catch (e) {
           done(e);
         }
