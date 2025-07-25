@@ -340,7 +340,11 @@ describe('Bigtable/ClientSideMetrics', () => {
   describe('Bigtable/ClientSideMetricsToGCM', () => {
     // This test suite ensures that for each test all the export calls are
     // successful even when multiple instances and tables are created.
-    async function mockBigtable(projectId: string, done: mocha.Done, apiEndpoint?: string) {
+    async function mockBigtable(
+      projectId: string,
+      done: mocha.Done,
+      apiEndpoint?: string,
+    ) {
       /*
       The exporter is called every x seconds, but we only want to test the value
       it receives once. Since done cannot be called multiple times in mocha,
@@ -381,7 +385,14 @@ describe('Bigtable/ClientSideMetrics', () => {
                   // result from calling export was successful.
                   assert.strictEqual(result.code, 0);
                   resultCallback({code: 0});
-                  done();
+                  void checkForPublishedMetrics(projectId)
+                    .then(() => {
+                      done();
+                    })
+                    .catch(err => {
+                      done(new Error('Metrics have not been published'));
+                      done(err);
+                    });
                 } catch (error) {
                   // The code here isn't 0 so we report the original error to the mocha test runner.
                   done(result);
@@ -499,7 +510,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           resultCallback: (result: ExportResult) => void,
         ): Promise<void> {
           try {
-            await super.export(metrics, (result: ExportResult) => {
+            await super.export(metrics, async (result: ExportResult) => {
               try {
                 // The code is expected to be 0 because the
                 // result from calling export was successful.
