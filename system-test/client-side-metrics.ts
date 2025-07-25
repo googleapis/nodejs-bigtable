@@ -419,7 +419,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
       );
     }
 
-    it.only('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
+    it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
       (async () => {
         try {
           const bigtable = await mockBigtable(defaultProjectId, done);
