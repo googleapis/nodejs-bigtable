@@ -22,7 +22,8 @@ import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 import * as proxyquire from 'proxyquire';
-import {Bigtable, BigtableOptions, Row} from '../src';
+import {Bigtable, BigtableOptions} from '../src';
+import {Row} from '../src/row';
 import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {
@@ -293,7 +294,7 @@ async function checkForPublishedMetrics(projectId: string) {
   }
 }
 
-describe.only('Bigtable/ClientSideMetrics', () => {
+describe('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -648,7 +649,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     /**
      * This method is called to do a bunch of basic assertion checks that are
      * expected to pass when a client makes two getRows calls.
