@@ -22,7 +22,7 @@ import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 import * as proxyquire from 'proxyquire';
-import {Bigtable} from '../src';
+import {Bigtable, BigtableOptions} from '../src';
 import {setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {
@@ -47,7 +47,10 @@ class FakeHRTime {
   }
 }
 
-function getFakeBigtableWithoutHandler(projectId: string, hrtime: FakeHRTime) {
+function getFakeBigtableWithoutHandler(
+  options: BigtableOptions,
+  hrtime: FakeHRTime,
+) {
   const FakeTimedStream = proxyquire('../src/timed-stream.js', {
     'node:process': {
       hrtime,
@@ -75,7 +78,7 @@ function getFakeBigtableWithoutHandler(projectId: string, hrtime: FakeHRTime) {
   const FakeBigtable = proxyquire('../src/index.js', {
     './instance.js': {Instance: FakeInstance},
   }).Bigtable;
-  return new FakeBigtable({projectId});
+  return new FakeBigtable(options);
 }
 
 /**
@@ -103,7 +106,7 @@ function getFakeBigtable(
     apiEndpoint,
   };
   const metricHandler = new metricsHandlerClass(options);
-  const newClient = getFakeBigtableWithoutHandler(projectId, hrtime);
+  const newClient = getFakeBigtableWithoutHandler(options, hrtime);
   newClient._metricsConfigManager = new ClientSideMetricsConfigManager([
     metricHandler,
   ]);
@@ -290,7 +293,7 @@ async function checkForPublishedMetrics(projectId: string) {
   }
 }
 
-describe('Bigtable/ClientSideMetrics', () => {
+describe.only('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -416,7 +419,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       );
     }
 
-    it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
+    it.only('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
       (async () => {
         try {
           const bigtable = await mockBigtable(defaultProjectId, done);
