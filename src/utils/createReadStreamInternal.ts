@@ -169,6 +169,7 @@ export function createReadStreamInternal(
       callback(null, row);
     },
   });
+  metricsCollector.attachUserStream(userStream);
 
   // The caller should be able to call userStream.end() to stop receiving
   // more rows and cancel the stream prematurely. But also, the 'end' event

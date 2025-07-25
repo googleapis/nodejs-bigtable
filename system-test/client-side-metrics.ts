@@ -539,7 +539,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
           metricsCollectorData: {
             instanceId: 'emulator-test-instance',
             table: 'my-table',
-            cluster: 'unspecified',
+            cluster: '<unspecified>',
             zone: 'global',
             method: 'Bigtable.ReadRows',
           },
@@ -551,7 +551,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
           metricsCollectorData: {
             instanceId: 'emulator-test-instance',
             table: 'my-table',
-            cluster: 'unspecified',
+            cluster: '<unspecified>',
             zone: 'global',
             method: 'Bigtable.ReadRows',
           },
@@ -572,7 +572,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
           metricsCollectorData: {
             instanceId: 'emulator-test-instance',
             table: 'my-table2',
-            cluster: 'unspecified',
+            cluster: '<unspecified>',
             zone: 'global',
             method: 'Bigtable.ReadRows',
           },
