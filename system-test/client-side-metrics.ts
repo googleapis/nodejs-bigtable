@@ -111,6 +111,22 @@ function getFakeBigtable(
   hrtime: FakeHRTime,
   apiEndpoint?: string,
 ) {
+  const FakeOperationsMetricsCollector = proxyquire(
+    '../src/client-side-metrics/operation-metrics-collector.js',
+    {
+      'node:process': {
+        hrtime,
+      },
+    },
+  ).OperationMetricsCollector;
+  const FakeClientSideMetricsConfigManager = proxyquire(
+    '../src/client-side-metrics/metrics-config-manager.js',
+    {
+      './operation-metrics-collector.js': {
+        OperationMetricsCollector: FakeOperationsMetricsCollector,
+      },
+    },
+  ).ClientSideMetricsConfigManager;
   // Normally the options passed into the client are passed into the metrics
   // handler so when we mock out the metrics handler, it really should have
   // the same options that are passed into the client.
@@ -120,7 +136,7 @@ function getFakeBigtable(
   };
   const metricHandler = new metricsHandlerClass(options);
   const newClient = getFakeBigtableWithoutHandler(options, hrtime);
-  newClient._metricsConfigManager = new ClientSideMetricsConfigManager([
+  newClient._metricsConfigManager = new FakeClientSideMetricsConfigManager([
     metricHandler,
   ]);
   return newClient;
@@ -306,7 +322,7 @@ async function checkForPublishedMetrics(projectId: string) {
   }
 }
 
-describe('Bigtable/ClientSideMetrics', () => {
+describe.only('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -661,7 +677,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     /**
      * This method is called to do a bunch of basic assertion checks that are
      * expected to pass when a client makes two getRows calls.
