@@ -28,6 +28,11 @@ type TimedStreamOptions = TransformOptions & {
   ) => void;
 };
 
+/**
+ * StreamTimer is a utility class for measuring the elapsed time of stream
+ * operations. It provides methods to start and stop the timer, as well as
+ * retrieve the total duration in milliseconds.
+ */
 class StreamTimer {
   private startTime;
   private totalDuration;
@@ -61,7 +66,6 @@ export class TimedStream extends PassThrough {
   private readTimer = new StreamTimer();
   private transformTimer = new StreamTimer();
   constructor(options?: TimedStreamOptions) {
-    // highWaterMark of 1 is needed to respond to each row
     super({
       ...options,
       objectMode: true,
