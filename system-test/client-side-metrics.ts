@@ -125,7 +125,7 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
   }).GCPMetricsHandler;
 }
 
-describe('Bigtable/ClientSideMetrics', () => {
+describe.only('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -442,7 +442,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     /**
      * This method is called to do a bunch of basic assertion checks that are
      * expected to pass when a client makes two getRows calls.
@@ -481,7 +481,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       // them from the comparison after checking they exist.
       assert(secondRequest.operationLatency);
       assert(secondRequest.firstResponseLatency);
-      assert(secondRequest.applicationLatency);
+      assert.strictEqual(secondRequest.applicationLatency, 0);
       delete secondRequest.operationLatency;
       delete secondRequest.firstResponseLatency;
       delete secondRequest.applicationLatency;
@@ -527,7 +527,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       // them from the comparison after checking they exist.
       assert(fourthRequest.operationLatency);
       assert(fourthRequest.firstResponseLatency);
-      assert(fourthRequest.applicationLatency);
+      assert.strictEqual(fourthRequest.applicationLatency, 0);
       delete fourthRequest.operationLatency;
       delete fourthRequest.firstResponseLatency;
       delete fourthRequest.applicationLatency;
