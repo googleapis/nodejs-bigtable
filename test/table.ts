@@ -35,6 +35,9 @@ import {OperationMetricsCollector} from '../src/client-side-metrics/operation-me
 import {SinonSpy} from 'sinon';
 import {TabularApiSurface} from '../src/tabular-api-surface';
 import {GetRowsOptions} from '../src/table';
+import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
+import {IMetricsHandler} from '../src/client-side-metrics/metrics-handler';
+import {OperationMetricsCollector} from '../src/client-side-metrics/operation-metrics-collector';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};

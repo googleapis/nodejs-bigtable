@@ -102,6 +102,7 @@ export class OperationMetricsCollector {
   // The following key corresponds to the key the instance information is
   // stored in for the metadata that gets returned from the server.
   private readonly INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
+  private readonly INSTANCE_INFORMATION_KEY = 'x-goog-ext-425905942-bin';
   private state: MetricsCollectorState;
   private operationStartTime: bigint | null;
   private attemptStartTime: bigint | null;
@@ -118,6 +119,13 @@ export class OperationMetricsCollector {
   private applicationLatencies: number[];
   private lastRowReceivedTime: bigint | null;
   private handlers: IMetricsHandler[];
+  private handlers: IMetricsHandler[];
+  // recordingApplicationLatencies is set to false when other operations are
+  // happening like if a new request is being made. This ensures that if a
+  // bunch of events are queued in the user stream and an error comes in then
+  // we will not continue to add to application latency time when the request
+  // is being sent.
+  private recordingApplicationLatencies: boolean;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
@@ -145,6 +153,8 @@ export class OperationMetricsCollector {
     this.streamingOperation = streamingOperation;
     this.lastRowReceivedTime = null;
     this.applicationLatencies = [];
+    this.handlers = handlers;
+    this.recordingApplicationLatencies = false;
     this.handlers = handlers;
   }
 
@@ -255,7 +265,9 @@ export class OperationMetricsCollector {
       this.serverTimeRead = false;
       this.connectivityErrorCount = 0;
       this.lastRowReceivedTime = null;
-    });
+    } else {
+      console.warn('Invalid state transition attempted');
+    }
   }
 
   /**
@@ -373,15 +385,17 @@ export class OperationMetricsCollector {
       this.state ===
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS
     ) {
-      const currentTime = hrtime.bigint();
-      if (this.lastRowReceivedTime) {
-        // application latency is measured in total milliseconds.
-        const applicationLatency = Number(
-          (currentTime - this.lastRowReceivedTime) / BigInt(1000000),
-        );
-        this.applicationLatencies.push(applicationLatency);
+      if (this.recordingApplicationLatencies) {
+        const currentTime = hrtime.bigint();
+        if (this.lastRowReceivedTime) {
+          // application latency is measured in total milliseconds.
+          const applicationLatency = Number(
+            (currentTime - this.lastRowReceivedTime) / BigInt(1000000),
+          );
+          this.applicationLatencies.push(applicationLatency);
+        }
+        this.lastRowReceivedTime = currentTime;
       }
-      this.lastRowReceivedTime = currentTime;
     } else {
       console.warn('Invalid state transition attempted');
     }

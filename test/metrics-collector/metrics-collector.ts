@@ -30,6 +30,10 @@ import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 const protoPath = path.join(
   __dirname,
   '../../protos/google/bigtable/v2/response_params.proto',
+import {GCPMetricsHandler} from '../../src/client-side-metrics/gcp-metrics-handler';
+const protoPath = path.join(
+  __dirname,
+  '../../protos/google/bigtable/v2/response_params.proto',
 );
 const root = gax.protobuf.loadSync(protoPath);
 const ResponseParams = root.lookupType('ResponseParams');
