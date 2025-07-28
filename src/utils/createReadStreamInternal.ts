@@ -364,7 +364,7 @@ export function createReadStreamInternal(
 
     rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
-    metricsCollector.handleStatusAndMetadata(requestStream);
+    metricsCollector.wrapRequest(requestStream);
     rowStream
       .on('error', (error: ServiceError) => {
         rowStreamUnpipe(rowStream, userStream);
@@ -413,7 +413,6 @@ export function createReadStreamInternal(
         // Reset error count after a successful read so the backoff
         // time won't keep increasing when as stream had multiple errors
         numConsecutiveErrors = 0;
-        metricsCollector.onResponse();
       })
       .on('end', () => {
         activeRequestStream = null;

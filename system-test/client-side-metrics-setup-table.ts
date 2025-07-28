@@ -56,6 +56,19 @@ export async function setupBigtable(
       }
     }
     // Add some data so that a firstResponseLatency is recorded.
+  }
+}
+
+export async function setupBigtableWithInsert(
+  bigtable: Bigtable,
+  columnFamilyId: string,
+  instanceId: string,
+  tableIds: string[],
+) {
+  await setupBigtable(bigtable, columnFamilyId, instanceId, tableIds);
+  const instance = bigtable.instance(instanceId);
+  const tables = tableIds.map(tableId => instance.table(tableId));
+  for (const currentTable of tables) {
     await currentTable.insert([
       {
         key: 'rowId',
