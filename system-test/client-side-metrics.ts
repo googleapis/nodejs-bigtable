@@ -24,7 +24,7 @@ import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler'
 import * as proxyquire from 'proxyquire';
 import {Bigtable} from '../src';
 import {Row} from '../src/row';
-import {setupBigtable} from './client-side-metrics-setup-table';
+import {setupBigtableWithoutInsert as setupBigtable} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {
   OnAttemptCompleteData,
