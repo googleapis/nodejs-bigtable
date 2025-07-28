@@ -390,10 +390,12 @@ describe('Bigtable/ClientSideMetrics', () => {
           try {
             const bigtable = await mockBigtable(defaultProjectId, done);
             for (const instanceId of [instanceId1, instanceId2]) {
-              await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
-                tableId1,
-                tableId2,
-              ]);
+              await setupBigtableWithInsert(
+                bigtable,
+                columnFamilyId,
+                instanceId,
+                [tableId1, tableId2],
+              );
               const instance = bigtable.instance(instanceId);
               const table = instance.table(tableId1);
               await table.getRows();
@@ -441,10 +443,12 @@ describe('Bigtable/ClientSideMetrics', () => {
             const projectId = SECOND_PROJECT_ID;
             const bigtable = await mockBigtable(projectId, done);
             for (const instanceId of [instanceId1, instanceId2]) {
-              await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
-                tableId1,
-                tableId2,
-              ]);
+              await setupBigtableWithInsert(
+                bigtable,
+                columnFamilyId,
+                instanceId,
+                [tableId1, tableId2],
+              );
               const instance = bigtable.instance(instanceId);
               const table = instance.table(tableId1);
               await table.getRows();
@@ -466,10 +470,12 @@ describe('Bigtable/ClientSideMetrics', () => {
           try {
             const bigtable = await mockBigtable(defaultProjectId, done);
             for (const instanceId of [instanceId1, instanceId2]) {
-              await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
-                tableId1,
-                tableId2,
-              ]);
+              await setupBigtableWithInsert(
+                bigtable,
+                columnFamilyId,
+                instanceId,
+                [tableId1, tableId2],
+              );
               const instance = bigtable.instance(instanceId);
               const table = instance.table(tableId1);
               await table.mutate(mutation);
@@ -517,10 +523,12 @@ describe('Bigtable/ClientSideMetrics', () => {
             const projectId = SECOND_PROJECT_ID;
             const bigtable = await mockBigtable(projectId, done);
             for (const instanceId of [instanceId1, instanceId2]) {
-              await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
-                tableId1,
-                tableId2,
-              ]);
+              await setupBigtableWithInsert(
+                bigtable,
+                columnFamilyId,
+                instanceId,
+                [tableId1, tableId2],
+              );
               const instance = bigtable.instance(instanceId);
               const table = instance.table(tableId1);
               await table.mutate(mutation);
@@ -610,10 +618,12 @@ describe('Bigtable/ClientSideMetrics', () => {
             const bigtable2 = await mockBigtable(defaultProjectId, done);
             for (const bigtable of [bigtable1, bigtable2]) {
               for (const instanceId of [instanceId1, instanceId2]) {
-                await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
-                  tableId1,
-                  tableId2,
-                ]);
+                await setupBigtableWithInsert(
+                  bigtable,
+                  columnFamilyId,
+                  instanceId,
+                  [tableId1, tableId2],
+                );
                 const instance = bigtable.instance(instanceId);
                 const table = instance.table(tableId1);
                 await table.getRows();
@@ -668,10 +678,12 @@ describe('Bigtable/ClientSideMetrics', () => {
             }
             for (const bigtable of bigtableList) {
               for (const instanceId of [instanceId1, instanceId2]) {
-                await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
-                  tableId1,
-                  tableId2,
-                ]);
+                await setupBigtableWithInsert(
+                  bigtable,
+                  columnFamilyId,
+                  instanceId,
+                  [tableId1, tableId2],
+                );
                 const instance = bigtable.instance(instanceId);
                 const table = instance.table(tableId1);
                 await table.getRows();
@@ -707,10 +719,12 @@ describe('Bigtable/ClientSideMetrics', () => {
             const bigtable2 = await mockBigtable(defaultProjectId, done);
             for (const bigtable of [bigtable1, bigtable2]) {
               for (const instanceId of [instanceId1, instanceId2]) {
-                await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
-                  tableId1,
-                  tableId2,
-                ]);
+                await setupBigtableWithInsert(
+                  bigtable,
+                  columnFamilyId,
+                  instanceId,
+                  [tableId1, tableId2],
+                );
                 const instance = bigtable.instance(instanceId);
                 const table = instance.table(tableId1);
                 await table.mutate(mutation);
@@ -765,10 +779,12 @@ describe('Bigtable/ClientSideMetrics', () => {
             }
             for (const bigtable of bigtableList) {
               for (const instanceId of [instanceId1, instanceId2]) {
-                await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
-                  tableId1,
-                  tableId2,
-                ]);
+                await setupBigtableWithInsert(
+                  bigtable,
+                  columnFamilyId,
+                  instanceId,
+                  [tableId1, tableId2],
+                );
                 const instance = bigtable.instance(instanceId);
                 const table = instance.table(tableId1);
                 await table.mutate(mutation);
