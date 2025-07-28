@@ -59,7 +59,7 @@ export async function setupBigtableWithoutInsert(
   }
 }
 
-export async function setupBigtable(
+export async function setupBigtableWithInsert(
   bigtable: Bigtable,
   columnFamilyId: string,
   instanceId: string,

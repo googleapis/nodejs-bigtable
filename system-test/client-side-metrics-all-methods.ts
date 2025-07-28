@@ -26,7 +26,7 @@ import {Bigtable} from '../src';
 import {Mutation} from '../src/mutation';
 import {Row} from '../src/row';
 import {
-  setupBigtable,
+  setupBigtableWithInsert,
   setupBigtableWithoutInsert,
 } from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
@@ -275,7 +275,7 @@ describe('Bigtable/ClientSideMetrics', () => {
     // test more easily.
     bigtable._metricsConfigManager = new ClientSideMetricsConfigManager([]);
     for (const instanceId of [instanceId1, instanceId2]) {
-      await setupBigtable(bigtable, columnFamilyId, instanceId, [
+      await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
         tableId1,
         tableId2,
       ]);
@@ -390,7 +390,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           try {
             const bigtable = await mockBigtable(defaultProjectId, done);
             for (const instanceId of [instanceId1, instanceId2]) {
-              await setupBigtable(bigtable, columnFamilyId, instanceId, [
+              await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
                 tableId1,
                 tableId2,
               ]);
@@ -441,7 +441,7 @@ describe('Bigtable/ClientSideMetrics', () => {
             const projectId = SECOND_PROJECT_ID;
             const bigtable = await mockBigtable(projectId, done);
             for (const instanceId of [instanceId1, instanceId2]) {
-              await setupBigtable(bigtable, columnFamilyId, instanceId, [
+              await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
                 tableId1,
                 tableId2,
               ]);
@@ -466,7 +466,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           try {
             const bigtable = await mockBigtable(defaultProjectId, done);
             for (const instanceId of [instanceId1, instanceId2]) {
-              await setupBigtable(bigtable, columnFamilyId, instanceId, [
+              await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
                 tableId1,
                 tableId2,
               ]);
@@ -517,7 +517,7 @@ describe('Bigtable/ClientSideMetrics', () => {
             const projectId = SECOND_PROJECT_ID;
             const bigtable = await mockBigtable(projectId, done);
             for (const instanceId of [instanceId1, instanceId2]) {
-              await setupBigtable(bigtable, columnFamilyId, instanceId, [
+              await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
                 tableId1,
                 tableId2,
               ]);
@@ -610,7 +610,7 @@ describe('Bigtable/ClientSideMetrics', () => {
             const bigtable2 = await mockBigtable(defaultProjectId, done);
             for (const bigtable of [bigtable1, bigtable2]) {
               for (const instanceId of [instanceId1, instanceId2]) {
-                await setupBigtable(bigtable, columnFamilyId, instanceId, [
+                await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
                   tableId1,
                   tableId2,
                 ]);
@@ -668,7 +668,7 @@ describe('Bigtable/ClientSideMetrics', () => {
             }
             for (const bigtable of bigtableList) {
               for (const instanceId of [instanceId1, instanceId2]) {
-                await setupBigtable(bigtable, columnFamilyId, instanceId, [
+                await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
                   tableId1,
                   tableId2,
                 ]);
@@ -707,7 +707,7 @@ describe('Bigtable/ClientSideMetrics', () => {
             const bigtable2 = await mockBigtable(defaultProjectId, done);
             for (const bigtable of [bigtable1, bigtable2]) {
               for (const instanceId of [instanceId1, instanceId2]) {
-                await setupBigtable(bigtable, columnFamilyId, instanceId, [
+                await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
                   tableId1,
                   tableId2,
                 ]);
@@ -765,7 +765,7 @@ describe('Bigtable/ClientSideMetrics', () => {
             }
             for (const bigtable of bigtableList) {
               for (const instanceId of [instanceId1, instanceId2]) {
-                await setupBigtable(bigtable, columnFamilyId, instanceId, [
+                await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
                   tableId1,
                   tableId2,
                 ]);
@@ -827,7 +827,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         done,
         checkFn,
       );
-      await setupBigtable(bigtable, columnFamilyId, instanceId1, [
+      await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId1, [
         tableId1,
         tableId2,
       ]);
