@@ -29,7 +29,6 @@ import {BackoffSettings} from 'google-gax/build/src/gax';
 import {google} from '../protos/protos';
 import {CallOptions, grpc, ServiceError} from 'google-gax';
 import {Transform} from 'stream';
-import * as is from 'is';
 import {GoogleInnerError} from './table';
 import {createReadStreamInternal} from './utils/createReadStreamInternal';
 import {getRowsInternal} from './utils/getRowsInternal';
@@ -37,7 +36,6 @@ import {
   MethodName,
   StreamingState,
 } from './client-side-metrics/client-side-metrics-attributes';
-import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
 import {mutateInternal} from './utils/mutateInternal';
 
 // See protos/google/rpc/code.proto
