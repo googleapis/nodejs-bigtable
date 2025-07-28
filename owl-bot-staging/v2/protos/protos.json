@@ -33,7 +33,7 @@
                         "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readRows",
                         "(google.api.http).additional_bindings.body": "*",
                         "(google.api.routing).routing_parameters.field": "authorized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
+                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}/**",
                         "(google.api.method_signature)": "table_name,app_profile_id"
                       },
                       "parsedOptions": [
@@ -59,7 +59,7 @@
                               },
                               {
                                 "field": "authorized_view_name",
-                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
+                                "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
                               }
                             ]
                           }
@@ -80,7 +80,7 @@
                         "(google.api.http).get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys",
                         "(google.api.http).additional_bindings.get": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:sampleRowKeys",
                         "(google.api.routing).routing_parameters.field": "authorized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
+                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}/**",
                         "(google.api.method_signature)": "table_name,app_profile_id"
                       },
                       "parsedOptions": [
@@ -104,7 +104,7 @@
                               },
                               {
                                 "field": "authorized_view_name",
-                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
+                                "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
                               }
                             ]
                           }
@@ -126,7 +126,7 @@
                         "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:mutateRow",
                         "(google.api.http).additional_bindings.body": "*",
                         "(google.api.routing).routing_parameters.field": "authorized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
+                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}/**",
                         "(google.api.method_signature)": "table_name,row_key,mutations,app_profile_id"
                       },
                       "parsedOptions": [
@@ -152,7 +152,7 @@
                               },
                               {
                                 "field": "authorized_view_name",
-                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
+                                "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
                               }
                             ]
                           }
@@ -175,7 +175,7 @@
                         "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:mutateRows",
                         "(google.api.http).additional_bindings.body": "*",
                         "(google.api.routing).routing_parameters.field": "authorized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
+                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}/**",
                         "(google.api.method_signature)": "table_name,entries,app_profile_id"
                       },
                       "parsedOptions": [
@@ -201,7 +201,7 @@
                               },
                               {
                                 "field": "authorized_view_name",
-                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
+                                "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
                               }
                             ]
                           }
@@ -223,7 +223,7 @@
                         "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:checkAndMutateRow",
                         "(google.api.http).additional_bindings.body": "*",
                         "(google.api.routing).routing_parameters.field": "authorized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
+                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}/**",
                         "(google.api.method_signature)": "table_name,row_key,predicate_filter,true_mutations,false_mutations,app_profile_id"
                       },
                       "parsedOptions": [
@@ -249,7 +249,7 @@
                               },
                               {
                                 "field": "authorized_view_name",
-                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
+                                "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
                               }
                             ]
                           }
@@ -309,7 +309,7 @@
                         "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readModifyWriteRow",
                         "(google.api.http).additional_bindings.body": "*",
                         "(google.api.routing).routing_parameters.field": "authorized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
+                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}/**",
                         "(google.api.method_signature)": "table_name,row_key,rules,app_profile_id"
                       },
                       "parsedOptions": [
@@ -335,7 +335,7 @@
                               },
                               {
                                 "field": "authorized_view_name",
-                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
+                                "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
                               }
                             ]
                           }

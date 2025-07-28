@@ -467,10 +467,10 @@ export class BigtableClient {
     {
       const fieldValue = request.authorizedViewName;
       if (fieldValue !== undefined && fieldValue !== null) {
-        const match = fieldValue.toString().match(RegExp('(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)'));
+        const match = fieldValue.toString().match(RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)(?:/.*)?'));
         if (match) {
-          const parameterValue = match.groups?.['authorized_view_name'] ?? fieldValue;
-          Object.assign(routingParameter, { authorized_view_name: parameterValue });
+          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
+          Object.assign(routingParameter, { table_name: parameterValue });
         }
       }
     }
@@ -623,10 +623,10 @@ export class BigtableClient {
     {
       const fieldValue = request.authorizedViewName;
       if (fieldValue !== undefined && fieldValue !== null) {
-        const match = fieldValue.toString().match(RegExp('(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)'));
+        const match = fieldValue.toString().match(RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)(?:/.*)?'));
         if (match) {
-          const parameterValue = match.groups?.['authorized_view_name'] ?? fieldValue;
-          Object.assign(routingParameter, { authorized_view_name: parameterValue });
+          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
+          Object.assign(routingParameter, { table_name: parameterValue });
         }
       }
     }
@@ -890,10 +890,10 @@ export class BigtableClient {
     {
       const fieldValue = request.authorizedViewName;
       if (fieldValue !== undefined && fieldValue !== null) {
-        const match = fieldValue.toString().match(RegExp('(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)'));
+        const match = fieldValue.toString().match(RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)(?:/.*)?'));
         if (match) {
-          const parameterValue = match.groups?.['authorized_view_name'] ?? fieldValue;
-          Object.assign(routingParameter, { authorized_view_name: parameterValue });
+          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
+          Object.assign(routingParameter, { table_name: parameterValue });
         }
       }
     }
@@ -1157,10 +1157,10 @@ export class BigtableClient {
     {
       const fieldValue = request.authorizedViewName;
       if (fieldValue !== undefined && fieldValue !== null) {
-        const match = fieldValue.toString().match(RegExp('(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)'));
+        const match = fieldValue.toString().match(RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)(?:/.*)?'));
         if (match) {
-          const parameterValue = match.groups?.['authorized_view_name'] ?? fieldValue;
-          Object.assign(routingParameter, { authorized_view_name: parameterValue });
+          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
+          Object.assign(routingParameter, { table_name: parameterValue });
         }
       }
     }
@@ -1240,10 +1240,10 @@ export class BigtableClient {
     {
       const fieldValue = request.authorizedViewName;
       if (fieldValue !== undefined && fieldValue !== null) {
-        const match = fieldValue.toString().match(RegExp('(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)'));
+        const match = fieldValue.toString().match(RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)(?:/.*)?'));
         if (match) {
-          const parameterValue = match.groups?.['authorized_view_name'] ?? fieldValue;
-          Object.assign(routingParameter, { authorized_view_name: parameterValue });
+          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
+          Object.assign(routingParameter, { table_name: parameterValue });
         }
       }
     }
@@ -1324,10 +1324,10 @@ export class BigtableClient {
     {
       const fieldValue = request.authorizedViewName;
       if (fieldValue !== undefined && fieldValue !== null) {
-        const match = fieldValue.toString().match(RegExp('(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)'));
+        const match = fieldValue.toString().match(RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)(?:/.*)?'));
         if (match) {
-          const parameterValue = match.groups?.['authorized_view_name'] ?? fieldValue;
-          Object.assign(routingParameter, { authorized_view_name: parameterValue });
+          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
+          Object.assign(routingParameter, { table_name: parameterValue });
         }
       }
     }
