@@ -65,12 +65,7 @@ export async function setupBigtableWithInsert(
   instanceId: string,
   tableIds: string[],
 ) {
-  await setupBigtable(
-    bigtable,
-    columnFamilyId,
-    instanceId,
-    tableIds,
-  );
+  await setupBigtable(bigtable, columnFamilyId, instanceId, tableIds);
   const instance = bigtable.instance(instanceId);
   const tables = tableIds.map(tableId => instance.table(tableId));
   for (const currentTable of tables) {
