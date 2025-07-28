@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {Bigtable} from '../src';
-export async function setupBigtableWithoutInsert(
+export async function setupBigtable(
   bigtable: Bigtable,
   columnFamilyId: string,
   instanceId: string,
@@ -65,7 +65,7 @@ export async function setupBigtableWithInsert(
   instanceId: string,
   tableIds: string[],
 ) {
-  await setupBigtableWithoutInsert(
+  await setupBigtable(
     bigtable,
     columnFamilyId,
     instanceId,

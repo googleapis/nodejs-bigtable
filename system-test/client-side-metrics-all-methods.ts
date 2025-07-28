@@ -27,7 +27,7 @@ import {Mutation} from '../src/mutation';
 import {Row} from '../src/row';
 import {
   setupBigtableWithInsert,
-  setupBigtableWithoutInsert,
+  setupBigtable,
 } from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {
@@ -857,7 +857,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         done,
         checkFn,
       );
-      await setupBigtableWithoutInsert(bigtable, columnFamilyId, instanceId1, [
+      await setupBigtable(bigtable, columnFamilyId, instanceId1, [
         tableId1,
         tableId2,
       ]);
