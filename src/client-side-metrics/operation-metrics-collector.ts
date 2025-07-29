@@ -19,6 +19,7 @@ import * as gax from 'google-gax';
 import {AbortableDuplex, BigtableOptions} from '../index';
 import * as path from 'path';
 import {IMetricsHandler} from './metrics-handler';
+import {TimedStream} from '../timed-stream';
 
 // When this environment variable is set then print any errors associated
 // with failures in the metrics collector.
@@ -96,17 +97,6 @@ function checkState<T>(
 }
 
 /**
- * Describes an object that can provide its total duration in milliseconds.
- */
-export interface ITimeTrackable {
-  /**
-   * Calculates and returns the total duration in milliseconds.
-   * @returns {number} The total duration in milliseconds.
-   */
-  getTotalDurationMs(): number;
-}
-
-/**
  * A class for tracing and recording client-side metrics related to Bigtable operations.
  */
 export class OperationMetricsCollector {
@@ -127,7 +117,7 @@ export class OperationMetricsCollector {
   private connectivityErrorCount: number;
   private streamingOperation: StreamingState;
   private handlers: IMetricsHandler[];
-  public userStream?: ITimeTrackable;
+  public userStream?: TimedStream;
 
   /**
    * @param {ITabularApiSurface} tabularApiSurface Information about the Bigtable table being accessed.
