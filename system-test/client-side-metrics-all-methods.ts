@@ -203,13 +203,15 @@ function checkSingleRowCall(
   );
 }
 
+const entry = {
+  cf1: {
+    column: 1,
+  },
+};
+
 const mutation = {
   key: 'rowId',
-  data: {
-    cf1: {
-      column: 1,
-    },
-  },
+  data: entry,
   method: Mutation.methods.INSERT,
 };
 
@@ -534,6 +536,91 @@ describe('Bigtable/ClientSideMetrics', () => {
               await table.mutate(mutation);
               const table2 = instance.table(tableId2);
               await table2.mutate(mutation);
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
+    describe.only('MutateRow', () => {
+      it('should send the metrics to Google Cloud Monitoring for a single point MutateRows call', done => {
+        (async () => {
+          try {
+            const bigtable = await mockBigtable(defaultProjectId, done);
+            for (const instanceId of [instanceId1, instanceId2]) {
+              await setupBigtableWithInsert(
+                bigtable,
+                columnFamilyId,
+                instanceId,
+                [tableId1, tableId2],
+              );
+              const instance = bigtable.instance(instanceId);
+              const table = instance.table(tableId1);
+              const row = table.row('gwashington');
+              await row.save(entry);
+              const table2 = instance.table(tableId2);
+              const row2 = table2.row('gwashington');
+              await row2.save(entry);
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a custom endpoint', done => {
+        (async () => {
+          try {
+            const bigtable = await mockBigtable(
+              defaultProjectId,
+              done,
+              'bogus-endpoint',
+            );
+            const instance = bigtable.instance(instanceId1);
+            const table = instance.table(tableId1);
+            try {
+              // This call will fail because we are trying to hit a bogus endpoint.
+              // The idea here is that we just want to record at least one metric
+              // so that the exporter gets executed.
+              const row = table.row('gwashington');
+              await row.save(entry);
+            } catch (e: unknown) {
+              // Try blocks just need a catch/finally block.
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a MutateRow call with a second project and a single point', done => {
+        (async () => {
+          try {
+            // This is the second project the test is configured to work with:
+            const projectId = SECOND_PROJECT_ID;
+            const bigtable = await mockBigtable(projectId, done);
+            for (const instanceId of [instanceId1, instanceId2]) {
+              await setupBigtableWithInsert(
+                bigtable,
+                columnFamilyId,
+                instanceId,
+                [tableId1, tableId2],
+              );
+              const instance = bigtable.instance(instanceId);
+              const table = instance.table(tableId1);
+              const row = table.row('gwashington');
+              await row.save(entry);
+              const table2 = instance.table(tableId2);
+              const row2 = table2.row('gwashington');
+              await row2.save(entry);
             }
           } catch (e) {
             done(new Error('An error occurred while running the script'));
