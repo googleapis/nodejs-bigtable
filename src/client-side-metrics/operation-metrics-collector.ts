@@ -284,7 +284,7 @@ export class OperationMetricsCollector {
    */
   onOperationComplete(
     finalOperationStatus: grpc.status,
-    applicationLatency: number,
+    applicationLatency?: number,
   ) {
     this.onAttemptComplete(finalOperationStatus);
     withMetricsDebug(() => {
