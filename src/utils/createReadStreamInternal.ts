@@ -373,7 +373,7 @@ export function createReadStreamInternal(
           // We ignore the `cancelled` "error", since we are the ones who cause
           // it when the user calls `.abort()`.
           userStream.end();
-          metricsCollector.onOperationComplete(error.code);
+          metricsCollector.onOperationAndAttemptComplete(error.code);
           return;
         }
         numConsecutiveErrors++;
@@ -405,7 +405,7 @@ export function createReadStreamInternal(
             //
             error.code = grpc.status.CANCELLED;
           }
-          metricsCollector.onOperationComplete(error.code);
+          metricsCollector.onOperationAndAttemptComplete(error.code);
           userStream.emit('error', error);
         }
       })
@@ -417,7 +417,7 @@ export function createReadStreamInternal(
       })
       .on('end', () => {
         activeRequestStream = null;
-        metricsCollector.onOperationComplete(grpc.status.OK);
+        metricsCollector.onOperationAndAttemptComplete(grpc.status.OK);
       });
     rowStreamPipe(rowStream, userStream);
   };

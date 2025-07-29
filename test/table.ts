@@ -66,6 +66,7 @@ function createFake(klass: any) {
 
 class FakeMetricsCollector {
   onOperationStart() {}
+  onOperationAndAttemptComplete() {}
   onOperationComplete() {}
   onResponse() {}
   onAttemptStart() {}

@@ -49,10 +49,15 @@ function createMetricsInterceptorProvider(
             collector.onStatusMetadataReceived(
               status as unknown as ServerStatus,
             );
+            collector.onAttemptComplete(status.code);
             nextStat(status);
           },
         };
         next(metadata, newListener);
+      },
+      sendMessage: function (message, next) {
+        collector.onAttemptStart();
+        next(message);
       },
     });
   };

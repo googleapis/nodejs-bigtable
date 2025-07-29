@@ -224,7 +224,6 @@ class RowDataUtils {
       },
       (...args) => {
         const err = args[0];
-        metricsCollector.onAttemptComplete(err ? err.code : 0);
         metricsCollector.onOperationComplete(err ? err.code : 0);
         callback(...args);
       },

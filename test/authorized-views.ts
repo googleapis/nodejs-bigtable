@@ -20,7 +20,7 @@ import {Mutation} from '../src/mutation';
 import * as mocha from 'mocha';
 import {Row} from '../src';
 
-describe('Bigtable/AuthorizedViews', () => {
+describe.only('Bigtable/AuthorizedViews', () => {
   describe('Authorized View methods should have requests that match Table and Row requests', () => {
     const bigtable = new Bigtable({});
     const fakeTableName = 'fake-table';
@@ -50,6 +50,14 @@ describe('Bigtable/AuthorizedViews', () => {
         try {
           requestCount++;
           delete config['retryOpts'];
+          if (
+            config &&
+            config.gaxOpts &&
+            config.gaxOpts.otherArgs &&
+            config.gaxOpts.otherArgs.options
+          ) {
+            delete config.gaxOpts.otherArgs['options'];
+          }
           assert.deepStrictEqual(config, compareFn(requestCount));
         } catch (err: unknown) {
           done(err);

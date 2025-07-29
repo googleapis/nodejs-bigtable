@@ -162,7 +162,7 @@ describe('Bigtable/MetricsCollector', () => {
           metricsCollector.onRowReachesUser();
           logger.value += '19. User reads row 1\n';
           logger.value += '20. Stream ends, operation completes\n';
-          metricsCollector.onOperationComplete(grpc.status.OK);
+          metricsCollector.onOperationAndAttemptComplete(grpc.status.OK);
         }
       }
     }
