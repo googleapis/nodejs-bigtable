@@ -239,6 +239,15 @@ async function checkForPublishedMetrics(projectId: string) {
   }
 }
 
+/**
+ * Pauses execution for a specified number of seconds.
+ * @param {number} seconds The number of seconds to sleep.
+ * @returns {Promise<void>} A promise that resolves after the specified time.
+ */
+function sleep(seconds: number) {
+  return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+}
+
 describe('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
@@ -264,6 +273,8 @@ describe('Bigtable/ClientSideMetrics', () => {
         }
       });
     });
+    // Sleep 10 seconds to make sure the instance has enough time to get created
+    await sleep(10);
   });
 
   after(async () => {

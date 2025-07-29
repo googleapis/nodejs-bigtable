@@ -1537,7 +1537,7 @@ describe('Bigtable', () => {
         // Sleep here for just over a minute so that the system tests don't
         // experience quota issues due to too many requests per minute.
         await new Promise(resolve => {
-          setTimeout(resolve, 60001);
+          setTimeout(resolve, 120001);
         });
       });
       /*
