@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import {PassThrough, TransformCallback, TransformOptions} from 'stream';
+const {hrtime} = require('node:process');
 
 /**
  * This interface is the usual options that can be passed into a Transform plus
@@ -47,11 +48,11 @@ class StreamTimer {
   }
 
   start() {
-    this.startTime = process.hrtime.bigint();
+    this.startTime = hrtime.bigint();
   }
 
   stop() {
-    const endTime = process.hrtime.bigint();
+    const endTime = hrtime.bigint();
     const duration = endTime - this.startTime;
     this.totalDuration += duration;
   }
@@ -69,7 +70,8 @@ export class TimedStream extends PassThrough {
     super({
       ...options,
       objectMode: true,
-      highWaterMark: 0,
+      readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
+      writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
       transform: (event, _encoding, callback) => {
         /* When we iterate through a stream, time spent waiting for the user's
         application is added to totalDurationTransform. When we use handlers,
@@ -83,7 +85,6 @@ export class TimedStream extends PassThrough {
         if (options?.transformHook) {
           options?.transformHook(event, _encoding, callback);
         }
-        callback(null, event);
         this.transformTimer.stop();
       },
     });

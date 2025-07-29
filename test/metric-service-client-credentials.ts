@@ -15,7 +15,6 @@
 import * as proxyquire from 'proxyquire';
 import {ClientOptions, grpc} from 'google-gax';
 import * as assert from 'assert';
-import {setupBigtable} from '../system-test/client-side-metrics-setup-table';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 
 describe('Bigtable/MetricServiceClientCredentials', () => {
