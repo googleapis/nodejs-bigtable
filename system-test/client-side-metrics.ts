@@ -24,7 +24,10 @@ import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler'
 import * as proxyquire from 'proxyquire';
 import {Bigtable, BigtableOptions} from '../src';
 import {Row} from '../src/row';
-import {setupBigtable} from './client-side-metrics-setup-table';
+import {
+  setupBigtable,
+  setupBigtableWithInsert,
+} from './client-side-metrics-setup-table';
 import {TestMetricsHandler} from '../test-common/test-metrics-handler';
 import {
   OnAttemptCompleteData,
@@ -333,7 +336,7 @@ describe('Bigtable/ClientSideMetrics', () => {
   before(async () => {
     const bigtable = new Bigtable();
     for (const instanceId of [instanceId1, instanceId2]) {
-      await setupBigtable(bigtable, columnFamilyId, instanceId, [
+      await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
         tableId1,
         tableId2,
       ]);
