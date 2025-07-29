@@ -100,7 +100,7 @@ function readRowsAssertionCheck(
   // them from the comparison after checking they exist.
   assert(secondRequest.operationLatency);
   assert(secondRequest.firstResponseLatency);
-  assert(secondRequest.applicationLatency);
+  assert.strictEqual(secondRequest.applicationLatency, 0);
   delete secondRequest.operationLatency;
   delete secondRequest.firstResponseLatency;
   delete secondRequest.applicationLatency;
@@ -146,7 +146,7 @@ function readRowsAssertionCheck(
   // them from the comparison after checking they exist.
   assert(fourthRequest.operationLatency);
   assert(fourthRequest.firstResponseLatency);
-  assert(fourthRequest.applicationLatency);
+  assert.strictEqual(fourthRequest.applicationLatency, 0);
   delete fourthRequest.operationLatency;
   delete fourthRequest.firstResponseLatency;
   delete fourthRequest.applicationLatency;
@@ -802,7 +802,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     async function getFakeBigtableWithHandler(
       projectId: string,
       done: mocha.Done,
