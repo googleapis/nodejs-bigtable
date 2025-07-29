@@ -347,6 +347,7 @@ describe.only('Bigtable/AuthorizedViews', () => {
                 method: 'readModifyWriteRow',
                 gaxOpts: {
                   maxRetries: 4,
+                  otherArgs: {},
                 },
                 reqOpts: Object.assign(
                   {
