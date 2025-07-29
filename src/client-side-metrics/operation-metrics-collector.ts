@@ -311,7 +311,7 @@ export class OperationMetricsCollector {
                 operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? undefined,
-                applicationLatency,
+                applicationLatency: applicationLatency ?? 0,
               });
             }
           });
