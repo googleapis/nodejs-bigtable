@@ -287,7 +287,7 @@ async function checkForPublishedMetrics(projectId: string) {
   }
 }
 
-describe.only('Bigtable/ClientSideMetrics', () => {
+describe('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -1173,7 +1173,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
       });
     });
     describe('MutateRows', () => {
-      it.only('should send the metrics to the metrics handler for a MutateRows call', done => {
+      it('should send the metrics to the metrics handler for a MutateRows call', done => {
         (async () => {
           const bigtable = await mockBigtableWithNoInserts(
             defaultProjectId,
