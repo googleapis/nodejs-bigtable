@@ -98,11 +98,15 @@ function readRowsAssertionCheck(
   const secondRequest = requestsHandled[1] as any;
   // We would expect these parameters to be different every time so delete
   // them from the comparison after checking they exist.
+  if (method === 'Bigtable.ReadRows' || method === 'Bigtable.ReadRow') {
+    assert(secondRequest.firstResponseLatency);
+    delete secondRequest.firstResponseLatency;
+  } else {
+    assert(!secondRequest.firstResponseLatency);
+  }
   assert(secondRequest.operationLatency);
-  assert(secondRequest.firstResponseLatency);
   assert.strictEqual(secondRequest.applicationLatency, 0);
   delete secondRequest.operationLatency;
-  delete secondRequest.firstResponseLatency;
   delete secondRequest.applicationLatency;
   delete secondRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(secondRequest, {
@@ -144,11 +148,15 @@ function readRowsAssertionCheck(
   const fourthRequest = requestsHandled[3] as any;
   // We would expect these parameters to be different every time so delete
   // them from the comparison after checking they exist.
+  if (method === 'Bigtable.ReadRows' || method === 'Bigtable.ReadRow') {
+    assert(fourthRequest.firstResponseLatency);
+    delete fourthRequest.firstResponseLatency;
+  } else {
+    assert(!fourthRequest.firstResponseLatency);
+  }
   assert(fourthRequest.operationLatency);
-  assert(fourthRequest.firstResponseLatency);
   assert.strictEqual(fourthRequest.applicationLatency, 0);
   delete fourthRequest.operationLatency;
-  delete fourthRequest.firstResponseLatency;
   delete fourthRequest.applicationLatency;
   delete fourthRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(fourthRequest, {
@@ -199,6 +207,18 @@ function checkSingleRowCall(
     projectId,
     requestsHandled,
     'Bigtable.ReadRow',
+    'false',
+  );
+}
+
+function checkReadModifyWriteRowCall(
+  projectId: string,
+  requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
+) {
+  readRowsAssertionCheck(
+    projectId,
+    requestsHandled,
+    'Bigtable.ReadModifyWriteRow',
     'false',
   );
 }
@@ -471,7 +491,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
-    describe.only('ReadModifyWriteRow', () => {
+    describe('ReadModifyWriteRow', () => {
       it('should send the metrics to Google Cloud Monitoring for a ReadModifyWriteRow call', done => {
         (async () => {
           try {
@@ -792,7 +812,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
-    describe.only('ReadModifyWriteRow', () => {
+    describe('ReadModifyWriteRow', () => {
       it('should send the metrics to Google Cloud Monitoring for a ReadModifyWriteRow call', done => {
         let testFinished = false;
         /*
@@ -1027,26 +1047,6 @@ describe('Bigtable/ClientSideMetrics', () => {
       return getFakeBigtable(projectId, TestGCPMetricsHandler);
     }
 
-    async function mockBigtableWithInserts(
-      projectId: string,
-      done: mocha.Done,
-      checkFn: (
-        projectId: string,
-        requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
-      ) => void,
-    ) {
-      const bigtable = await getFakeBigtableWithHandler(
-        projectId,
-        done,
-        checkFn,
-      );
-      await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId1, [
-        tableId1,
-        tableId2,
-      ]);
-      return bigtable;
-    }
-
     /**
      * Returns a bigtable client with a test metrics handler that will check
      * the metrics it receives and pass/fail the test if we get the right
@@ -1129,6 +1129,44 @@ describe('Bigtable/ClientSideMetrics', () => {
           } catch (e) {
             done(e);
           }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
+    describe.only('ReadModifyWriteRow', () => {
+      it('should send the metrics to the metrics handler for a ReadModifyWriteRow call', done => {
+        (async () => {
+          const bigtable = await mockBigtableWithNoInserts(
+            defaultProjectId,
+            done,
+            checkReadModifyWriteRowCall,
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          const row = table.row(columnFamilyId);
+          await row.createRules(rules);
+          const table2 = instance.table(tableId2);
+          const row2 = table2.row(columnFamilyId);
+          await row2.createRules(rules);
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should pass the projectId to the metrics handler properly', done => {
+        (async () => {
+          const bigtable = await mockBigtableWithNoInserts(
+            defaultProjectId,
+            done,
+            checkReadModifyWriteRowCall,
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          const row = table.row(columnFamilyId);
+          await row.createRules(rules);
+          const table2 = instance.table(tableId2);
+          const row2 = table2.row(columnFamilyId);
+          await row2.createRules(rules);
         })().catch(err => {
           throw err;
         });
