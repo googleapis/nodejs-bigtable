@@ -374,7 +374,10 @@ export function createReadStreamInternal(
           // We ignore the `cancelled` "error", since we are the ones who cause
           // it when the user calls `.abort()`.
           userStream.end();
-          metricsCollector.onOperationAndAttemptComplete(error.code, userStream.getTotalDurationMs());
+          metricsCollector.onOperationAndAttemptComplete(
+            error.code,
+            userStream.getTotalDurationMs(),
+          );
           return;
         }
         numConsecutiveErrors++;

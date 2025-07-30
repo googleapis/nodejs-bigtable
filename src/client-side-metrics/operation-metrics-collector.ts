@@ -181,7 +181,7 @@ export class OperationMetricsCollector {
         }) => {
           this.onStatusMetadataReceived(status);
         },
-      )
+      );
   }
 
   /**
