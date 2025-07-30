@@ -211,7 +211,6 @@ class RowDataUtils {
     );
     // 2. Tell the metrics collector an attempt has been started.
     metricsCollector.onOperationStart();
-    metricsCollector.onAttemptStart();
     // 3. Make a unary call with gax options that include interceptors. The
     // interceptors are built from a method that hooks them up to the
     // metrics collector
