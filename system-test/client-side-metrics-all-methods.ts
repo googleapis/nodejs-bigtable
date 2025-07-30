@@ -287,7 +287,7 @@ async function checkForPublishedMetrics(projectId: string) {
   }
 }
 
-describe('Bigtable/ClientSideMetrics', () => {
+describe.only('Bigtable/ClientSideMetrics', () => {
   const instanceId1 = 'emulator-test-instance';
   const instanceId2 = 'emulator-test-instance2';
   const tableId1 = 'my-table';
@@ -577,7 +577,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
     describe('MutateRows', () => {
-      it('should send the metrics to Google Cloud Monitoring for a MutateRows call', done => {
+      it.only('should send the metrics to Google Cloud Monitoring for a MutateRows call', done => {
         (async () => {
           try {
             const bigtable = await mockBigtable(defaultProjectId, done);
@@ -1134,7 +1134,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
-    describe.only('ReadModifyWriteRow', () => {
+    describe('ReadModifyWriteRow', () => {
       it('should send the metrics to the metrics handler for a ReadModifyWriteRow call', done => {
         (async () => {
           const bigtable = await mockBigtableWithNoInserts(

@@ -181,7 +181,10 @@ export class OperationMetricsCollector {
         }) => {
           this.onStatusMetadataReceived(status);
         },
-      );
+      )
+      .on('data', () => {
+        this.onResponse();
+      });
   }
 
   /**
