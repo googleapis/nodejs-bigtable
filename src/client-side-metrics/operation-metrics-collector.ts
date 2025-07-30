@@ -181,10 +181,7 @@ export class OperationMetricsCollector {
         }) => {
           this.onStatusMetadataReceived(status);
         },
-      )
-      .on('data', () => {
-        this.onResponse();
-      });
+      );
   }
 
   /**
@@ -303,6 +300,14 @@ export class OperationMetricsCollector {
         {
           this.handlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
+              const firstResponseLatencyExpression =
+                this.methodName === MethodName.READ_ROWS ||
+                this.methodName === MethodName.READ_ROW
+                  ? {
+                      firstResponseLatency:
+                        this.firstResponseLatency ?? undefined,
+                    }
+                  : {};
               metricsHandler.onOperationComplete({
                 status: finalOperationStatus.toString(),
                 streaming: this.streamingOperation,
@@ -310,7 +315,8 @@ export class OperationMetricsCollector {
                 client_name: `nodejs-bigtable/${version}`,
                 operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
-                firstResponseLatency: this.firstResponseLatency ?? undefined,
+                // Conditionally add the firstResponseLatency property
+                ...firstResponseLatencyExpression,
                 applicationLatency: applicationLatency ?? 0,
               });
             }

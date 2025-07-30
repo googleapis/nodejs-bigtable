@@ -324,6 +324,9 @@ export function createReadStreamInternal(
       gaxOpts,
       retryOpts,
     });
+    requestStream.on('data', () => {
+      metricsCollector.onResponse();
+    });
 
     activeRequestStream = requestStream!;
 
