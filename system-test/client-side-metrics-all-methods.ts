@@ -215,9 +215,8 @@ const mutation = {
 
 const rules = [
   {
-    column: 'a:b',
+    column: 'cf1:column',
     append: 'c',
-    increment: 1,
   },
 ];
 
@@ -486,10 +485,10 @@ describe('Bigtable/ClientSideMetrics', () => {
               );
               const instance = bigtable.instance(instanceId);
               const table = instance.table(tableId1);
-              const row = table.row('gwashington');
+              const row = table.row(columnFamilyId);
               await row.createRules(rules);
               const table2 = instance.table(tableId2);
-              const row2 = table2.row('gwashington');
+              const row2 = table2.row(columnFamilyId);
               await row2.createRules(rules);
             }
           } catch (e) {
@@ -514,7 +513,7 @@ describe('Bigtable/ClientSideMetrics', () => {
               // This call will fail because we are trying to hit a bogus endpoint.
               // The idea here is that we just want to record at least one metric
               // so that the exporter gets executed.
-              const row = table.row('gwashington');
+              const row = table.row(columnFamilyId);
               await row.createRules(rules);
             } catch (e: unknown) {
               // Try blocks just need a catch/finally block.
@@ -542,10 +541,10 @@ describe('Bigtable/ClientSideMetrics', () => {
               );
               const instance = bigtable.instance(instanceId);
               const table = instance.table(tableId1);
-              const row = table.row('gwashington');
+              const row = table.row(columnFamilyId);
               await row.createRules(rules);
               const table2 = instance.table(tableId2);
-              const row2 = table2.row('gwashington');
+              const row2 = table2.row(columnFamilyId);
               await row2.createRules(rules);
             }
           } catch (e) {
@@ -820,10 +819,10 @@ describe('Bigtable/ClientSideMetrics', () => {
                 );
                 const instance = bigtable.instance(instanceId);
                 const table = instance.table(tableId1);
-                const row = table.row('gwashington');
+                const row = table.row(columnFamilyId);
                 await row.createRules(rules);
                 const table2 = instance.table(tableId2);
-                const row2 = table2.row('gwashington');
+                const row2 = table2.row(columnFamilyId);
                 await row2.createRules(rules);
               }
             }
@@ -882,10 +881,10 @@ describe('Bigtable/ClientSideMetrics', () => {
                 );
                 const instance = bigtable.instance(instanceId);
                 const table = instance.table(tableId1);
-                const row = table.row('gwashington');
+                const row = table.row(columnFamilyId);
                 await row.createRules(rules);
                 const table2 = instance.table(tableId2);
-                const row2 = table2.row('gwashington');
+                const row2 = table2.row(columnFamilyId);
                 await row2.createRules(rules);
               }
             }
