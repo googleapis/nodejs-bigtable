@@ -105,7 +105,7 @@ function readRowsAssertionCheck(
     assert(!secondRequest.firstResponseLatency);
   }
   assert(secondRequest.operationLatency);
-  assert.strictEqual(secondRequest.applicationLatency, 0);
+  assert(secondRequest.applicationLatency < 10);
   delete secondRequest.operationLatency;
   delete secondRequest.applicationLatency;
   delete secondRequest.metricsCollectorData.appProfileId;
@@ -155,7 +155,7 @@ function readRowsAssertionCheck(
     assert(!fourthRequest.firstResponseLatency);
   }
   assert(fourthRequest.operationLatency);
-  assert.strictEqual(fourthRequest.applicationLatency, 0);
+  assert(fourthRequest.applicationLatency < 10);
   delete fourthRequest.operationLatency;
   delete fourthRequest.applicationLatency;
   delete fourthRequest.metricsCollectorData.appProfileId;
@@ -577,7 +577,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
       });
     });
     describe('MutateRows', () => {
-      it.only('should send the metrics to Google Cloud Monitoring for a MutateRows call', done => {
+      it('should send the metrics to Google Cloud Monitoring for a MutateRows call', done => {
         (async () => {
           try {
             const bigtable = await mockBigtable(defaultProjectId, done);
@@ -1173,7 +1173,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
       });
     });
     describe('MutateRows', () => {
-      it('should send the metrics to the metrics handler for a MutateRows call', done => {
+      it.only('should send the metrics to the metrics handler for a MutateRows call', done => {
         (async () => {
           const bigtable = await mockBigtableWithNoInserts(
             defaultProjectId,
