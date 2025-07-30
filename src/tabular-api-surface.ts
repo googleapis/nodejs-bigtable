@@ -358,7 +358,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // communicate a code to the metrics collector.
       //
       const code = originalError ? originalError.code : 0;
-      metricsCollector.onOperationComplete(code);
+      metricsCollector.onOperationAndAttemptComplete(code);
       callback(err, apiResponse);
     };
 
