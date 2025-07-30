@@ -72,7 +72,7 @@ class FakeMetricsCollector {
   onAttemptStart() {}
   onAttemptComplete() {}
   onMetadataReceived() {}
-  handleStatusAndMetadata() {}
+  wrapRequest() {}
   onStatusMetadataReceived() {}
   onRowReachesUser() {}
 }
