@@ -26,10 +26,6 @@ import {
 } from '../chunktransformer';
 import {TableUtils} from './table';
 import {Duplex, PassThrough, Transform} from 'stream';
-import {
-  MethodName,
-  StreamingState,
-} from '../client-side-metrics/client-side-metrics-attributes';
 import {google} from '../../protos/protos';
 const pumpify = require('pumpify');
 import {grpc, ServiceError} from 'google-gax';
@@ -423,10 +419,9 @@ export function createReadStreamInternal(
       })
       .on('end', () => {
         activeRequestStream = null;
-        const applicationLatency = userStream.getTotalDurationMs();
         metricsCollector.onOperationAndAttemptComplete(
           grpc.status.OK,
-          applicationLatency,
+          userStream.getTotalDurationMs(),
         );
       });
     rowStreamPipe(rowStream, userStream);
