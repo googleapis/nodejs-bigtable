@@ -300,14 +300,6 @@ export class OperationMetricsCollector {
         {
           this.handlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
-              const firstResponseLatencyExpression =
-                this.methodName === MethodName.READ_ROWS ||
-                this.methodName === MethodName.READ_ROW
-                  ? {
-                      firstResponseLatency:
-                        this.firstResponseLatency ?? undefined,
-                    }
-                  : {};
               metricsHandler.onOperationComplete({
                 status: finalOperationStatus.toString(),
                 streaming: this.streamingOperation,
@@ -315,8 +307,7 @@ export class OperationMetricsCollector {
                 client_name: `nodejs-bigtable/${version}`,
                 operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
-                // Conditionally add the firstResponseLatency property
-                ...firstResponseLatencyExpression,
+                firstResponseLatency: this.firstResponseLatency ?? 0,
                 applicationLatency: applicationLatency ?? 0,
               });
             }
