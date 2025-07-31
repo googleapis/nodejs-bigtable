@@ -325,6 +325,7 @@ export function createReadStreamInternal(
       retryOpts,
     });
     requestStream.on('data', () => {
+      // This handler is necessary for recording firstResponseLatencies.
       metricsCollector.onResponse();
     });
 
