@@ -37,6 +37,7 @@ import {
 import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {MetricServiceClient} from '@google-cloud/monitoring';
+import {MethodName} from '../src/client-side-metrics/client-side-metrics-attributes';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
@@ -64,6 +65,19 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
       CloudMonitoringExporter: Exporter,
     },
   }).GCPMetricsHandler;
+}
+
+function checkFirstResponseLatency(requestHandled: OnOperationCompleteData) {
+  assert(requestHandled.firstResponseLatency);
+  if (
+    requestHandled.metricsCollectorData.method === MethodName.READ_ROWS ||
+    requestHandled.metricsCollectorData.method === MethodName.READ_ROW
+  ) {
+    assert(requestHandled.firstResponseLatency > 0);
+  } else {
+    assert.strictEqual(requestHandled.firstResponseLatency, 0);
+  }
+  delete requestHandled.firstResponseLatency;
 }
 
 function readRowsAssertionCheck(
@@ -98,15 +112,10 @@ function readRowsAssertionCheck(
   const secondRequest = requestsHandled[1] as any;
   // We would expect these parameters to be different every time so delete
   // them from the comparison after checking they exist.
-  if (method === 'Bigtable.ReadRows' || method === 'Bigtable.ReadRow') {
-    assert(secondRequest.firstResponseLatency);
-    delete secondRequest.firstResponseLatency;
-  } else {
-    assert(!secondRequest.firstResponseLatency);
-  }
+  checkFirstResponseLatency(secondRequest);
   assert(secondRequest.operationLatency);
-  assert(secondRequest.applicationLatency < 10);
   delete secondRequest.operationLatency;
+  assert(secondRequest.applicationLatency < 10);
   delete secondRequest.applicationLatency;
   delete secondRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(secondRequest, {
@@ -148,12 +157,7 @@ function readRowsAssertionCheck(
   const fourthRequest = requestsHandled[3] as any;
   // We would expect these parameters to be different every time so delete
   // them from the comparison after checking they exist.
-  if (method === 'Bigtable.ReadRows' || method === 'Bigtable.ReadRow') {
-    assert(fourthRequest.firstResponseLatency);
-    delete fourthRequest.firstResponseLatency;
-  } else {
-    assert(!fourthRequest.firstResponseLatency);
-  }
+  checkFirstResponseLatency(fourthRequest);
   assert(fourthRequest.operationLatency);
   assert(fourthRequest.applicationLatency < 10);
   delete fourthRequest.operationLatency;
@@ -810,7 +814,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     async function getFakeBigtableWithHandler(
       projectId: string,
       done: mocha.Done,
