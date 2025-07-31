@@ -68,11 +68,17 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
 }
 
 function checkFirstResponseLatency(requestHandled: OnOperationCompleteData) {
-  assert(requestHandled.firstResponseLatency);
+  assert(
+    Object.prototype.hasOwnProperty.call(
+      requestHandled,
+      'firstResponseLatency',
+    ),
+  );
   if (
     requestHandled.metricsCollectorData.method === MethodName.READ_ROWS ||
     requestHandled.metricsCollectorData.method === MethodName.READ_ROW
   ) {
+    assert(requestHandled.firstResponseLatency);
     assert(requestHandled.firstResponseLatency > 0);
   } else {
     assert.strictEqual(requestHandled.firstResponseLatency, 0);
@@ -814,7 +820,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     async function getFakeBigtableWithHandler(
       projectId: string,
       done: mocha.Done,
