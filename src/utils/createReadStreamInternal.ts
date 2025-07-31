@@ -38,6 +38,7 @@ import {
   TabularApiSurface,
 } from '../tabular-api-surface';
 import {OperationMetricsCollector} from '../client-side-metrics/operation-metrics-collector';
+import {TimedStream} from '../timed-stream';
 
 /**
  * Creates a readable stream of rows from a Bigtable table or authorized view.
@@ -124,11 +125,8 @@ export function createReadStreamInternal(
   // discarded in the per attempt subpipeline (rowStream)
   let lastRowKey = '';
   let rowsRead = 0;
-  const userStream = new PassThrough({
-    objectMode: true,
-    readableHighWaterMark: 0, // We need to disable readside buffering to allow for acceptable behavior when the end user cancels the stream early.
-    writableHighWaterMark: 0, // We need to disable writeside buffering because in nodejs 14 the call to _transform happens after write buffering. This creates problems for tracking the last seen row key.
-    transform(event, _encoding, callback) {
+  const userStream = new TimedStream({
+    transformHook(event, _encoding, callback) {
       if (userCanceled) {
         callback();
         return;
@@ -369,7 +367,10 @@ export function createReadStreamInternal(
           // We ignore the `cancelled` "error", since we are the ones who cause
           // it when the user calls `.abort()`.
           userStream.end();
-          metricsCollector.onOperationComplete(error.code);
+          metricsCollector.onOperationComplete(
+            error.code,
+            userStream.getTotalDurationMs(),
+          );
           return;
         }
         numConsecutiveErrors++;
@@ -401,7 +402,10 @@ export function createReadStreamInternal(
             //
             error.code = grpc.status.CANCELLED;
           }
-          metricsCollector.onOperationComplete(error.code);
+          metricsCollector.onOperationComplete(
+            error.code,
+            userStream.getTotalDurationMs(),
+          );
           userStream.emit('error', error);
         }
       })
@@ -412,7 +416,11 @@ export function createReadStreamInternal(
       })
       .on('end', () => {
         activeRequestStream = null;
-        metricsCollector.onOperationComplete(grpc.status.OK);
+        const applicationLatency = userStream.getTotalDurationMs();
+        metricsCollector.onOperationComplete(
+          grpc.status.OK,
+          userStream.getTotalDurationMs(),
+        );
       });
     rowStreamPipe(rowStream, userStream);
   };

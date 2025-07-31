@@ -19,7 +19,7 @@ import {
   DebugLog,
   ReadRowsServiceParameters,
   ReadRowsWritableStream,
-} from './readRowsServiceParameters';
+} from '../../test/utils/readRowsServiceParameters';
 import {google} from '../../protos/protos';
 import IRowRange = google.bigtable.v2.IRowRange;
 
@@ -226,7 +226,7 @@ function getSelectedKey(
  * @param debugLog A function that logs debug messages.
  * @returns {protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[]} The generated chunks.
  */
-function generateChunksFromRequest(
+export function generateChunksFromRequest(
   request: protos.google.bigtable.v2.IReadRowsRequest,
   serviceParameters: ReadRowsServiceParameters,
 ) {
