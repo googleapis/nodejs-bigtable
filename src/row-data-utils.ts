@@ -221,10 +221,9 @@ class RowDataUtils {
         reqOpts,
         gaxOpts: withInterceptors(gaxOptions, metricsCollector),
       },
-      (...args) => {
-        const err = args[0];
+      (err, ...args) => {
         metricsCollector.onOperationComplete(err ? err.code : 0);
-        callback(...args);
+        callback(err, ...args);
       },
     );
   }
