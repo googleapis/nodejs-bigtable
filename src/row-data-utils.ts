@@ -36,7 +36,7 @@ import {
   MethodName,
   StreamingState,
 } from './client-side-metrics/client-side-metrics-attributes';
-import {withInterceptors} from './interceptor';
+import {withMetricInterceptors} from './client-side-metrics/metric-interceptor';
 
 interface TabularApiSurfaceRequest {
   tableName?: string;
@@ -219,7 +219,7 @@ class RowDataUtils {
         client: 'BigtableClient',
         method: 'readModifyWriteRow',
         reqOpts,
-        gaxOpts: withInterceptors(gaxOptions, metricsCollector),
+        gaxOpts: withMetricInterceptors(gaxOptions, metricsCollector),
       },
       (err, ...args) => {
         metricsCollector.onOperationComplete(err ? err.code : 0);
