@@ -319,11 +319,7 @@ export class OperationMetricsCollector {
                 client_name: `nodejs-bigtable/${version}`,
                 operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
-                // Conditionally add the firstResponseLatency property
-                ...(this.firstResponseLatency !== undefined &&
-                  this.firstResponseLatency !== null && {
-                    firstResponseLatency: this.firstResponseLatency,
-                  }),
+                firstResponseLatency: this.firstResponseLatency ?? 0,
                 applicationLatency: applicationLatency ?? 0,
               });
             }

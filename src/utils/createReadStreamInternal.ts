@@ -320,6 +320,10 @@ export function createReadStreamInternal(
       gaxOpts,
       retryOpts,
     });
+    requestStream.on('data', () => {
+      // This handler is necessary for recording firstResponseLatencies.
+      metricsCollector.onResponse();
+    });
 
     activeRequestStream = requestStream!;
 
