@@ -63,7 +63,7 @@ function createMetricsInterceptorProvider(
   };
 }
 
-export function withInterceptors(
+export function withMetricInterceptors(
   gaxOptions: CallOptions,
   metricsCollector?: OperationMetricsCollector,
 ) {
