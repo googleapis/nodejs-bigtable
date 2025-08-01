@@ -181,10 +181,7 @@ export class OperationMetricsCollector {
         }) => {
           this.onStatusMetadataReceived(status);
         },
-      )
-      .on('data', () => {
-        this.onResponse();
-      });
+      );
   }
 
   /**
@@ -289,8 +286,15 @@ export class OperationMetricsCollector {
     finalOperationStatus: grpc.status,
     applicationLatency?: number,
   ) {
-    this.onAttemptComplete(finalOperationStatus);
     withMetricsDebug(() => {
+      if (
+        this.state ===
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
+        this.state ===
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED
+      ) {
+        this.onAttemptComplete(finalOperationStatus);
+      }
       checkState(this.state, [
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS,
       ]);
@@ -310,7 +314,7 @@ export class OperationMetricsCollector {
                 client_name: `nodejs-bigtable/${version}`,
                 operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
-                firstResponseLatency: this.firstResponseLatency ?? undefined,
+                firstResponseLatency: this.firstResponseLatency ?? 0,
                 applicationLatency: applicationLatency ?? 0,
               });
             }

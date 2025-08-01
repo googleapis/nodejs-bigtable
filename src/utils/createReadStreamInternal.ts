@@ -320,6 +320,10 @@ export function createReadStreamInternal(
       gaxOpts,
       retryOpts,
     });
+    requestStream.on('data', () => {
+      // This handler is necessary for recording firstResponseLatencies.
+      metricsCollector.onResponse();
+    });
 
     activeRequestStream = requestStream!;
 
@@ -416,7 +420,6 @@ export function createReadStreamInternal(
       })
       .on('end', () => {
         activeRequestStream = null;
-        const applicationLatency = userStream.getTotalDurationMs();
         metricsCollector.onOperationComplete(
           grpc.status.OK,
           userStream.getTotalDurationMs(),

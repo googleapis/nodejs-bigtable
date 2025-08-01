@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
+
 const dotProp = require('dot-prop');
 import {Filter, RawFilter} from './filter';
 import {
@@ -30,6 +32,11 @@ import {TabularApiSurface} from './tabular-api-surface';
 import arrify = require('arrify');
 import {Bigtable} from './index';
 import {CallOptions} from 'google-gax';
+import {
+  MethodName,
+  StreamingState,
+} from './client-side-metrics/client-side-metrics-attributes';
+import {withMetricInterceptors} from './client-side-metrics/metric-interceptor';
 
 interface TabularApiSurfaceRequest {
   tableName?: string;
@@ -193,14 +200,31 @@ class RowDataUtils {
       properties.reqOpts,
     );
     properties.requestData.data = {};
+    // 1. Create a metrics collector.
+    const metricsCollector = new OperationMetricsCollector(
+      properties.requestData.table,
+      MethodName.READ_MODIFY_WRITE_ROW,
+      StreamingState.UNARY,
+      (
+        properties.requestData.table as any
+      ).bigtable._metricsConfigManager!.metricsHandlers,
+    );
+    // 2. Tell the metrics collector an attempt has been started.
+    metricsCollector.onOperationStart();
+    // 3. Make a unary call with gax options that include interceptors. The
+    // interceptors are built from a method that hooks them up to the
+    // metrics collector
     properties.requestData.bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
       {
         client: 'BigtableClient',
         method: 'readModifyWriteRow',
         reqOpts,
-        gaxOpts: gaxOptions,
+        gaxOpts: withMetricInterceptors(gaxOptions, metricsCollector),
       },
-      callback,
+      (err, ...args) => {
+        metricsCollector.onOperationComplete(err ? err.code : 0);
+        callback(err, ...args);
+      },
     );
   }
 
