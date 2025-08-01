@@ -685,7 +685,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
-    describe.only('CheckAndMutateRow', () => {
+    describe('CheckAndMutateRow', () => {
       it('should send the metrics to Google Cloud Monitoring for a CheckAndMutateRow call', done => {
         (async () => {
           try {
@@ -1132,7 +1132,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
-    describe.only('CheckAndMutateRow', () => {
+    describe('CheckAndMutateRow', () => {
       it('should send the metrics to Google Cloud Monitoring for a CheckAndMutateRow call', done => {
         let testFinished = false;
         /*
@@ -1445,7 +1445,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
-    describe.only('CheckAndMutateRow', () => {
+    describe('CheckAndMutateRow', () => {
       it('should send the metrics to the metrics handler for a CheckAndMutateRow call for a single point', done => {
         (async () => {
           const bigtable = await mockBigtableWithNoInserts(
