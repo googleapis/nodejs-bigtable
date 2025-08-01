@@ -25,6 +25,8 @@ import {
   GetRowsOptions,
   GetRowsCallback,
   GetRowsResponse,
+  MutateOptions,
+  MutateCallback,
 } from '../src/table.js';
 import {Chunk} from '../src/chunktransformer.js';
 import {CallOptions, ServiceError} from 'google-gax';
@@ -32,6 +34,8 @@ import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics
 import {Bigtable} from '../src/';
 import {getRowsInternal} from '../src/utils/getRowsInternal';
 import {TabularApiSurface} from '../src/tabular-api-surface';
+import * as pumpify from 'pumpify';
+import {OperationMetricsCollector} from '../src/client-side-metrics/operation-metrics-collector';
 
 const sandbox = sinon.createSandbox();
 
@@ -87,6 +91,23 @@ describe('Bigtable/Row', () => {
   let Row: typeof rw.Row;
   let RowError: typeof rw.RowError;
   let row: rw.Row;
+
+  function getFakeMutateRow(
+    fn: (
+      table: TabularApiSurface,
+      metricsCollector: OperationMetricsCollector,
+      entry: Entry | Entry[],
+      gaxOptions_: MutateOptions | MutateCallback,
+      callback: Function,
+    ) => void | Promise<GetRowsResponse>,
+  ) {
+    const Fake = proxyquire('../src/row.js', {
+      '../src/utils/mutateInternal': {
+        mutateInternal: fn,
+      },
+    });
+    return Fake;
+  }
 
   function getFakeRow(
     getRowsInternal: (
@@ -1513,34 +1534,52 @@ describe('Bigtable/Row', () => {
     };
 
     it('should insert an object', done => {
-      (row.table.mutate as Function) = (
+      const fn = (
+        table: TabularApiSurface,
+        metricsCollector: OperationMetricsCollector,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        entry: any,
+        entry: Entry | Entry[],
         gaxOptions: {},
         callback: Function,
       ) => {
         assert.strictEqual(entry.data, data);
         callback(); // done()
       };
-      row.save(data, done);
+      const SavedRow = getFakeMutateRow(fn).Row;
+      const savedRow = new SavedRow(TABLE, ROW_ID);
+      savedRow.save(data, done);
     });
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      sandbox.stub(row.table, 'mutate').callsFake((entry, gaxOptions_) => {
+      const fn = (
+        table: TabularApiSurface,
+        metricsCollector: OperationMetricsCollector,
+        entry: Entry | Entry[],
+        gaxOptions_: MutateOptions | MutateCallback,
+      ) => {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
-      });
-      row.save(data, gaxOptions, assert.ifError);
+      };
+      const SavedRow = getFakeMutateRow(fn).Row;
+      const savedRow = new SavedRow(TABLE, ROW_ID);
+      savedRow.save(data, gaxOptions, assert.ifError);
     });
 
     it('should remove existing data', done => {
       const gaxOptions = {};
-      sandbox.stub(row.table, 'mutate').callsFake((entry, gaxOptions_) => {
+      const fn = (
+        table: TabularApiSurface,
+        metricsCollector: OperationMetricsCollector,
+        entry: Entry | Entry[],
+        gaxOptions_: MutateOptions | MutateCallback,
+      ) => {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
-      });
-      row.save(data, gaxOptions, assert.ifError);
+      };
+      const SavedRow = getFakeMutateRow(fn).Row;
+      const savedRow = new SavedRow(TABLE, ROW_ID);
+      savedRow.save(data, gaxOptions, assert.ifError);
       assert.strictEqual(row.data, undefined);
     });
   });
