@@ -39,6 +39,11 @@ import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics
 import {MetricServiceClient} from '@google-cloud/monitoring';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
+const instanceId1 = 'emulator-test-instance';
+const instanceId2 = 'emulator-test-instance2';
+const tableId1 = 'my-table';
+const tableId2 = 'my-table2';
+const columnFamilyId = 'cf1';
 
 function getFakeBigtable(
   projectId: string,
@@ -87,7 +92,7 @@ function readRowsAssertionCheck(
     status: '0',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
-      instanceId: 'emulator-test-instance',
+      instanceId: instanceId1,
       table: 'my-table',
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
@@ -110,7 +115,7 @@ function readRowsAssertionCheck(
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
-      instanceId: 'emulator-test-instance',
+      instanceId: instanceId1,
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
       method,
@@ -133,7 +138,7 @@ function readRowsAssertionCheck(
     status: '0',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
-      instanceId: 'emulator-test-instance',
+      instanceId: instanceId1,
       table: 'my-table2',
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
@@ -156,7 +161,7 @@ function readRowsAssertionCheck(
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
-      instanceId: 'emulator-test-instance',
+      instanceId: instanceId1,
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
       method,
@@ -275,11 +280,6 @@ async function checkForPublishedMetrics(projectId: string) {
 }
 
 describe('Bigtable/ClientSideMetrics', () => {
-  const instanceId1 = 'emulator-test-instance';
-  const instanceId2 = 'emulator-test-instance2';
-  const tableId1 = 'my-table';
-  const tableId2 = 'my-table2';
-  const columnFamilyId = 'cf1';
   let defaultProjectId: string;
 
   before(async () => {
