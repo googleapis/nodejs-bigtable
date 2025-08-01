@@ -108,7 +108,10 @@ class RowDataUtils {
         client: 'BigtableClient',
         method: 'checkAndMutateRow',
         reqOpts,
-        gaxOpts: withMetricInterceptors(config.gaxOptions ?? {}, metricsCollector),
+        gaxOpts: withMetricInterceptors(
+          config.gaxOptions ?? {},
+          metricsCollector,
+        ),
       },
       (err, apiResponse) => {
         metricsCollector.onOperationComplete(err ? err.code : 0);
