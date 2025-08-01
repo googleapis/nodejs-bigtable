@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {MethodName, StreamingState} from './client-side-metrics/client-side-metrics-attributes';
+import {
+  MethodName,
+  StreamingState,
+} from './client-side-metrics/client-side-metrics-attributes';
 
 const dotProp = require('dot-prop');
 import {Filter, RawFilter} from './filter';
