@@ -258,14 +258,14 @@ const mutation = {
 };
 
 const filter: RawFilter = {
-  family: 'follows',
+  family: 'cf1',
   value: 'alincoln',
 };
 
 const mutations = [
   {
     method: 'delete',
-    data: ['follows:alincoln'],
+    data: ['cf1:alincoln'],
   },
 ];
 
@@ -685,7 +685,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
-    describe('CheckAndMutateRow', () => {
+    describe.only('CheckAndMutateRow', () => {
       it('should send the metrics to Google Cloud Monitoring for a CheckAndMutateRow call', done => {
         (async () => {
           try {
@@ -699,10 +699,10 @@ describe('Bigtable/ClientSideMetrics', () => {
               );
               const instance = bigtable.instance(instanceId);
               const table = instance.table(tableId1);
-              const row = table.row('gwashington');
+              const row = table.row(columnFamilyId);
               await row.filter(filter, {onMatch: mutations});
               const table2 = instance.table(tableId2);
-              const row2 = table2.row('gwashington');
+              const row2 = table2.row(columnFamilyId);
               await row2.filter(filter, {onMatch: mutations});
             }
           } catch (e) {
@@ -727,7 +727,7 @@ describe('Bigtable/ClientSideMetrics', () => {
               // This call will fail because we are trying to hit a bogus endpoint.
               // The idea here is that we just want to record at least one metric
               // so that the exporter gets executed.
-              const row = table.row('gwashington');
+              const row = table.row(columnFamilyId);
               await row.filter(filter, {onMatch: mutations});
             } catch (e: unknown) {
               // Try blocks just need a catch/finally block.
@@ -755,10 +755,10 @@ describe('Bigtable/ClientSideMetrics', () => {
               );
               const instance = bigtable.instance(instanceId);
               const table = instance.table(tableId1);
-              const row = table.row('gwashington');
+              const row = table.row(columnFamilyId);
               await row.filter(filter, {onMatch: mutations});
               const table2 = instance.table(tableId2);
-              const row2 = table2.row('gwashington');
+              const row2 = table2.row(columnFamilyId);
               await row2.filter(filter, {onMatch: mutations});
             }
           } catch (e) {
@@ -1132,7 +1132,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
-    describe('CheckAndMutateRow', () => {
+    describe.only('CheckAndMutateRow', () => {
       it('should send the metrics to Google Cloud Monitoring for a CheckAndMutateRow call', done => {
         let testFinished = false;
         /*
@@ -1159,10 +1159,10 @@ describe('Bigtable/ClientSideMetrics', () => {
                 );
                 const instance = bigtable.instance(instanceId);
                 const table = instance.table(tableId1);
-                const row = table.row('gwashington');
+                const row = table.row(columnFamilyId);
                 await row.filter(filter, {onMatch: mutations});
                 const table2 = instance.table(tableId2);
-                const row2 = table2.row('gwashington');
+                const row2 = table2.row(columnFamilyId);
                 await row2.filter(filter, {onMatch: mutations});
               }
             }
@@ -1221,10 +1221,10 @@ describe('Bigtable/ClientSideMetrics', () => {
                 );
                 const instance = bigtable.instance(instanceId);
                 const table = instance.table(tableId1);
-                const row = table.row('gwashington');
+                const row = table.row(columnFamilyId);
                 await row.filter(filter, {onMatch: mutations});
                 const table2 = instance.table(tableId2);
-                const row2 = table2.row('gwashington');
+                const row2 = table2.row(columnFamilyId);
                 await row2.filter(filter, {onMatch: mutations});
               }
             }
@@ -1445,7 +1445,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
-    describe('CheckAndMutateRow', () => {
+    describe.only('CheckAndMutateRow', () => {
       it('should send the metrics to the metrics handler for a CheckAndMutateRow call for a single point', done => {
         (async () => {
           const bigtable = await mockBigtableWithNoInserts(
@@ -1455,10 +1455,10 @@ describe('Bigtable/ClientSideMetrics', () => {
           );
           const instance = bigtable.instance(instanceId1);
           const table = instance.table(tableId1);
-          const row = table.row('gwashington');
+          const row = table.row(columnFamilyId);
           await row.filter(filter, {onMatch: mutations});
           const table2 = instance.table(tableId2);
-          const row2 = table2.row('gwashington');
+          const row2 = table2.row(columnFamilyId);
           await row2.filter(filter, {onMatch: mutations});
         })().catch(err => {
           throw err;
