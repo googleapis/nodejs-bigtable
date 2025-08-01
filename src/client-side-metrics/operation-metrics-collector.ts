@@ -288,6 +288,14 @@ export class OperationMetricsCollector {
   ) {
     this.onAttemptComplete(finalOperationStatus);
     withMetricsDebug(() => {
+      if (
+        this.state ===
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
+        this.state ===
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED
+      ) {
+        this.onAttemptComplete(finalOperationStatus);
+      }
       checkState(this.state, [
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS,
       ]);
