@@ -462,16 +462,29 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       },
       objectMode: true,
     });
-
-    return pumpify.obj([
-      this.bigtable.request({
-        client: 'BigtableClient',
-        method: 'sampleRowKeys',
-        reqOpts,
-        gaxOpts: Object.assign({}, gaxOptions),
-      }),
-      rowKeysStream,
-    ]);
+    const metricsCollector =
+      this.bigtable._metricsConfigManager.createOperation(
+        MethodName.SAMPLE_ROW_KEYS,
+        StreamingState.STREAMING,
+        this,
+      );
+    metricsCollector.onOperationStart();
+    metricsCollector.onAttemptStart();
+    const requestStream = this.bigtable.request({
+      client: 'BigtableClient',
+      method: 'sampleRowKeys',
+      reqOpts,
+      gaxOpts: Object.assign({}, gaxOptions),
+    });
+    metricsCollector.wrapRequest(requestStream);
+    const stream = pumpify.obj([requestStream, rowKeysStream]);
+    stream.on('end', () => {
+      metricsCollector.onOperationComplete(0);
+    });
+    stream.on('error', (err: ServiceError) => {
+      metricsCollector.onOperationComplete(err.code);
+    });
+    return stream;
   }
 }
 
