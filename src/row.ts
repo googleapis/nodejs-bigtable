@@ -36,6 +36,7 @@ import {
   MethodName,
   StreamingState,
 } from './client-side-metrics/client-side-metrics-attributes';
+import {mutateInternal} from './utils/mutateInternal';
 
 export interface Rule {
   column: string;
@@ -830,7 +831,19 @@ export class Row {
       method: Mutation.methods.INSERT,
     } as {} as Entry;
     this.data = {};
-    this.table.mutate(mutation, gaxOptions as {} as MutateOptions, callback);
+    const metricsCollector =
+      this.bigtable._metricsConfigManager.createOperation(
+        MethodName.MUTATE_ROW,
+        StreamingState.UNARY,
+        this.table,
+      );
+    mutateInternal(
+      this.table,
+      metricsCollector,
+      mutation,
+      gaxOptions as {} as MutateOptions,
+      callback,
+    );
   }
 }
 
