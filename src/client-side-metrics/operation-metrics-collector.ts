@@ -280,6 +280,7 @@ export class OperationMetricsCollector {
    * Called when an operation completes (successfully or unsuccessfully).
    * Records operation latencies, retry counts, and connectivity error counts.
    * @param {grpc.status} finalOperationStatus Information about the completed operation.
+   * @param {number} applicationLatency The application latency measurement.
    */
   onOperationComplete(
     finalOperationStatus: grpc.status,
