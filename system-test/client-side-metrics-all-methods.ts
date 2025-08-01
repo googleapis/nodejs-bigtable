@@ -192,7 +192,7 @@ function checkCheckAndMutateCall(
   readRowsAssertionCheck(
     projectId,
     requestsHandled,
-    'Bigtable.ReadModifyWriteRow',
+    'Bigtable.CheckAndMutateRow',
     'false',
   );
 }
