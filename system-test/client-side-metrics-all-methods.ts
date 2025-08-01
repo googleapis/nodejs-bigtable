@@ -66,7 +66,7 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
   }).GCPMetricsHandler;
 }
 
-function readRowsAssertionCheck(
+function metricsAssertionCheck(
   projectId: string,
   requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
   method: string,
@@ -171,7 +171,7 @@ function checkMultiRowCall(
   projectId: string,
   requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
 ) {
-  readRowsAssertionCheck(
+  metricsAssertionCheck(
     projectId,
     requestsHandled,
     'Bigtable.ReadRows',
@@ -183,7 +183,7 @@ function checkMutateRowsCall(
   projectId: string,
   requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
 ) {
-  readRowsAssertionCheck(
+  metricsAssertionCheck(
     projectId,
     requestsHandled,
     'Bigtable.MutateRows',
@@ -195,7 +195,7 @@ function checkMutateRowCall(
   projectId: string,
   requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
 ) {
-  readRowsAssertionCheck(
+  metricsAssertionCheck(
     projectId,
     requestsHandled,
     'Bigtable.MutateRow',
@@ -207,7 +207,7 @@ function checkSingleRowCall(
   projectId: string,
   requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
 ) {
-  readRowsAssertionCheck(
+  metricsAssertionCheck(
     projectId,
     requestsHandled,
     'Bigtable.ReadRow',
