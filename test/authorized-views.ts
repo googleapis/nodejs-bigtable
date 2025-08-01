@@ -50,6 +50,14 @@ describe('Bigtable/AuthorizedViews', () => {
         try {
           requestCount++;
           delete config['retryOpts'];
+          if (
+            config &&
+            config.gaxOpts &&
+            config.gaxOpts.otherArgs &&
+            config.gaxOpts.otherArgs.options
+          ) {
+            delete config.gaxOpts.otherArgs['options'];
+          }
           assert.deepStrictEqual(config, compareFn(requestCount));
         } catch (err: unknown) {
           done(err);
@@ -425,6 +433,7 @@ describe('Bigtable/AuthorizedViews', () => {
                 method: 'checkAndMutateRow',
                 gaxOpts: {
                   maxRetries: 4,
+                  otherArgs: {},
                 },
                 reqOpts: Object.assign(
                   {
