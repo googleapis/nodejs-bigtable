@@ -962,8 +962,14 @@ describe('Bigtable/Row', () => {
           config.reqOpts.falseMutations,
           fakeMutations.mutations,
         );
-
-        assert.strictEqual(config.gaxOpts, undefined);
+        config.gaxOpts.otherArgs.options.interceptors = [];
+        assert.deepStrictEqual(config.gaxOpts, {
+          otherArgs: {
+            options: {
+              interceptors: [],
+            },
+          },
+        });
         assert.strictEqual(FakeMutation.parse.callCount, 2);
         assert.strictEqual(FakeMutation.parse.getCall(0).args[0], mutations[0]);
         assert.strictEqual(FakeMutation.parse.getCall(1).args[0], mutations[0]);
