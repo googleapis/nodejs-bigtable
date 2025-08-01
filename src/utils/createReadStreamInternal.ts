@@ -374,7 +374,7 @@ export function createReadStreamInternal(
           // We ignore the `cancelled` "error", since we are the ones who cause
           // it when the user calls `.abort()`.
           userStream.end();
-          metricsCollector.onOperationAndAttemptComplete(
+          metricsCollector.onOperationComplete(
             error.code,
             userStream.getTotalDurationMs(),
           );
@@ -409,7 +409,7 @@ export function createReadStreamInternal(
             //
             error.code = grpc.status.CANCELLED;
           }
-          metricsCollector.onOperationAndAttemptComplete(
+          metricsCollector.onOperationComplete(
             error.code,
             userStream.getTotalDurationMs(),
           );
@@ -423,7 +423,7 @@ export function createReadStreamInternal(
       })
       .on('end', () => {
         activeRequestStream = null;
-        metricsCollector.onOperationAndAttemptComplete(
+        metricsCollector.onOperationComplete(
           grpc.status.OK,
           userStream.getTotalDurationMs(),
         );

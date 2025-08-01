@@ -163,7 +163,7 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '18. User receives fourth row.\n';
           logger.value += '19. User reads row 1\n';
           logger.value += '20. Stream ends, operation completes\n';
-          metricsCollector.onOperationAndAttemptComplete(
+          metricsCollector.onOperationComplete(
             grpc.status.OK,
             userStream.getTotalDurationMs(),
           );

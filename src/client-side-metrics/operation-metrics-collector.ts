@@ -280,26 +280,20 @@ export class OperationMetricsCollector {
    * Called when an operation completes (successfully or unsuccessfully).
    * Records operation latencies, retry counts, and connectivity error counts.
    * @param {grpc.status} finalOperationStatus Information about the completed operation.
-   * @param {number} applicationLatency The application latency measurement.
-   */
-  onOperationAndAttemptComplete(
-    finalOperationStatus: grpc.status,
-    applicationLatency?: number,
-  ) {
-    this.onAttemptComplete(finalOperationStatus);
-    this.onOperationComplete(finalOperationStatus, applicationLatency);
-  }
-
-  /**
-   * Called when an operation completes (successfully or unsuccessfully).
-   * Records operation latencies, retry counts, and connectivity error counts.
-   * @param {grpc.status} finalOperationStatus Information about the completed operation.
    */
   onOperationComplete(
     finalOperationStatus: grpc.status,
     applicationLatency?: number,
   ) {
     withMetricsDebug(() => {
+      if (
+        this.state ===
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET ||
+        this.state ===
+          MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED
+      ) {
+        this.onAttemptComplete(finalOperationStatus);
+      }
       checkState(this.state, [
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS,
       ]);

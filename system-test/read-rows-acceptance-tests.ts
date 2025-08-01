@@ -36,7 +36,6 @@ import {
 } from '../src/client-side-metrics/client-side-metrics-attributes';
 
 class FakeOperationMetricsCollector extends OperationMetricsCollector {
-  onOperationAndAttemptComplete() {}
   onOperationComplete() {}
   onResponse() {}
   onAttemptStart() {}
