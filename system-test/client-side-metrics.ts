@@ -38,11 +38,11 @@ import {PassThrough} from 'stream';
 import {generateChunksFromRequest} from '../test-common/utils/readRowsImpl';
 import {TabularApiSurface} from '../src/tabular-api-surface';
 import {MetricServiceClient} from '@google-cloud/monitoring';
-import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
+import {generateId} from './common';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
-const instanceId1 = 'emulator-test-instance';
-const instanceId2 = 'emulator-test-instance2';
+const instanceId1 = generateId('instance');
+const instanceId2 = generateId('instance');
 const tableId1 = 'my-table';
 const tableId2 = 'my-table2';
 const columnFamilyId = 'cf1';
@@ -330,7 +330,7 @@ async function checkForPublishedMetrics(projectId: string) {
   }
 }
 
-describe('Bigtable/ClientSideMetrics', () => {
+describe.only('Bigtable/ClientSideMetrics', () => {
   let defaultProjectId: string;
 
   before(async () => {

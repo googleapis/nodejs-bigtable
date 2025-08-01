@@ -37,10 +37,11 @@ import {
 import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {MetricServiceClient} from '@google-cloud/monitoring';
+import {generateId} from './common';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
-const instanceId1 = 'emulator-test-instance';
-const instanceId2 = 'emulator-test-instance2';
+const instanceId1 = generateId('instance');
+const instanceId2 = generateId('instance');
 const tableId1 = 'my-table';
 const tableId2 = 'my-table2';
 const columnFamilyId = 'cf1';
