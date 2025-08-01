@@ -36,7 +36,7 @@ import arrify = require('arrify');
 import {Bigtable} from './index';
 import {CallOptions} from 'google-gax';
 import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
-import {withInterceptors} from './interceptor';
+import {withMetricInterceptors} from './client-side-metrics/metric-interceptor';
 
 interface TabularApiSurfaceRequest {
   tableName?: string;
@@ -108,7 +108,7 @@ class RowDataUtils {
         client: 'BigtableClient',
         method: 'checkAndMutateRow',
         reqOpts,
-        gaxOpts: withInterceptors(config.gaxOptions ?? {}, metricsCollector),
+        gaxOpts: withMetricInterceptors(config.gaxOptions ?? {}, metricsCollector),
       },
       (err, apiResponse) => {
         metricsCollector.onOperationComplete(err ? err.code : 0);

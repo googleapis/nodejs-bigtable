@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {CallOptions} from 'google-gax';
-import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
+import {OperationMetricsCollector} from './operation-metrics-collector';
 
 // Mock Server Implementation
 import * as grpcJs from '@grpc/grpc-js';
@@ -63,7 +63,7 @@ function createMetricsInterceptorProvider(
   };
 }
 
-export function withInterceptors(
+export function withMetricInterceptors(
   gaxOptions: CallOptions,
   metricsCollector?: OperationMetricsCollector,
 ) {
