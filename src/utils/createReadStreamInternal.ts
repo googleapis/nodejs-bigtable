@@ -420,7 +420,6 @@ export function createReadStreamInternal(
       })
       .on('end', () => {
         activeRequestStream = null;
-        const applicationLatency = userStream.getTotalDurationMs();
         metricsCollector.onOperationComplete(
           grpc.status.OK,
           userStream.getTotalDurationMs(),
