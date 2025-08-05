@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
+
 const dotProp = require('dot-prop');
 import {Filter, RawFilter} from './filter';
 import {
@@ -30,7 +32,6 @@ import {TabularApiSurface} from './tabular-api-surface';
 import arrify = require('arrify');
 import {Bigtable} from './index';
 import {CallOptions} from 'google-gax';
-import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
 import {
   MethodName,
   StreamingState,
