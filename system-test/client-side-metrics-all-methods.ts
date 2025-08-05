@@ -1029,7 +1029,7 @@ describe('Bigtable/ClientSideMetricsAllMethods', () => {
       });
     });
   });
-  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     async function getFakeBigtableWithHandler(
       projectId: string,
       done: mocha.Done,
@@ -1107,7 +1107,7 @@ describe('Bigtable/ClientSideMetricsAllMethods', () => {
       return bigtable;
     }
 
-    describe.only('ReadRows', () => {
+    describe('ReadRows', () => {
       it('should send the metrics to the metrics handler for a ReadRows call', done => {
         (async () => {
           const bigtable = await mockBigtableWithNoInserts(
