@@ -712,6 +712,16 @@ export class BigtableInstanceAdminClient {
  *   Output only. Reserved for future use.
  * @param {boolean} request.satisfiesPzi
  *   Output only. Reserved for future use.
+ * @param {number[]} request.tags
+ *   Optional. Input only. Immutable. Tag keys/values directly bound to this
+ *   resource. For example:
+ *   - "123/environment": "production",
+ *   - "123/costCenter": "marketing"
+ *
+ *   Tags and Labels (above) are both used to bind metadata to resources, with
+ *   different use-cases. See
+ *   https://cloud.google.com/resource-manager/docs/tags/tags-overview for an
+ *   in-depth overview on the difference between tags and labels.
  * @param {object} [options]
  *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
  * @returns {Promise} - The promise which resolves to an array.

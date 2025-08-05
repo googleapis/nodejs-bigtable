@@ -158,7 +158,7 @@
       "segments": [
         {
           "start": 25,
-          "end": 99,
+          "end": 111,
           "type": "FULL"
         }
       ],
@@ -198,6 +198,10 @@
           {
             "name": "satisfies_pzi",
             "type": "TYPE_BOOL"
+          },
+          {
+            "name": "tags",
+            "type": "TYPE_MESSAGE[]"
           }
         ],
         "resultType": ".google.bigtable.admin.v2.Instance",

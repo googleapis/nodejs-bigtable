@@ -5285,6 +5285,9 @@ export namespace google {
 
                     /** Instance satisfiesPzi */
                     satisfiesPzi?: (boolean|null);
+
+                    /** Instance tags */
+                    tags?: ({ [k: string]: string }|null);
                 }
 
                 /** Represents an Instance. */
@@ -5319,6 +5322,9 @@ export namespace google {
 
                     /** Instance satisfiesPzi. */
                     public satisfiesPzi?: (boolean|null);
+
+                    /** Instance tags. */
+                    public tags: { [k: string]: string };
 
                     /**
                      * Creates a new Instance instance using the specified properties.
