@@ -36,7 +36,7 @@ import {
   MethodName,
   StreamingState,
 } from './client-side-metrics/client-side-metrics-attributes';
-import {withMetricInterceptors} from './client-side-metrics/metric-interceptor';
+import {createMetricsUnaryInterceptorProvider} from './client-side-metrics/metric-interceptor';
 
 interface TabularApiSurfaceRequest {
   tableName?: string;
@@ -108,7 +108,7 @@ class RowDataUtils {
         client: 'BigtableClient',
         method: 'checkAndMutateRow',
         reqOpts,
-        gaxOpts: withMetricInterceptors(
+        gaxOpts: createMetricsUnaryInterceptorProvider(
           config.gaxOptions ?? {},
           metricsCollector,
         ),
@@ -237,7 +237,7 @@ class RowDataUtils {
         client: 'BigtableClient',
         method: 'readModifyWriteRow',
         reqOpts,
-        gaxOpts: withMetricInterceptors(gaxOptions, metricsCollector),
+        gaxOpts: createMetricsUnaryInterceptorProvider(gaxOptions, metricsCollector),
       },
       (err, ...args) => {
         metricsCollector.onOperationComplete(err ? err.code : 0);

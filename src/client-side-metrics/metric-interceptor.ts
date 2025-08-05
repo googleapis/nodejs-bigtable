@@ -76,7 +76,7 @@ function createMetricsInterceptorProvider(
  *   for the operation.
  * @returns {CallOptions} The modified `gaxOptions` with the interceptor attached.
  */
-export function withMetricInterceptors(
+export function createMetricsUnaryInterceptorProvider(
   gaxOptions: CallOptions,
   metricsCollector?: OperationMetricsCollector,
 ) {
