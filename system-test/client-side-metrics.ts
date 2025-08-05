@@ -330,45 +330,53 @@ async function checkForPublishedMetrics(projectId: string) {
   }
 }
 
-describe.only('Bigtable/ClientSideMetrics', () => {
+describe('Bigtable/ClientSideMetrics', () => {
   let defaultProjectId: string;
 
   before(async () => {
-    const bigtable = new Bigtable();
-    for (const instanceId of [instanceId1, instanceId2]) {
-      await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
-        tableId1,
-        tableId2,
-      ]);
-    }
-    defaultProjectId = await new Promise((resolve, reject) => {
-      bigtable.getProjectId_((err: Error | null, projectId?: string) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(projectId as string);
-        }
+    for (const bigtable of [
+      new Bigtable(),
+      new Bigtable({projectId: SECOND_PROJECT_ID}),
+    ]) {
+      for (const instanceId of [instanceId1, instanceId2]) {
+        await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
+          tableId1,
+          tableId2,
+        ]);
+      }
+      defaultProjectId = await new Promise((resolve, reject) => {
+        bigtable.getProjectId_((err: Error | null, projectId?: string) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(projectId as string);
+          }
+        });
       });
-    });
+    }
   });
 
   after(async () => {
-    const bigtable = new Bigtable();
-    try {
-      // If the instance has been deleted already by another source, we don't
-      // want this after hook to block the continuous integration pipeline.
-      const instance = bigtable.instance(instanceId1);
-      await instance.delete({});
-    } catch (e) {
-      console.warn('The instance has been deleted already');
-    }
-    try {
-      // If the instance has been deleted already by another source, we don't
-      // want this after hook to block the continuous integration pipeline.
-      const instance = bigtable.instance(instanceId2);
-      await instance.delete({});
-    } catch (e) {
-      console.warn('The instance has been deleted already');
+    for (const bigtable of [
+      new Bigtable(),
+      new Bigtable({projectId: SECOND_PROJECT_ID}),
+    ]) {
+      try {
+        // If the instance has been deleted already by another source, we don't
+        // want this after hook to block the continuous integration pipeline.
+        const instance = bigtable.instance(instanceId1);
+        await instance.delete({});
+      } catch (e) {
+        console.warn('The instance has been deleted already');
+      }
+      try {
+        // If the instance has been deleted already by another source, we don't
+        // want this after hook to block the continuous integration pipeline.
+        const instance = bigtable.instance(instanceId2);
+        await instance.delete({});
+      } catch (e) {
+        console.warn('The instance has been deleted already');
+      }
     }
   });
 
