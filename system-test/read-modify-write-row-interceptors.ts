@@ -209,7 +209,10 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
               ],
               appProfileId: undefined,
             },
-            gaxOpts: createMetricsUnaryInterceptorProvider({}, metricsCollector),
+            gaxOpts: createMetricsUnaryInterceptorProvider(
+              {},
+              metricsCollector,
+            ),
           },
           (err: ServiceError | null, resp?: any) => {
             if (err) {

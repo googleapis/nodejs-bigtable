@@ -237,7 +237,10 @@ class RowDataUtils {
         client: 'BigtableClient',
         method: 'readModifyWriteRow',
         reqOpts,
-        gaxOpts: createMetricsUnaryInterceptorProvider(gaxOptions, metricsCollector),
+        gaxOpts: createMetricsUnaryInterceptorProvider(
+          gaxOptions,
+          metricsCollector,
+        ),
       },
       (err, ...args) => {
         metricsCollector.onOperationComplete(err ? err.code : 0);
