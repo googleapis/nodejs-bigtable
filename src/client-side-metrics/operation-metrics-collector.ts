@@ -181,10 +181,7 @@ export class OperationMetricsCollector {
         }) => {
           this.onStatusMetadataReceived(status);
         },
-      )
-      .on('data', () => {
-        this.onResponse();
-      });
+      );
   }
 
   /**
@@ -310,7 +307,7 @@ export class OperationMetricsCollector {
                 client_name: `nodejs-bigtable/${version}`,
                 operationLatency: totalMilliseconds,
                 retryCount: this.attemptCount - 1,
-                firstResponseLatency: this.firstResponseLatency ?? undefined,
+                firstResponseLatency: this.firstResponseLatency ?? 0,
                 applicationLatency: applicationLatency ?? 0,
               });
             }

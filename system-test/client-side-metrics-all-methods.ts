@@ -37,6 +37,7 @@ import {
 import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {MetricServiceClient} from '@google-cloud/monitoring';
+import {MethodName} from '../src/client-side-metrics/client-side-metrics-attributes';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
 
@@ -64,6 +65,25 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
       CloudMonitoringExporter: Exporter,
     },
   }).GCPMetricsHandler;
+}
+
+function checkFirstResponseLatency(requestHandled: OnOperationCompleteData) {
+  assert(
+    Object.prototype.hasOwnProperty.call(
+      requestHandled,
+      'firstResponseLatency',
+    ),
+  );
+  if (
+    requestHandled.metricsCollectorData.method === MethodName.READ_ROWS ||
+    requestHandled.metricsCollectorData.method === MethodName.READ_ROW
+  ) {
+    assert(requestHandled.firstResponseLatency);
+    assert(requestHandled.firstResponseLatency > 0);
+  } else {
+    assert.strictEqual(requestHandled.firstResponseLatency, 0);
+  }
+  delete requestHandled.firstResponseLatency;
 }
 
 function readRowsAssertionCheck(
@@ -98,11 +118,10 @@ function readRowsAssertionCheck(
   const secondRequest = requestsHandled[1] as any;
   // We would expect these parameters to be different every time so delete
   // them from the comparison after checking they exist.
+  checkFirstResponseLatency(secondRequest);
   assert(secondRequest.operationLatency);
-  assert(secondRequest.firstResponseLatency);
-  assert.strictEqual(secondRequest.applicationLatency, 0);
   delete secondRequest.operationLatency;
-  delete secondRequest.firstResponseLatency;
+  assert(secondRequest.applicationLatency < 10);
   delete secondRequest.applicationLatency;
   delete secondRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(secondRequest, {
@@ -144,11 +163,10 @@ function readRowsAssertionCheck(
   const fourthRequest = requestsHandled[3] as any;
   // We would expect these parameters to be different every time so delete
   // them from the comparison after checking they exist.
+  checkFirstResponseLatency(fourthRequest);
   assert(fourthRequest.operationLatency);
-  assert(fourthRequest.firstResponseLatency);
-  assert.strictEqual(fourthRequest.applicationLatency, 0);
+  assert(fourthRequest.applicationLatency < 10);
   delete fourthRequest.operationLatency;
-  delete fourthRequest.firstResponseLatency;
   delete fourthRequest.applicationLatency;
   delete fourthRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(fourthRequest, {
