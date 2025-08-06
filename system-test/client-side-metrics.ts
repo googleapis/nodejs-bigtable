@@ -334,6 +334,12 @@ describe('Bigtable/ClientSideMetrics', () => {
   let defaultProjectId: string;
 
   before(async () => {
+    /*
+    For both the default project and the secondary project we need to create
+    instances with some data in them so that the tests can collect all the
+    metrics they would normally collect in a typical situation and compare
+    those metrics against expected results.
+     */
     for (const bigtable of [
       new Bigtable(),
       new Bigtable({projectId: SECOND_PROJECT_ID}),
