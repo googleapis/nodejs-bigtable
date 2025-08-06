@@ -37,8 +37,15 @@ import {
 import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {MetricServiceClient} from '@google-cloud/monitoring';
+import {MethodName} from '../src/client-side-metrics/client-side-metrics-attributes';
+import {generateId} from './common';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
+const instanceId1 = generateId('instance');
+const instanceId2 = generateId('instance');
+const tableId1 = 'my-table';
+const tableId2 = 'my-table2';
+const columnFamilyId = 'cf1';
 
 function getFakeBigtable(
   projectId: string,
@@ -66,6 +73,25 @@ function getHandlerFromExporter(Exporter: typeof CloudMonitoringExporter) {
   }).GCPMetricsHandler;
 }
 
+function checkFirstResponseLatency(requestHandled: OnOperationCompleteData) {
+  assert(
+    Object.prototype.hasOwnProperty.call(
+      requestHandled,
+      'firstResponseLatency',
+    ),
+  );
+  if (
+    requestHandled.metricsCollectorData.method === MethodName.READ_ROWS ||
+    requestHandled.metricsCollectorData.method === MethodName.READ_ROW
+  ) {
+    assert(requestHandled.firstResponseLatency);
+    assert(requestHandled.firstResponseLatency > 0);
+  } else {
+    assert.strictEqual(requestHandled.firstResponseLatency, 0);
+  }
+  delete requestHandled.firstResponseLatency;
+}
+
 function metricsAssertionCheck(
   projectId: string,
   requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
@@ -87,7 +113,7 @@ function metricsAssertionCheck(
     status: '0',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
-      instanceId: 'emulator-test-instance',
+      instanceId: instanceId1,
       table: 'my-table',
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
@@ -98,11 +124,10 @@ function metricsAssertionCheck(
   const secondRequest = requestsHandled[1] as any;
   // We would expect these parameters to be different every time so delete
   // them from the comparison after checking they exist.
+  checkFirstResponseLatency(secondRequest);
   assert(secondRequest.operationLatency);
-  assert(secondRequest.firstResponseLatency);
-  assert.strictEqual(secondRequest.applicationLatency, 0);
   delete secondRequest.operationLatency;
-  delete secondRequest.firstResponseLatency;
+  assert(secondRequest.applicationLatency < 10);
   delete secondRequest.applicationLatency;
   delete secondRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(secondRequest, {
@@ -110,7 +135,7 @@ function metricsAssertionCheck(
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
-      instanceId: 'emulator-test-instance',
+      instanceId: instanceId1,
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
       method,
@@ -133,7 +158,7 @@ function metricsAssertionCheck(
     status: '0',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
-      instanceId: 'emulator-test-instance',
+      instanceId: instanceId1,
       table: 'my-table2',
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
@@ -144,11 +169,10 @@ function metricsAssertionCheck(
   const fourthRequest = requestsHandled[3] as any;
   // We would expect these parameters to be different every time so delete
   // them from the comparison after checking they exist.
+  checkFirstResponseLatency(fourthRequest);
   assert(fourthRequest.operationLatency);
-  assert(fourthRequest.firstResponseLatency);
-  assert.strictEqual(fourthRequest.applicationLatency, 0);
+  assert(fourthRequest.applicationLatency < 10);
   delete fourthRequest.operationLatency;
-  delete fourthRequest.firstResponseLatency;
   delete fourthRequest.applicationLatency;
   delete fourthRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(fourthRequest, {
@@ -156,7 +180,7 @@ function metricsAssertionCheck(
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
-      instanceId: 'emulator-test-instance',
+      instanceId: instanceId1,
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
       method,
@@ -215,6 +239,18 @@ function checkSingleRowCall(
   );
 }
 
+function checkReadModifyWriteRowCall(
+  projectId: string,
+  requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
+) {
+  readRowsAssertionCheck(
+    projectId,
+    requestsHandled,
+    'Bigtable.ReadModifyWriteRow',
+    'false',
+  );
+}
+
 const entry = {
   cf1: {
     column: 1,
@@ -226,6 +262,13 @@ const mutation = {
   data: entry,
   method: Mutation.methods.INSERT,
 };
+
+const rules = [
+  {
+    column: 'cf1:column',
+    append: 'c',
+  },
+];
 
 /**
  * Checks if metrics have been published to Google Cloud Monitoring.
@@ -274,54 +317,53 @@ async function checkForPublishedMetrics(projectId: string) {
   }
 }
 
-describe('Bigtable/ClientSideMetrics', () => {
-  const instanceId1 = 'emulator-test-instance';
-  const instanceId2 = 'emulator-test-instance2';
-  const tableId1 = 'my-table';
-  const tableId2 = 'my-table2';
-  const columnFamilyId = 'cf1';
+describe('Bigtable/ClientSideMetricsAllMethods', () => {
   let defaultProjectId: string;
 
   before(async () => {
-    const bigtable = new Bigtable();
-    // For easier debugging, don't include metrics handlers in the config
-    // manager. This helps us step through the metrics handler for an individual
-    // test more easily.
-    bigtable._metricsConfigManager = new ClientSideMetricsConfigManager([]);
-    for (const instanceId of [instanceId1, instanceId2]) {
-      await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
-        tableId1,
-        tableId2,
-      ]);
-    }
-    defaultProjectId = await new Promise((resolve, reject) => {
-      bigtable.getProjectId_((err: Error | null, projectId?: string) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(projectId as string);
-        }
+    for (const bigtable of [
+      new Bigtable(),
+      new Bigtable({projectId: SECOND_PROJECT_ID}),
+    ]) {
+      for (const instanceId of [instanceId1, instanceId2]) {
+        await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
+          tableId1,
+          tableId2,
+        ]);
+      }
+      defaultProjectId = await new Promise((resolve, reject) => {
+        bigtable.getProjectId_((err: Error | null, projectId?: string) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(projectId as string);
+          }
+        });
       });
-    });
+    }
   });
 
   after(async () => {
-    const bigtable = new Bigtable();
-    try {
-      // If the instance has been deleted already by another source, we don't
-      // want this after hook to block the continuous integration pipeline.
-      const instance = bigtable.instance(instanceId1);
-      await instance.delete({});
-    } catch (e) {
-      console.warn('The instance has been deleted already');
-    }
-    try {
-      // If the instance has been deleted already by another source, we don't
-      // want this after hook to block the continuous integration pipeline.
-      const instance = bigtable.instance(instanceId2);
-      await instance.delete({});
-    } catch (e) {
-      console.warn('The instance has been deleted already');
+    for (const bigtable of [
+      new Bigtable(),
+      new Bigtable({projectId: SECOND_PROJECT_ID}),
+    ]) {
+      try {
+        // If the instance has been deleted already by another source, we don't
+        // want this after hook to block the continuous integration pipeline.
+        const instance = bigtable.instance(instanceId1);
+        await instance.delete({});
+      } catch (e) {
+        console.warn('The instance has been deleted already');
+      }
+      try {
+        // If the instance has been deleted already by another source, we don't
+        // want this after hook to block the continuous integration pipeline.
+        const instance = bigtable.instance(instanceId2);
+        await instance.delete({});
+      } catch (e) {
+        console.warn('The instance has been deleted already');
+      }
     }
   });
 
@@ -468,6 +510,91 @@ describe('Bigtable/ClientSideMetrics', () => {
               await table.getRows();
               const table2 = instance.table(tableId2);
               await table2.getRows();
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
+    describe('ReadModifyWriteRow', () => {
+      it('should send the metrics to Google Cloud Monitoring for a ReadModifyWriteRow call', done => {
+        (async () => {
+          try {
+            const bigtable = await mockBigtable(defaultProjectId, done);
+            for (const instanceId of [instanceId1, instanceId2]) {
+              await setupBigtableWithInsert(
+                bigtable,
+                columnFamilyId,
+                instanceId,
+                [tableId1, tableId2],
+              );
+              const instance = bigtable.instance(instanceId);
+              const table = instance.table(tableId1);
+              const row = table.row(columnFamilyId);
+              await row.createRules(rules);
+              const table2 = instance.table(tableId2);
+              const row2 = table2.row(columnFamilyId);
+              await row2.createRules(rules);
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a custom endpoint', done => {
+        (async () => {
+          try {
+            const bigtable = await mockBigtable(
+              defaultProjectId,
+              done,
+              'bogus-endpoint',
+            );
+            const instance = bigtable.instance(instanceId1);
+            const table = instance.table(tableId1);
+            try {
+              // This call will fail because we are trying to hit a bogus endpoint.
+              // The idea here is that we just want to record at least one metric
+              // so that the exporter gets executed.
+              const row = table.row(columnFamilyId);
+              await row.createRules(rules);
+            } catch (e: unknown) {
+              // Try blocks just need a catch/finally block.
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a ReadModifyWriteRow call with a second project', done => {
+        (async () => {
+          try {
+            // This is the second project the test is configured to work with:
+            const projectId = SECOND_PROJECT_ID;
+            const bigtable = await mockBigtable(projectId, done);
+            for (const instanceId of [instanceId1, instanceId2]) {
+              await setupBigtableWithInsert(
+                bigtable,
+                columnFamilyId,
+                instanceId,
+                [tableId1, tableId2],
+              );
+              const instance = bigtable.instance(instanceId);
+              const table = instance.table(tableId1);
+              const row = table.row(columnFamilyId);
+              await row.createRules(rules);
+              const table2 = instance.table(tableId2);
+              const row2 = table2.row(columnFamilyId);
+              await row2.createRules(rules);
             }
           } catch (e) {
             done(new Error('An error occurred while running the script'));
@@ -799,6 +926,111 @@ describe('Bigtable/ClientSideMetrics', () => {
         });
       });
     });
+    describe('ReadModifyWriteRow', () => {
+      it('should send the metrics to Google Cloud Monitoring for a ReadModifyWriteRow call', done => {
+        let testFinished = false;
+        /*
+        We need to create a timeout here because if we don't then mocha shuts down
+        the test as it is sleeping before the GCPMetricsHandler has a chance to
+        export the data. When the timeout is finished, if there were no export
+        errors then the test passes.
+        */
+        setTimeout(() => {
+          testFinished = true;
+          done();
+        }, 120000);
+        (async () => {
+          try {
+            const bigtable1 = await mockBigtable(defaultProjectId, done);
+            const bigtable2 = await mockBigtable(defaultProjectId, done);
+            for (const bigtable of [bigtable1, bigtable2]) {
+              for (const instanceId of [instanceId1, instanceId2]) {
+                await setupBigtableWithInsert(
+                  bigtable,
+                  columnFamilyId,
+                  instanceId,
+                  [tableId1, tableId2],
+                );
+                const instance = bigtable.instance(instanceId);
+                const table = instance.table(tableId1);
+                const row = table.row(columnFamilyId);
+                await row.createRules(rules);
+                const table2 = instance.table(tableId2);
+                const row2 = table2.row(columnFamilyId);
+                await row2.createRules(rules);
+              }
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a ReadModifyWriteRow call with thirty clients', done => {
+        /*
+        We need to create a timeout here because if we don't then mocha shuts down
+        the test as it is sleeping before the GCPMetricsHandler has a chance to
+        export the data. When the timeout is finished, if there were no export
+        errors then the test passes.
+        */
+        const testTimeout = setTimeout(() => {
+          done(new Error('The test timed out'));
+        }, 480000);
+        let testComplete = false;
+        const numClients = 30;
+        (async () => {
+          try {
+            const bigtableList = [];
+            const completedSet = new Set();
+            for (
+              let bigtableCount = 0;
+              bigtableCount < numClients;
+              bigtableCount++
+            ) {
+              const currentCount = bigtableCount;
+              const onExportSuccess = () => {
+                completedSet.add(currentCount);
+                if (completedSet.size === numClients) {
+                  // If every client has completed the export then pass the test.
+                  clearTimeout(testTimeout);
+                  if (!testComplete) {
+                    testComplete = true;
+                    done();
+                  }
+                }
+              };
+              bigtableList.push(
+                await mockBigtable(defaultProjectId, done, onExportSuccess),
+              );
+            }
+            for (const bigtable of bigtableList) {
+              for (const instanceId of [instanceId1, instanceId2]) {
+                await setupBigtableWithInsert(
+                  bigtable,
+                  columnFamilyId,
+                  instanceId,
+                  [tableId1, tableId2],
+                );
+                const instance = bigtable.instance(instanceId);
+                const table = instance.table(tableId1);
+                const row = table.row(columnFamilyId);
+                await row.createRules(rules);
+                const table2 = instance.table(tableId2);
+                const row2 = table2.row(columnFamilyId);
+                await row2.createRules(rules);
+              }
+            }
+          } catch (e) {
+            done(e);
+            done(new Error('An error occurred while running the script'));
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
     describe('MutateRows', () => {
       it('should send the metrics to Google Cloud Monitoring for a MutateRows call', done => {
         let testFinished = false;
@@ -1034,26 +1266,6 @@ describe('Bigtable/ClientSideMetrics', () => {
       return getFakeBigtable(projectId, TestGCPMetricsHandler);
     }
 
-    async function mockBigtableWithInserts(
-      projectId: string,
-      done: mocha.Done,
-      checkFn: (
-        projectId: string,
-        requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[],
-      ) => void,
-    ) {
-      const bigtable = await getFakeBigtableWithHandler(
-        projectId,
-        done,
-        checkFn,
-      );
-      await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId1, [
-        tableId1,
-        tableId2,
-      ]);
-      return bigtable;
-    }
-
     /**
      * Returns a bigtable client with a test metrics handler that will check
      * the metrics it receives and pass/fail the test if we get the right
@@ -1136,6 +1348,44 @@ describe('Bigtable/ClientSideMetrics', () => {
           } catch (e) {
             done(e);
           }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
+    describe('ReadModifyWriteRow', () => {
+      it('should send the metrics to the metrics handler for a ReadModifyWriteRow call', done => {
+        (async () => {
+          const bigtable = await mockBigtableWithNoInserts(
+            defaultProjectId,
+            done,
+            checkReadModifyWriteRowCall,
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          const row = table.row(columnFamilyId);
+          await row.createRules(rules);
+          const table2 = instance.table(tableId2);
+          const row2 = table2.row(columnFamilyId);
+          await row2.createRules(rules);
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should pass the projectId to the metrics handler properly', done => {
+        (async () => {
+          const bigtable = await mockBigtableWithNoInserts(
+            defaultProjectId,
+            done,
+            checkReadModifyWriteRowCall,
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          const row = table.row(columnFamilyId);
+          await row.createRules(rules);
+          const table2 = instance.table(tableId2);
+          const row2 = table2.row(columnFamilyId);
+          await row2.createRules(rules);
         })().catch(err => {
           throw err;
         });
