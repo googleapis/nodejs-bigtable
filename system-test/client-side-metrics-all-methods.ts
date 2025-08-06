@@ -38,8 +38,14 @@ import {ClientOptions} from 'google-gax';
 import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {MethodName} from '../src/client-side-metrics/client-side-metrics-attributes';
+import {generateId} from './common';
 
 const SECOND_PROJECT_ID = 'cfdb-sdk-node-tests';
+const instanceId1 = generateId('instance');
+const instanceId2 = generateId('instance');
+const tableId1 = 'my-table';
+const tableId2 = 'my-table2';
+const columnFamilyId = 'cf1';
 
 function getFakeBigtable(
   projectId: string,
@@ -107,7 +113,7 @@ function readRowsAssertionCheck(
     status: '0',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
-      instanceId: 'emulator-test-instance',
+      instanceId: instanceId1,
       table: 'my-table',
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
@@ -129,7 +135,7 @@ function readRowsAssertionCheck(
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
-      instanceId: 'emulator-test-instance',
+      instanceId: instanceId1,
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
       method,
@@ -152,7 +158,7 @@ function readRowsAssertionCheck(
     status: '0',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
-      instanceId: 'emulator-test-instance',
+      instanceId: instanceId1,
       table: 'my-table2',
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
@@ -174,7 +180,7 @@ function readRowsAssertionCheck(
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
-      instanceId: 'emulator-test-instance',
+      instanceId: instanceId1,
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
       method,
@@ -323,54 +329,53 @@ async function checkForPublishedMetrics(projectId: string) {
   }
 }
 
-describe('Bigtable/ClientSideMetrics', () => {
-  const instanceId1 = 'emulator-test-instance';
-  const instanceId2 = 'emulator-test-instance2';
-  const tableId1 = 'my-table';
-  const tableId2 = 'my-table2';
-  const columnFamilyId = 'cf1';
+describe('Bigtable/ClientSideMetricsAllMethods', () => {
   let defaultProjectId: string;
 
   before(async () => {
-    const bigtable = new Bigtable();
-    // For easier debugging, don't include metrics handlers in the config
-    // manager. This helps us step through the metrics handler for an individual
-    // test more easily.
-    bigtable._metricsConfigManager = new ClientSideMetricsConfigManager([]);
-    for (const instanceId of [instanceId1, instanceId2]) {
-      await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
-        tableId1,
-        tableId2,
-      ]);
-    }
-    defaultProjectId = await new Promise((resolve, reject) => {
-      bigtable.getProjectId_((err: Error | null, projectId?: string) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(projectId as string);
-        }
+    for (const bigtable of [
+      new Bigtable(),
+      new Bigtable({projectId: SECOND_PROJECT_ID}),
+    ]) {
+      for (const instanceId of [instanceId1, instanceId2]) {
+        await setupBigtableWithInsert(bigtable, columnFamilyId, instanceId, [
+          tableId1,
+          tableId2,
+        ]);
+      }
+      defaultProjectId = await new Promise((resolve, reject) => {
+        bigtable.getProjectId_((err: Error | null, projectId?: string) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(projectId as string);
+          }
+        });
       });
-    });
+    }
   });
 
   after(async () => {
-    const bigtable = new Bigtable();
-    try {
-      // If the instance has been deleted already by another source, we don't
-      // want this after hook to block the continuous integration pipeline.
-      const instance = bigtable.instance(instanceId1);
-      await instance.delete({});
-    } catch (e) {
-      console.warn('The instance has been deleted already');
-    }
-    try {
-      // If the instance has been deleted already by another source, we don't
-      // want this after hook to block the continuous integration pipeline.
-      const instance = bigtable.instance(instanceId2);
-      await instance.delete({});
-    } catch (e) {
-      console.warn('The instance has been deleted already');
+    for (const bigtable of [
+      new Bigtable(),
+      new Bigtable({projectId: SECOND_PROJECT_ID}),
+    ]) {
+      try {
+        // If the instance has been deleted already by another source, we don't
+        // want this after hook to block the continuous integration pipeline.
+        const instance = bigtable.instance(instanceId1);
+        await instance.delete({});
+      } catch (e) {
+        console.warn('The instance has been deleted already');
+      }
+      try {
+        // If the instance has been deleted already by another source, we don't
+        // want this after hook to block the continuous integration pipeline.
+        const instance = bigtable.instance(instanceId2);
+        await instance.delete({});
+      } catch (e) {
+        console.warn('The instance has been deleted already');
+      }
     }
   });
 
