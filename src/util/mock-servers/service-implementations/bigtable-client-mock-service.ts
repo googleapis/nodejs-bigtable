@@ -36,3 +36,10 @@ export class BigtableClientMockService extends MockService {
     // @ts-ignore
     proto.google.bigtable.v2.Bigtable.service;
 }
+
+export class BigtableAdminClientMockService extends MockService {
+  service =
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    proto.google.bigtable.admin.v2.BigtableInstanceAdmin.service;
+}
