@@ -37,7 +37,7 @@ describe.only('Bigtable/ClientSideMetrics', () => {
                 hundredValues.push(i);
               }
               const promises = hundredValues.map(i =>
-                  table.getRows({limit: 100}),
+                table.getRows({limit: 100}),
               );
               console.log(new Date());
               console.log('running 100 readRows calls');
