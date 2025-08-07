@@ -36,7 +36,7 @@ import {
   MethodName,
   StreamingState,
 } from './client-side-metrics/client-side-metrics-attributes';
-import {withMetricInterceptors} from './client-side-metrics/metric-interceptor';
+import {createMetricsUnaryInterceptorProvider} from './client-side-metrics/metric-interceptor';
 
 interface TabularApiSurfaceRequest {
   tableName?: string;
@@ -89,14 +89,32 @@ class RowDataUtils {
       properties.reqOpts,
     );
     properties.requestData.data = {};
+    // 1. Create a metrics collector.
+    const metricsCollector = new OperationMetricsCollector(
+      properties.requestData.table,
+      MethodName.CHECK_AND_MUTATE_ROW,
+      StreamingState.UNARY,
+      (
+        properties.requestData.table as any
+      ).bigtable._metricsConfigManager!.metricsHandlers,
+    );
+    // 2. Tell the metrics collector an attempt has been started.
+    metricsCollector.onOperationStart();
+    // 3. Make a unary call with gax options that include interceptors. The
+    // interceptors are built from a method that hooks them up to the
+    // metrics collector
     properties.requestData.bigtable.request<google.bigtable.v2.ICheckAndMutateRowResponse>(
       {
         client: 'BigtableClient',
         method: 'checkAndMutateRow',
         reqOpts,
-        gaxOpts: config.gaxOptions,
+        gaxOpts: createMetricsUnaryInterceptorProvider(
+          config.gaxOptions ?? {},
+          metricsCollector,
+        ),
       },
       (err, apiResponse) => {
+        metricsCollector.onOperationComplete(err ? err.code : 0);
         if (err) {
           callback(err, null, apiResponse);
           return;
@@ -219,7 +237,10 @@ class RowDataUtils {
         client: 'BigtableClient',
         method: 'readModifyWriteRow',
         reqOpts,
-        gaxOpts: withMetricInterceptors(gaxOptions, metricsCollector),
+        gaxOpts: createMetricsUnaryInterceptorProvider(
+          gaxOptions,
+          metricsCollector,
+        ),
       },
       (err, ...args) => {
         metricsCollector.onOperationComplete(err ? err.code : 0);
