@@ -215,6 +215,18 @@ function checkMutateRowsCall(
   );
 }
 
+function checkSampleRowKeysCall(
+  projectId: string,
+  requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
+) {
+  readRowsAssertionCheck(
+    projectId,
+    requestsHandled,
+    'Bigtable.SampleRowKeys',
+    'true',
+  );
+}
+
 function checkMutateRowCall(
   projectId: string,
   requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
@@ -440,6 +452,86 @@ describe('Bigtable/ClientSideMetricsAllMethods', () => {
       );
     }
 
+    describe('SampleRowKeys', () => {
+      it('should send the metrics to Google Cloud Monitoring for a SampleRowKeys call', done => {
+        (async () => {
+          try {
+            const bigtable = await mockBigtable(defaultProjectId, done);
+            for (const instanceId of [instanceId1, instanceId2]) {
+              await setupBigtableWithInsert(
+                bigtable,
+                columnFamilyId,
+                instanceId,
+                [tableId1, tableId2],
+              );
+              const instance = bigtable.instance(instanceId);
+              const table = instance.table(tableId1);
+              await table.sampleRowKeys();
+              const table2 = instance.table(tableId2);
+              await table2.sampleRowKeys();
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a custom endpoint', done => {
+        (async () => {
+          try {
+            const bigtable = await mockBigtable(
+              defaultProjectId,
+              done,
+              'bogus-endpoint',
+            );
+            const instance = bigtable.instance(instanceId1);
+            const table = instance.table(tableId1);
+            try {
+              // This call will fail because we are trying to hit a bogus endpoint.
+              // The idea here is that we just want to record at least one metric
+              // so that the exporter gets executed.
+              await table.sampleRowKeys();
+            } catch (e: unknown) {
+              // Try blocks just need a catch/finally block.
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a SampleRowKeys call with a second project', done => {
+        (async () => {
+          try {
+            // This is the second project the test is configured to work with:
+            const projectId = SECOND_PROJECT_ID;
+            const bigtable = await mockBigtable(projectId, done);
+            for (const instanceId of [instanceId1, instanceId2]) {
+              await setupBigtableWithInsert(
+                bigtable,
+                columnFamilyId,
+                instanceId,
+                [tableId1, tableId2],
+              );
+              const instance = bigtable.instance(instanceId);
+              const table = instance.table(tableId1);
+              await table.sampleRowKeys();
+              const table2 = instance.table(tableId2);
+              await table2.sampleRowKeys();
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
     describe('ReadRows', () => {
       it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
         (async () => {
@@ -825,6 +917,107 @@ describe('Bigtable/ClientSideMetricsAllMethods', () => {
       return getFakeBigtable(projectId, getHandlerFromExporter(TestExporter));
     }
 
+    describe('SampleRowKeys', () => {
+      it('should send the metrics to Google Cloud Monitoring for a SampleRowKeys call', done => {
+        let testFinished = false;
+        /*
+        We need to create a timeout here because if we don't then mocha shuts down
+        the test as it is sleeping before the GCPMetricsHandler has a chance to
+        export the data. When the timeout is finished, if there were no export
+        errors then the test passes.
+        */
+        setTimeout(() => {
+          testFinished = true;
+          done();
+        }, 120000);
+        (async () => {
+          try {
+            const bigtable1 = await mockBigtable(defaultProjectId, done);
+            const bigtable2 = await mockBigtable(defaultProjectId, done);
+            for (const bigtable of [bigtable1, bigtable2]) {
+              for (const instanceId of [instanceId1, instanceId2]) {
+                await setupBigtableWithInsert(
+                  bigtable,
+                  columnFamilyId,
+                  instanceId,
+                  [tableId1, tableId2],
+                );
+                const instance = bigtable.instance(instanceId);
+                const table = instance.table(tableId1);
+                await table.sampleRowKeys();
+                const table2 = instance.table(tableId2);
+                await table2.sampleRowKeys();
+              }
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a SampleRowKeys call with thirty clients', done => {
+        /*
+        We need to create a timeout here because if we don't then mocha shuts down
+        the test as it is sleeping before the GCPMetricsHandler has a chance to
+        export the data. When the timeout is finished, if there were no export
+        errors then the test passes.
+        */
+        const testTimeout = setTimeout(() => {
+          done(new Error('The test timed out'));
+        }, 480000);
+        let testComplete = false;
+        const numClients = 30;
+        (async () => {
+          try {
+            const bigtableList = [];
+            const completedSet = new Set();
+            for (
+              let bigtableCount = 0;
+              bigtableCount < numClients;
+              bigtableCount++
+            ) {
+              const currentCount = bigtableCount;
+              const onExportSuccess = () => {
+                completedSet.add(currentCount);
+                if (completedSet.size === numClients) {
+                  // If every client has completed the export then pass the test.
+                  clearTimeout(testTimeout);
+                  if (!testComplete) {
+                    testComplete = true;
+                    done();
+                  }
+                }
+              };
+              bigtableList.push(
+                await mockBigtable(defaultProjectId, done, onExportSuccess),
+              );
+            }
+            for (const bigtable of bigtableList) {
+              for (const instanceId of [instanceId1, instanceId2]) {
+                await setupBigtableWithInsert(
+                  bigtable,
+                  columnFamilyId,
+                  instanceId,
+                  [tableId1, tableId2],
+                );
+                const instance = bigtable.instance(instanceId);
+                const table = instance.table(tableId1);
+                await table.sampleRowKeys();
+                const table2 = instance.table(tableId2);
+                await table2.sampleRowKeys();
+              }
+            }
+          } catch (e) {
+            done(e);
+            done(new Error('An error occurred while running the script'));
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
     describe('ReadRows', () => {
       it('should send the metrics to Google Cloud Monitoring for a ReadRows call', done => {
         let testFinished = false;
@@ -1295,7 +1488,40 @@ describe('Bigtable/ClientSideMetricsAllMethods', () => {
       ]);
       return bigtable;
     }
-
+    describe('SampleRowKeys', () => {
+      it('should send the metrics to the metrics handler for a SampleRowKeys call', done => {
+        (async () => {
+          const bigtable = await mockBigtableWithNoInserts(
+            defaultProjectId,
+            done,
+            checkSampleRowKeysCall,
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          await table.sampleRowKeys();
+          const table2 = instance.table(tableId2);
+          await table2.sampleRowKeys();
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should pass the projectId to the metrics handler properly', done => {
+        (async () => {
+          const bigtable = await mockBigtableWithNoInserts(
+            defaultProjectId,
+            done,
+            checkSampleRowKeysCall,
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          await table.sampleRowKeys();
+          const table2 = instance.table(tableId2);
+          await table2.sampleRowKeys();
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
     describe('ReadRows', () => {
       it('should send the metrics to the metrics handler for a ReadRows call', done => {
         (async () => {
