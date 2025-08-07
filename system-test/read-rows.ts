@@ -105,12 +105,9 @@ describe('Bigtable/Table', () => {
   }).Bigtable;
 
   const bigtable = new FakeBigtable();
-  const INSTANCE_NAME = 'fake-instance2';
+  const INSTANCE_NAME = generateId('instance');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (bigtable as any).grpcCredentials = grpc.credentials.createInsecure();
-
-  const INSTANCE = bigtable.instance('instance');
-  const TABLE = INSTANCE.table('table');
 
   describe('close', () => {
     it('should fail when invoking readRows with closed client', async () => {
@@ -152,6 +149,8 @@ describe('Bigtable/Table', () => {
   });
 
   describe('createReadStream', () => {
+    const INSTANCE = bigtable.instance('instance');
+    const TABLE = INSTANCE.table('table');
     let endCalled: boolean;
     let error: ServiceError | null;
     let requestedOptions: Array<{}>;
