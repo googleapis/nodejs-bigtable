@@ -16,10 +16,6 @@ import * as proxyquire from 'proxyquire';
 import {ClientOptions, grpc} from 'google-gax';
 import * as assert from 'assert';
 import {MetricServiceClient} from '@google-cloud/monitoring';
-import {MockServer} from '../src/util/mock-servers/mock-server';
-import {MockService} from '../src/util/mock-servers/mock-service';
-import {Bigtable} from '../src';
-import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 
 describe('Bigtable/MetricServiceClientCredentials', () => {
   it('should pass the credentials and universe domain to the exporter', done => {
