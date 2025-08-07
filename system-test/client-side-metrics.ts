@@ -339,6 +339,12 @@ describe('Bigtable/ClientSideMetrics', () => {
     instances with some data in them so that the tests can collect all the
     metrics they would normally collect in a typical situation and compare
     those metrics against expected results.
+
+    We need tests like "should send the metrics to Google Cloud Monitoring for a
+    ReadRows call with a second project" that work with a second project because
+    we want to ensure that when a user specifies a second project that the
+    metrics actually get written for that other project instead of the default
+    project.
      */
     for (const bigtable of [
       new Bigtable(),
