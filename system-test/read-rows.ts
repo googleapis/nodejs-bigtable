@@ -25,9 +25,8 @@ import {EventEmitter} from 'events';
 import {Test} from './testTypes';
 import {ServiceError, GrpcClient, GoogleError, CallOptions} from 'google-gax';
 import {PassThrough} from 'stream';
-import * as proxyquire from 'proxyquire';
 import {TabularApiSurface} from '../src/tabular-api-surface';
-import * as mocha from 'mocha';
+import * as proxyquire from 'proxyquire';
 
 const {grpc} = new GrpcClient();
 
@@ -205,7 +204,7 @@ describe('Bigtable/Table', () => {
     });
 
     tests.forEach(test => {
-      it(test.name, (done: mocha.Done) => {
+      it(test.name, done => {
         responses = test.responses;
         TABLE.maxRetries = test.max_retries;
         TABLE.createReadStream(test.createReadStream_options)
