@@ -434,6 +434,7 @@ describe('Bigtable/AuthorizedViews', () => {
                 method: 'checkAndMutateRow',
                 gaxOpts: {
                   maxRetries: 4,
+                  otherArgs: {},
                 },
                 reqOpts: Object.assign(
                   {

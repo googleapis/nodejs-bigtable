@@ -22,7 +22,7 @@ import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 import * as assert from 'assert';
 import {GCPMetricsHandler} from '../src/client-side-metrics/gcp-metrics-handler';
 import * as proxyquire from 'proxyquire';
-import {Bigtable} from '../src';
+import {Bigtable, RawFilter} from '../src';
 import {Mutation} from '../src/mutation';
 import {Row} from '../src/row';
 import {
@@ -191,6 +191,18 @@ function readRowsAssertionCheck(
   });
 }
 
+function checkCheckAndMutateCall(
+  projectId: string,
+  requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
+) {
+  readRowsAssertionCheck(
+    projectId,
+    requestsHandled,
+    'Bigtable.CheckAndMutateRow',
+    'false',
+  );
+}
+
 function checkMultiRowCall(
   projectId: string,
   requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [],
@@ -274,6 +286,18 @@ const mutation = {
   data: entry,
   method: Mutation.methods.INSERT,
 };
+
+const filter: RawFilter = {
+  family: 'cf1',
+  value: 'alincoln',
+};
+
+const mutations = [
+  {
+    method: 'delete',
+    data: ['cf1:alincoln'],
+  },
+];
 
 const rules = [
   {
@@ -862,6 +886,91 @@ describe('Bigtable/ClientSideMetricsAllMethods', () => {
         });
       });
     });
+    describe('CheckAndMutateRow', () => {
+      it('should send the metrics to Google Cloud Monitoring for a CheckAndMutateRow call', done => {
+        (async () => {
+          try {
+            const bigtable = await mockBigtable(defaultProjectId, done);
+            for (const instanceId of [instanceId1, instanceId2]) {
+              await setupBigtableWithInsert(
+                bigtable,
+                columnFamilyId,
+                instanceId,
+                [tableId1, tableId2],
+              );
+              const instance = bigtable.instance(instanceId);
+              const table = instance.table(tableId1);
+              const row = table.row(columnFamilyId);
+              await row.filter(filter, {onMatch: mutations});
+              const table2 = instance.table(tableId2);
+              const row2 = table2.row(columnFamilyId);
+              await row2.filter(filter, {onMatch: mutations});
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a custom endpoint', done => {
+        (async () => {
+          try {
+            const bigtable = await mockBigtable(
+              defaultProjectId,
+              done,
+              'bogus-endpoint',
+            );
+            const instance = bigtable.instance(instanceId1);
+            const table = instance.table(tableId1);
+            try {
+              // This call will fail because we are trying to hit a bogus endpoint.
+              // The idea here is that we just want to record at least one metric
+              // so that the exporter gets executed.
+              const row = table.row(columnFamilyId);
+              await row.filter(filter, {onMatch: mutations});
+            } catch (e: unknown) {
+              // Try blocks just need a catch/finally block.
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a CheckAndMutateRow call with a second project', done => {
+        (async () => {
+          try {
+            // This is the second project the test is configured to work with:
+            const projectId = SECOND_PROJECT_ID;
+            const bigtable = await mockBigtable(projectId, done);
+            for (const instanceId of [instanceId1, instanceId2]) {
+              await setupBigtableWithInsert(
+                bigtable,
+                columnFamilyId,
+                instanceId,
+                [tableId1, tableId2],
+              );
+              const instance = bigtable.instance(instanceId);
+              const table = instance.table(tableId1);
+              const row = table.row(columnFamilyId);
+              await row.filter(filter, {onMatch: mutations});
+              const table2 = instance.table(tableId2);
+              const row2 = table2.row(columnFamilyId);
+              await row2.filter(filter, {onMatch: mutations});
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
   });
   describe('Bigtable/ClientSideMetricsToGCMTimeout', () => {
     // This test suite simulates a situation where the user creates multiple
@@ -1430,6 +1539,111 @@ describe('Bigtable/ClientSideMetricsAllMethods', () => {
         });
       });
     });
+    describe('CheckAndMutateRow', () => {
+      it('should send the metrics to Google Cloud Monitoring for a CheckAndMutateRow call', done => {
+        let testFinished = false;
+        /*
+        We need to create a timeout here because if we don't then mocha shuts down
+        the test as it is sleeping before the GCPMetricsHandler has a chance to
+        export the data. When the timeout is finished, if there were no export
+        errors then the test passes.
+        */
+        setTimeout(() => {
+          testFinished = true;
+          done();
+        }, 120000);
+        (async () => {
+          try {
+            const bigtable1 = await mockBigtable(defaultProjectId, done);
+            const bigtable2 = await mockBigtable(defaultProjectId, done);
+            for (const bigtable of [bigtable1, bigtable2]) {
+              for (const instanceId of [instanceId1, instanceId2]) {
+                await setupBigtableWithInsert(
+                  bigtable,
+                  columnFamilyId,
+                  instanceId,
+                  [tableId1, tableId2],
+                );
+                const instance = bigtable.instance(instanceId);
+                const table = instance.table(tableId1);
+                const row = table.row(columnFamilyId);
+                await row.filter(filter, {onMatch: mutations});
+                const table2 = instance.table(tableId2);
+                const row2 = table2.row(columnFamilyId);
+                await row2.filter(filter, {onMatch: mutations});
+              }
+            }
+          } catch (e) {
+            done(new Error('An error occurred while running the script'));
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should send the metrics to Google Cloud Monitoring for a single CheckAndMutateRow call with thirty clients', done => {
+        /*
+        We need to create a timeout here because if we don't then mocha shuts down
+        the test as it is sleeping before the GCPMetricsHandler has a chance to
+        export the data. When the timeout is finished, if there were no export
+        errors then the test passes.
+        */
+        const testTimeout = setTimeout(() => {
+          done(new Error('The test timed out'));
+        }, 480000);
+        let testComplete = false;
+        const numClients = 30;
+        (async () => {
+          try {
+            const bigtableList = [];
+            const completedSet = new Set();
+            for (
+              let bigtableCount = 0;
+              bigtableCount < numClients;
+              bigtableCount++
+            ) {
+              const currentCount = bigtableCount;
+              const onExportSuccess = () => {
+                completedSet.add(currentCount);
+                if (completedSet.size === numClients) {
+                  // If every client has completed the export then pass the test.
+                  clearTimeout(testTimeout);
+                  if (!testComplete) {
+                    testComplete = true;
+                    done();
+                  }
+                }
+              };
+              bigtableList.push(
+                await mockBigtable(defaultProjectId, done, onExportSuccess),
+              );
+            }
+            for (const bigtable of bigtableList) {
+              for (const instanceId of [instanceId1, instanceId2]) {
+                await setupBigtableWithInsert(
+                  bigtable,
+                  columnFamilyId,
+                  instanceId,
+                  [tableId1, tableId2],
+                );
+                const instance = bigtable.instance(instanceId);
+                const table = instance.table(tableId1);
+                const row = table.row(columnFamilyId);
+                await row.filter(filter, {onMatch: mutations});
+                const table2 = instance.table(tableId2);
+                const row2 = table2.row(columnFamilyId);
+                await row2.filter(filter, {onMatch: mutations});
+              }
+            }
+          } catch (e) {
+            done(e);
+            done(new Error('An error occurred while running the script'));
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
   });
   describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     async function getFakeBigtableWithHandler(
@@ -1684,6 +1898,26 @@ describe('Bigtable/ClientSideMetricsAllMethods', () => {
           const table2 = instance.table(tableId2);
           const row2 = table2.row('gwashington');
           await row2.save(entry);
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
+    describe('CheckAndMutateRow', () => {
+      it('should send the metrics to the metrics handler for a CheckAndMutateRow call for a single point', done => {
+        (async () => {
+          const bigtable = await mockBigtableWithNoInserts(
+            defaultProjectId,
+            done,
+            checkCheckAndMutateCall,
+          );
+          const instance = bigtable.instance(instanceId1);
+          const table = instance.table(tableId1);
+          const row = table.row(columnFamilyId);
+          await row.filter(filter, {onMatch: mutations});
+          const table2 = instance.table(tableId2);
+          const row2 = table2.row(columnFamilyId);
+          await row2.filter(filter, {onMatch: mutations});
         })().catch(err => {
           throw err;
         });
