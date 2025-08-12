@@ -756,9 +756,9 @@ describe('v2.BigtableClient', () => {
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadRowsRequest()
             );
-            // path template: {table_name=projects/*/instances/*/tables/*}/**
-            request.authorizedViewName = 'projects/value/instances/value/tables/value/value';
-            const expectedHeaderRequestParams = 'table_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+            // path template: {name=projects/*/instances/*}/**
+            request.materializedViewName = 'projects/value/instances/value/value';
+            const expectedHeaderRequestParams = 'name=projects%2Fvalue%2Finstances%2Fvalue';
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.v2.ReadRowsResponse()
             );
@@ -792,9 +792,9 @@ describe('v2.BigtableClient', () => {
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadRowsRequest()
             );
-            // path template: {table_name=projects/*/instances/*/tables/*}/**
-            request.authorizedViewName = 'projects/value/instances/value/tables/value/value';
-            const expectedHeaderRequestParams = 'table_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+            // path template: {name=projects/*/instances/*}/**
+            request.materializedViewName = 'projects/value/instances/value/value';
+            const expectedHeaderRequestParams = 'name=projects%2Fvalue%2Finstances%2Fvalue';
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.v2.ReadRowsResponse()
             );
@@ -827,9 +827,9 @@ describe('v2.BigtableClient', () => {
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadRowsRequest()
             );
-            // path template: {table_name=projects/*/instances/*/tables/*}/**
-            request.authorizedViewName = 'projects/value/instances/value/tables/value/value';
-            const expectedHeaderRequestParams = 'table_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+            // path template: {name=projects/*/instances/*}/**
+            request.materializedViewName = 'projects/value/instances/value/value';
+            const expectedHeaderRequestParams = 'name=projects%2Fvalue%2Finstances%2Fvalue';
             const expectedError = new Error('expected');
             client.innerApiCalls.readRows = stubServerStreamingCall(undefined, expectedError);
             const stream = client.readRows(request);
@@ -859,8 +859,8 @@ describe('v2.BigtableClient', () => {
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.ReadRowsRequest()
             );
-            // path template: {table_name=projects/*/instances/*/tables/*}/**
-            request.authorizedViewName = 'projects/value/instances/value/tables/value/value';
+            // path template: {name=projects/*/instances/*}/**
+            request.materializedViewName = 'projects/value/instances/value/value';
             const expectedError = new Error('The client has already been closed.');
             client.close().catch(err => {throw err});
             const stream = client.readRows(request, {retryRequestOptions: {noResponseRetries: 0}});
@@ -892,9 +892,9 @@ describe('v2.BigtableClient', () => {
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.SampleRowKeysRequest()
             );
-            // path template: {table_name=projects/*/instances/*/tables/*}/**
-            request.authorizedViewName = 'projects/value/instances/value/tables/value/value';
-            const expectedHeaderRequestParams = 'table_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+            // path template: {name=projects/*/instances/*}/**
+            request.materializedViewName = 'projects/value/instances/value/value';
+            const expectedHeaderRequestParams = 'name=projects%2Fvalue%2Finstances%2Fvalue';
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.v2.SampleRowKeysResponse()
             );
@@ -928,9 +928,9 @@ describe('v2.BigtableClient', () => {
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.SampleRowKeysRequest()
             );
-            // path template: {table_name=projects/*/instances/*/tables/*}/**
-            request.authorizedViewName = 'projects/value/instances/value/tables/value/value';
-            const expectedHeaderRequestParams = 'table_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+            // path template: {name=projects/*/instances/*}/**
+            request.materializedViewName = 'projects/value/instances/value/value';
+            const expectedHeaderRequestParams = 'name=projects%2Fvalue%2Finstances%2Fvalue';
             const expectedResponse = generateSampleMessage(
               new protos.google.bigtable.v2.SampleRowKeysResponse()
             );
@@ -963,9 +963,9 @@ describe('v2.BigtableClient', () => {
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.SampleRowKeysRequest()
             );
-            // path template: {table_name=projects/*/instances/*/tables/*}/**
-            request.authorizedViewName = 'projects/value/instances/value/tables/value/value';
-            const expectedHeaderRequestParams = 'table_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+            // path template: {name=projects/*/instances/*}/**
+            request.materializedViewName = 'projects/value/instances/value/value';
+            const expectedHeaderRequestParams = 'name=projects%2Fvalue%2Finstances%2Fvalue';
             const expectedError = new Error('expected');
             client.innerApiCalls.sampleRowKeys = stubServerStreamingCall(undefined, expectedError);
             const stream = client.sampleRowKeys(request);
@@ -995,8 +995,8 @@ describe('v2.BigtableClient', () => {
             const request = generateSampleMessage(
               new protos.google.bigtable.v2.SampleRowKeysRequest()
             );
-            // path template: {table_name=projects/*/instances/*/tables/*}/**
-            request.authorizedViewName = 'projects/value/instances/value/tables/value/value';
+            // path template: {name=projects/*/instances/*}/**
+            request.materializedViewName = 'projects/value/instances/value/value';
             const expectedError = new Error('The client has already been closed.');
             client.close().catch(err => {throw err});
             const stream = client.sampleRowKeys(request, {retryRequestOptions: {noResponseRetries: 0}});

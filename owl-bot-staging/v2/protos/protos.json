@@ -30,10 +30,10 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readRows",
                         "(google.api.http).body": "*",
-                        "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readRows",
+                        "(google.api.http).additional_bindings.post": "/v2/{materialized_view_name=projects/*/instances/*/materializedViews/*}:readRows",
                         "(google.api.http).additional_bindings.body": "*",
-                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}/**",
+                        "(google.api.routing).routing_parameters.field": "materialized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{name=projects/*/instances/*}/**",
                         "(google.api.method_signature)": "table_name,app_profile_id"
                       },
                       "parsedOptions": [
@@ -41,10 +41,16 @@
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:readRows",
                             "body": "*",
-                            "additional_bindings": {
-                              "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readRows",
-                              "body": "*"
-                            }
+                            "additional_bindings": [
+                              {
+                                "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readRows",
+                                "body": "*"
+                              },
+                              {
+                                "post": "/v2/{materialized_view_name=projects/*/instances/*/materializedViews/*}:readRows",
+                                "body": "*"
+                              }
+                            ]
                           }
                         },
                         {
@@ -60,6 +66,10 @@
                               {
                                 "field": "authorized_view_name",
                                 "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
+                              },
+                              {
+                                "field": "materialized_view_name",
+                                "path_template": "{name=projects/*/instances/*}/**"
                               }
                             ]
                           }
@@ -78,18 +88,23 @@
                       "responseStream": true,
                       "options": {
                         "(google.api.http).get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys",
-                        "(google.api.http).additional_bindings.get": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:sampleRowKeys",
-                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}/**",
+                        "(google.api.http).additional_bindings.get": "/v2/{materialized_view_name=projects/*/instances/*/materializedViews/*}:sampleRowKeys",
+                        "(google.api.routing).routing_parameters.field": "materialized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{name=projects/*/instances/*}/**",
                         "(google.api.method_signature)": "table_name,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
                             "get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys",
-                            "additional_bindings": {
-                              "get": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:sampleRowKeys"
-                            }
+                            "additional_bindings": [
+                              {
+                                "get": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:sampleRowKeys"
+                              },
+                              {
+                                "get": "/v2/{materialized_view_name=projects/*/instances/*/materializedViews/*}:sampleRowKeys"
+                              }
+                            ]
                           }
                         },
                         {
@@ -105,6 +120,10 @@
                               {
                                 "field": "authorized_view_name",
                                 "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
+                              },
+                              {
+                                "field": "materialized_view_name",
+                                "path_template": "{name=projects/*/instances/*}/**"
                               }
                             ]
                           }

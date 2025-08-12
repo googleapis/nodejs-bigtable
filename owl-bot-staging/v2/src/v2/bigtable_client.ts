@@ -1164,6 +1164,16 @@ export class BigtableClient {
         }
       }
     }
+    {
+      const fieldValue = request.materializedViewName;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue.toString().match(RegExp('(?<name>projects/[^/]+/instances/[^/]+)(?:/.*)?'));
+        if (match) {
+          const parameterValue = match.groups?.['name'] ?? fieldValue;
+          Object.assign(routingParameter, { name: parameterValue });
+        }
+      }
+    }
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = this._gaxModule.routingHeader.fromParams(
@@ -1244,6 +1254,16 @@ export class BigtableClient {
         if (match) {
           const parameterValue = match.groups?.['table_name'] ?? fieldValue;
           Object.assign(routingParameter, { table_name: parameterValue });
+        }
+      }
+    }
+    {
+      const fieldValue = request.materializedViewName;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue.toString().match(RegExp('(?<name>projects/[^/]+/instances/[^/]+)(?:/.*)?'));
+        if (match) {
+          const parameterValue = match.groups?.['name'] ?? fieldValue;
+          Object.assign(routingParameter, { name: parameterValue });
         }
       }
     }
