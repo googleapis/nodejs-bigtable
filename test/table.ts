@@ -35,6 +35,7 @@ import {OperationMetricsCollector} from '../src/client-side-metrics/operation-me
 import {SinonSpy} from 'sinon';
 import {TabularApiSurface} from '../src/tabular-api-surface';
 import {GetRowsOptions} from '../src/table';
+import {mutateInternal} from '../src/utils/mutateInternal';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
@@ -135,6 +136,13 @@ function getTableMock(
       createReadStreamInternal: createReadStreamInternal,
     },
   });
+  const FakeMutateInternal = proxyquire('../src/utils/mutateInternal.js', {
+    '../row.js': {Row: FakeRow},
+    '../chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+    '../filter.js': {Filter: FakeFilter},
+    '../mutation.js': {Mutation: FakeMutation},
+    pumpify,
+  }).mutateInternal;
   const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
     '@google-cloud/promisify': fakePromisify,
     './family.js': {Family: FakeFamily},
@@ -145,6 +153,9 @@ function getTableMock(
     './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
     './utils/createReadStreamInternal': {
       createReadStreamInternal,
+    },
+    './utils/mutateInternal': {
+      mutateInternal: FakeMutateInternal,
     },
     './utils/getRowsInternal': {
       getRowsInternal: FakeGetRows.getRowsInternal,
