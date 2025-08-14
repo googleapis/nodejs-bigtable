@@ -31,6 +31,12 @@ import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
 import {RowDataUtils, RowProperties} from './row-data-utils';
 import {TabularApiSurface} from './tabular-api-surface';
+import {getRowsInternal} from './utils/getRowsInternal';
+import {
+  MethodName,
+  StreamingState,
+} from './client-side-metrics/client-side-metrics-attributes';
+import {mutateInternal} from './utils/mutateInternal';
 
 export interface Rule {
   column: string;
@@ -666,31 +672,42 @@ export class Row {
       filter,
     });
 
-    this.table.getRows(getRowsOptions, (err, rows) => {
-      if (err) {
-        callback(err);
-        return;
-      }
+    const metricsCollector =
+      this.table.bigtable._metricsConfigManager.createOperation(
+        MethodName.READ_ROW,
+        StreamingState.UNARY,
+        this.table,
+      );
+    void getRowsInternal(
+      this.table,
+      metricsCollector,
+      getRowsOptions,
+      (err, rows) => {
+        if (err) {
+          callback(err);
+          return;
+        }
 
-      const row = rows![0];
+        const row = rows![0];
 
-      if (!row) {
-        const e = new RowError(this.id);
-        callback(e);
-        return;
-      }
+        if (!row) {
+          const e = new RowError(this.id);
+          callback(e);
+          return;
+        }
 
-      this.data = row.data;
+        this.data = row.data;
 
-      // If the user specifies column names, we'll return back the row data
-      // we received. Otherwise, we'll return the row "this" in a typical
-      // GrpcServiceObject#get fashion.
-      if (columns.length > 0) {
-        callback(null, row.data);
-      } else {
-        (callback as {} as GetRowCallback<Row>)(null, this);
-      }
-    });
+        // If the user specifies column names, we'll return back the row data
+        // we received. Otherwise, we'll return the row "this" in a typical
+        // GrpcServiceObject#get fashion.
+        if (columns.length > 0) {
+          callback(null, row.data);
+        } else {
+          (callback as {} as GetRowCallback<Row>)(null, this);
+        }
+      },
+    );
   }
 
   getMetadata(options?: GetRowOptions): Promise<GetRowMetadataResponse>;
@@ -814,7 +831,19 @@ export class Row {
       method: Mutation.methods.INSERT,
     } as {} as Entry;
     this.data = {};
-    this.table.mutate(mutation, gaxOptions as {} as MutateOptions, callback);
+    const metricsCollector =
+      this.bigtable._metricsConfigManager.createOperation(
+        MethodName.MUTATE_ROW,
+        StreamingState.UNARY,
+        this.table,
+      );
+    mutateInternal(
+      this.table,
+      metricsCollector,
+      mutation,
+      gaxOptions as {} as MutateOptions,
+      callback,
+    );
   }
 }
 

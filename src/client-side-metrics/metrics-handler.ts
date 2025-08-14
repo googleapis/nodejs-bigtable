@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
-import {grpc} from 'google-gax';
 
 /**
  * The interfaces below use undefined instead of null to indicate a metric is
@@ -28,11 +27,9 @@ type IMetricsCollectorData = {
   zone?: string;
   app_profile?: string;
   method: MethodName;
-  client_uid: string;
 };
 
 interface StandardData {
-  projectId: string;
   metricsCollectorData: IMetricsCollectorData;
   client_name: string;
   streaming: StreamingState;
@@ -42,7 +39,7 @@ interface StandardData {
 export interface OnOperationCompleteData extends StandardData {
   firstResponseLatency?: number;
   operationLatency: number;
-  applicationLatencies: number[];
+  applicationLatency?: number;
   retryCount?: number;
 }
 

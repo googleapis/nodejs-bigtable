@@ -22,21 +22,26 @@ import {
 } from '../../src/client-side-metrics/client-side-metrics-attributes';
 import {grpc} from 'google-gax';
 import {expectedRequestsHandled} from '../../test-common/metrics-handler-fixture';
+import * as path from 'path'; // Import the 'path' module
 import * as gax from 'google-gax';
 import * as proxyquire from 'proxyquire';
-const root = gax.protobuf.loadSync(
-  './protos/google/bigtable/v2/response_params.proto',
+import {GCPMetricsHandler} from '../../src/client-side-metrics/gcp-metrics-handler';
+const protoPath = path.join(
+  __dirname,
+  '../../protos/google/bigtable/v2/response_params.proto',
 );
+const root = gax.protobuf.loadSync(protoPath);
 const ResponseParams = root.lookupType('ResponseParams');
+
+const projectId = 'my-project';
 
 /**
  * A fake implementation of the Bigtable client for testing purposes.  Provides a
  * metricsTracerFactory and a stubbed projectId method.
  */
 class FakeBigtable {
-  clientUid = 'fake-uuid';
   appProfileId?: string;
-  projectId = 'my-project';
+  projectId = projectId;
 }
 
 /**
@@ -48,6 +53,11 @@ class FakeInstance {
    */
   id = 'fakeInstanceId';
 }
+
+const logger = {value: ''};
+const testHandler = new TestMetricsHandler();
+testHandler.projectId = projectId;
+testHandler.messages = logger;
 
 describe('Bigtable/MetricsCollector', () => {
   class FakeHRTime {
@@ -63,23 +73,28 @@ describe('Bigtable/MetricsCollector', () => {
     'node:process': {
       hrtime: new FakeHRTime(),
     },
+    './gcp-metrics-handler': {
+      GCPMetricsHandler: testHandler,
+    },
   };
   const FakeOperationsMetricsCollector = proxyquire(
     '../../src/client-side-metrics/operation-metrics-collector.js',
     stubs,
   ).OperationMetricsCollector;
 
-  const logger = {value: ''};
-
   it('should record the right metrics with a typical method call', async () => {
-    const testHandler = new TestMetricsHandler(logger);
-    const metricsHandlers = [testHandler];
     class FakeTable {
       id = 'fakeTableId';
       instance = new FakeInstance();
       bigtable = new FakeBigtable();
 
       async fakeMethod(): Promise<void> {
+        class FakeUserStream {
+          getTotalDurationMs() {
+            return 1256;
+          }
+        }
+        const userStream = new FakeUserStream();
         function createMetadata(duration: string) {
           return {
             internalRepr: new Map([
@@ -107,9 +122,9 @@ describe('Bigtable/MetricsCollector', () => {
           };
           const metricsCollector = new FakeOperationsMetricsCollector(
             this,
-            metricsHandlers,
             MethodName.READ_ROWS,
             StreamingState.STREAMING,
+            [testHandler as unknown as GCPMetricsHandler],
           );
           // In this method we simulate a series of events that might happen
           // when a user calls one of the Table methods.
@@ -125,18 +140,13 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '5. Client receives first row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '6. User receives first row.\n';
-          metricsCollector.onRowReachesUser();
           logger.value += '7. Client receives metadata.\n';
           metricsCollector.onMetadataReceived(createMetadata('102'));
           logger.value += '8. Client receives second row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '9. User receives second row.\n';
-          metricsCollector.onRowReachesUser();
           logger.value += '10. A transient error occurs.\n';
-          metricsCollector.onAttemptComplete(
-            this.bigtable.projectId,
-            grpc.status.DEADLINE_EXCEEDED,
-          );
+          metricsCollector.onAttemptComplete(grpc.status.DEADLINE_EXCEEDED);
           logger.value += '11. After a timeout, the second attempt is made.\n';
           metricsCollector.onAttemptStart();
           logger.value += '12. Client receives status information.\n';
@@ -146,22 +156,16 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '14. Client receives third row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '15. User receives third row.\n';
-          metricsCollector.onRowReachesUser();
           logger.value += '16. Client receives metadata.\n';
           metricsCollector.onMetadataReceived(createMetadata('104'));
           logger.value += '17. Client receives fourth row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '18. User receives fourth row.\n';
-          metricsCollector.onRowReachesUser();
           logger.value += '19. User reads row 1\n';
           logger.value += '20. Stream ends, operation completes\n';
-          metricsCollector.onAttemptComplete(
-            this.bigtable.projectId,
-            grpc.status.OK,
-          );
           metricsCollector.onOperationComplete(
-            this.bigtable.projectId,
             grpc.status.OK,
+            userStream.getTotalDurationMs(),
           );
         }
       }

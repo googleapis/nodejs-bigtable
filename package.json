@@ -1,6 +1,6 @@
 {
   "name": "@google-cloud/bigtable",
-  "version": "6.0.0",
+  "version": "6.3.0",
   "description": "Cloud Bigtable Client Library for Node.js",
   "keywords": [
     "bigtable",
@@ -57,11 +57,13 @@
     "@opentelemetry/resources": "^1.30.0",
     "@opentelemetry/sdk-metrics": "^1.30.0",
     "@types/long": "^4.0.0",
+    "abort-controller": "^3.0.0",
     "arrify": "2.0.0",
     "concat-stream": "^2.0.0",
     "dot-prop": "6.0.0",
     "escape-string-regexp": "4.0.0",
     "extend": "^3.0.2",
+    "fast-crc32c": "^2.0.0",
     "google-gax": "^5.0.1-rc.0",
     "grpc-gcp": "^1.0.1",
     "is": "^3.3.0",
