@@ -1364,4 +1364,5 @@ export {
   WaitForReplicationCallback,
   WaitForReplicationResponse,
 } from './table';
+export {GCRuleMaker} from './gc-rule-maker';
 export {SqlTypes};
