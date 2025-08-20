@@ -113,35 +113,53 @@ const snippets = {
   createTable: (instanceId, tableId) => {
     // [START bigtable_api_create_table]
     const {Bigtable} = require('@google-cloud/bigtable');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
+    const adminClient = new BigtableTableAdminClient();
 
-    const options = {
-      families: ['follows'],
+    const request = {
+      parent: instance.name,
+      tableId: tableId,
+      table: {
+        columnFamilies: {
+          follows: {},
+        },
+      },
     };
 
     // You can also specify garbage collection rules for your column families.
     // See {@link Table#createFamily} for more information about
     // column families and garbage collection rules.
     //-
-    // const options = {
-    //   families: [
-    //     {
-    //       name: 'follows',
-    //       rule:  {
-    //         age: {
-    //           seconds: 0,
-    //           nanos: 5000
+    // const request = {
+    //   parent: instance.name,
+    //   tableId: tableId,
+    //   table: {
+    //     columnFamilies: {
+    //       follows: {
+    //         gcRule: {
+    //           union: {
+    //             rules: [
+    //               {
+    //                 maxAge: {
+    //                   seconds: 0,
+    //                   nanos: 5000,
+    //                 },
+    //               },
+    //               {
+    //                 maxNumVersions: 3,
+    //               },
+    //             ],
+    //           },
     //         },
-    //         versions: 3,
-    //         union: true
-    //       }
-    //     }
-    //   ]
+    //       },
+    //     },
+    //   },
     // };
 
-    instance
-      .createTable(tableId, options)
+    adminClient
+      .createTable(request)
       .then(result => {
         const newTable = result[0];
         // const apiResponse = result[1];
