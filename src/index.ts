@@ -591,7 +591,7 @@ export class Bigtable {
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
 
     const handlers = !(options.metricsEnabled === false)
-      ? [new GCPMetricsHandler(options as ClientOptions)]
+      ? [new GCPMetricsHandler(Object.assign({}, options) as ClientOptions)]
       : [];
     this._metricsConfigManager = new ClientSideMetricsConfigManager(handlers);
   }
