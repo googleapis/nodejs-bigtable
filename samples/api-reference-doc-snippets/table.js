@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const {Bigtable} = require('@google-cloud/bigtable');
+const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
+const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
 const bigtable = new Bigtable();
 
 const snippets = {
@@ -88,18 +89,30 @@ const snippets = {
     const table = instance.table(tableId);
 
     // [START bigtable_api_create_family]
-    const options = {};
-    // options.rule = {
-    //   age: {
-    //     seconds: 0,
-    //     nanos: 5000
-    //   },
-    //   versions: 3,
-    //   union: true
-    // };
+    const options = {
+      ruleType: 'union',
+      rule: {
+        maxVersions: 3,
+        rule: {
+          maxAge: {
+            seconds: 0,
+            nanos: 5000,
+          },
+        },
+      },
+    };
 
-    table
-      .createFamily(familyId, options)
+    BigtableTableAdminClient.modifyColumnFamilies({
+      name: table.name,
+      modifications: [
+        {
+          id: familyId,
+          create: {
+            gcRule: GCRuleMaker.makeRule(options),
+          },
+        },
+      ],
+    })
       .then(result => {
         const family = result[0];
         // const apiResponse = result[1];
