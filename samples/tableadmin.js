@@ -13,7 +13,8 @@
 // limitations under the License.
 
 // Imports the Google Cloud client library
-const {Bigtable} = require('@google-cloud/bigtable');
+const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
+const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
 
 async function runTableOperations(instanceID, tableID) {
   const bigtable = new Bigtable();
@@ -64,15 +65,24 @@ async function runTableOperations(instanceID, tableID) {
   // Define the GC rule to retain data with max age of 5 days
   const maxAgeRule = {
     rule: {
-      age: {
+      maxAge: {
         // Value must be atleast 1 millisecond
         seconds: 60 * 60 * 24 * 5,
         nanos: 0,
       },
     },
   };
-
-  let [family] = await table.createFamily('cf1', maxAgeRule);
+  let [family] = await BigtableTableAdminClient.modifyColumnFamilies({
+    name: table.name,
+    modifications: [
+      {
+        id: 'cf1',
+        create: {
+          gcRule: GCRuleMaker.makeRule(maxAgeRule),
+        },
+      },
+    ],
+  });
   console.log(`Created column family ${family.id}`);
   // [END bigtable_create_family_gc_max_age]
 
