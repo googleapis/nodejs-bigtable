@@ -56,6 +56,7 @@ const {grpc} = new gax.GrpcClient();
 // Enable channel pooling
 const grpcGcp = grpcGcpModule(gaxVendoredGrpc);
 
+// Some comment
 export interface GetInstancesCallback {
   (
     err: ServiceError | null,
