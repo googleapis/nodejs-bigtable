@@ -17,9 +17,6 @@ const normalizeCallback = require('./utils/normalize-callback.js');
 
 const grpc = require('@grpc/grpc-js');
 const {Bigtable} = require('../../build/src/index.js');
-const {
-  ClientSideMetricsConfigManager,
-} = require('../../build/src/client-side-metrics/metrics-config-manager');
 const {BigtableClient} = require('../../build/src/index.js').v2;
 
 const v2 = Symbol.for('v2');
@@ -84,10 +81,6 @@ const createClient = ({clientMap}) =>
       appProfileId,
       clientConfig,
     });
-    const handlers = [];
-    bigtable._metricsConfigManager = new ClientSideMetricsConfigManager(
-      handlers,
-    );
     bigtable[v2] = new BigtableClient(bigtable.options.BigtableClient);
     clientMap.set(clientId, bigtable);
   });
