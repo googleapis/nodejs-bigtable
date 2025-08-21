@@ -15,11 +15,11 @@
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
-  backupId = 'YOUR_BACKUP_ID',
+  clusterId = 'YOUR_CLUSTER_ID',
+  backupId = 'YOUR_BACKUP_ID'
 ) {
   // [START bigtable_api_restore_backup]
-  const {Bigtable} = require('@google-cloud/bigtable');
-  const bigtable = new Bigtable();
+  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
 
   async function restoreBackup() {
     /**
@@ -27,16 +27,26 @@ async function main(
      */
     // const instanceId = 'YOUR_INSTANCE_ID';
     // const tableId = 'YOUR_TABLE_ID';
+    // const clusterId = 'YOUR_CLUSTER_ID';
     // const backupId = 'YOUR_BACKUP_ID';
-    const instance = bigtable.instance(instanceId);
+
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
     // Restore a table to an instance.
-    const [table, operation] = await instance.createTableFromBackup({
-      table: tableId,
-      backup: backupId,
+    const [operation] = await adminClient.restoreTable({
+      parent: adminClient.instancePath(projectId, instanceId),
+      tableId,
+      backup: adminClient.backupPath(
+        projectId,
+        instanceId,
+        clusterId,
+        backupId
+      ),
     });
 
-    await operation.promise();
+    const [table] = await operation.promise();
+
     console.log(`Table restored to ${table.id} successfully.`);
   }
 
