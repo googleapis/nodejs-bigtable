@@ -84,7 +84,18 @@ const snippets = {
     // [END bigtable_api_get_table_meta]
   },
 
-  createFamily: (instanceId, tableId, familyId) => {
+  createFamily: async (instanceId, tableId, familyId) => {
+    // The request will only work if the projectName doesn't contain the {{projectId}} token.
+    const defaultProjectId = await new Promise((resolve, reject) => {
+      bigtable.getProjectId_((err, projectId) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(projectId);
+        }
+      });
+    });
+    bigtable.projectName = `projects/${defaultProjectId}`;
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
