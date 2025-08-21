@@ -123,14 +123,10 @@ async function runTableOperations(instanceID, tableID) {
   // Define a GC rule to drop cells older than 5 days or not the most recent version
   const unionRule = {
     ruleType: 'union',
-    rule: {
-      maxVersions: 1,
-      rule: {
-        maxAge: {
-          seconds: 60 * 60 * 24 * 5,
-          nanos: 0,
-        },
-      },
+    maxVersions: 1,
+    maxAge: {
+      seconds: 60 * 60 * 24 * 5,
+      nanos: 0,
     },
   };
 
@@ -156,14 +152,10 @@ async function runTableOperations(instanceID, tableID) {
   // GC rule: Drop cells older than 5 days AND older than the most recent 2 versions
   const intersectionRule = {
     ruleType: 'intersection',
-    rule: {
-      maxVersions: 2,
-      rule: {
-        maxAge: {
-          seconds: 60 * 60 * 24 * 5,
-          nanos: 0,
-        },
-      },
+    maxVersions: 2,
+    maxAge: {
+      seconds: 60 * 60 * 24 * 5,
+      nanos: 0,
     },
   };
   [family] = await adminClient.modifyColumnFamilies({
@@ -189,20 +181,14 @@ async function runTableOperations(instanceID, tableID) {
   // Drop cells that are older than a month AND older than the 2 recent versions
   const nestedRule = {
     ruleType: 'union',
+    maxVersions: 10,
     rule: {
-      maxVersions: 10,
-      rule: {
-        ruleType: 'intersection',
-        rule: {
-          maxVersions: 2,
-          rule: {
-            maxAge: {
-              // one month
-              seconds: 60 * 60 * 24 * 30,
-              nanos: 0,
-            },
-          },
-        },
+      ruleType: 'intersection',
+      maxVersions: 2,
+      maxAge: {
+        // one month
+        seconds: 60 * 60 * 24 * 30,
+        nanos: 0,
       },
     },
   };
