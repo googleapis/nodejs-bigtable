@@ -84,7 +84,7 @@ async function runTableOperations(instanceID, tableID) {
       },
     ],
   });
-  console.log(`Created column family ${family.id}`);
+  console.log(`Created column family ${family.name}`);
   // [END bigtable_create_family_gc_max_age]
 
   console.log();
@@ -112,7 +112,7 @@ async function runTableOperations(instanceID, tableID) {
       },
     ],
   });
-  console.log(`Created column family ${family.id}`);
+  console.log(`Created column family ${family.name}`);
   // [END bigtable_create_family_gc_max_versions]
 
   console.log();
@@ -141,7 +141,7 @@ async function runTableOperations(instanceID, tableID) {
       },
     ],
   });
-  console.log(`Created column family ${family.id}`);
+  console.log(`Created column family ${family.name}`);
   // [END bigtable_create_family_gc_union]
 
   console.log();
@@ -169,7 +169,7 @@ async function runTableOperations(instanceID, tableID) {
       },
     ],
   });
-  console.log(`Created column family ${family.id}`);
+  console.log(`Created column family ${family.name}`);
   // [END bigtable_create_family_gc_intersection]
 
   console.log();
@@ -204,7 +204,7 @@ async function runTableOperations(instanceID, tableID) {
       },
     ],
   });
-  console.log(`Created column family ${family.id}`);
+  console.log(`Created column family ${family.name}`);
   // [END bigtable_create_family_gc_nested]
 
   console.log();
