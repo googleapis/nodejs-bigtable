@@ -47,7 +47,7 @@ async function main(
 
     const [table] = await operation.promise();
 
-    console.log(`Table restored to ${table.id} successfully.`);
+    console.log(`Table restored to ${table.name} successfully.`);
   }
 
   await restoreBackup();
