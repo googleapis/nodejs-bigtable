@@ -93,7 +93,7 @@ const snippets = {
       ruleType: 'union',
       maxVersions: 3,
       maxAge: {
-        seconds: 0,
+        seconds: 1,
         nanos: 5000,
       },
     };
