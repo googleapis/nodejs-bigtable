@@ -19,6 +19,16 @@ const adminClient = new BigtableTableAdminClient();
 
 async function runTableOperations(instanceID, tableID) {
   const bigtable = new Bigtable();
+  const defaultProjectId = await new Promise((resolve, reject) => {
+    bigtable.getProjectId_((err, projectId) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(projectId);
+      }
+    });
+  });
+  bigtable.projectName = `projects/${defaultProjectId}`;
   const instance = bigtable.instance(instanceID);
   const table = instance.table(tableID);
 
