@@ -91,28 +91,26 @@ const snippets = {
     // [START bigtable_api_create_family]
     const options = {
       ruleType: 'union',
-      rule: {
-        maxVersions: 3,
-        rule: {
-          maxAge: {
-            seconds: 0,
-            nanos: 5000,
-          },
-        },
+      maxVersions: 3,
+      maxAge: {
+        seconds: 0,
+        nanos: 5000,
       },
     };
 
-    BigtableTableAdminClient.modifyColumnFamilies({
-      name: table.name,
-      modifications: [
-        {
-          id: familyId,
-          create: {
-            gcRule: GCRuleMaker.makeRule(options),
+    const adminClient = new BigtableTableAdminClient();
+    adminClient
+      .modifyColumnFamilies({
+        name: table.name,
+        modifications: [
+          {
+            id: familyId,
+            create: {
+              gcRule: GCRuleMaker.makeRule(options),
+            },
           },
-        },
-      ],
-    })
+        ],
+      })
       .then(result => {
         const family = result[0];
         // const apiResponse = result[1];
