@@ -15,6 +15,7 @@
 // Imports the Google Cloud client library
 const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
 const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+const adminClient = new BigtableTableAdminClient();
 
 async function runTableOperations(instanceID, tableID) {
   const bigtable = new Bigtable();
@@ -72,7 +73,7 @@ async function runTableOperations(instanceID, tableID) {
       },
     },
   };
-  let [family] = await BigtableTableAdminClient.modifyColumnFamilies({
+  let [family] = await adminClient.modifyColumnFamilies({
     name: table.name,
     modifications: [
       {
@@ -100,7 +101,7 @@ async function runTableOperations(instanceID, tableID) {
   };
 
   // Create a column family with given GC rule
-  [family] = await BigtableTableAdminClient.modifyColumnFamilies({
+  [family] = await adminClient.modifyColumnFamilies({
     name: table.name,
     modifications: [
       {
@@ -133,7 +134,7 @@ async function runTableOperations(instanceID, tableID) {
     },
   };
 
-  [family] = await BigtableTableAdminClient.modifyColumnFamilies({
+  [family] = await adminClient.modifyColumnFamilies({
     name: table.name,
     modifications: [
       {
@@ -165,7 +166,7 @@ async function runTableOperations(instanceID, tableID) {
       },
     },
   };
-  [family] = await BigtableTableAdminClient.modifyColumnFamilies({
+  [family] = await adminClient.modifyColumnFamilies({
     name: table.name,
     modifications: [
       {
@@ -206,7 +207,7 @@ async function runTableOperations(instanceID, tableID) {
     },
   };
 
-  [family] = await BigtableTableAdminClient.modifyColumnFamilies({
+  [family] = await adminClient.modifyColumnFamilies({
     name: table.name,
     modifications: [
       {
