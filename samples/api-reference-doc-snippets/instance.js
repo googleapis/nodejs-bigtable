@@ -112,6 +112,7 @@ const snippets = {
 
   createTable: async (instanceId, tableId) => {
     // [START bigtable_api_create_table]
+    const projectId = 'projectId';
     const {Bigtable} = require('@google-cloud/bigtable');
     const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
     const bigtable = new Bigtable();
@@ -129,7 +130,7 @@ const snippets = {
     const adminClient = new BigtableTableAdminClient();
 
     const request = {
-      parent: instance.name,
+      parent: adminClient.instancePath(projectId, instanceId),
       tableId: tableId,
       table: {
         columnFamilies: {

@@ -64,7 +64,7 @@ const getRowGreeting = row => {
         ],
       };
       await adminClient.createTable({
-        parent: instance.name,
+        parent: adminClient.instancePath('projectId', INSTANCE_ID),
         tableId: TABLE_ID,
         table: {
           columnFamilies: {

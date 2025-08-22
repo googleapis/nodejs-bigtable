@@ -19,6 +19,7 @@ const adminClient = new BigtableTableAdminClient();
 
 async function runTableOperations(instanceID, tableID) {
   const bigtable = new Bigtable();
+  const projectId = 'projectId';
   // The request will only work if the projectName doesn't contain the {{projectId}} token.
   const defaultProjectId = await new Promise((resolve, reject) => {
     bigtable.getProjectId_((err, projectId) => {
@@ -41,7 +42,7 @@ async function runTableOperations(instanceID, tableID) {
     // Create table if does not exist
     console.log(`Table does not exist. Creating table ${tableID}`);
     const request = {
-      parent: instance.name,
+      parent: adminClient.instancePath(projectId, instanceID),
       tableId: tableID,
       table: {
         columnFamilies: {
