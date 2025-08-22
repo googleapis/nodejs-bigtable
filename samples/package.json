@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@google-cloud/bigtable": "^6.4.0",
-    "uuid": "^9.0.0",
+    "uuid": "^11.0.0",
     "yargs": "^16.0.0"
   },
   "devDependencies": {
