@@ -103,6 +103,7 @@ const snippets = {
   },
 
   createFamily: async (instanceId, tableId, familyId) => {
+    // [START bigtable_api_create_family]
     const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
     // The request will only work if the projectName doesn't contain the {{projectId}} token.
     const defaultProjectId = await new Promise((resolve, reject) => {
@@ -118,7 +119,6 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_api_create_family]
     const options = {
       ruleType: 'union',
       maxVersions: 3,
