@@ -13,12 +13,22 @@
 // limitations under the License.
 
 const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
-const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
 const bigtable = new Bigtable();
 
 const snippets = {
-  createTable: (instanceId, tableId) => {
+  createTable: async (instanceId, tableId) => {
+    // [START bigtable_api_create_table]
     const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const defaultProjectId = await new Promise((resolve, reject) => {
+      bigtable.getProjectId_((err, projectId) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(projectId);
+        }
+      });
+    });
+    bigtable.projectName = `projects/${defaultProjectId}`;
     const instance = bigtable.instance(instanceId);
     const adminClient = new BigtableTableAdminClient();
     const request = {
@@ -30,8 +40,6 @@ const snippets = {
         },
       },
     };
-
-    // [START bigtable_api_create_table]
     adminClient
       .createTable(request)
       .then(result => {
@@ -95,6 +103,7 @@ const snippets = {
   },
 
   createFamily: async (instanceId, tableId, familyId) => {
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
     // The request will only work if the projectName doesn't contain the {{projectId}} token.
     const defaultProjectId = await new Promise((resolve, reject) => {
       bigtable.getProjectId_((err, projectId) => {
