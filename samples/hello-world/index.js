@@ -51,6 +51,8 @@ const getRowGreeting = row => {
     const [tableExists] = await table.exists();
     if (!tableExists) {
       console.log(`Creating table ${TABLE_ID}`);
+      const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+      const adminClient = new BigtableTableAdminClient();
       const options = {
         families: [
           {
@@ -61,6 +63,19 @@ const getRowGreeting = row => {
           },
         ],
       };
+      await adminClient.createTable({
+        parent: instance.name,
+        tableId: TABLE_ID,
+        table: {
+          columnFamilies: {
+            [COLUMN_FAMILY_ID]: {
+              gcRule: {
+                maxNumVersions: 1,
+              },
+            },
+          },
+        },
+      });
       await table.create(options);
     }
     // [END bigtable_hw_create_table]
