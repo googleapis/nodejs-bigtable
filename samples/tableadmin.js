@@ -40,7 +40,16 @@ async function runTableOperations(instanceID, tableID) {
   if (!tableExists) {
     // Create table if does not exist
     console.log(`Table does not exist. Creating table ${tableID}`);
-    await table.create();
+    const request = {
+      parent: instance.name,
+      tableId: tableID,
+      table: {
+        columnFamilies: {
+          follows: {},
+        },
+      },
+    };
+    await adminClient.createTable(request);
   } else {
     console.log('Table exists.');
   }
