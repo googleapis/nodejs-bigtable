@@ -119,14 +119,15 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    const options = {
-      ruleType: 'union',
-      maxVersions: 3,
-      maxAge: {
-        seconds: 1,
-        nanos: 5000,
-      },
-    };
+    const options = {};
+    //  {
+    //    ruleType: 'union',
+    //    maxVersions: 3,
+    //    maxAge: {
+    //      seconds: 1,
+    //      nanos: 5000,
+    //    },
+    //  };
 
     const adminClient = new BigtableTableAdminClient();
     adminClient
