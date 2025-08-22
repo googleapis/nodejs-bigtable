@@ -18,12 +18,22 @@ const bigtable = new Bigtable();
 
 const snippets = {
   createTable: (instanceId, tableId) => {
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
     const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
+    const adminClient = new BigtableTableAdminClient();
+    const request = {
+      parent: instance.name,
+      tableId: tableId,
+      table: {
+        columnFamilies: {
+          follows: {},
+        },
+      },
+    };
 
     // [START bigtable_api_create_table]
-    table
-      .create()
+    adminClient
+      .createTable(request)
       .then(result => {
         const table = result[0];
         // let apiResponse = result[1];
