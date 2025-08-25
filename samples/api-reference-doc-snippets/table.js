@@ -12,17 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const {Bigtable} = require('@google-cloud/bigtable');
+const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
 const bigtable = new Bigtable();
 
 const snippets = {
-  createTable: (instanceId, tableId) => {
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-
+  createTable: async (instanceId, tableId) => {
     // [START bigtable_api_create_table]
-    table
-      .create()
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
+    const request = {
+      parent: adminClient.instancePath(projectId, instanceId),
+      tableId: tableId,
+      table: {
+        columnFamilies: {
+          follows: {},
+        },
+      },
+    };
+    adminClient
+      .createTable(request)
       .then(result => {
         const table = result[0];
         // let apiResponse = result[1];
@@ -83,23 +92,34 @@ const snippets = {
     // [END bigtable_api_get_table_meta]
   },
 
-  createFamily: (instanceId, tableId, familyId) => {
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-
+  createFamily: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_create_family]
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
+    // The request will only work if the projectName doesn't contain the {{projectId}} token.
     const options = {};
-    // options.rule = {
-    //   age: {
-    //     seconds: 0,
-    //     nanos: 5000
-    //   },
-    //   versions: 3,
-    //   union: true
-    // };
+    //  {
+    //    ruleType: 'union',
+    //    maxVersions: 3,
+    //    maxAge: {
+    //      seconds: 1,
+    //      nanos: 5000,
+    //    },
+    //  };
 
-    table
-      .createFamily(familyId, options)
+    adminClient
+      .modifyColumnFamilies({
+        name: adminClient.tablePath(projectId, instanceId, tableId),
+        modifications: [
+          {
+            id: familyId,
+            create: {
+              gcRule: GCRuleMaker.makeRule(options),
+            },
+          },
+        ],
+      })
       .then(result => {
         const family = result[0];
         // const apiResponse = result[1];
