@@ -285,33 +285,4 @@ async function deleteTable(instanceID, tableID) {
   // [END bigtable_delete_table]
 }
 
-require('yargs')
-  .demand(1)
-  .command(
-    'run',
-    'Create a table (if does not exist) and run basic table operations.',
-    {},
-    argv => runTableOperations(argv.instance, argv.table),
-  )
-  .example(
-    'node $0 run --instance [instanceID] --table [tableID]',
-    'Create a table (if does not exist) and run basic table operations.',
-  )
-  .wrap(120)
-  .command('delete', 'Delete table.', {},
-    argv => deleteTable(argv.instance, argv.table),
-  )
-  .example(
-    'node $0 delete --instance [instanceID] --table [tableID]',
-    'Delete a table.',
-  )
-  .wrap(120)
-  .nargs('instance', 1)
-  .nargs('table', 1)
-  .describe('instance', 'Cloud Bigtable Instance ID')
-  .describe('table', 'Cloud Bigtable Table ID')
-  .demandOption(['instance', 'table'])
-  .recommendCommands()
-  .epilogue('For more information, see https://cloud.google.com/bigtable/docs')
-  .help()
-  .strict().argv;
+runTableOperations('dan-bigtable-instance', 'Hello-Bigtable23');
