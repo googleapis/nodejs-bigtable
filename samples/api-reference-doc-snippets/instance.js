@@ -113,20 +113,7 @@ const snippets = {
   createTable: async (instanceId, tableId) => {
     // [START bigtable_api_create_table]
     const projectId = 'projectId';
-    const {Bigtable} = require('@google-cloud/bigtable');
     const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-    const bigtable = new Bigtable();
-    const defaultProjectId = await new Promise((resolve, reject) => {
-      bigtable.getProjectId_((err, projectId) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(projectId);
-        }
-      });
-    });
-    bigtable.projectName = `projects/${defaultProjectId}`;
-    const instance = bigtable.instance(instanceId);
     const adminClient = new BigtableTableAdminClient();
 
     const request = {

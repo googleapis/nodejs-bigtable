@@ -21,16 +21,7 @@ async function runTableOperations(instanceID, tableID) {
   const bigtable = new Bigtable();
   const projectId = 'projectId';
   // The request will only work if the projectName doesn't contain the {{projectId}} token.
-  const defaultProjectId = await new Promise((resolve, reject) => {
-    bigtable.getProjectId_((err, projectId) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(projectId);
-      }
-    });
-  });
-  bigtable.projectName = `projects/${defaultProjectId}`;
+  bigtable.projectName = `projects/${projectId}`;
   const instance = bigtable.instance(instanceID);
   const table = instance.table(tableID);
 
