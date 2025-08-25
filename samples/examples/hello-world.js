@@ -54,16 +54,6 @@ const getRowGreeting = row => {
       const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
       const adminClient = new BigtableTableAdminClient();
       const projectId = await adminClient.getProjectId();
-      const options = {
-        families: [
-          {
-            name: COLUMN_FAMILY_ID,
-            rule: {
-              versions: 1,
-            },
-          },
-        ],
-      };
       await adminClient.createTable({
         parent: adminClient.instancePath(projectId, INSTANCE_ID),
         tableId: TABLE_ID,
