@@ -22,6 +22,7 @@ const bigtable = new Bigtable();
 const INSTANCE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const TABLE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const PROJECT_ID = 'project-id';
 
 const rowSnippets = require('./row.js');
 
@@ -30,6 +31,7 @@ const instance = bigtable.instance(INSTANCE_ID);
 describe.skip('Row Snippets', () => {
   before(async () => {
     try {
+      const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
       const [, operation] = await instance.create({
         clusters: [
           {
@@ -41,7 +43,13 @@ describe.skip('Row Snippets', () => {
         type: 'DEVELOPMENT',
       });
       await operation.promise();
-      await instance.createTable(TABLE_ID);
+      const adminClient = new BigtableTableAdminClient();
+      const request = {
+        parent: adminClient.instancePath(PROJECT_ID, INSTANCE_ID),
+        tableId: TABLE_ID,
+        table: {},
+      };
+      await adminClient.createTable(request);
     } catch (err) {
       // Handle the error.
     }
