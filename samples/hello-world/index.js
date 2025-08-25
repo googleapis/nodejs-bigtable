@@ -77,7 +77,6 @@ const getRowGreeting = row => {
           },
         },
       });
-      await table.create(options);
     }
     // [END bigtable_hw_create_table]
 
