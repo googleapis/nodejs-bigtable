@@ -22,7 +22,6 @@ const bigtable = new Bigtable();
 const INSTANCE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const TABLE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const PROJECT_ID = 'project-id';
 
 const rowSnippets = require('./row.js');
 
@@ -44,8 +43,9 @@ describe.skip('Row Snippets', () => {
       });
       await operation.promise();
       const adminClient = new BigtableTableAdminClient();
+      const projectId = await adminClient.getProjectId();
       const request = {
-        parent: adminClient.instancePath(PROJECT_ID, INSTANCE_ID),
+        parent: adminClient.instancePath(projectId, INSTANCE_ID),
         tableId: TABLE_ID,
         table: {},
       };

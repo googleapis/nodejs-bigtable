@@ -19,7 +19,6 @@ const {describe, it, before, after} = require('mocha');
 const {Bigtable} = require('@google-cloud/bigtable');
 const bigtable = new Bigtable();
 
-const projectId = 'projectId';
 const INSTANCE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const TABLE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
@@ -45,6 +44,7 @@ describe.skip('Family Snippets', () => {
       });
       await operation.promise();
       const adminClient = new BigtableTableAdminClient();
+      const projectId = await adminClient.getProjectId();
       const request = {
         parent: adminClient.instancePath(projectId, INSTANCE_ID),
         tableId: TABLE_ID,
