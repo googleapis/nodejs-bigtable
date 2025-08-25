@@ -19,7 +19,7 @@ const adminClient = new BigtableTableAdminClient();
 
 async function runTableOperations(instanceID, tableID) {
   const bigtable = new Bigtable();
-  const projectId = 'projectId';
+  const projectId = await adminClient.getProjectId();
   // The request will only work if the projectName doesn't contain the {{projectId}} token.
   bigtable.projectName = `projects/${projectId}`;
   const instance = bigtable.instance(instanceID);

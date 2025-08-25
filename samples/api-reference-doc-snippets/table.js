@@ -18,9 +18,9 @@ const bigtable = new Bigtable();
 const snippets = {
   createTable: async (instanceId, tableId) => {
     // [START bigtable_api_create_table]
-    const projectId = 'projectId';
     const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
     const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
     const request = {
       parent: adminClient.instancePath(projectId, instanceId),
       tableId: tableId,
@@ -94,8 +94,9 @@ const snippets = {
 
   createFamily: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_create_family]
-    const projectId = 'project-id';
     const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
     // The request will only work if the projectName doesn't contain the {{projectId}} token.
     const options = {};
     //  {
@@ -107,7 +108,6 @@ const snippets = {
     //    },
     //  };
 
-    const adminClient = new BigtableTableAdminClient();
     adminClient
       .modifyColumnFamilies({
         name: adminClient.tablePath(projectId, instanceId, tableId),
