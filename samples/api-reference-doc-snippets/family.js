@@ -15,7 +15,8 @@
 const snippets = {
   createColmFamily: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_create_family]
-    const {BigtableTableAdminClient, GCRuleMaker} = require('@google-cloud/bigtable').v2;
+    const {BigtableTableAdminClient, GCRuleMaker} =
+      require('@google-cloud/bigtable').v2;
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
 
@@ -109,7 +110,8 @@ const snippets = {
   },
   setMetadata: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_set_family_meta]
-    const {BigtableTableAdminClient, GCRuleMaker} = require('@google-cloud/bigtable').v2;
+    const {BigtableTableAdminClient, GCRuleMaker} =
+      require('@google-cloud/bigtable').v2;
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
 

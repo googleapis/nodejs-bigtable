@@ -34,9 +34,20 @@ describe('reads', async () => {
     const TIMESTAMP = new Date(2019, 5, 1);
     TIMESTAMP.setUTCHours(0);
 
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
+    const request = {
+      parent: adminClient.instancePath(projectId, INSTANCE_ID),
+      tableId: TABLE_ID,
+      table: {
+        columnFamilies: {
+          stats_summary: {},
+        },
+      },
+    };
+    await adminClient.createTable(request);
     table = instance.table(TABLE_ID);
-    await table.create();
-    await table.createFamily('stats_summary');
 
     const rowsToInsert = [
       {

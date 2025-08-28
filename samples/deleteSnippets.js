@@ -111,16 +111,39 @@ async function main(
     }
     case 'deleteColumnFamily': {
       // [START bigtable_delete_column_family]
-      const cf = table.family('stats_summary');
-      await cf.delete();
+      const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+      const adminClient = new BigtableTableAdminClient();
+      const projectId = await adminClient.getProjectId();
+      const request = {
+        name: adminClient.tablePath(projectId, instanceId, tableId),
+        modifications: [
+          {
+            id: 'stats_summary',
+            drop: true,
+          },
+        ],
+      };
+      await adminClient.modifyColumnFamilies(request);
       await printRows();
       // [END bigtable_delete_column_family]
       break;
     }
     case 'deleteTable': {
       // [START bigtable_delete_table]
-      await table.delete();
-      console.log(await table.exists({}));
+      const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+      const adminClient = new BigtableTableAdminClient();
+      const projectId = await adminClient.getProjectId();
+      const request = {
+        name: adminClient.tablePath(projectId, instanceId, tableId),
+      };
+      await adminClient.deleteTable(request);
+      console.log(
+        await adminClient
+          .getTable({
+            name: adminClient.tablePath(projectId, instanceId, tableId),
+          })
+          .catch(e => (e.code === 5 ? false : e)),
+      );
       // [END bigtable_delete_table]
       break;
     }

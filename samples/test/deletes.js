@@ -32,14 +32,29 @@ describe('deletes', async () => {
   before(async () => {
     const instance = await obtainTestInstance();
     INSTANCE_ID = instance.id;
-    table = instance.table(TABLE_ID);
-    const tableExists = (await table.exists({}))[0];
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
+    const request = {
+      parent: adminClient.instancePath(projectId, INSTANCE_ID),
+      tableId: TABLE_ID,
+      table: {
+        columnFamilies: {
+          stats_summary: {},
+          cell_plan: {},
+        },
+      },
+    };
+    const tableExists = await adminClient
+      .getTable({name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID)})
+      .catch(e => (e.code === 5 ? false : e));
     if (tableExists) {
-      await table.delete({});
+      await adminClient.deleteTable({
+        name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+      });
     }
-    await table.create();
-    await table.createFamily('stats_summary');
-    await table.createFamily('cell_plan');
+    await adminClient.createTable(request);
+    table = instance.table(TABLE_ID);
 
     const rowsToInsert = [
       {

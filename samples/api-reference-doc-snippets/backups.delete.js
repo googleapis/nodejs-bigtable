@@ -30,7 +30,12 @@ async function main(
     // const backupId = 'YOUR_BACKUP_ID';
     const projectId = await tableAdminClient.getProjectId();
     const request = {
-      name: tableAdminClient.backupPath(projectId, instanceId, clusterId, backupId),
+      name: tableAdminClient.backupPath(
+        projectId,
+        instanceId,
+        clusterId,
+        backupId,
+      ),
     };
     await tableAdminClient.deleteBackup(request);
     console.log(`Backup ${backupId} was deleted successfully.`);

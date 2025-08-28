@@ -340,15 +340,18 @@ const snippets = {
     // [END bigtable_api_sample_row_keys]
   },
 
-  getIamPolicy: (instanceId, tableId) => {
+  getIamPolicy: async (instanceId, tableId) => {
     // [START bigtable_api_get_table_Iam_policy]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
-    table
-      .getIamPolicy()
+    const request = {
+      resource: adminClient.tablePath(projectId, instanceId, tableId),
+    };
+
+    adminClient
+      .getIamPolicy(request)
       .then(result => {
         const policy = result[0];
       })
@@ -358,12 +361,11 @@ const snippets = {
     // [END bigtable_api_get_table_Iam_policy]
   },
 
-  setIamPolicy: (instanceId, tableId) => {
+  setIamPolicy: async (instanceId, tableId) => {
     // [START bigtable_api_set_table_Iam_policy]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
     const policy = {
       bindings: [
@@ -374,8 +376,13 @@ const snippets = {
       ],
     };
 
-    table
-      .setIamPolicy(policy)
+    const request = {
+      resource: adminClient.tablePath(projectId, instanceId, tableId),
+      policy: policy,
+    };
+
+    adminClient
+      .setIamPolicy(request)
       .then(result => {
         const setPolicy = result[0];
       })
@@ -385,16 +392,21 @@ const snippets = {
     // [END bigtable_api_set_table_Iam_policy]
   },
 
-  testIamPermissions: (instanceId, tableId) => {
+  testIamPermissions: async (instanceId, tableId) => {
     // [START bigtable_api_test_table_Iam_permissions]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
     const permissions = ['bigtable.tables.get', 'bigtable.tables.readRows'];
-    table
-      .testIamPermissions(permissions)
+
+    const request = {
+      resource: adminClient.tablePath(projectId, instanceId, tableId),
+      permissions: permissions,
+    };
+
+    adminClient
+      .testIamPermissions(request)
       .then(result => {
         const grantedPermissions = result[0];
       })

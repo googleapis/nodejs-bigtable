@@ -14,30 +14,25 @@
 
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
-  tableId = 'YOUR_TABLE_ID',
   clusterId = 'YOUR_CLUSTER_ID',
 ) {
   // [START bigtable_api_list_backups]
-  const {Bigtable} = require('@google-cloud/bigtable');
-  const bigtable = new Bigtable();
+  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+  const tableAdminClient = new BigtableTableAdminClient();
 
   async function listBackups() {
     /**
      * TODO(developer): Uncomment these variables before running the sample.
      */
     // const instanceId = 'YOUR_INSTANCE_ID';
-    // const tableId = 'YOUR_TABLE_ID';
     // const clusterId = 'YOUR_CLUSTER_ID';
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-    const cluster = table.cluster(clusterId);
+    const projectId = await tableAdminClient.getProjectId();
 
-    const [backupsFromInstance] = await instance.listBackups();
-    console.log(
-      `${backupsFromInstance.length} backups returned from the instance.`,
-    );
+    const request = {
+      parent: tableAdminClient.clusterPath(projectId, instanceId, clusterId),
+    };
 
-    const [backupsFromCluster] = await cluster.listBackups();
+    const [backupsFromCluster] = await tableAdminClient.listBackups(request);
     console.log(
       `${backupsFromCluster.length} backups returned from the cluster.`,
     );
