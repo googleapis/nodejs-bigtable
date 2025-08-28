@@ -127,7 +127,13 @@ const getRowGreeting = row => {
 
     // [START bigtable_hw_delete_table]
     console.log('Delete the table');
-    await table.delete();
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
+    const request = {
+      name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+    };
+    await adminClient.deleteTable(request);
     // [END bigtable_hw_delete_table]
   } catch (error) {
     console.error('Something went wrong:', error);
