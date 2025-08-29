@@ -31,10 +31,20 @@ describe('writes', async () => {
     const instance = await obtainTestInstance();
     INSTANCE_ID = instance.id;
 
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
+    const request = {
+      parent: adminClient.instancePath(projectId, INSTANCE_ID),
+      tableId: TABLE_ID,
+      table: {
+        columnFamilies: {
+          stats_summary: {},
+        },
+      },
+    };
+    await adminClient.createTable(request).catch(console.error);
     table = instance.table(TABLE_ID);
-
-    await table.create().catch(console.error);
-    await table.createFamily('stats_summary').catch(console.error);
   });
 
   it('should do a simple write', async () => {
