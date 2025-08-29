@@ -166,12 +166,15 @@ describe('backups', async () => {
     const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
-    const [backupsFromCluster] = await adminClient.listBackups({
-      parent: adminClient.clusterPath(projectId, INSTANCE_ID, CLUSTER_ID),
-    });
+    const [backupsFromInstance] = await adminClient.listBackups({parent: adminClient.instancePath(projectId, INSTANCE_ID)});
+    const [backupsFromCluster] = await adminClient.listBackups({parent: adminClient.clusterPath(projectId, INSTANCE_ID, CLUSTER_ID)});
 
     const stdout = execSync(
       `node ./backups.list.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID}`,
+    );
+    assert.include(
+      stdout,
+      `${backupsFromInstance.length} backups returned from the instance.`,
     );
     assert.include(
       stdout,
