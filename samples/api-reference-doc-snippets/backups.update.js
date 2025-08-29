@@ -14,32 +14,41 @@
 
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
-  tableId = 'YOUR_TABLE_ID',
   clusterId = 'YOUR_CLUSTER_ID',
   backupId = 'YOUR_BACKUP_ID',
 ) {
   // [START bigtable_api_update_backup]
-  const {Bigtable} = require('@google-cloud/bigtable');
-  const bigtable = new Bigtable();
+  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+  const tableAdminClient = new BigtableTableAdminClient();
 
   async function updateBackup() {
     /**
      * TODO(developer): Uncomment these variables before running the sample.
      */
     // const instanceId = 'YOUR_INSTANCE_ID';
-    // const tableId = 'YOUR_TABLE_ID';
     // const clusterId = 'YOUR_CLUSTER_ID';
     // const backupId = 'YOUR_BACKUP_ID';
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-    const cluster = table.cluster(clusterId);
-    const backup = cluster.backup(backupId);
+    const projectId = await tableAdminClient.getProjectId();
 
-    // Extend a backup's life by updating its expiry date.
-    const [metadata] = await backup.setMetadata({
-      expireTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-    });
-    console.log(`The backup will now auto-delete at ${metadata.expireDate}.`);
+    const request = {
+      backup: {
+        name: tableAdminClient.backupPath(
+          projectId,
+          instanceId,
+          clusterId,
+          backupId,
+        ),
+        expireTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+      },
+      updateMask: {
+        paths: ['expire_time'],
+      },
+    };
+
+    const [metadata] = await tableAdminClient.updateBackup(request);
+    console.log(
+      `The backup will now auto-delete at ${new Date(metadata.expireTime.seconds * 1000)}.`,
+    );
   }
 
   await updateBackup();
