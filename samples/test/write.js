@@ -25,7 +25,6 @@ const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable na
 
 describe('writes', async () => {
   let INSTANCE_ID;
-  let table;
 
   before(async () => {
     const instance = await obtainTestInstance();
@@ -44,7 +43,6 @@ describe('writes', async () => {
       },
     };
     await adminClient.createTable(request).catch(console.error);
-    table = instance.table(TABLE_ID);
   });
 
   it('should do a simple write', async () => {
