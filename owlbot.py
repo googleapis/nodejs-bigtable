@@ -36,9 +36,7 @@ if staging.is_dir():
     for version in ['v2']:
         library = staging / version
         _tracked_paths.add(library)
-        admin_client_files_excludes = ['bigtable_instance_admin_client.ts', 'bigtable_instance_admin_client_config.json', 'bigtable_instance_admin_proto_list.json', 'bigtable_table_admin_client.ts', 'bigtable_table_admin_client_config.json', 'bigtable_table_admin_proto_list.json']
-        non_admin_client_files_excludes = ['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json', '.github/sync-repo-settings.yaml']
-        s.copy([library], excludes= admin_client_files_excludes + non_admin_client_files_excludes)
+        s.copy([library], excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json', '.github/sync-repo-settings.yaml'])
 
     # Copy the admin library.
     # Not override system-test for admin/v2, just keep the v2 version.
