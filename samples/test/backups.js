@@ -37,36 +37,17 @@ describe('backups', async () => {
   const backup = cluster.backup(BACKUP_ID);
 
   async function createTestBackup(backupId) {
-    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-    const adminClient = new BigtableTableAdminClient();
-    const projectId = await adminClient.getProjectId();
-    const request = {
-      parent: adminClient.clusterPath(projectId, INSTANCE_ID, CLUSTER_ID),
-      backupId: backupId,
-      backup: {
-        sourceTable: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
-        expireTime: new Date(Date.now() + 60 * 60 * 1000), // 1 hour from now
-      },
-    };
-    const [operation] = await adminClient.createBackup(request);
-    const [backup] = await operation.promise();
+    const [backup, operation] = await cluster.createBackup(backupId, {
+      table,
+      expireTime: new Date(Date.now() + 60 * 60 * 1000), // 1 hour from now
+    });
+    await operation.promise();
     return backup;
   }
 
   before(async () => {
-    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-    const adminClient = new BigtableTableAdminClient();
-    const projectId = await adminClient.getProjectId();
-    const request = {
-      parent: adminClient.instancePath(projectId, INSTANCE_ID),
-      tableId: TABLE_ID,
-      table: {
-        columnFamilies: {
-          follows: {},
-        },
-      },
-    };
-    await adminClient.createTable(request);
+    await table.create();
+    await table.createFamily('follows');
     await table.insert([
       {
         key: 'alincoln',
@@ -90,15 +71,10 @@ describe('backups', async () => {
 
   after(async () => {
     async function reapBackups(instance) {
-      const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-      const adminClient = new BigtableTableAdminClient();
-      const projectId = await adminClient.getProjectId();
-      const [backups] = await adminClient.listBackups({
-        parent: adminClient.instancePath(projectId, instance.id),
-      });
+      const [backups] = await instance.getBackups();
       return Promise.all(
         backups.map(backup => {
-          return adminClient.deleteBackup({name: backup.name});
+          return backup.delete({timeout: 50 * 1000});
         }),
       );
     }
@@ -127,18 +103,8 @@ describe('backups', async () => {
   });
 
   it('should get an existing backup', async () => {
-    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-    const adminClient = new BigtableTableAdminClient();
-    const projectId = await adminClient.getProjectId();
-    const request = {
-      name: adminClient.backupPath(
-        projectId,
-        INSTANCE_ID,
-        CLUSTER_ID,
-        BACKUP_ID,
-      ),
-    };
-    const [metadata] = await adminClient.getBackup(request);
+    // Refresh our copy of the backup metadata.
+    const [metadata] = await backup.getMetadata();
 
     const stdout = execSync(
       `node ./backups.get.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID} ${BACKUP_ID}`,
@@ -146,24 +112,24 @@ describe('backups', async () => {
     assert.include(stdout, `The backup is ${metadata.sizeBytes} bytes.`);
     assert.include(
       stdout,
-      `The backup will auto-delete at ${new Date(metadata.expireTime.seconds * 1000).toISOString()}`,
+      `The backup will auto-delete at ${metadata.expireDate.toISOString()}`,
     );
     assert.include(
       stdout,
-      `The backup finished being created at ${new Date(metadata.endTime.seconds * 1000).toISOString()}`,
+      `The backup finished being created at ${metadata.endTime.toISOString()}`,
     );
   });
 
   it('should get existing backups', async () => {
-    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-    const adminClient = new BigtableTableAdminClient();
-    const projectId = await adminClient.getProjectId();
-    const [backupsFromCluster] = await adminClient.listBackups({
-      parent: adminClient.clusterPath(projectId, INSTANCE_ID, CLUSTER_ID),
-    });
+    const [backupsFromInstance] = await instance.listBackups();
+    const [backupsFromCluster] = await cluster.listBackups();
 
     const stdout = execSync(
       `node ./backups.list.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID}`,
+    );
+    assert.include(
+      stdout,
+      `${backupsFromInstance.length} backups returned from the instance.`,
     );
     assert.include(
       stdout,
@@ -183,33 +149,18 @@ describe('backups', async () => {
     const backupId = generateId();
     const backup = await createTestBackup(backupId);
 
-    const oldExpireTime = new Date(
-      backup.expireTime.seconds * 1000,
-    ).toISOString();
+    const oldExpireTime = backup.expireTime.toISOString();
 
     const stdout = execSync(
       `node ./backups.update.js ${INSTANCE_ID} ${TABLE_ID} ${CLUSTER_ID} ${backupId}`,
     );
 
-    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-    const adminClient = new BigtableTableAdminClient();
-    const projectId = await adminClient.getProjectId();
-    const [updatedBackup] = await adminClient.getBackup({
-      name: adminClient.backupPath(
-        projectId,
-        INSTANCE_ID,
-        CLUSTER_ID,
-        backupId,
-      ),
-    });
-    const newExpireTime = new Date(
-      updatedBackup.expireTime.seconds * 1000,
-    ).toISOString();
+    const newExpireTime = backup.expireTime.toISOString();
     assert.notStrictEqual(oldExpireTime, newExpireTime);
 
     assert.include(
       stdout,
-      `The backup will now auto-delete at ${newExpireTime}.`,
+      `The backup will now auto-delete at ${backup.metadata.expireDate}.`,
     );
   });
 });
