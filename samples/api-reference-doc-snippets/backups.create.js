@@ -19,8 +19,8 @@ async function main(
   backupId = 'YOUR_BACKUP_ID',
 ) {
   // [START bigtable_api_create_backup]
-  const {Bigtable} = require('@google-cloud/bigtable');
-  const bigtable = new Bigtable();
+  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+  const tableAdminClient = new BigtableTableAdminClient();
 
   async function createBackup() {
     /**
@@ -30,19 +30,23 @@ async function main(
     // const tableId = 'YOUR_TABLE_ID';
     // const clusterId = 'YOUR_CLUSTER_ID';
     // const backupId = 'YOUR_BACKUP_ID';
+    const projectId = await tableAdminClient.getProjectId();
 
-    const instance = bigtable.instance(instanceId);
-    const cluster = instance.cluster(clusterId);
+    const request = {
+      parent: tableAdminClient.clusterPath(projectId, instanceId, clusterId),
+      backupId: backupId,
+      backup: {
+        sourceTable: tableAdminClient.tablePath(projectId, instanceId, tableId),
+        expireTime: new Date(Date.now() + 7 * 60 * 60 * 1000), // 7 hours from now
+      },
+    };
 
-    const [backup, operation] = await cluster.createBackup(backupId, {
-      table: tableId,
-      expireTime: new Date(Date.now() + 7 * 60 * 60 * 1000), // 7 hours from now
-    });
+    const [operation] = await tableAdminClient.createBackup(request);
 
     console.log('Started a table backup operation.');
-    await operation.promise();
+    const [backup] = await operation.promise();
 
-    console.log(`Backup "${backup.id}" is now ready for use.`);
+    console.log(`Backup "${backup.name}" is now ready for use.`);
   }
 
   await createBackup();
