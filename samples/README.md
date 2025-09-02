@@ -40,7 +40,7 @@ Before running the samples, make sure you've followed the steps outlined in
 
 ### Delete Snippets
 
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/deleteSnippets.js).
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/deleteSnippets.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/deleteSnippets.js,samples/README.md)
 
@@ -57,7 +57,7 @@ __Usage:__
 
 ### Filter Snippets
 
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/filterSnippets.js).
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/filterSnippets.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/filterSnippets.js,samples/README.md)
 
@@ -74,7 +74,7 @@ __Usage:__
 
 ### Instances
 
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/instances.js).
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/instances.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/instances.js,samples/README.md)
 
@@ -91,7 +91,7 @@ __Usage:__
 
 ### Quickstart
 
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/quickstart.js).
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/quickstart.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/quickstart.js,samples/README.md)
 
@@ -108,7 +108,7 @@ __Usage:__
 
 ### Read Snippets
 
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/readSnippets.js).
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/readSnippets.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/readSnippets.js,samples/README.md)
 
@@ -125,7 +125,7 @@ __Usage:__
 
 ### Tableadmin
 
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/tableadmin.js).
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/tableadmin.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/tableadmin.js,samples/README.md)
 
@@ -142,7 +142,7 @@ __Usage:__
 
 ### Write Batch
 
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/writeBatch.js).
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeBatch.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeBatch.js,samples/README.md)
 
@@ -159,7 +159,7 @@ __Usage:__
 
 ### Write Conditionally
 
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/writeConditionally.js).
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeConditionally.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeConditionally.js,samples/README.md)
 
@@ -176,7 +176,7 @@ __Usage:__
 
 ### Write Increment
 
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/writeIncrement.js).
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeIncrement.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeIncrement.js,samples/README.md)
 
@@ -195,7 +195,7 @@ __Usage:__
 
 Insert a row into a table.
 
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/writeSimple.js).
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeSimple.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeSimple.js,samples/README.md)
 

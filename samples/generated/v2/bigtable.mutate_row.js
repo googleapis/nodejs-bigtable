@@ -61,6 +61,11 @@ function main(rowKey, mutations) {
    *  ones. Must contain at least one entry and at most 100000.
    */
   // const mutations = [1,2,3,4]
+  /**
+   *  If set consistently across retries, prevents this mutation from being
+   *  double applied to aggregate column families within a 15m window.
+   */
+  // const idempotency = {}
 
   // Imports the Bigtable library
   const {BigtableClient} = require('@google-cloud/bigtable').v2;

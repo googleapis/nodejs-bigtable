@@ -1,1 +1,0 @@
-Bigtable: Nodejs Client
