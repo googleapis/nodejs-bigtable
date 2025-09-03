@@ -54,7 +54,10 @@ const snippets = {
 
     try {
       const [table] = await adminClient.getTable(request);
-      const exists = table.columnFamilies.hasOwnProperty(familyId);
+      const exists = Object.prototype.hasOwnProperty.call(
+        table.columnFamilies,
+        familyId,
+      );
       console.log(`Family ${familyId} exists: ${exists}`);
     } catch (err) {
       // Handle the error.

@@ -34,7 +34,6 @@ describe('backups', async () => {
 
   const table = instance.table(TABLE_ID);
   const cluster = instance.cluster(INSTANCE_ID);
-  const backup = cluster.backup(BACKUP_ID);
 
   async function createTestBackup(backupId) {
     const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
