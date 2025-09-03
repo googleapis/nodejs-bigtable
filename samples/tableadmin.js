@@ -72,7 +72,10 @@ async function runTableOperations(instanceID, tableID) {
   const options = {
     view: 'id',
   };
-  const [tableMetadata] = await adminClient.getTable({name: table.name, view: options.view});
+  const [tableMetadata] = await adminClient.getTable({
+    name: table.name,
+    view: options.view,
+  });
   console.log(`Metadata: ${JSON.stringify(tableMetadata)}`);
   // [END bigtable_get_table_metadata]
 
@@ -230,8 +233,11 @@ async function runTableOperations(instanceID, tableID) {
   console.log('Printing ID and GC Rule for all column families...');
   // [START bigtable_list_column_families]
   // List all families in the table with GC rules
-  const [tableData] = await adminClient.getTable({name: table.name, view: 'FULL'});
-  const families = tableData.columnFamilies;
+  const [tableData2] = await adminClient.getTable({
+    name: table.name,
+    view: 'FULL',
+  });
+  const families = tableData2.columnFamilies;
   // Print ID, GC Rule for each column family
   for (const familyId in families) {
     const family = families[familyId];
@@ -272,7 +278,10 @@ async function runTableOperations(instanceID, tableID) {
   console.log('\nPrint updated column family cf1 GC rule...');
   // [START bigtable_family_get_gc_rule]
   // Retrieve column family metadata (Id, column family GC rule)
-  const [tableData] = await adminClient.getTable({name: table.name, view: 'FULL'});
+  const [tableData] = await adminClient.getTable({
+    name: table.name,
+    view: 'FULL',
+  });
   const metadata = tableData.columnFamilies['cf1'].gcRule;
   console.log(`Metadata: ${JSON.stringify(metadata)}`);
   // [END bigtable_family_get_gc_rule]
@@ -305,7 +314,9 @@ async function deleteTable(instanceID, tableID) {
   // [START bigtable_delete_table]
   // Delete the entire table
   console.log('Delete the table.');
-  await adminClient.deleteTable({name: adminClient.tablePath(projectId, instanceID, tableID)});
+  await adminClient.deleteTable({
+    name: adminClient.tablePath(projectId, instanceID, tableID),
+  });
   console.log(`Table deleted: ${tableID}`);
   // [END bigtable_delete_table]
 }
