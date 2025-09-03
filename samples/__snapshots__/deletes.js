@@ -177,4 +177,4 @@ exports['deletes should delete a column family 1'] = `
 
 `;
 
-exports['deletes should delete a table 1'] = false;
+exports['deletes should delete a table 1'] = 'false\n';
