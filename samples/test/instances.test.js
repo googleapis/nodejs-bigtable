@@ -29,19 +29,36 @@ const instance = bigtable.instance(instanceId);
 
 describe('instances', () => {
   before(async () => {
-    const [, operation] = await instance.create({
-      clusters: [
-        {
-          id: clusterId,
-          location: 'us-central1-c',
-          nodes: 3,
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
+    const request = {
+      parent: instanceAdminClient.projectPath(projectId),
+      instanceId: instanceId,
+      instance: {
+        displayName: instanceId,
+        labels: {},
+        type: 'PRODUCTION',
+      },
+      clusters: {
+        [clusterId]: {
+          location: instanceAdminClient.locationPath(projectId, 'us-central1-c'),
+          serveNodes: 3,
+          defaultStorageType: 'SSD',
         },
-      ],
-    });
+      },
+    };
+    const [, operation] = await instanceAdminClient.createInstance(request);
     await operation.promise();
   });
 
-  after(() => instance.delete());
+  after(async () => {
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
+    const instancePath = instanceAdminClient.instancePath(projectId, instanceId);
+    await instanceAdminClient.deleteInstance({name: instancePath});
+  });
 
   it('should list zones', () => {
     const output = exec(
