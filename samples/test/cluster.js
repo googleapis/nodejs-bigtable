@@ -28,29 +28,36 @@ const instance = bigtable.instance(INSTANCE_ID);
 
 describe.skip('Cluster Snippets', () => {
   before(async () => {
-    try {
-      const [, operation] = await instance.create({
-        clusters: [
-          {
-            name: CLUSTER_ID,
-            location: 'us-central1-f',
-            storage: 'hdd',
-          },
-        ],
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
+    const request = {
+      parent: instanceAdminClient.projectPath(projectId),
+      instanceId: INSTANCE_ID,
+      instance: {
+        displayName: INSTANCE_ID,
+        labels: {},
         type: 'DEVELOPMENT',
-      });
-      await operation.promise();
-    } catch (err) {
-      // Handle the error.
-    }
+      },
+      clusters: {
+        [CLUSTER_ID]: {
+          location: instanceAdminClient.locationPath(projectId, 'us-central1-f'),
+          serveNodes: 1,
+          defaultStorageType: 'HDD',
+        },
+      },
+    };
+    const [, operation] = await instanceAdminClient.createInstance(request);
+    await operation.promise();
   });
 
   after(async () => {
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
+    const instancePath = instanceAdminClient.instancePath(projectId, INSTANCE_ID);
     try {
-      const [exists] = await instance.exists();
-      if (exists) {
-        await instance.delete();
-      }
+      await instanceAdminClient.deleteInstance({name: instancePath});
     } catch (err) {
       // Handle the error.
     }
