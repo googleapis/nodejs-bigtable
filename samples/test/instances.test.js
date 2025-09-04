@@ -18,14 +18,11 @@ const {assert} = require('chai');
 const {describe, it, before, after} = require('mocha');
 const uuid = require('uuid');
 const {execSync} = require('child_process');
-const {Bigtable} = require('@google-cloud/bigtable');
 
 const exec = cmd => execSync(cmd, {encoding: 'utf8'});
 
-const bigtable = new Bigtable();
 const clusterId = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const instanceId = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const instance = bigtable.instance(instanceId);
 
 describe('instances', () => {
   before(async () => {

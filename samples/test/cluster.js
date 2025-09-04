@@ -16,15 +16,11 @@
 
 const uuid = require('uuid');
 const {describe, it, before, after} = require('mocha');
-const {Bigtable} = require('@google-cloud/bigtable');
-const bigtable = new Bigtable();
 
 const INSTANCE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 const clusterSnippets = require('./cluster.js');
-
-const instance = bigtable.instance(INSTANCE_ID);
 
 describe.skip('Cluster Snippets', () => {
   before(async () => {
