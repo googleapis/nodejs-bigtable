@@ -29,10 +29,14 @@ const instanceSnippets = require('./instance.js');
 describe.skip('Instance Snippets', () => {
   after(async () => {
     try {
-      const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+      const {BigtableInstanceAdminClient} =
+        require('@google-cloud/bigtable').v2;
       const instanceAdminClient = new BigtableInstanceAdminClient();
       const projectId = await instanceAdminClient.getProjectId();
-      const instancePath = instanceAdminClient.instancePath(projectId, INSTANCE_ID);
+      const instancePath = instanceAdminClient.instancePath(
+        projectId,
+        INSTANCE_ID,
+      );
       await instanceAdminClient.deleteInstance({name: instancePath});
     } catch (err) {
       // Handle the error.

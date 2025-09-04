@@ -48,7 +48,9 @@ describe('writes', async () => {
         },
       ],
     };
-    await adminClient.modifyColumnFamilies(modifyFamiliesReq).catch(console.error);
+    await adminClient
+      .modifyColumnFamilies(modifyFamiliesReq)
+      .catch(console.error);
   });
 
   it('should do a simple write', async () => {

@@ -42,7 +42,10 @@ describe('instances', () => {
       },
       clusters: {
         [clusterId]: {
-          location: instanceAdminClient.locationPath(projectId, 'us-central1-c'),
+          location: instanceAdminClient.locationPath(
+            projectId,
+            'us-central1-c',
+          ),
           serveNodes: 3,
           defaultStorageType: 'SSD',
         },
@@ -56,7 +59,10 @@ describe('instances', () => {
     const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
     const instanceAdminClient = new BigtableInstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
-    const instancePath = instanceAdminClient.instancePath(projectId, instanceId);
+    const instancePath = instanceAdminClient.instancePath(
+      projectId,
+      instanceId,
+    );
     await instanceAdminClient.deleteInstance({name: instancePath});
   });
 

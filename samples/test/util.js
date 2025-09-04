@@ -76,7 +76,9 @@ async function createTestInstance() {
   };
   const [, operation] = await instanceAdminClient.createInstance(request);
   await operation.promise();
-  return instanceAdminClient.getInstance({name: instanceAdminClient.instancePath(projectId, instanceId)});
+  return instanceAdminClient.getInstance({
+    name: instanceAdminClient.instancePath(projectId, instanceId),
+  });
 }
 
 /**
