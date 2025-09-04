@@ -16,8 +16,6 @@
 
 const uuid = require('uuid');
 const {describe, it, before, after} = require('mocha');
-const {Bigtable} = require('@google-cloud/bigtable');
-const bigtable = new Bigtable();
 
 const INSTANCE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
@@ -25,30 +23,47 @@ const APP_PROFILE_ID = 'my-app-profile';
 
 const appProfileSnippets = require('./app-profile.js');
 
-const instance = bigtable.instance(INSTANCE_ID);
-
 describe.skip('App Profile Snippets', () => {
   before(async () => {
-    const [, operation] = await instance.create({
-      clusters: [
-        {
-          name: CLUSTER_ID,
-          location: 'us-central1-f',
-          storage: 'hdd',
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
+    const request = {
+      parent: instanceAdminClient.projectPath(projectId),
+      instanceId: INSTANCE_ID,
+      instance: {
+        displayName: INSTANCE_ID,
+        labels: {},
+        type: 'DEVELOPMENT',
+      },
+      clusters: {
+        [CLUSTER_ID]: {
+          location: instanceAdminClient.locationPath(
+            projectId,
+            'us-central1-f',
+          ),
+          serveNodes: 1,
+          defaultStorageType: 'HDD',
         },
-      ],
-      type: 'DEVELOPMENT',
-    });
+      },
+    };
+    const [, operation] = await instanceAdminClient.createInstance(request);
     await operation.promise();
   });
 
-  after(() => {
-    instance.exists().then(result => {
-      const exists = result[0];
-      if (exists) {
-        instance.delete();
-      }
-    });
+  after(async () => {
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
+    const instancePath = instanceAdminClient.instancePath(
+      projectId,
+      INSTANCE_ID,
+    );
+    try {
+      await instanceAdminClient.deleteInstance({name: instancePath});
+    } catch (err) {
+      // Handle the error.
+    }
   });
 
   it('should create an app-profile', () => {
