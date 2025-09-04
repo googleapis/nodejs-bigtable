@@ -36,13 +36,19 @@ describe('writes', async () => {
     const request = {
       parent: adminClient.instancePath(projectId, INSTANCE_ID),
       tableId: TABLE_ID,
-      table: {
-        columnFamilies: {
-          stats_summary: {},
-        },
-      },
+      table: {},
     };
     await adminClient.createTable(request).catch(console.error);
+    const modifyFamiliesReq = {
+      name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+      modifications: [
+        {
+          id: 'stats_summary',
+          create: {},
+        },
+      ],
+    };
+    await adminClient.modifyColumnFamilies(modifyFamiliesReq).catch(console.error);
   });
 
   it('should do a simple write', async () => {
