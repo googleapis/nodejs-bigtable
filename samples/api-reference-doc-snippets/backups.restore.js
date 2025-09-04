@@ -45,6 +45,7 @@ async function main(
       ),
     });
 
+    // The following call is part of the restoreTable long running operation.
     const [table] = await operation.promise();
 
     console.log(`Table restored to ${table.name} successfully.`);
