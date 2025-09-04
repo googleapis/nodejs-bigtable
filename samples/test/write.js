@@ -25,16 +25,24 @@ const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable na
 
 describe('writes', async () => {
   let INSTANCE_ID;
-  let table;
 
   before(async () => {
     const instance = await obtainTestInstance();
     INSTANCE_ID = instance.id;
 
-    table = instance.table(TABLE_ID);
-
-    await table.create().catch(console.error);
-    await table.createFamily('stats_summary').catch(console.error);
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
+    const request = {
+      parent: adminClient.instancePath(projectId, INSTANCE_ID),
+      tableId: TABLE_ID,
+      table: {
+        columnFamilies: {
+          stats_summary: {},
+        },
+      },
+    };
+    await adminClient.createTable(request).catch(console.error);
   });
 
   it('should do a simple write', async () => {

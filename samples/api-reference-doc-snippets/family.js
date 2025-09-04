@@ -13,16 +13,25 @@
 // limitations under the License.
 
 const snippets = {
-  createColmFamily: (instanceId, tableId, familyId) => {
+  createColmFamily: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_create_family]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-    const family = table.family(familyId);
+    const {BigtableTableAdminClient, GCRuleMaker} =
+      require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
-    family
-      .create()
+    const request = {
+      name: adminClient.tablePath(projectId, instanceId, tableId),
+      modifications: [
+        {
+          id: familyId,
+          create: {},
+        },
+      ],
+    };
+
+    adminClient
+      .modifyColumnFamilies(request)
       .then(result => {
         const family = result[0];
         // let apiResponse = result[1];
@@ -32,36 +41,46 @@ const snippets = {
       });
     // [END bigtable_api_create_family]
   },
-  existsFamily: (instanceId, tableId, familyId) => {
+  existsFamily: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_exists_family]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-    const family = table.family(familyId);
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
-    family
-      .exists()
-      .then(result => {
-        const exists = result[0];
-      })
-      .catch(err => {
-        // Handle the error.
-      });
+    const request = {
+      name: adminClient.tablePath(projectId, instanceId, tableId),
+      view: 'FAMILY_VIEW_BASIC',
+    };
+
+    try {
+      const [table] = await adminClient.getTable(request);
+      const exists = Object.prototype.hasOwnProperty.call(
+        table.columnFamilies,
+        familyId,
+      );
+      console.log(`Family ${familyId} exists: ${exists}`);
+    } catch (err) {
+      // Handle the error.
+      console.error(err);
+    }
     // [END bigtable_api_exists_family]
   },
-  getFamily: (instanceId, tableId, familyId) => {
+  getFamily: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_get_family]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-    const family = table.family(familyId);
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
-    family
-      .get()
+    const request = {
+      name: adminClient.tablePath(projectId, instanceId, tableId),
+      view: 'FULL',
+    };
+
+    adminClient
+      .getTable(request)
       .then(result => {
-        const family = result[0];
+        const table = result[0];
+        const family = table.columnFamilies[familyId];
         // const apiResponse = result[1];
       })
       .catch(err => {
@@ -69,18 +88,22 @@ const snippets = {
       });
     // [END bigtable_api_get_family]
   },
-  getMetadata: (instanceId, tableId, familyId) => {
+  getMetadata: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_get_family_meta]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-    const family = table.family(familyId);
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
-    family
-      .getMetadata()
+    const request = {
+      name: adminClient.tablePath(projectId, instanceId, tableId),
+      view: 'FULL',
+    };
+
+    adminClient
+      .getTable(request)
       .then(result => {
-        const metaData = result[0];
+        const table = result[0];
+        const metaData = table.columnFamilies[familyId];
         // const apiResponse = result[1];
       })
       .catch(err => {
@@ -88,23 +111,32 @@ const snippets = {
       });
     // [END bigtable_api_get_family_meta]
   },
-  setMetadata: (instanceId, tableId, familyId) => {
+  setMetadata: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_set_family_meta]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-    const family = table.family(familyId);
+    const {BigtableTableAdminClient, GCRuleMaker} =
+      require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
-    const metadata = {
-      rule: {
-        versions: 2,
-        union: true,
-      },
+    const rule = {
+      versions: 2,
+      union: true,
     };
 
-    family
-      .setMetadata(metadata)
+    const request = {
+      name: adminClient.tablePath(projectId, instanceId, tableId),
+      modifications: [
+        {
+          id: familyId,
+          update: {
+            gcRule: GCRuleMaker.makeRule(rule),
+          },
+        },
+      ],
+    };
+
+    adminClient
+      .modifyColumnFamilies(request)
       .then(result => {
         const apiResponse = result[0];
       })
@@ -113,16 +145,24 @@ const snippets = {
       });
     // [END bigtable_api_set_family_meta]
   },
-  delFamily: (instanceId, tableId, familyId) => {
+  delFamily: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_del_family]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-    const family = table.family(familyId);
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
-    family
-      .delete()
+    const request = {
+      name: adminClient.tablePath(projectId, instanceId, tableId),
+      modifications: [
+        {
+          id: familyId,
+          drop: true,
+        },
+      ],
+    };
+
+    adminClient
+      .modifyColumnFamilies(request)
       .then(result => {
         const apiResponse = result[0];
       })
