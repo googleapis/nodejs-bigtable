@@ -13,9 +13,15 @@
 // limitations under the License.
 
 const uuid = require('uuid');
+const {after} = require('mocha');
+
+const PREFIX = 'gcloud-tests-';
+const runId = uuid.v4().split('-')[0];
+const instanceId = `${PREFIX}-${runId}`;
+const clusterId = `${PREFIX}-${runId}`;
+
 const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
 const instanceAdminClient = new BigtableInstanceAdminClient();
-let instance;
 
 let obtainPromise;
 
@@ -76,7 +82,9 @@ async function createTestInstance() {
   };
   const [, operation] = await instanceAdminClient.createInstance(request);
   await operation.promise();
-  return instanceAdminClient.getInstance({name: instanceAdminClient.instancePath(projectId, instanceId)});
+  return instanceAdminClient.getInstance({
+    name: instanceAdminClient.instancePath(projectId, instanceId),
+  });
 }
 
 /**
