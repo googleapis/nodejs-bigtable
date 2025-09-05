@@ -140,7 +140,7 @@ describe('backups', async () => {
   it('should restore a backup', () => {
     const newTableId = generateId();
     const stdout = execSync(
-      `node ./backups.list.js ${INSTANCE_ID} ${newTableId} ${BACKUP_ID}`,
+      `node ./backups.list.js ${INSTANCE_ID} ${newTableId} ${CLUSTER_ID} ${BACKUP_ID}`,
     );
     assert.include(stdout, `Table restored to ${newTableId} successfully.`);
   });
