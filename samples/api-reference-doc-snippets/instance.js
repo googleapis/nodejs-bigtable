@@ -13,68 +13,57 @@
 // limitations under the License.
 
 const snippets = {
-  createInstance: (instanceId, clusterId) => {
+  createInstance: async (instanceId, clusterId) => {
     // [START bigtable_api_create_instance]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    // options for a PRODUCTION Instance
-    // const options = {
-    //   clusters: [
-    //     {
-    //       id: clusterId,
-    //       nodes: 3,
-    //       location: 'us-central1-f',
-    //       storage: 'ssd',
-    //     },
-    //   ],
-    //   type: 'PRODUCTION', // Optional as default type is PRODUCTION
-    // };
-
-    // options for a DEVELOPMENT Instance
     const options = {
-      clusters: [
-        {
-          id: clusterId,
-          location: 'us-central1-f',
-          storage: 'hdd',
+      parent: instanceAdminClient.projectPath(projectId),
+      instanceId: instanceId,
+      instance: {
+        displayName: instanceId,
+        labels: {},
+        type: 'DEVELOPMENT',
+      },
+      clusters: {
+        [clusterId]: {
+          location: instanceAdminClient.locationPath(projectId, 'us-central1-f'),
+          serveNodes: 1,
+          defaultStorageType: 'HDD',
         },
-      ],
-      type: 'DEVELOPMENT',
+      },
     };
 
     // creates a new Instance
-    instance
-      .create(options)
-      .then(result => {
-        const newInstance = result[0];
-        // let operations = result[1];
-        // let apiResponse = result[2];
-      })
-      .catch(err => {
-        // Handle the error.
-      });
+    const [newInstance, operation] = await instanceAdminClient.createInstance(options);
+    // let operations = result[1];
+    // let apiResponse = result[2];
+  })
+  .catch(err => {
+    // Handle the error.
+  });
     // [END bigtable_api_create_instance]
   },
 
-  createCluster: (instanceId, clusterId) => {
+  createCluster: async (instanceId, clusterId) => {
     // [START bigtable_api_create_cluster]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    // const options = {
-    //   location: 'us-central1-b',
-    //   nodes: 3,
-    //   storage: 'ssd',
-    // };
     const options = {
-      location: 'us-central1-b',
-      storage: 'hdd',
+      parent: instanceAdminClient.instancePath(projectId, instanceId),
+      clusterId: clusterId,
+      cluster: {
+        location: instanceAdminClient.locationPath(projectId, 'us-central1-b'),
+        serveNodes: 1,
+        defaultStorageType: 'HDD',
+      },
     };
-    instance
-      .createCluster(clusterId, options)
+    instanceAdminClient
+      .createCluster(options)
       .then(result => {
         const newCluster = result[0];
         // const operations = result[1];
@@ -86,21 +75,28 @@ const snippets = {
     // [END bigtable_api_create_cluster]
   },
 
-  createAppProfile: (instanceId, clusterId, appProfileId, callback) => {
+  createAppProfile: async (instanceId, clusterId, appProfileId, callback) => {
     // [START bigtable_api_create_app_profile]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    const cluster = instance.cluster(clusterId);
-
-    const options = {
-      routing: cluster,
-      allowTransactionalWrites: true,
-      ignoreWarnings: true,
+    const appProfile = {
+      name: instanceAdminClient.appProfilePath(
+        projectId,
+        instanceId,
+        appProfileId
+      ),
+      multiClusterRoutingUseAny: {},
     };
 
-    instance.createAppProfile(appProfileId, options, (err, appProfile) => {
+    const request = {
+      parent: instanceAdminClient.instancePath(projectId, instanceId),
+      appProfileId: appProfileId,
+      appProfile: appProfile,
+    };
+
+    instanceAdminClient.createAppProfile(request, (err, appProfile) => {
       if (err) {
         // Handle the error.
         return callback(err);
@@ -168,20 +164,27 @@ const snippets = {
     // [END bigtable_api_create_table]
   },
 
-  existsInstance: instanceId => {
+  existsInstance: async (instanceId) => {
     // [START bigtable_api_exists_instance]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    instance
-      .exists()
-      .then(result => {
-        const exists = result[0];
-      })
-      .catch(err => {
+    const request = {
+      name: instanceAdminClient.instancePath(projectId, instanceId),
+    };
+
+    try {
+      await instanceAdminClient.getInstance(request);
+      console.log('Instance exists.');
+    } catch (err) {
+      if (err.code === 5) {
+        console.log('Instance does not exist.');
+      } else {
         // Handle the error.
-      });
+        console.error(err);
+      }
+    }
     // [END bigtable_api_exists_instance]
   },
 
