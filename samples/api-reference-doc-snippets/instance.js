@@ -188,14 +188,18 @@ const snippets = {
     // [END bigtable_api_exists_instance]
   },
 
-  getInstance: instanceId => {
+  getInstance: async instanceId => {
     // [START bigtable_api_get_instance]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    instance
-      .get()
+    const request = {
+      name: instanceAdminClient.instancePath(projectId, instanceId),
+    };
+
+    instanceAdminClient
+      .getInstance(request)
       .then(result => {
         const instance = result[0];
         // const apiResponse = result[1];
@@ -206,14 +210,18 @@ const snippets = {
     // [END bigtable_api_get_instance]
   },
 
-  getClusters: instanceId => {
+  getClusters: async instanceId => {
     // [START bigtable_api_get_clusters]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    instance
-      .getClusters()
+    const request = {
+      parent: instanceAdminClient.instancePath(projectId, instanceId),
+    };
+
+    instanceAdminClient
+      .listClusters(request)
       .then(result => {
         const clusters = result[0];
       })
@@ -223,14 +231,18 @@ const snippets = {
     // [END bigtable_api_get_clusters]
   },
 
-  getIamPolicy: instanceId => {
+  getIamPolicy: async instanceId => {
     // [START bigtable_api_get_instance_Iam_policy]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    instance
-      .getIamPolicy()
+    const request = {
+      resource: instanceAdminClient.instancePath(projectId, instanceId),
+    };
+
+    instanceAdminClient
+      .getIamPolicy(request)
       .then(result => {
         const policy = result[0];
       })
@@ -240,11 +252,11 @@ const snippets = {
     // [END bigtable_api_get_instance_Iam_policy]
   },
 
-  setIamPolicy: instanceId => {
+  setIamPolicy: async instanceId => {
     // [START bigtable_api_set_instance_Iam_policy]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
     const policy = {
       bindings: [
@@ -255,8 +267,13 @@ const snippets = {
       ],
     };
 
-    instance
-      .setIamPolicy(policy)
+    const request = {
+      resource: instanceAdminClient.instancePath(projectId, instanceId),
+      policy: policy,
+    };
+
+    instanceAdminClient
+      .setIamPolicy(request)
       .then(result => {
         const setPolicy = result[0];
       })
@@ -266,15 +283,19 @@ const snippets = {
     // [END bigtable_api_set_instance_Iam_policy]
   },
 
-  testIamPermissions: instanceId => {
+  testIamPermissions: async instanceId => {
     // [START bigtable_api_test_instance_Iam_permissions]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    const permissions = ['bigtable.tables.get', 'bigtable.tables.readRows'];
-    instance
-      .testIamPermissions(permissions)
+    const request = {
+      resource: instanceAdminClient.instancePath(projectId, instanceId),
+      permissions: ['bigtable.tables.get', 'bigtable.tables.readRows'],
+    };
+
+    instanceAdminClient
+      .testIamPermissions(request)
       .then(result => {
         const grantedPermissions = result[0];
       })
@@ -284,14 +305,18 @@ const snippets = {
     // [END bigtable_api_test_instance_Iam_permissions]
   },
 
-  getAppProfiles: instanceId => {
+  getAppProfiles: async instanceId => {
     // [START bigtable_api_get_app_profiles]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    instance
-      .getAppProfiles()
+    const request = {
+      parent: instanceAdminClient.instancePath(projectId, instanceId),
+    };
+
+    instanceAdminClient
+      .listAppProfiles(request)
       .then(result => {
         const appProfiles = result[0];
       })
@@ -301,14 +326,18 @@ const snippets = {
     // [END bigtable_api_get_app_profiles]
   },
 
-  getMetadata: instanceId => {
+  getMetadata: async instanceId => {
     // [START bigtable_api_get_instance_metadata]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    instance
-      .getMetadata()
+    const request = {
+      name: instanceAdminClient.instancePath(projectId, instanceId),
+    };
+
+    instanceAdminClient
+      .getInstance(request)
       .then(result => {
         const metaData = result[0];
       })
@@ -318,23 +347,24 @@ const snippets = {
     // [END bigtable_api_get_instance_metadata]
   },
 
-  getTables: instanceId => {
+  getTables: async instanceId => {
     // [START bigtable_api_get_tables]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const tableAdminClient = new BigtableTableAdminClient();
+    const projectId = await tableAdminClient.getProjectId();
 
     // To control how many API requests are made and page through the results
     // manually, set `autoPaginate` to false.
     const options = {
+      parent: tableAdminClient.instancePath(projectId, instanceId),
       autoPaginate: false,
     };
     // const options = {
     //   autoPaginate: true
     // };
 
-    instance
-      .getTables(options)
+    tableAdminClient
+      .listTables(options)
       .then(result => {
         const tables = result[0];
       })
@@ -344,18 +374,24 @@ const snippets = {
     // [END bigtable_api_get_tables]
   },
 
-  updateInstance: instanceId => {
+  updateInstance: async instanceId => {
     // [START bigtable_api_set_meta_data]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    const metadata = {
-      displayName: 'updated-name',
+    const request = {
+      instance: {
+        name: instanceAdminClient.instancePath(projectId, instanceId),
+        displayName: 'updated-name',
+      },
+      updateMask: {
+        paths: ['display_name'],
+      },
     };
 
-    instance
-      .setMetadata(metadata)
+    instanceAdminClient
+      .partialUpdateInstance(request)
       .then(result => {
         const apiResponse = result[0];
       })
@@ -365,14 +401,18 @@ const snippets = {
     // [END bigtable_api_set_meta_data]
   },
 
-  delInstance: instanceId => {
+  delInstance: async instanceId => {
     // [START bigtable_api_del_instance]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    instance
-      .delete()
+    const request = {
+      name: instanceAdminClient.instancePath(projectId, instanceId),
+    };
+
+    instanceAdminClient
+      .deleteInstance(request)
       .then(result => {
         const apiResponse = result[0];
       })
@@ -382,36 +422,29 @@ const snippets = {
     // [END bigtable_api_del_instance]
   },
 
-  executeQuery: (instanceId, tableId) => {
+  executeQuery: async (instanceId, tableId) => {
     // [START bigtable_api_execute_query]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {Bigtable} = require('@google-cloud/bigtable').v2;
+    const bigtableClient = new Bigtable();
+    const projectId = await bigtableClient.getProjectId();
 
     const query = `SELECT
                     _key
                   from \`${tableId}\` WHERE _key=@row_key`;
-    const parameters = {
-      row_key: 'alincoln',
-    };
-
-    const parameterTypes = {
-      row_key: Bigtable.SqlTypes.String(),
-    };
-
-    const prepareStatementOptions = {
+    const request = {
+      instanceName: bigtableClient.instancePath(projectId, instanceId),
       query,
-      parameterTypes,
+      params: {
+        fields: {
+          row_key: {
+            stringValue: 'alincoln',
+          },
+        },
+      },
     };
 
-    instance
-      .prepareStatement(prepareStatementOptions)
-      .then(([preparedStatement]) =>
-        instance.executeQuery({
-          preparedStatement,
-          parameters,
-        }),
-      )
+    bigtableClient
+      .executeQuery(request)
       .then(result => {
         const rows = result[0];
       })
@@ -422,43 +455,36 @@ const snippets = {
     // [END bigtable_api_execute_query]
   },
 
-  createExecuteQueryStream: (instanceId, tableId) => {
+  createExecuteQueryStream: async (instanceId, tableId) => {
     // [START bigtable_api_create_query_stream]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
+    const {Bigtable} = require('@google-cloud/bigtable').v2;
+    const bigtableClient = new Bigtable();
+    const projectId = await bigtableClient.getProjectId();
 
     const query = `SELECT
                     _key
                   from \`${tableId}\` WHERE _key=@row_key`;
-    const parameters = {
-      row_key: 'alincoln',
-    };
-    const parameterTypes = {
-      row_key: Bigtable.ExecuteQueryTypes.String(),
-    };
-
-    const prepareStatementOptions = {
+    const request = {
+      instanceName: bigtableClient.instancePath(projectId, instanceId),
       query,
-      parameterTypes,
+      params: {
+        fields: {
+          row_key: {
+            stringValue: 'alincoln',
+          },
+        },
+      },
     };
-    instance
-      .prepareStatement(prepareStatementOptions)
-      .then(preparedStatement => {
-        instance
-          .createExecuteQueryStream({
-            preparedStatement,
-            parameters,
-          })
-          .on('error', err => {
-            // Handle the error.
-          })
-          .on('data', row => {
-            // `row` is a QueryResultRow object.
-          })
-          .on('end', () => {
-            // All rows retrieved.
-          });
+    bigtableClient
+      .executeQueryStream(request)
+      .on('error', err => {
+        // Handle the error.
+      })
+      .on('data', row => {
+        // `row` is a QueryResultRow object.
+      })
+      .on('end', () => {
+        // All rows retrieved.
       });
 
     // If you anticipate many results, you can end a stream early to prevent
