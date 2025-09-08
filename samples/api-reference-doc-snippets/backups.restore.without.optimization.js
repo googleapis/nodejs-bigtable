@@ -18,7 +18,7 @@ async function main(
   clusterId = 'YOUR_CLUSTER_ID',
   backupId = 'YOUR_BACKUP_ID',
 ) {
-  // [START bigtable_api_restore_backup]
+  // [START bigtable_api_restore_backup_no_optimization]
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
 
   async function restoreBackup() {
@@ -45,40 +45,12 @@ async function main(
       ),
     });
     console.log('Waiting for restoreTable operation to complete...');
-    const [table, metadata] = await restoreLRO.promise();
+    const [table] = await restoreLRO.promise();
     console.log(`Table ${table.name} restored successfully.`);
-
-    // Await the secondary optimize table operation
-    const optimizeTableOperationName = metadata.optimizeTableOperationName;
-    if (optimizeTableOperationName) {
-      console.log(
-        `Waiting for optimize table operation: ${optimizeTableOperationName}`,
-      );
-      try {
-        const startTime = Date.now();
-        let operation;
-        const timeoutMs = 300000; // 5 minutes
-        while (
-          Date.now() - startTime < timeoutMs &&
-          (!operation || !operation.done)
-        ) {
-          [operation] = await adminClient.operationsClient.getOperation({
-            name: optimizeTableOperationName,
-          });
-        }
-        console.log(
-          `Optimized table operation ${operation.name} completed successfully.`,
-        );
-      } catch (err) {
-        console.error('Optimize table operation failed:', err);
-      }
-    } else {
-      console.log('No optimize table operation name found in metadata.');
-    }
   }
 
   await restoreBackup();
-  // [END bigtable_api_restore_backup]
+  // [END bigtable_api_restore_backup_no_optimization]
 }
 
 const args = process.argv.slice(2);
