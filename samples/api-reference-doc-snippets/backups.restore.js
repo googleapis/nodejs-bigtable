@@ -70,7 +70,7 @@ async function main(
           `Optimized table operation ${operation.name} completed successfully.`,
         );
       } catch (err) {
-        console.error(`Optimize table operation failed:`, err);
+        console.error('Optimize table operation failed:', err);
       }
     } else {
       console.log('No optimize table operation name found in metadata.');
