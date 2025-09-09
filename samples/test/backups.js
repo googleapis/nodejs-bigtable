@@ -137,12 +137,7 @@ describe('backups', async () => {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const request = {
-      name: adminClient.backupPath(
-        projectId,
-        INSTANCE_ID,
-        CLUSTER_ID,
-        BACKUP_ID,
-      ),
+      name: `projects/${projectId}/instances/${INSTANCE_ID}/clusters/${CLUSTER_ID}/backups/${BACKUP_ID}`,
     };
     const [metadata] = await adminClient.getBackup(request);
 
@@ -208,12 +203,7 @@ describe('backups', async () => {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const [updatedBackup] = await adminClient.getBackup({
-      name: adminClient.backupPath(
-        projectId,
-        INSTANCE_ID,
-        CLUSTER_ID,
-        backupId,
-      ),
+      name: `projects/${projectId}/instances/${INSTANCE_ID}/clusters/${CLUSTER_ID}/backups/${backupId}`,
     });
     const newExpireTime = new Date(
       updatedBackup.expireTime.seconds * 1000,

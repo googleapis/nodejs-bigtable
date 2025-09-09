@@ -32,12 +32,7 @@ async function main(
 
     const request = {
       backup: {
-        name: tableAdminClient.backupPath(
-          projectId,
-          instanceId,
-          clusterId,
-          backupId,
-        ),
+        name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}/backups/${backupId}`,
         expireTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
       },
       updateMask: {

@@ -37,12 +37,7 @@ async function main(
     const [operation] = await adminClient.restoreTable({
       parent: adminClient.instancePath(projectId, instanceId),
       tableId,
-      backup: adminClient.backupPath(
-        projectId,
-        instanceId,
-        clusterId,
-        backupId,
-      ),
+      backup: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}/backups/${backupId}`,
     });
 
     // The following call is part of the restoreTable long running operation.
