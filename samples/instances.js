@@ -79,7 +79,7 @@ async function runInstanceOperations(instanceID, clusterID) {
   const [instances] = await instanceAdminClient.listInstances({
     parent: instanceAdminClient.projectPath(projectId),
   });
-  instances.forEach(instance => {
+  instances.instances.forEach(instance => {
     console.log(instance.name);
   });
   // [END bigtable_list_instances]
@@ -100,7 +100,7 @@ async function runInstanceOperations(instanceID, clusterID) {
   const [clusters] = await instanceAdminClient.listClusters({
     parent: instanceAdminClient.instancePath(projectId, instanceID),
   });
-  clusters.forEach(cluster => {
+  clusters.clusters.forEach(cluster => {
     console.log(cluster.name);
   });
   // [END bigtable_get_clusters]
