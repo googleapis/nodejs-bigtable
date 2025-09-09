@@ -16,8 +16,6 @@
 
 const uuid = require('uuid');
 const {describe, it, after} = require('mocha');
-const {Bigtable} = require('@google-cloud/bigtable');
-const bigtable = new Bigtable();
 
 const INSTANCE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
@@ -29,10 +27,11 @@ const instanceSnippets = require('./instance.js');
 describe.skip('Instance Snippets', () => {
   after(async () => {
     try {
-      const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+      const {BigtableInstanceAdminClient} =
+        require('@google-cloud/bigtable').v2;
       const instanceAdminClient = new BigtableInstanceAdminClient();
       const projectId = await instanceAdminClient.getProjectId();
-      const instancePath = instanceAdminClient.instancePath(projectId, INSTANCE_ID);
+      const instancePath = `projects/${projectId}/instances/${INSTANCE_ID}`;
       await instanceAdminClient.deleteInstance({name: instancePath});
     } catch (err) {
       // Handle the error.
