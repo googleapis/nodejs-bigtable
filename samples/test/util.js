@@ -21,6 +21,7 @@ const instanceId = `${PREFIX}-${runId}`;
 const clusterId = `${PREFIX}-${runId}`;
 
 const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+
 const instanceAdminClient = new BigtableInstanceAdminClient();
 
 let obtainPromise;
@@ -63,6 +64,7 @@ async function obtainTestInstance() {
  */
 async function createTestInstance() {
   const projectId = await instanceAdminClient.getProjectId();
+  const location = 'us-central1-c';
   const request = {
     parent: instanceAdminClient.projectPath(projectId),
     instanceId: instanceId,
@@ -74,13 +76,13 @@ async function createTestInstance() {
     },
     clusters: {
       [clusterId]: {
-        location: instanceAdminClient.locationPath(projectId, 'us-central1-c'),
+        location: `projects/${projectId}/locations/${location}`,
         serveNodes: 1,
         defaultStorageType: 'HDD',
       },
     },
   };
-  const [, operation] = await instanceAdminClient.createInstance(request);
+  const [operation] = await instanceAdminClient.createInstance(request);
   await operation.promise();
   return instanceAdminClient.getInstance({
     name: instanceAdminClient.instancePath(projectId, instanceId),
