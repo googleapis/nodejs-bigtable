@@ -44,11 +44,24 @@ const getRowGreeting = row => {
     // [START bigtable_hw_connect]
     const bigtableClient = new Bigtable();
     const instance = bigtableClient.instance(INSTANCE_ID);
+    const table = instance.table(TABLE_ID);
     // [END bigtable_hw_connect]
 
     // [START bigtable_hw_create_table]
-    const table = instance.table(TABLE_ID);
-    const [tableExists] = await table.exists();
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
+
+    let tableExists = true;
+    try {
+      await adminClient.getTable({
+        name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+      });
+    } catch (e) {
+      if (e.code === 5) {
+        tableExists = false;
+      }
+    }
     if (!tableExists) {
       console.log(`Creating table ${TABLE_ID}`);
       const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
@@ -127,7 +140,10 @@ const getRowGreeting = row => {
 
     // [START bigtable_hw_delete_table]
     console.log('Delete the table');
-    await table.delete();
+    const request = {
+      name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+    };
+    await adminClient.deleteTable(request);
     // [END bigtable_hw_delete_table]
   } catch (error) {
     console.error('Something went wrong:', error);

@@ -28,7 +28,14 @@ async function runTableOperations(instanceID, tableID) {
   // Check if table exists
   console.log();
   console.log('Checking if table exists...');
-  const [tableExists] = await table.exists();
+  let tableExists = true;
+  try {
+    await adminClient.getTable({name: table.name});
+  } catch (e) {
+    if (e.code === 5) {
+      tableExists = false;
+    }
+  }
   if (!tableExists) {
     // Create table if does not exist
     console.log(`Table does not exist. Creating table ${tableID}`);
@@ -50,9 +57,9 @@ async function runTableOperations(instanceID, tableID) {
   console.log('Listing tables in current project...');
   // [START bigtable_list_tables]
   // List tables in current project
-  const [tables] = await instance.getTables();
+  const [tables] = await adminClient.listTables({parent: instance.name});
   tables.forEach(table => {
-    console.log(table.id);
+    console.log(table.name);
   });
   // [END bigtable_list_tables]
 
@@ -65,7 +72,10 @@ async function runTableOperations(instanceID, tableID) {
   const options = {
     view: 'id',
   };
-  const [tableMetadata] = await table.getMetadata(options);
+  const [tableMetadata] = await adminClient.getTable({
+    name: table.name,
+    view: options.view,
+  });
   console.log(`Metadata: ${JSON.stringify(tableMetadata)}`);
   // [END bigtable_get_table_metadata]
 
@@ -223,24 +233,26 @@ async function runTableOperations(instanceID, tableID) {
   console.log('Printing ID and GC Rule for all column families...');
   // [START bigtable_list_column_families]
   // List all families in the table with GC rules
-  const [families] = await table.getFamilies();
+  const [tableData2] = await adminClient.getTable({
+    name: table.name,
+    view: 'FULL',
+  });
+  const families = tableData2.columnFamilies;
   // Print ID, GC Rule for each column family
-  families.forEach(family => {
-    const metadata = JSON.stringify(family.metadata);
-    console.log(`Column family: ${family.id}, Metadata: ${metadata}`);
+  for (const familyId in families) {
+    const family = families[familyId];
+    const metadata = JSON.stringify(family.gcRule);
+    console.log(`Column family: ${familyId}, Metadata: ${metadata}`);
     /* Sample output:
         Column family: projects/{{projectId}}/instances/my-instance/tables/my-table/columnFamilies/cf4,
         Metadata: {"gcRule":{"intersection":{"rules":[{"maxAge":{"seconds":"432000","nanos":0},"rule":"maxAge"},{"maxNumVersions":2,"rule":"maxNumVersions"}]},"rule":"intersection"}}
     */
-  });
+  }
   // [END bigtable_list_column_families]
 
   console.log('\nUpdating column family cf1 GC rule...');
   // [START bigtable_update_gc_rule]
   // Update the column family metadata to update the GC rule
-
-  // Create a reference to the column family
-  family = table.family('cf1');
 
   // Update a column family GC rule
   const updatedMetadata = {
@@ -249,22 +261,44 @@ async function runTableOperations(instanceID, tableID) {
     },
   };
 
-  const [apiResponse] = await family.setMetadata(updatedMetadata);
+  const [apiResponse] = await adminClient.modifyColumnFamilies({
+    name: table.name,
+    modifications: [
+      {
+        id: 'cf1',
+        update: {
+          gcRule: GCRuleMaker.makeRule(updatedMetadata.rule),
+        },
+      },
+    ],
+  });
   console.log(`Updated GC rule: ${JSON.stringify(apiResponse)}`);
   // [END bigtable_update_gc_rule]
 
   console.log('\nPrint updated column family cf1 GC rule...');
   // [START bigtable_family_get_gc_rule]
   // Retrieve column family metadata (Id, column family GC rule)
-  const [metadata] = await family.getMetadata();
+  const [tableData] = await adminClient.getTable({
+    name: table.name,
+    view: 'FULL',
+  });
+  const metadata = tableData.columnFamilies['cf1'].gcRule;
   console.log(`Metadata: ${JSON.stringify(metadata)}`);
   // [END bigtable_family_get_gc_rule]
 
   console.log('\nDelete a column family cf2...');
   // [START bigtable_delete_family]
   // Delete a column family
-  await family.delete();
-  console.log(`${family.id} deleted successfully\n`);
+  await adminClient.modifyColumnFamilies({
+    name: table.name,
+    modifications: [
+      {
+        id: 'cf2',
+        drop: true,
+      },
+    ],
+  });
+  console.log('cf2 deleted successfully\n');
   // [END bigtable_delete_family]
   console.log(
     'Run node $0 delete --instance [instanceID] --table [tableID] to delete the table.\n',
@@ -274,14 +308,16 @@ async function runTableOperations(instanceID, tableID) {
 async function deleteTable(instanceID, tableID) {
   // const instanceID = "my-instance";
   // const tableID = "my-bigtable-ID";
-  const bigtableClient = new Bigtable();
-  const instance = bigtableClient.instance(instanceID);
-  const table = instance.table(tableID);
+  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+  const adminClient = new BigtableTableAdminClient();
+  const projectId = await adminClient.getProjectId();
   // [START bigtable_delete_table]
   // Delete the entire table
   console.log('Delete the table.');
-  await table.delete();
-  console.log(`Table deleted: ${table.id}`);
+  await adminClient.deleteTable({
+    name: adminClient.tablePath(projectId, instanceID, tableID),
+  });
+  console.log(`Table deleted: ${tableID}`);
   // [END bigtable_delete_table]
 }
 

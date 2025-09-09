@@ -101,4 +101,8 @@ describe.skip('Table Snippets', () => {
   it('should delete table', () => {
     tableSnippets.delTable(INSTANCE_ID, TABLE_ID);
   });
+
+  it('should check consistency', () => {
+    tableSnippets.consistency(INSTANCE_ID, TABLE_ID);
+  });
 });
