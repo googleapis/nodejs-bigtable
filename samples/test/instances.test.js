@@ -45,7 +45,7 @@ describe('instances', () => {
         },
       },
     };
-    const [, operation] = await instanceAdminClient.createInstance(request);
+    const [operation] = await instanceAdminClient.createInstance(request);
     await operation.promise();
   });
 
