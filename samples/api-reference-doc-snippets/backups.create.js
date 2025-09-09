@@ -36,7 +36,7 @@ async function main(
       parent: tableAdminClient.clusterPath(projectId, instanceId, clusterId),
       backupId: backupId,
       backup: {
-        sourceTable: tableAdminClient.tablePath(projectId, instanceId, tableId),
+        sourceTable: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
         expireTime: new Date(Date.now() + 7 * 60 * 60 * 1000), // 7 hours from now
       },
     };

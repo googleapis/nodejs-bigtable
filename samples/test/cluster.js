@@ -28,7 +28,7 @@ describe.skip('Cluster Snippets', () => {
     const instanceAdminClient = new BigtableInstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
     const request = {
-      parent: instanceAdminClient.projectPath(projectId),
+      parent: `projects/${projectId}`,
       instanceId: INSTANCE_ID,
       instance: {
         displayName: INSTANCE_ID,

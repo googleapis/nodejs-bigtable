@@ -66,7 +66,7 @@ async function createTestInstance() {
   const projectId = await instanceAdminClient.getProjectId();
   const location = 'us-central1-c';
   const request = {
-    parent: instanceAdminClient.projectPath(projectId),
+    parent: `projects/${projectId}`,
     instanceId: instanceId,
     instance: {
       displayName: instanceId,

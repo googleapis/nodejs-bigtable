@@ -44,7 +44,7 @@ async function runInstanceOperations(instanceID, clusterID) {
     // with cluster id "ssd-cluster", 3 nodes and location us-central1-f
 
     const instanceOptions = {
-      parent: instanceAdminClient.projectPath(projectId),
+      parent: `projects/${projectId}`,
       instanceId: instanceID,
       instance: {
         displayName: instanceID,
@@ -77,7 +77,7 @@ async function runInstanceOperations(instanceID, clusterID) {
   console.log('Listing Instances:');
   // [START bigtable_list_instances]
   const [instances] = await instanceAdminClient.listInstances({
-    parent: instanceAdminClient.projectPath(projectId),
+    parent: `projects/${projectId}`,
   });
   instances.instances.forEach(instance => {
     console.log(instance.name);
@@ -119,7 +119,7 @@ async function createDevInstance(instanceID, clusterID) {
   console.log('Creating a DEVELOPMENT Instance');
   // Set options to create an Instance
   const options = {
-    parent: instanceAdminClient.projectPath(projectId),
+    parent: `projects/${projectId}`,
     instanceId: instanceID,
     instance: {
       displayName: instanceID,

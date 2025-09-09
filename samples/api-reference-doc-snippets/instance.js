@@ -20,7 +20,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const options = {
-      parent: instanceAdminClient.projectPath(projectId),
+      parent: `projects/${projectId}`,
       instanceId: instanceId,
       instance: {
         displayName: instanceId,

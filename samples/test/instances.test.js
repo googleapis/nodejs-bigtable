@@ -30,7 +30,7 @@ describe('instances', () => {
     const instanceAdminClient = new BigtableInstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
     const request = {
-      parent: instanceAdminClient.projectPath(projectId),
+      parent: `projects/${projectId}`,
       instanceId: instanceId,
       instance: {
         displayName: instanceId,
