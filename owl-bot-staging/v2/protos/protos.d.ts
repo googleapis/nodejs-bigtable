@@ -7968,6 +7968,9 @@ export namespace google {
 
                         /** Properties of a Raw. */
                         interface IRaw {
+
+                            /** Raw escapeNulls */
+                            escapeNulls?: (boolean|null);
                         }
 
                         /** Represents a Raw. */
@@ -7978,6 +7981,9 @@ export namespace google {
                              * @param [properties] Properties to set
                              */
                             constructor(properties?: google.bigtable.v2.Type.Bytes.Encoding.IRaw);
+
+                            /** Raw escapeNulls. */
+                            public escapeNulls: boolean;
 
                             /**
                              * Creates a new Raw instance using the specified properties.
@@ -8359,6 +8365,9 @@ export namespace google {
 
                         /** Properties of an Utf8Bytes. */
                         interface IUtf8Bytes {
+
+                            /** Utf8Bytes nullEscapeChar */
+                            nullEscapeChar?: (string|null);
                         }
 
                         /** Represents an Utf8Bytes. */
@@ -8369,6 +8378,9 @@ export namespace google {
                              * @param [properties] Properties to set
                              */
                             constructor(properties?: google.bigtable.v2.Type.String.Encoding.IUtf8Bytes);
+
+                            /** Utf8Bytes nullEscapeChar. */
+                            public nullEscapeChar: string;
 
                             /**
                              * Creates a new Utf8Bytes instance using the specified properties.
@@ -8554,6 +8566,9 @@ export namespace google {
 
                         /** Encoding bigEndianBytes */
                         bigEndianBytes?: (google.bigtable.v2.Type.Int64.Encoding.IBigEndianBytes|null);
+
+                        /** Encoding orderedCodeBytes */
+                        orderedCodeBytes?: (google.bigtable.v2.Type.Int64.Encoding.IOrderedCodeBytes|null);
                     }
 
                     /** Represents an Encoding. */
@@ -8568,8 +8583,11 @@ export namespace google {
                         /** Encoding bigEndianBytes. */
                         public bigEndianBytes?: (google.bigtable.v2.Type.Int64.Encoding.IBigEndianBytes|null);
 
+                        /** Encoding orderedCodeBytes. */
+                        public orderedCodeBytes?: (google.bigtable.v2.Type.Int64.Encoding.IOrderedCodeBytes|null);
+
                         /** Encoding encoding. */
-                        public encoding?: "bigEndianBytes";
+                        public encoding?: ("bigEndianBytes"|"orderedCodeBytes");
 
                         /**
                          * Creates a new Encoding instance using the specified properties.
@@ -8742,6 +8760,97 @@ export namespace google {
 
                             /**
                              * Gets the default type url for BigEndianBytes
+                             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                             * @returns The default type url
+                             */
+                            public static getTypeUrl(typeUrlPrefix?: string): string;
+                        }
+
+                        /** Properties of an OrderedCodeBytes. */
+                        interface IOrderedCodeBytes {
+                        }
+
+                        /** Represents an OrderedCodeBytes. */
+                        class OrderedCodeBytes implements IOrderedCodeBytes {
+
+                            /**
+                             * Constructs a new OrderedCodeBytes.
+                             * @param [properties] Properties to set
+                             */
+                            constructor(properties?: google.bigtable.v2.Type.Int64.Encoding.IOrderedCodeBytes);
+
+                            /**
+                             * Creates a new OrderedCodeBytes instance using the specified properties.
+                             * @param [properties] Properties to set
+                             * @returns OrderedCodeBytes instance
+                             */
+                            public static create(properties?: google.bigtable.v2.Type.Int64.Encoding.IOrderedCodeBytes): google.bigtable.v2.Type.Int64.Encoding.OrderedCodeBytes;
+
+                            /**
+                             * Encodes the specified OrderedCodeBytes message. Does not implicitly {@link google.bigtable.v2.Type.Int64.Encoding.OrderedCodeBytes.verify|verify} messages.
+                             * @param message OrderedCodeBytes message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encode(message: google.bigtable.v2.Type.Int64.Encoding.IOrderedCodeBytes, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Encodes the specified OrderedCodeBytes message, length delimited. Does not implicitly {@link google.bigtable.v2.Type.Int64.Encoding.OrderedCodeBytes.verify|verify} messages.
+                             * @param message OrderedCodeBytes message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encodeDelimited(message: google.bigtable.v2.Type.Int64.Encoding.IOrderedCodeBytes, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Decodes an OrderedCodeBytes message from the specified reader or buffer.
+                             * @param reader Reader or buffer to decode from
+                             * @param [length] Message length if known beforehand
+                             * @returns OrderedCodeBytes
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.Type.Int64.Encoding.OrderedCodeBytes;
+
+                            /**
+                             * Decodes an OrderedCodeBytes message from the specified reader or buffer, length delimited.
+                             * @param reader Reader or buffer to decode from
+                             * @returns OrderedCodeBytes
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.Type.Int64.Encoding.OrderedCodeBytes;
+
+                            /**
+                             * Verifies an OrderedCodeBytes message.
+                             * @param message Plain object to verify
+                             * @returns `null` if valid, otherwise the reason why it is not
+                             */
+                            public static verify(message: { [k: string]: any }): (string|null);
+
+                            /**
+                             * Creates an OrderedCodeBytes message from a plain object. Also converts values to their respective internal types.
+                             * @param object Plain object
+                             * @returns OrderedCodeBytes
+                             */
+                            public static fromObject(object: { [k: string]: any }): google.bigtable.v2.Type.Int64.Encoding.OrderedCodeBytes;
+
+                            /**
+                             * Creates a plain object from an OrderedCodeBytes message. Also converts values to other types if specified.
+                             * @param message OrderedCodeBytes
+                             * @param [options] Conversion options
+                             * @returns Plain object
+                             */
+                            public static toObject(message: google.bigtable.v2.Type.Int64.Encoding.OrderedCodeBytes, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                            /**
+                             * Converts this OrderedCodeBytes to JSON.
+                             * @returns JSON object
+                             */
+                            public toJSON(): { [k: string]: any };
+
+                            /**
+                             * Gets the default type url for OrderedCodeBytes
                              * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                              * @returns The default type url
                              */
@@ -9025,6 +9134,9 @@ export namespace google {
 
                 /** Properties of a Timestamp. */
                 interface ITimestamp {
+
+                    /** Timestamp encoding */
+                    encoding?: (google.bigtable.v2.Type.Timestamp.IEncoding|null);
                 }
 
                 /** Represents a Timestamp. */
@@ -9035,6 +9147,9 @@ export namespace google {
                      * @param [properties] Properties to set
                      */
                     constructor(properties?: google.bigtable.v2.Type.ITimestamp);
+
+                    /** Timestamp encoding. */
+                    public encoding?: (google.bigtable.v2.Type.Timestamp.IEncoding|null);
 
                     /**
                      * Creates a new Timestamp instance using the specified properties.
@@ -9112,6 +9227,109 @@ export namespace google {
                      * @returns The default type url
                      */
                     public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                namespace Timestamp {
+
+                    /** Properties of an Encoding. */
+                    interface IEncoding {
+
+                        /** Encoding unixMicrosInt64 */
+                        unixMicrosInt64?: (google.bigtable.v2.Type.Int64.IEncoding|null);
+                    }
+
+                    /** Represents an Encoding. */
+                    class Encoding implements IEncoding {
+
+                        /**
+                         * Constructs a new Encoding.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: google.bigtable.v2.Type.Timestamp.IEncoding);
+
+                        /** Encoding unixMicrosInt64. */
+                        public unixMicrosInt64?: (google.bigtable.v2.Type.Int64.IEncoding|null);
+
+                        /** Encoding encoding. */
+                        public encoding?: "unixMicrosInt64";
+
+                        /**
+                         * Creates a new Encoding instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns Encoding instance
+                         */
+                        public static create(properties?: google.bigtable.v2.Type.Timestamp.IEncoding): google.bigtable.v2.Type.Timestamp.Encoding;
+
+                        /**
+                         * Encodes the specified Encoding message. Does not implicitly {@link google.bigtable.v2.Type.Timestamp.Encoding.verify|verify} messages.
+                         * @param message Encoding message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: google.bigtable.v2.Type.Timestamp.IEncoding, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified Encoding message, length delimited. Does not implicitly {@link google.bigtable.v2.Type.Timestamp.Encoding.verify|verify} messages.
+                         * @param message Encoding message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: google.bigtable.v2.Type.Timestamp.IEncoding, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes an Encoding message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns Encoding
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.Type.Timestamp.Encoding;
+
+                        /**
+                         * Decodes an Encoding message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns Encoding
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.Type.Timestamp.Encoding;
+
+                        /**
+                         * Verifies an Encoding message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates an Encoding message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns Encoding
+                         */
+                        public static fromObject(object: { [k: string]: any }): google.bigtable.v2.Type.Timestamp.Encoding;
+
+                        /**
+                         * Creates a plain object from an Encoding message. Also converts values to other types if specified.
+                         * @param message Encoding
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: google.bigtable.v2.Type.Timestamp.Encoding, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this Encoding to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+
+                        /**
+                         * Gets the default type url for Encoding
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
                 }
 
                 /** Properties of a Date. */
@@ -9210,6 +9428,9 @@ export namespace google {
 
                     /** Struct fields */
                     fields?: (google.bigtable.v2.Type.Struct.IField[]|null);
+
+                    /** Struct encoding */
+                    encoding?: (google.bigtable.v2.Type.Struct.IEncoding|null);
                 }
 
                 /** Represents a Struct. */
@@ -9223,6 +9444,9 @@ export namespace google {
 
                     /** Struct fields. */
                     public fields: google.bigtable.v2.Type.Struct.IField[];
+
+                    /** Struct encoding. */
+                    public encoding?: (google.bigtable.v2.Type.Struct.IEncoding|null);
 
                     /**
                      * Creates a new Struct instance using the specified properties.
@@ -9405,6 +9629,400 @@ export namespace google {
                          * @returns The default type url
                          */
                         public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** Properties of an Encoding. */
+                    interface IEncoding {
+
+                        /** Encoding singleton */
+                        singleton?: (google.bigtable.v2.Type.Struct.Encoding.ISingleton|null);
+
+                        /** Encoding delimitedBytes */
+                        delimitedBytes?: (google.bigtable.v2.Type.Struct.Encoding.IDelimitedBytes|null);
+
+                        /** Encoding orderedCodeBytes */
+                        orderedCodeBytes?: (google.bigtable.v2.Type.Struct.Encoding.IOrderedCodeBytes|null);
+                    }
+
+                    /** Represents an Encoding. */
+                    class Encoding implements IEncoding {
+
+                        /**
+                         * Constructs a new Encoding.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: google.bigtable.v2.Type.Struct.IEncoding);
+
+                        /** Encoding singleton. */
+                        public singleton?: (google.bigtable.v2.Type.Struct.Encoding.ISingleton|null);
+
+                        /** Encoding delimitedBytes. */
+                        public delimitedBytes?: (google.bigtable.v2.Type.Struct.Encoding.IDelimitedBytes|null);
+
+                        /** Encoding orderedCodeBytes. */
+                        public orderedCodeBytes?: (google.bigtable.v2.Type.Struct.Encoding.IOrderedCodeBytes|null);
+
+                        /** Encoding encoding. */
+                        public encoding?: ("singleton"|"delimitedBytes"|"orderedCodeBytes");
+
+                        /**
+                         * Creates a new Encoding instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns Encoding instance
+                         */
+                        public static create(properties?: google.bigtable.v2.Type.Struct.IEncoding): google.bigtable.v2.Type.Struct.Encoding;
+
+                        /**
+                         * Encodes the specified Encoding message. Does not implicitly {@link google.bigtable.v2.Type.Struct.Encoding.verify|verify} messages.
+                         * @param message Encoding message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: google.bigtable.v2.Type.Struct.IEncoding, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified Encoding message, length delimited. Does not implicitly {@link google.bigtable.v2.Type.Struct.Encoding.verify|verify} messages.
+                         * @param message Encoding message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: google.bigtable.v2.Type.Struct.IEncoding, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes an Encoding message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns Encoding
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.Type.Struct.Encoding;
+
+                        /**
+                         * Decodes an Encoding message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns Encoding
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.Type.Struct.Encoding;
+
+                        /**
+                         * Verifies an Encoding message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates an Encoding message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns Encoding
+                         */
+                        public static fromObject(object: { [k: string]: any }): google.bigtable.v2.Type.Struct.Encoding;
+
+                        /**
+                         * Creates a plain object from an Encoding message. Also converts values to other types if specified.
+                         * @param message Encoding
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: google.bigtable.v2.Type.Struct.Encoding, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this Encoding to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+
+                        /**
+                         * Gets the default type url for Encoding
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    namespace Encoding {
+
+                        /** Properties of a Singleton. */
+                        interface ISingleton {
+                        }
+
+                        /** Represents a Singleton. */
+                        class Singleton implements ISingleton {
+
+                            /**
+                             * Constructs a new Singleton.
+                             * @param [properties] Properties to set
+                             */
+                            constructor(properties?: google.bigtable.v2.Type.Struct.Encoding.ISingleton);
+
+                            /**
+                             * Creates a new Singleton instance using the specified properties.
+                             * @param [properties] Properties to set
+                             * @returns Singleton instance
+                             */
+                            public static create(properties?: google.bigtable.v2.Type.Struct.Encoding.ISingleton): google.bigtable.v2.Type.Struct.Encoding.Singleton;
+
+                            /**
+                             * Encodes the specified Singleton message. Does not implicitly {@link google.bigtable.v2.Type.Struct.Encoding.Singleton.verify|verify} messages.
+                             * @param message Singleton message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encode(message: google.bigtable.v2.Type.Struct.Encoding.ISingleton, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Encodes the specified Singleton message, length delimited. Does not implicitly {@link google.bigtable.v2.Type.Struct.Encoding.Singleton.verify|verify} messages.
+                             * @param message Singleton message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encodeDelimited(message: google.bigtable.v2.Type.Struct.Encoding.ISingleton, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Decodes a Singleton message from the specified reader or buffer.
+                             * @param reader Reader or buffer to decode from
+                             * @param [length] Message length if known beforehand
+                             * @returns Singleton
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.Type.Struct.Encoding.Singleton;
+
+                            /**
+                             * Decodes a Singleton message from the specified reader or buffer, length delimited.
+                             * @param reader Reader or buffer to decode from
+                             * @returns Singleton
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.Type.Struct.Encoding.Singleton;
+
+                            /**
+                             * Verifies a Singleton message.
+                             * @param message Plain object to verify
+                             * @returns `null` if valid, otherwise the reason why it is not
+                             */
+                            public static verify(message: { [k: string]: any }): (string|null);
+
+                            /**
+                             * Creates a Singleton message from a plain object. Also converts values to their respective internal types.
+                             * @param object Plain object
+                             * @returns Singleton
+                             */
+                            public static fromObject(object: { [k: string]: any }): google.bigtable.v2.Type.Struct.Encoding.Singleton;
+
+                            /**
+                             * Creates a plain object from a Singleton message. Also converts values to other types if specified.
+                             * @param message Singleton
+                             * @param [options] Conversion options
+                             * @returns Plain object
+                             */
+                            public static toObject(message: google.bigtable.v2.Type.Struct.Encoding.Singleton, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                            /**
+                             * Converts this Singleton to JSON.
+                             * @returns JSON object
+                             */
+                            public toJSON(): { [k: string]: any };
+
+                            /**
+                             * Gets the default type url for Singleton
+                             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                             * @returns The default type url
+                             */
+                            public static getTypeUrl(typeUrlPrefix?: string): string;
+                        }
+
+                        /** Properties of a DelimitedBytes. */
+                        interface IDelimitedBytes {
+
+                            /** DelimitedBytes delimiter */
+                            delimiter?: (Uint8Array|Buffer|string|null);
+                        }
+
+                        /** Represents a DelimitedBytes. */
+                        class DelimitedBytes implements IDelimitedBytes {
+
+                            /**
+                             * Constructs a new DelimitedBytes.
+                             * @param [properties] Properties to set
+                             */
+                            constructor(properties?: google.bigtable.v2.Type.Struct.Encoding.IDelimitedBytes);
+
+                            /** DelimitedBytes delimiter. */
+                            public delimiter: (Uint8Array|Buffer|string);
+
+                            /**
+                             * Creates a new DelimitedBytes instance using the specified properties.
+                             * @param [properties] Properties to set
+                             * @returns DelimitedBytes instance
+                             */
+                            public static create(properties?: google.bigtable.v2.Type.Struct.Encoding.IDelimitedBytes): google.bigtable.v2.Type.Struct.Encoding.DelimitedBytes;
+
+                            /**
+                             * Encodes the specified DelimitedBytes message. Does not implicitly {@link google.bigtable.v2.Type.Struct.Encoding.DelimitedBytes.verify|verify} messages.
+                             * @param message DelimitedBytes message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encode(message: google.bigtable.v2.Type.Struct.Encoding.IDelimitedBytes, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Encodes the specified DelimitedBytes message, length delimited. Does not implicitly {@link google.bigtable.v2.Type.Struct.Encoding.DelimitedBytes.verify|verify} messages.
+                             * @param message DelimitedBytes message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encodeDelimited(message: google.bigtable.v2.Type.Struct.Encoding.IDelimitedBytes, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Decodes a DelimitedBytes message from the specified reader or buffer.
+                             * @param reader Reader or buffer to decode from
+                             * @param [length] Message length if known beforehand
+                             * @returns DelimitedBytes
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.Type.Struct.Encoding.DelimitedBytes;
+
+                            /**
+                             * Decodes a DelimitedBytes message from the specified reader or buffer, length delimited.
+                             * @param reader Reader or buffer to decode from
+                             * @returns DelimitedBytes
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.Type.Struct.Encoding.DelimitedBytes;
+
+                            /**
+                             * Verifies a DelimitedBytes message.
+                             * @param message Plain object to verify
+                             * @returns `null` if valid, otherwise the reason why it is not
+                             */
+                            public static verify(message: { [k: string]: any }): (string|null);
+
+                            /**
+                             * Creates a DelimitedBytes message from a plain object. Also converts values to their respective internal types.
+                             * @param object Plain object
+                             * @returns DelimitedBytes
+                             */
+                            public static fromObject(object: { [k: string]: any }): google.bigtable.v2.Type.Struct.Encoding.DelimitedBytes;
+
+                            /**
+                             * Creates a plain object from a DelimitedBytes message. Also converts values to other types if specified.
+                             * @param message DelimitedBytes
+                             * @param [options] Conversion options
+                             * @returns Plain object
+                             */
+                            public static toObject(message: google.bigtable.v2.Type.Struct.Encoding.DelimitedBytes, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                            /**
+                             * Converts this DelimitedBytes to JSON.
+                             * @returns JSON object
+                             */
+                            public toJSON(): { [k: string]: any };
+
+                            /**
+                             * Gets the default type url for DelimitedBytes
+                             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                             * @returns The default type url
+                             */
+                            public static getTypeUrl(typeUrlPrefix?: string): string;
+                        }
+
+                        /** Properties of an OrderedCodeBytes. */
+                        interface IOrderedCodeBytes {
+                        }
+
+                        /** Represents an OrderedCodeBytes. */
+                        class OrderedCodeBytes implements IOrderedCodeBytes {
+
+                            /**
+                             * Constructs a new OrderedCodeBytes.
+                             * @param [properties] Properties to set
+                             */
+                            constructor(properties?: google.bigtable.v2.Type.Struct.Encoding.IOrderedCodeBytes);
+
+                            /**
+                             * Creates a new OrderedCodeBytes instance using the specified properties.
+                             * @param [properties] Properties to set
+                             * @returns OrderedCodeBytes instance
+                             */
+                            public static create(properties?: google.bigtable.v2.Type.Struct.Encoding.IOrderedCodeBytes): google.bigtable.v2.Type.Struct.Encoding.OrderedCodeBytes;
+
+                            /**
+                             * Encodes the specified OrderedCodeBytes message. Does not implicitly {@link google.bigtable.v2.Type.Struct.Encoding.OrderedCodeBytes.verify|verify} messages.
+                             * @param message OrderedCodeBytes message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encode(message: google.bigtable.v2.Type.Struct.Encoding.IOrderedCodeBytes, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Encodes the specified OrderedCodeBytes message, length delimited. Does not implicitly {@link google.bigtable.v2.Type.Struct.Encoding.OrderedCodeBytes.verify|verify} messages.
+                             * @param message OrderedCodeBytes message or plain object to encode
+                             * @param [writer] Writer to encode to
+                             * @returns Writer
+                             */
+                            public static encodeDelimited(message: google.bigtable.v2.Type.Struct.Encoding.IOrderedCodeBytes, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                            /**
+                             * Decodes an OrderedCodeBytes message from the specified reader or buffer.
+                             * @param reader Reader or buffer to decode from
+                             * @param [length] Message length if known beforehand
+                             * @returns OrderedCodeBytes
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.Type.Struct.Encoding.OrderedCodeBytes;
+
+                            /**
+                             * Decodes an OrderedCodeBytes message from the specified reader or buffer, length delimited.
+                             * @param reader Reader or buffer to decode from
+                             * @returns OrderedCodeBytes
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.Type.Struct.Encoding.OrderedCodeBytes;
+
+                            /**
+                             * Verifies an OrderedCodeBytes message.
+                             * @param message Plain object to verify
+                             * @returns `null` if valid, otherwise the reason why it is not
+                             */
+                            public static verify(message: { [k: string]: any }): (string|null);
+
+                            /**
+                             * Creates an OrderedCodeBytes message from a plain object. Also converts values to their respective internal types.
+                             * @param object Plain object
+                             * @returns OrderedCodeBytes
+                             */
+                            public static fromObject(object: { [k: string]: any }): google.bigtable.v2.Type.Struct.Encoding.OrderedCodeBytes;
+
+                            /**
+                             * Creates a plain object from an OrderedCodeBytes message. Also converts values to other types if specified.
+                             * @param message OrderedCodeBytes
+                             * @param [options] Conversion options
+                             * @returns Plain object
+                             */
+                            public static toObject(message: google.bigtable.v2.Type.Struct.Encoding.OrderedCodeBytes, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                            /**
+                             * Converts this OrderedCodeBytes to JSON.
+                             * @returns JSON object
+                             */
+                            public toJSON(): { [k: string]: any };
+
+                            /**
+                             * Gets the default type url for OrderedCodeBytes
+                             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                             * @returns The default type url
+                             */
+                            public static getTypeUrl(typeUrlPrefix?: string): string;
+                        }
                     }
                 }
 

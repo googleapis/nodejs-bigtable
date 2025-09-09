@@ -2081,7 +2081,12 @@
                           },
                           "nested": {
                             "Raw": {
-                              "fields": {}
+                              "fields": {
+                                "escapeNulls": {
+                                  "type": "bool",
+                                  "id": 1
+                                }
+                              }
                             }
                           }
                         }
@@ -2125,7 +2130,12 @@
                               "fields": {}
                             },
                             "Utf8Bytes": {
-                              "fields": {}
+                              "fields": {
+                                "nullEscapeChar": {
+                                  "type": "string",
+                                  "id": 1
+                                }
+                              }
                             }
                           }
                         }
@@ -2143,7 +2153,8 @@
                           "oneofs": {
                             "encoding": {
                               "oneof": [
-                                "bigEndianBytes"
+                                "bigEndianBytes",
+                                "orderedCodeBytes"
                               ]
                             }
                           },
@@ -2151,6 +2162,10 @@
                             "bigEndianBytes": {
                               "type": "BigEndianBytes",
                               "id": 1
+                            },
+                            "orderedCodeBytes": {
+                              "type": "OrderedCodeBytes",
+                              "id": 2
                             }
                           },
                           "nested": {
@@ -2158,9 +2173,15 @@
                               "fields": {
                                 "bytesType": {
                                   "type": "Bytes",
-                                  "id": 1
+                                  "id": 1,
+                                  "options": {
+                                    "deprecated": true
+                                  }
                                 }
                               }
+                            },
+                            "OrderedCodeBytes": {
+                              "fields": {}
                             }
                           }
                         }
@@ -2176,7 +2197,29 @@
                       "fields": {}
                     },
                     "Timestamp": {
-                      "fields": {}
+                      "fields": {
+                        "encoding": {
+                          "type": "Encoding",
+                          "id": 1
+                        }
+                      },
+                      "nested": {
+                        "Encoding": {
+                          "oneofs": {
+                            "encoding": {
+                              "oneof": [
+                                "unixMicrosInt64"
+                              ]
+                            }
+                          },
+                          "fields": {
+                            "unixMicrosInt64": {
+                              "type": "Int64.Encoding",
+                              "id": 1
+                            }
+                          }
+                        }
+                      }
                     },
                     "Date": {
                       "fields": {}
@@ -2187,6 +2230,10 @@
                           "rule": "repeated",
                           "type": "Field",
                           "id": 1
+                        },
+                        "encoding": {
+                          "type": "Encoding",
+                          "id": 2
                         }
                       },
                       "nested": {
@@ -2199,6 +2246,47 @@
                             "type": {
                               "type": "Type",
                               "id": 2
+                            }
+                          }
+                        },
+                        "Encoding": {
+                          "oneofs": {
+                            "encoding": {
+                              "oneof": [
+                                "singleton",
+                                "delimitedBytes",
+                                "orderedCodeBytes"
+                              ]
+                            }
+                          },
+                          "fields": {
+                            "singleton": {
+                              "type": "Singleton",
+                              "id": 1
+                            },
+                            "delimitedBytes": {
+                              "type": "DelimitedBytes",
+                              "id": 2
+                            },
+                            "orderedCodeBytes": {
+                              "type": "OrderedCodeBytes",
+                              "id": 3
+                            }
+                          },
+                          "nested": {
+                            "Singleton": {
+                              "fields": {}
+                            },
+                            "DelimitedBytes": {
+                              "fields": {
+                                "delimiter": {
+                                  "type": "bytes",
+                                  "id": 1
+                                }
+                              }
+                            },
+                            "OrderedCodeBytes": {
+                              "fields": {}
                             }
                           }
                         }
