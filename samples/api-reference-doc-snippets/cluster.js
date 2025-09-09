@@ -23,7 +23,7 @@ const snippets = {
       parent: instanceAdminClient.instancePath(projectId, instanceId),
       clusterId: clusterId,
       cluster: {
-        location: instanceAdminClient.locationPath(projectId, 'us-central1-f'),
+        location: `projects/${projectId}/locations/us-central1-f`,
         serveNodes: 1,
         defaultStorageType: 'HDD',
       },

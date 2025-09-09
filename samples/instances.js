@@ -53,10 +53,7 @@ async function runInstanceOperations(instanceID, clusterID) {
       },
       clusters: {
         [clusterID]: {
-          location: instanceAdminClient.locationPath(
-            projectId,
-            'us-central1-f',
-          ),
+          location: `projects/${projectId}/locations/us-central1-f`,
           serveNodes: 3,
           defaultStorageType: 'SSD',
         },
@@ -129,7 +126,7 @@ async function createDevInstance(instanceID, clusterID) {
     clusters: [
       {
         id: clusterID,
-        location: instanceAdminClient.locationPath(projectId, 'us-central1-f'),
+        location: `projects/${projectId}/locations/us-central1-f`,
         serveNodes: 1,
         defaultStorageType: 'HDD',
       },
@@ -187,7 +184,7 @@ async function addCluster(instanceID, clusterID) {
       parent: instanceAdminClient.instancePath(projectId, instanceID),
       clusterId: clusterID,
       cluster: {
-        location: instanceAdminClient.locationPath(projectId, 'us-central1-c'),
+        location: `projects/${projectId}/locations/us-central1-c`,
         serveNodes: 3,
         defaultStorageType: 'SSD',
       },
