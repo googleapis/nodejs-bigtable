@@ -44,7 +44,7 @@ describe.skip('Family Snippets', () => {
         },
         clusters: {
           [CLUSTER_ID]: {
-            location: instanceAdminClient.locationPath(projectId, 'us-central1-f'),
+            location: `projects/${projectId}/locations/us-central1-f`,
             serveNodes: 1,
             defaultStorageType: 'HDD',
           },

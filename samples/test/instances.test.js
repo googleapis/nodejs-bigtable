@@ -42,7 +42,7 @@ describe('instances', () => {
       },
       clusters: {
         [clusterId]: {
-          location: instanceAdminClient.locationPath(projectId, 'us-central1-c'),
+          location: `projects/${projectId}/locations/us-central1-c`,
           serveNodes: 3,
           defaultStorageType: 'SSD',
         },
