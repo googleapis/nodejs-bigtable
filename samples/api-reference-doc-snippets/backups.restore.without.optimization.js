@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,9 +18,7 @@ async function main(
   clusterId = 'YOUR_CLUSTER_ID',
   backupId = 'YOUR_BACKUP_ID',
 ) {
-  // [START bigtable_api_restore_backup]
-  // eslint-disable-next-line n/no-extraneous-require
-  const gax = require('google-gax');
+  // [START bigtable_api_restore_backup_no_optimization]
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
 
   async function restoreBackup() {
@@ -37,38 +35,22 @@ async function main(
 
     // Restore a table to an instance.
     const [restoreLRO] = await adminClient.restoreTable({
-      parent: `projects/${projectId}/instances/${instanceId}`,
+      parent: adminClient.instancePath(projectId, instanceId),
       tableId,
-      backup: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}/backups/${backupId}`,
+      backup: adminClient.backupPath(
+        projectId,
+        instanceId,
+        clusterId,
+        backupId,
+      ),
     });
     console.log('Waiting for restoreTable operation to complete...');
-    const [table, metadata] = await restoreLRO.promise();
+    const [table] = await restoreLRO.promise();
     console.log(`Table ${table.name} restored successfully.`);
-
-    // Await the secondary optimize table operation
-    const optimizeTableOperationName = metadata.optimizeTableOperationName;
-    if (optimizeTableOperationName) {
-      console.log(
-        `Waiting for optimize table operation: ${optimizeTableOperationName}`,
-      );
-      const [rawOptimizeLRO] = await adminClient.operationsClient.getOperation({
-        name: optimizeTableOperationName,
-      });
-      const optimizeRestoreTableLRO = gax.operation(
-        rawOptimizeLRO,
-        adminClient.descriptors.longrunning.restoreTable,
-        {},
-      );
-      const [, , info] = await optimizeRestoreTableLRO.promise();
-
-      console.log(`Optimized table restored to ${info.name} successfully.`);
-    } else {
-      console.log('No optimize table operation name found in metadata.');
-    }
   }
 
   await restoreBackup();
-  // [END bigtable_api_restore_backup]
+  // [END bigtable_api_restore_backup_no_optimization]
 }
 
 const args = process.argv.slice(2);
