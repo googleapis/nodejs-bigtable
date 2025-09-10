@@ -39,7 +39,7 @@ describe('backups', async () => {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const request = {
-      parent: adminClient.clusterPath(projectId, INSTANCE_ID, CLUSTER_ID),
+      parent: `projects/${projectId}/instances/${INSTANCE_ID}/clusters/${CLUSTER_ID}`,
       backupId: backupId,
       backup: {
         sourceTable: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
@@ -163,7 +163,7 @@ describe('backups', async () => {
       parent: adminClient.instancePath(projectId, INSTANCE_ID),
     });
     const [backupsFromCluster] = await adminClient.listBackups({
-      parent: adminClient.clusterPath(projectId, INSTANCE_ID, CLUSTER_ID),
+      parent: `projects/${projectId}/instances/${INSTANCE_ID}/clusters/${CLUSTER_ID}`,
     });
 
     const stdout = execSync(

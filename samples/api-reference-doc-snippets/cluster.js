@@ -49,7 +49,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      name: instanceAdminClient.clusterPath(projectId, instanceId, clusterId),
+      name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
     };
 
     instanceAdminClient
@@ -70,7 +70,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      name: instanceAdminClient.clusterPath(projectId, instanceId, clusterId),
+      name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
     };
 
     try {
@@ -94,7 +94,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      name: instanceAdminClient.clusterPath(projectId, instanceId, clusterId),
+      name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
     };
 
     instanceAdminClient
@@ -116,7 +116,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      name: instanceAdminClient.clusterPath(projectId, instanceId, clusterId),
+      name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
     };
 
     instanceAdminClient
@@ -138,7 +138,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const cluster = {
-      name: instanceAdminClient.clusterPath(projectId, instanceId, clusterId),
+      name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
       serveNodes: 4,
     };
 

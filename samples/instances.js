@@ -208,7 +208,7 @@ async function deleteCluster(instanceID, clusterID) {
   console.log(); //for just a new-line
   console.log('Deleting Cluster');
   await instanceAdminClient.deleteCluster({
-    name: instanceAdminClient.clusterPath(projectId, instanceID, clusterID),
+    name: `projects/${projectId}/instances/${instanceID}/clusters/${clusterID}`,
   });
   console.log(`Cluster deleted: ${clusterID}`);
   // [END bigtable_delete_cluster]

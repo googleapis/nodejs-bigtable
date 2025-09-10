@@ -33,7 +33,7 @@ async function main(
     const projectId = await tableAdminClient.getProjectId();
 
     const request = {
-      parent: tableAdminClient.clusterPath(projectId, instanceId, clusterId),
+      parent: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
       backupId: backupId,
       backup: {
         sourceTable: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
