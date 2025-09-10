@@ -56,7 +56,7 @@ describe('backups', async () => {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const request = {
-      parent: adminClient.instancePath(projectId, INSTANCE_ID),
+      parent: `projects/${projectId}/instances/${INSTANCE_ID}`,
       tableId: TABLE_ID,
       table: {},
     };
@@ -160,7 +160,7 @@ describe('backups', async () => {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const [backupsFromInstance] = await adminClient.listBackups({
-      parent: adminClient.instancePath(projectId, INSTANCE_ID),
+      parent: `projects/${projectId}/instances/${INSTANCE_ID}`,
     });
     const [backupsFromCluster] = await adminClient.listBackups({
       parent: `projects/${projectId}/instances/${INSTANCE_ID}/clusters/${CLUSTER_ID}`,

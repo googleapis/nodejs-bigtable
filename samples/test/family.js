@@ -52,7 +52,7 @@ describe.skip('Family Snippets', () => {
       const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
       const adminClient = new BigtableTableAdminClient();
       const tableRequest = {
-        parent: adminClient.instancePath(projectId, INSTANCE_ID),
+        parent: `projects/${projectId}/instances/${INSTANCE_ID}`,
         tableId: TABLE_ID,
         table: {
           columnFamilies: {

@@ -68,7 +68,7 @@ const getRowGreeting = row => {
       const adminClient = new BigtableTableAdminClient();
       const projectId = await adminClient.getProjectId();
       await adminClient.createTable({
-        parent: adminClient.instancePath(projectId, INSTANCE_ID),
+        parent: `projects/${projectId}/instances/${INSTANCE_ID}`,
         tableId: TABLE_ID,
         table: {
           columnFamilies: {
