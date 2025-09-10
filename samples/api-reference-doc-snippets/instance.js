@@ -37,13 +37,10 @@ const snippets = {
     };
 
     // creates a new Instance
-    const [newInstance, operation] = await instanceAdminClient.createInstance(options);
+    const [newInstance, operation] =
+      await instanceAdminClient.createInstance(options);
     // let operations = result[1];
     // let apiResponse = result[2];
-  })
-  .catch(err => {
-    // Handle the error.
-  });
     // [END bigtable_api_create_instance]
   },
 
@@ -160,7 +157,7 @@ const snippets = {
     // [END bigtable_api_create_table]
   },
 
-  existsInstance: async (instanceId) => {
+  existsInstance: async instanceId => {
     // [START bigtable_api_exists_instance]
     const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
     const instanceAdminClient = new BigtableInstanceAdminClient();
