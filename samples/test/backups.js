@@ -42,7 +42,7 @@ describe('backups', async () => {
       parent: `projects/${projectId}/instances/${INSTANCE_ID}/clusters/${CLUSTER_ID}`,
       backupId: backupId,
       backup: {
-        sourceTable: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+        sourceTable: `projects/${projectId}/instances/${INSTANCE_ID}/tables/${TABLE_ID}`,
         expireTime: new Date(Date.now() + 60 * 60 * 1000), // 1 hour from now
       },
     };
@@ -62,7 +62,7 @@ describe('backups', async () => {
     };
     await adminClient.createTable(request);
     const modifyFamiliesReq = {
-      name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+      name: `projects/${projectId}/instances/${INSTANCE_ID}/tables/${TABLE_ID}`,
       modifications: [
         {
           id: 'follows',

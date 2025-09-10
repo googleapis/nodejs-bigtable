@@ -55,7 +55,7 @@ const getRowGreeting = row => {
     let tableExists = true;
     try {
       await adminClient.getTable({
-        name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+        name: `projects/${projectId}/instances/${INSTANCE_ID}/tables/${TABLE_ID}`,
       });
     } catch (e) {
       if (e.code === 5) {
@@ -141,7 +141,7 @@ const getRowGreeting = row => {
     // [START bigtable_hw_delete_table]
     console.log('Delete the table');
     const request = {
-      name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+      name: `projects/${projectId}/instances/${INSTANCE_ID}/tables/${TABLE_ID}`,
     };
     await adminClient.deleteTable(request);
     // [END bigtable_hw_delete_table]

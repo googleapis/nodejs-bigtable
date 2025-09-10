@@ -115,7 +115,7 @@ async function main(
       const adminClient = new BigtableTableAdminClient();
       const projectId = await adminClient.getProjectId();
       const request = {
-        name: adminClient.tablePath(projectId, instanceId, tableId),
+        name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
         modifications: [
           {
             id: 'stats_summary',
@@ -134,13 +134,13 @@ async function main(
       const adminClient = new BigtableTableAdminClient();
       const projectId = await adminClient.getProjectId();
       const request = {
-        name: adminClient.tablePath(projectId, instanceId, tableId),
+        name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
       };
       await adminClient.deleteTable(request);
       console.log(
         await adminClient
           .getTable({
-            name: adminClient.tablePath(projectId, instanceId, tableId),
+            name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
           })
           .catch(e => (e.code === 5 ? false : e)),
       );

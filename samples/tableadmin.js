@@ -315,7 +315,7 @@ async function deleteTable(instanceID, tableID) {
   // Delete the entire table
   console.log('Delete the table.');
   await adminClient.deleteTable({
-    name: adminClient.tablePath(projectId, instanceID, tableID),
+    name: `projects/${projectId}/instances/${instanceID}/tables/${tableID}`,
   });
   console.log(`Table deleted: ${tableID}`);
   // [END bigtable_delete_table]

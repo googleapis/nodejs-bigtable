@@ -227,7 +227,7 @@ describe('filters', async () => {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const request = {
-      name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+      name: `projects/${projectId}/instances/${INSTANCE_ID}/tables/${TABLE_ID}`,
     };
     await adminClient.deleteTable(request).catch(console.error);
   });
