@@ -14,9 +14,6 @@
 
 'use strict';
 
-// Imports the Google Cloud client library
-const {Bigtable} = require('@google-cloud/bigtable');
-
 async function runInstanceOperations(instanceID, clusterID) {
   const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
   const instanceAdminClient = new BigtableInstanceAdminClient();

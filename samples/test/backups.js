@@ -100,7 +100,7 @@ describe('backups', async () => {
       const adminClient = new BigtableTableAdminClient();
       const projectId = await adminClient.getProjectId();
       const [backups] = await adminClient.listBackups({
-        parent: `projects/${projectId}/instances/${instanceId}/clusters/-`,
+        parent: `projects/${projectId}/instances/${instance.id}/clusters/-`,
       });
       return Promise.all(
         backups.map(backup => {
