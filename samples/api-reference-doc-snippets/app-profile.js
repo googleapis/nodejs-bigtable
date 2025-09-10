@@ -20,11 +20,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const appProfile = {
-      name: instanceAdminClient.appProfilePath(
-        projectId,
-        instanceId,
-        appProfileId,
-      ),
+      name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
       multiClusterRoutingUseAny: {},
     };
 
@@ -53,11 +49,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      name: instanceAdminClient.appProfilePath(
-        projectId,
-        instanceId,
-        appProfileId,
-      ),
+      name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
     };
 
     instanceAdminClient
@@ -78,11 +70,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      name: instanceAdminClient.appProfilePath(
-        projectId,
-        instanceId,
-        appProfileId,
-      ),
+      name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
     };
 
     try {
@@ -106,11 +94,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      name: instanceAdminClient.appProfilePath(
-        projectId,
-        instanceId,
-        appProfileId,
-      ),
+      name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
     };
 
     instanceAdminClient
@@ -132,11 +116,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      name: instanceAdminClient.appProfilePath(
-        projectId,
-        instanceId,
-        appProfileId,
-      ),
+      name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
     };
 
     instanceAdminClient
@@ -158,11 +138,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const appProfile = {
-      name: instanceAdminClient.appProfilePath(
-        projectId,
-        instanceId,
-        appProfileId,
-      ),
+      name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
       description: 'My Updated App Profile',
       multiClusterRoutingUseAny: {},
     };

@@ -82,11 +82,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const appProfile = {
-      name: instanceAdminClient.appProfilePath(
-        projectId,
-        instanceId,
-        appProfileId
-      ),
+      name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
       multiClusterRoutingUseAny: {},
     };
 
