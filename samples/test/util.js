@@ -85,7 +85,7 @@ async function createTestInstance() {
   const [operation] = await instanceAdminClient.createInstance(request);
   await operation.promise();
   return instanceAdminClient.getInstance({
-    name: instanceAdminClient.instancePath(projectId, instanceId),
+    name: `projects/${projectId}/instances/${instanceId}`,
   });
 }
 
@@ -94,7 +94,7 @@ async function createTestInstance() {
  */
 after(async () => {
   const projectId = await instanceAdminClient.getProjectId();
-  const instancePath = instanceAdminClient.instancePath(projectId, instanceId);
+  const instancePath = `projects/${projectId}/instances/${instanceId}`;
   await instanceAdminClient.deleteInstance({name: instancePath});
 });
 

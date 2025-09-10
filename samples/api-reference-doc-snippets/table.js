@@ -22,7 +22,7 @@ const snippets = {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const request = {
-      parent: adminClient.instancePath(projectId, instanceId),
+      parent: `projects/${projectId}/instances/${instanceId}`,
       tableId: tableId,
       table: {
         columnFamilies: {

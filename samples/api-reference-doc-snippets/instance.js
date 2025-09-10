@@ -54,7 +54,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const options = {
-      parent: instanceAdminClient.instancePath(projectId, instanceId),
+      parent: `projects/${projectId}/instances/${instanceId}`,
       clusterId: clusterId,
       cluster: {
         location: `projects/${projectId}/locations/us-central1-b`,
@@ -91,7 +91,7 @@ const snippets = {
     };
 
     const request = {
-      parent: instanceAdminClient.instancePath(projectId, instanceId),
+      parent: `projects/${projectId}/instances/${instanceId}`,
       appProfileId: appProfileId,
       appProfile: appProfile,
     };
@@ -113,7 +113,7 @@ const snippets = {
     const projectId = await adminClient.getProjectId();
 
     const request = {
-      parent: adminClient.instancePath(projectId, instanceId),
+      parent: `projects/${projectId}/instances/${instanceId}`,
       tableId: tableId,
       table: {
         columnFamilies: {
@@ -171,7 +171,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      name: instanceAdminClient.instancePath(projectId, instanceId),
+      name: `projects/${projectId}/instances/${instanceId}`,
     };
 
     try {
@@ -195,7 +195,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      name: instanceAdminClient.instancePath(projectId, instanceId),
+      name: `projects/${projectId}/instances/${instanceId}`,
     };
 
     instanceAdminClient
@@ -217,7 +217,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      parent: instanceAdminClient.instancePath(projectId, instanceId),
+      parent: `projects/${projectId}/instances/${instanceId}`,
     };
 
     instanceAdminClient
@@ -238,7 +238,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      resource: instanceAdminClient.instancePath(projectId, instanceId),
+      resource: `projects/${projectId}/instances/${instanceId}`,
     };
 
     instanceAdminClient
@@ -268,7 +268,7 @@ const snippets = {
     };
 
     const request = {
-      resource: instanceAdminClient.instancePath(projectId, instanceId),
+      resource: `projects/${projectId}/instances/${instanceId}`,
       policy: policy,
     };
 
@@ -290,7 +290,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      resource: instanceAdminClient.instancePath(projectId, instanceId),
+      resource: `projects/${projectId}/instances/${instanceId}`,
       permissions: ['bigtable.tables.get', 'bigtable.tables.readRows'],
     };
 
@@ -312,7 +312,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      parent: instanceAdminClient.instancePath(projectId, instanceId),
+      parent: `projects/${projectId}/instances/${instanceId}`,
     };
 
     instanceAdminClient
@@ -333,7 +333,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      name: instanceAdminClient.instancePath(projectId, instanceId),
+      name: `projects/${projectId}/instances/${instanceId}`,
     };
 
     instanceAdminClient
@@ -356,7 +356,7 @@ const snippets = {
     // To control how many API requests are made and page through the results
     // manually, set `autoPaginate` to false.
     const options = {
-      parent: tableAdminClient.instancePath(projectId, instanceId),
+      parent: `projects/${projectId}/instances/${instanceId}`,
       autoPaginate: false,
     };
     // const options = {
@@ -382,7 +382,7 @@ const snippets = {
 
     const request = {
       instance: {
-        name: instanceAdminClient.instancePath(projectId, instanceId),
+        name: `projects/${projectId}/instances/${instanceId}`,
         displayName: 'updated-name',
       },
       updateMask: {
@@ -408,7 +408,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      name: instanceAdminClient.instancePath(projectId, instanceId),
+      name: `projects/${projectId}/instances/${instanceId}`,
     };
 
     instanceAdminClient
@@ -432,7 +432,7 @@ const snippets = {
                     _key
                   from \`${tableId}\` WHERE _key=@row_key`;
     const request = {
-      instanceName: bigtableClient.instancePath(projectId, instanceId),
+      instanceName: `projects/${projectId}/instances/${instanceId}`,
       query,
       params: {
         fields: {
@@ -465,7 +465,7 @@ const snippets = {
                     _key
                   from \`${tableId}\` WHERE _key=@row_key`;
     const request = {
-      instanceName: bigtableClient.instancePath(projectId, instanceId),
+      instanceName: `projects/${projectId}/instances/${instanceId}`,
       query,
       params: {
         fields: {

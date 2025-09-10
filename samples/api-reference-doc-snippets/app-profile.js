@@ -29,7 +29,7 @@ const snippets = {
     };
 
     const request = {
-      parent: instanceAdminClient.instancePath(projectId, instanceId),
+      parent: `projects/${projectId}/instances/${instanceId}`,
       appProfileId: appProfileId,
       appProfile: appProfile,
     };

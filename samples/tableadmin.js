@@ -40,7 +40,7 @@ async function runTableOperations(instanceID, tableID) {
     // Create table if does not exist
     console.log(`Table does not exist. Creating table ${tableID}`);
     const request = {
-      parent: adminClient.instancePath(projectId, instanceID),
+      parent: `projects/${projectId}/instances/${instanceID}`,
       tableId: tableID,
       table: {
         columnFamilies: {

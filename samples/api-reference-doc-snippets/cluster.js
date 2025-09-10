@@ -20,7 +20,7 @@ const snippets = {
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
-      parent: instanceAdminClient.instancePath(projectId, instanceId),
+      parent: `projects/${projectId}/instances/${instanceId}`,
       clusterId: clusterId,
       cluster: {
         location: `projects/${projectId}/locations/us-central1-f`,

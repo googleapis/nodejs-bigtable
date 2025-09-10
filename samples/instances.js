@@ -27,7 +27,7 @@ async function runInstanceOperations(instanceID, clusterID) {
   let instanceExists = true;
   try {
     await instanceAdminClient.getInstance({
-      name: instanceAdminClient.instancePath(projectId, instanceID),
+      name: `projects/${projectId}/instances/${instanceID}`,
     });
   } catch (e) {
     if (e.code === 5) {
@@ -85,7 +85,7 @@ async function runInstanceOperations(instanceID, clusterID) {
   console.log('Get Instance');
   // [START bigtable_get_instance]
   const [instance2] = await instanceAdminClient.getInstance({
-    name: instanceAdminClient.instancePath(projectId, instanceID),
+    name: `projects/${projectId}/instances/${instanceID}`,
   });
   console.log(`Instance ID: ${instance2.name}`);
   console.log(`Instance Meta: ${JSON.stringify(instance2.labels)}`);
@@ -95,7 +95,7 @@ async function runInstanceOperations(instanceID, clusterID) {
   console.log('Listing Clusters...');
   // [START bigtable_get_clusters]
   const [clusters] = await instanceAdminClient.listClusters({
-    parent: instanceAdminClient.instancePath(projectId, instanceID),
+    parent: `projects/${projectId}/instances/${instanceID}`,
   });
   clusters.clusters.forEach(cluster => {
     console.log(cluster.name);
@@ -152,7 +152,7 @@ async function deleteInstance(instanceID) {
   // [START bigtable_delete_instance]
   console.log('Deleting Instance');
   await instanceAdminClient.deleteInstance({
-    name: instanceAdminClient.instancePath(projectId, instanceID),
+    name: `projects/${projectId}/instances/${instanceID}`,
   });
   console.log(`Instance deleted: ${instanceID}`);
   // [END bigtable_delete_instance]
@@ -167,7 +167,7 @@ async function addCluster(instanceID, clusterID) {
   let instanceExists = true;
   try {
     await instanceAdminClient.getInstance({
-      name: instanceAdminClient.instancePath(projectId, instanceID),
+      name: `projects/${projectId}/instances/${instanceID}`,
     });
   } catch (e) {
     if (e.code === 5) {
@@ -181,7 +181,7 @@ async function addCluster(instanceID, clusterID) {
     console.log(`Adding Cluster to Instance ${instanceID}`);
     // [START bigtable_create_cluster]
     const clusterOptions = {
-      parent: instanceAdminClient.instancePath(projectId, instanceID),
+      parent: `projects/${projectId}/instances/${instanceID}`,
       clusterId: clusterID,
       cluster: {
         location: `projects/${projectId}/locations/us-central1-c`,

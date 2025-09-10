@@ -35,7 +35,7 @@ async function main(
 
     // Restore a table to an instance.
     const [operation] = await adminClient.restoreTable({
-      parent: adminClient.instancePath(projectId, instanceId),
+      parent: `projects/${projectId}/instances/${instanceId}`,
       tableId,
       backup: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}/backups/${backupId}`,
     });
