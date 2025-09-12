@@ -39,10 +39,10 @@ describe('backups', async () => {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const request = {
-      parent: adminClient.clusterPath(projectId, INSTANCE_ID, CLUSTER_ID),
+      parent: `projects/${projectId}/instances/${INSTANCE_ID}/clusters/${CLUSTER_ID}`,
       backupId: backupId,
       backup: {
-        sourceTable: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+        sourceTable: `projects/${projectId}/instances/${INSTANCE_ID}/tables/${TABLE_ID}`,
         expireTime: new Date(Date.now() + 60 * 60 * 1000), // 1 hour from now
       },
     };
@@ -56,13 +56,13 @@ describe('backups', async () => {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const request = {
-      parent: adminClient.instancePath(projectId, INSTANCE_ID),
+      parent: `projects/${projectId}/instances/${INSTANCE_ID}`,
       tableId: TABLE_ID,
       table: {},
     };
     await adminClient.createTable(request);
     const modifyFamiliesReq = {
-      name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+      name: `projects/${projectId}/instances/${INSTANCE_ID}/tables/${TABLE_ID}`,
       modifications: [
         {
           id: 'follows',
@@ -100,7 +100,7 @@ describe('backups', async () => {
       const adminClient = new BigtableTableAdminClient();
       const projectId = await adminClient.getProjectId();
       const [backups] = await adminClient.listBackups({
-        parent: `${adminClient.instancePath(projectId, instance.id)}/clusters/-`,
+        parent: `projects/${projectId}/instances/${instance.id}/clusters/-`,
       });
       return Promise.all(
         backups.map(backup => {
@@ -137,12 +137,7 @@ describe('backups', async () => {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const request = {
-      name: adminClient.backupPath(
-        projectId,
-        INSTANCE_ID,
-        CLUSTER_ID,
-        BACKUP_ID,
-      ),
+      name: `projects/${projectId}/instances/${INSTANCE_ID}/clusters/${CLUSTER_ID}/backups/${BACKUP_ID}`,
     };
     const [metadata] = await adminClient.getBackup(request);
 
@@ -165,10 +160,10 @@ describe('backups', async () => {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const [backupsFromInstance] = await adminClient.listBackups({
-      parent: adminClient.instancePath(projectId, INSTANCE_ID),
+      parent: `projects/${projectId}/instances/${INSTANCE_ID}`,
     });
     const [backupsFromCluster] = await adminClient.listBackups({
-      parent: adminClient.clusterPath(projectId, INSTANCE_ID, CLUSTER_ID),
+      parent: `projects/${projectId}/instances/${INSTANCE_ID}/clusters/${CLUSTER_ID}`,
     });
 
     const stdout = execSync(
@@ -208,12 +203,7 @@ describe('backups', async () => {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const [updatedBackup] = await adminClient.getBackup({
-      name: adminClient.backupPath(
-        projectId,
-        INSTANCE_ID,
-        CLUSTER_ID,
-        backupId,
-      ),
+      name: `projects/${projectId}/instances/${INSTANCE_ID}/clusters/${CLUSTER_ID}/backups/${backupId}`,
     });
     const newExpireTime = new Date(
       updatedBackup.expireTime.seconds * 1000,

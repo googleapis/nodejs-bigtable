@@ -29,7 +29,7 @@ async function main(
     const projectId = await tableAdminClient.getProjectId();
 
     const request = {
-      parent: tableAdminClient.clusterPath(projectId, instanceId, clusterId),
+      parent: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
     };
 
     const [backupsFromCluster] = await tableAdminClient.listBackups(request);

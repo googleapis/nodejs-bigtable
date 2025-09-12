@@ -19,38 +19,42 @@ const snapshot = require('snap-shot-it');
 const {describe, it, before} = require('mocha');
 const cp = require('child_process');
 const {obtainTestInstance} = require('./util');
+const {Bigtable} = require('@google-cloud/bigtable');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 describe('deletes', async () => {
+  const bigtable = new Bigtable();
   let table;
   let INSTANCE_ID;
   const TIMESTAMP = new Date(2019, 5, 1);
   TIMESTAMP.setUTCHours(0);
 
   before(async () => {
-    const instance = await obtainTestInstance();
-    INSTANCE_ID = instance.id;
+    const [instance] = await obtainTestInstance();
+    INSTANCE_ID = instance.displayName;
     const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
+    const instancePath = `projects/${projectId}/instances/${INSTANCE_ID}`;
+    const tablePath = `${instancePath}/tables/${TABLE_ID}`;
     const tableExists = await adminClient
-      .getTable({name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID)})
+      .getTable({name: tablePath})
       .catch(e => (e.code === 5 ? false : e));
     if (tableExists) {
       await adminClient.deleteTable({
-        name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+        name: tablePath,
       });
     }
     const request = {
-      parent: adminClient.instancePath(projectId, INSTANCE_ID),
+      parent: instancePath,
       tableId: TABLE_ID,
       table: {},
     };
     await adminClient.createTable(request);
     const modifyFamiliesReq = {
-      name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+      name: tablePath,
       modifications: [
         {
           id: 'stats_summary',
@@ -62,7 +66,7 @@ describe('deletes', async () => {
       .modifyColumnFamilies(modifyFamiliesReq)
       .catch(console.error);
     const modifyFamiliesReq2 = {
-      name: adminClient.tablePath(projectId, INSTANCE_ID, TABLE_ID),
+      name: tablePath,
       modifications: [
         {
           id: 'cell_plan',
@@ -73,7 +77,8 @@ describe('deletes', async () => {
     await adminClient
       .modifyColumnFamilies(modifyFamiliesReq2)
       .catch(console.error);
-    table = instance.table(TABLE_ID);
+    const handwrittenInstance = bigtable.instance(INSTANCE_ID);
+    table = handwrittenInstance.table(TABLE_ID);
 
     const rowsToInsert = [
       {

@@ -33,10 +33,10 @@ async function main(
     const projectId = await tableAdminClient.getProjectId();
 
     const request = {
-      parent: tableAdminClient.clusterPath(projectId, instanceId, clusterId),
+      parent: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
       backupId: backupId,
       backup: {
-        sourceTable: tableAdminClient.tablePath(projectId, instanceId, tableId),
+        sourceTable: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
         expireTime: new Date(Date.now() + 7 * 60 * 60 * 1000), // 7 hours from now
       },
     };

@@ -37,14 +37,9 @@ async function main(
 
     // Restore a table to an instance.
     const [restoreLRO] = await adminClient.restoreTable({
-      parent: adminClient.instancePath(projectId, instanceId),
+      parent: `projects/${projectId}/instances/${instanceId}`,
       tableId,
-      backup: adminClient.backupPath(
-        projectId,
-        instanceId,
-        clusterId,
-        backupId,
-      ),
+      backup: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}/backups/${backupId}`,
     });
     console.log('Waiting for restoreTable operation to complete...');
     const [table, metadata] = await restoreLRO.promise();
