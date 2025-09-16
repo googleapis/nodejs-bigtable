@@ -28,16 +28,22 @@ const mutateRow = ({clientMap}) =>
     const appProfileId = clientMap.get(clientId).appProfileId;
     const client = clientMap.get(clientId)[v2];
 
-    await client.mutateRow({
-      appProfileId,
-      mutations,
-      tableName,
-      rowKey,
-    });
+    try {
+      await client.mutateRow({
+        appProfileId,
+        mutations,
+        tableName,
+        rowKey,
+      });
 
-    return {
-      status: {code: grpc.status.OK, details: []},
-    };
+      return {
+        status: {code: grpc.status.OK, details: []},
+      };
+    } catch (e) {
+      return {
+        status: e,
+      };
+    }
   });
 
 module.exports = mutateRow;
