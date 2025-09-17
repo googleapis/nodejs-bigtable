@@ -13,293 +13,381 @@
 // limitations under the License.
 
 // Imports the Google Cloud client library
-const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
-const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-const adminClient = new BigtableTableAdminClient();
-
 async function runTableOperations(instanceID, tableID) {
-  const bigtable = new Bigtable();
-  const projectId = await adminClient.getProjectId();
-  // The request will only work if the projectName doesn't contain the {{projectId}} token.
-  bigtable.projectName = `projects/${projectId}`;
-  const instance = bigtable.instance(instanceID);
-  const table = instance.table(tableID);
+  {
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const {Bigtable} = require('@google-cloud/bigtable');
+    const adminClient = new BigtableTableAdminClient();
+    const bigtable = new Bigtable();
+    const projectId = await adminClient.getProjectId();
+    // The request will only work if the projectName doesn't contain the {{projectId}} token.
+    bigtable.projectName = `projects/${projectId}`;
+    const instance = bigtable.instance(instanceID);
+    const table = instance.table(tableID);
 
-  // Check if table exists
-  console.log();
-  console.log('Checking if table exists...');
-  let tableExists = true;
-  try {
-    await adminClient.getTable({name: table.name});
-  } catch (e) {
-    if (e.code === 5) {
-      tableExists = false;
+    // Check if table exists
+    console.log();
+    console.log('Checking if table exists...');
+    let tableExists = true;
+    try {
+      await adminClient.getTable({name: table.name});
+    } catch (e) {
+      if (e.code === 5) {
+        tableExists = false;
+      }
     }
-  }
-  if (!tableExists) {
-    // Create table if does not exist
-    console.log(`Table does not exist. Creating table ${tableID}`);
-    const request = {
-      parent: `projects/${projectId}/instances/${instanceID}`,
-      tableId: tableID,
-      table: {
-        columnFamilies: {
-          follows: {},
+    if (!tableExists) {
+      // Create table if does not exist
+      console.log(`Table does not exist. Creating table ${tableID}`);
+      const request = {
+        parent: `projects/${projectId}/instances/${instanceID}`,
+        tableId: tableID,
+        table: {
+          columnFamilies: {
+            follows: {},
+          },
         },
-      },
-    };
-    await adminClient.createTable(request);
-  } else {
-    console.log('Table exists.');
+      };
+      await adminClient.createTable(request);
+    } else {
+      console.log('Table exists.');
+    }
   }
 
   console.log();
   console.log('Listing tables in current project...');
-  // [START bigtable_list_tables]
-  // List tables in current project
-  const [tables] = await adminClient.listTables({parent: instance.name});
-  tables.forEach(table => {
-    console.log(table.name);
-  });
-  // [END bigtable_list_tables]
+  {
+    // [START bigtable_list_tables]
+    const {Bigtable} = require('@google-cloud/bigtable');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceID);
+    // List tables in current project
+    const [tables] = await adminClient.listTables({parent: instance.name});
+    tables.forEach(table => {
+      console.log(table.name);
+    });
+    // [END bigtable_list_tables]
+  }
 
   console.log();
   console.log('Printing table metadata...');
-  // [START bigtable_get_table_metadata]
-  // Get table metadata, and apply a view to the table fields
-  // Supported views include ID, schema or full
-  // View defaults to schema if unspecified.
-  const options = {
-    view: 'id',
-  };
-  const [tableMetadata] = await adminClient.getTable({
-    name: table.name,
-    view: options.view,
-  });
-  console.log(`Metadata: ${JSON.stringify(tableMetadata)}`);
-  // [END bigtable_get_table_metadata]
+  {
+    // [START bigtable_get_table_metadata]
+    // Get table metadata, and apply a view to the table fields
+    // Supported views include ID, schema or full
+    // View defaults to schema if unspecified.
+    const {Bigtable} = require('@google-cloud/bigtable');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceID);
+    const table = instance.table(tableID);
+    const options = {
+      view: 'id',
+    };
+    const [tableMetadata] = await adminClient.getTable({
+      name: table.name,
+      view: options.view,
+    });
+    console.log(`Metadata: ${JSON.stringify(tableMetadata)}`);
+    // [END bigtable_get_table_metadata]
+  }
 
   console.log();
   console.log('Creating column family cf1 with max age GC rule...');
-  // [START bigtable_create_family_gc_max_age]
-  // Create a column family with GC policy : maximum age
-  // where age = current time minus cell timestamp
+  {
+    // [START bigtable_create_family_gc_max_age]
+    // Create a column family with GC policy : maximum age
+    // where age = current time minus cell timestamp
+    const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceID);
+    const table = instance.table(tableID);
 
-  // Define the GC rule to retain data with max age of 5 days
-  const maxAgeRule = {
-    rule: {
-      maxAge: {
-        // Value must be atleast 1 millisecond
-        seconds: 60 * 60 * 24 * 5,
-        nanos: 0,
-      },
-    },
-  };
-  let [family] = await adminClient.modifyColumnFamilies({
-    name: table.name,
-    modifications: [
-      {
-        id: 'cf1',
-        create: {
-          gcRule: GCRuleMaker.makeRule(maxAgeRule),
+    // Define the GC rule to retain data with max age of 5 days
+    const maxAgeRule = {
+      rule: {
+        maxAge: {
+          // Value must be atleast 1 millisecond
+          seconds: 60 * 60 * 24 * 5,
+          nanos: 0,
         },
       },
-    ],
-  });
-  console.log(`Created column family ${family.name}`);
-  // [END bigtable_create_family_gc_max_age]
+    };
+    const [family] = await adminClient.modifyColumnFamilies({
+      name: table.name,
+      modifications: [
+        {
+          id: 'cf1',
+          create: {
+            gcRule: GCRuleMaker.makeRule(maxAgeRule),
+          },
+        },
+      ],
+    });
+    console.log(`Created column family ${family.name}`);
+    // [END bigtable_create_family_gc_max_age]
+  }
 
   console.log();
   console.log('Creating column family cf2 with max versions GC rule...');
-  // [START bigtable_create_family_gc_max_versions]
-  // Create a column family with GC policy : most recent N versions
-  // where 1 = most recent version
+  {
+    // [START bigtable_create_family_gc_max_versions]
+    // Create a column family with GC policy : most recent N versions
+    // where 1 = most recent version
 
-  // Define the GC policy to retain only the most recent 2 versions
-  const maxVersionsRule = {
-    rule: {
-      maxVersions: 2,
-    },
-  };
-
-  // Create a column family with given GC rule
-  [family] = await adminClient.modifyColumnFamilies({
-    name: table.name,
-    modifications: [
-      {
-        id: 'cf2',
-        create: {
-          gcRule: GCRuleMaker.makeRule(maxVersionsRule),
-        },
+    const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceID);
+    const table = instance.table(tableID);
+    // Define the GC policy to retain only the most recent 2 versions
+    const maxVersionsRule = {
+      rule: {
+        maxVersions: 2,
       },
-    ],
-  });
-  console.log(`Created column family ${family.name}`);
-  // [END bigtable_create_family_gc_max_versions]
+    };
+
+    // Create a column family with given GC rule
+    const [family] = await adminClient.modifyColumnFamilies({
+      name: table.name,
+      modifications: [
+        {
+          id: 'cf2',
+          create: {
+            gcRule: GCRuleMaker.makeRule(maxVersionsRule),
+          },
+        },
+      ],
+    });
+    console.log(`Created column family ${family.name}`);
+    // [END bigtable_create_family_gc_max_versions]
+  }
 
   console.log();
   console.log('Creating column family cf3 with union GC rule...');
-  // [START bigtable_create_family_gc_union]
-  // Create a column family with GC policy to drop data that matches at least one condition.
+  {
+    // [START bigtable_create_family_gc_union]
+    // Create a column family with GC policy to drop data that matches at least one condition.
 
-  // Define a GC rule to drop cells older than 5 days or not the most recent version
-  const unionRule = {
-    ruleType: 'union',
-    maxVersions: 1,
-    maxAge: {
-      seconds: 60 * 60 * 24 * 5,
-      nanos: 0,
-    },
-  };
-
-  [family] = await adminClient.modifyColumnFamilies({
-    name: table.name,
-    modifications: [
-      {
-        id: 'cf3',
-        create: {
-          gcRule: GCRuleMaker.makeRule(unionRule),
-        },
+    const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceID);
+    const table = instance.table(tableID);
+    // Define a GC rule to drop cells older than 5 days or not the most recent version
+    const unionRule = {
+      ruleType: 'union',
+      maxVersions: 1,
+      maxAge: {
+        seconds: 60 * 60 * 24 * 5,
+        nanos: 0,
       },
-    ],
-  });
-  console.log(`Created column family ${family.name}`);
-  // [END bigtable_create_family_gc_union]
+    };
+
+    const [family] = await adminClient.modifyColumnFamilies({
+      name: table.name,
+      modifications: [
+        {
+          id: 'cf3',
+          create: {
+            gcRule: GCRuleMaker.makeRule(unionRule),
+          },
+        },
+      ],
+    });
+    console.log(`Created column family ${family.name}`);
+    // [END bigtable_create_family_gc_union]
+  }
 
   console.log();
   console.log('Creating column family cf4 with intersect GC rule...');
-  // [START bigtable_create_family_gc_intersection]
-  // Create a column family with GC policy to drop data that matches all conditions
+  {
+    // [START bigtable_create_family_gc_intersection]
+    // Create a column family with GC policy to drop data that matches all conditions
 
-  // GC rule: Drop cells older than 5 days AND older than the most recent 2 versions
-  const intersectionRule = {
-    ruleType: 'intersection',
-    maxVersions: 2,
-    maxAge: {
-      seconds: 60 * 60 * 24 * 5,
-      nanos: 0,
-    },
-  };
-  [family] = await adminClient.modifyColumnFamilies({
-    name: table.name,
-    modifications: [
-      {
-        id: 'cf4',
-        create: {
-          gcRule: GCRuleMaker.makeRule(intersectionRule),
-        },
-      },
-    ],
-  });
-  console.log(`Created column family ${family.name}`);
-  // [END bigtable_create_family_gc_intersection]
-
-  console.log();
-  console.log('Creating column family cf5 with a nested GC rule...');
-  // [START bigtable_create_family_gc_nested]
-  // Create a nested GC rule:
-  // Drop cells that are either older than the 10 recent versions
-  // OR
-  // Drop cells that are older than a month AND older than the 2 recent versions
-  const nestedRule = {
-    ruleType: 'union',
-    maxVersions: 10,
-    rule: {
+    const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceID);
+    const table = instance.table(tableID);
+    // GC rule: Drop cells older than 5 days AND older than the most recent 2 versions
+    const intersectionRule = {
       ruleType: 'intersection',
       maxVersions: 2,
       maxAge: {
-        // one month
-        seconds: 60 * 60 * 24 * 30,
+        seconds: 60 * 60 * 24 * 5,
         nanos: 0,
       },
-    },
-  };
+    };
+    const [family] = await adminClient.modifyColumnFamilies({
+      name: table.name,
+      modifications: [
+        {
+          id: 'cf4',
+          create: {
+            gcRule: GCRuleMaker.makeRule(intersectionRule),
+          },
+        },
+      ],
+    });
+    console.log(`Created column family ${family.name}`);
+    // [END bigtable_create_family_gc_intersection]
+  }
 
-  [family] = await adminClient.modifyColumnFamilies({
-    name: table.name,
-    modifications: [
-      {
-        id: 'cf5',
-        create: {
-          gcRule: GCRuleMaker.makeRule(nestedRule),
+  console.log();
+  console.log('Creating column family cf5 with a nested GC rule...');
+  {
+    // [START bigtable_create_family_gc_nested]
+    // Create a nested GC rule:
+    // Drop cells that are either older than the 10 recent versions
+    // OR
+    // Drop cells that are older than a month AND older than the 2 recent versions
+    const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceID);
+    const table = instance.table(tableID);
+    const nestedRule = {
+      ruleType: 'union',
+      maxVersions: 10,
+      rule: {
+        ruleType: 'intersection',
+        maxVersions: 2,
+        maxAge: {
+          // one month
+          seconds: 60 * 60 * 24 * 30,
+          nanos: 0,
         },
       },
-    ],
-  });
-  console.log(`Created column family ${family.name}`);
-  // [END bigtable_create_family_gc_nested]
+    };
+
+    const [family] = await adminClient.modifyColumnFamilies({
+      name: table.name,
+      modifications: [
+        {
+          id: 'cf5',
+          create: {
+            gcRule: GCRuleMaker.makeRule(nestedRule),
+          },
+        },
+      ],
+    });
+    console.log(`Created column family ${family.name}`);
+    // [END bigtable_create_family_gc_nested]
+  }
 
   console.log();
   console.log('Printing ID and GC Rule for all column families...');
-  // [START bigtable_list_column_families]
-  // List all families in the table with GC rules
-  const [tableData2] = await adminClient.getTable({
-    name: table.name,
-    view: 'FULL',
-  });
-  const families = tableData2.columnFamilies;
-  // Print ID, GC Rule for each column family
-  for (const familyId in families) {
-    const family = families[familyId];
-    const metadata = JSON.stringify(family.gcRule);
-    console.log(`Column family: ${familyId}, Metadata: ${metadata}`);
-    /* Sample output:
-        Column family: projects/{{projectId}}/instances/my-instance/tables/my-table/columnFamilies/cf4,
-        Metadata: {"gcRule":{"intersection":{"rules":[{"maxAge":{"seconds":"432000","nanos":0},"rule":"maxAge"},{"maxNumVersions":2,"rule":"maxNumVersions"}]},"rule":"intersection"}}
-    */
+  {
+    // [START bigtable_list_column_families]
+    // List all families in the table with GC rules
+    const {Bigtable} = require('@google-cloud/bigtable');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceID);
+    const table = instance.table(tableID);
+    const [tableData2] = await adminClient.getTable({
+      name: table.name,
+      view: 'FULL',
+    });
+    const families = tableData2.columnFamilies;
+    // Print ID, GC Rule for each column family
+    for (const familyId in families) {
+      const family = families[familyId];
+      const metadata = JSON.stringify(family.gcRule);
+      console.log(`Column family: ${familyId}, Metadata: ${metadata}`);
+      /* Sample output:
+          Column family: projects/{{projectId}}/instances/my-instance/tables/my-table/columnFamilies/cf4,
+          Metadata: {"gcRule":{"intersection":{"rules":[{"maxAge":{"seconds":"432000","nanos":0},"rule":"maxAge"},{"maxNumVersions":2,"rule":"maxNumVersions"}]},"rule":"intersection"}}
+      */
+    }
+    // [END bigtable_list_column_families]
   }
-  // [END bigtable_list_column_families]
 
   console.log('\nUpdating column family cf1 GC rule...');
-  // [START bigtable_update_gc_rule]
-  // Update the column family metadata to update the GC rule
+  {
+    // [START bigtable_update_gc_rule]
+    // Update the column family metadata to update the GC rule
 
-  // Update a column family GC rule
-  const updatedMetadata = {
-    rule: {
-      versions: 1,
-    },
-  };
-
-  const [apiResponse] = await adminClient.modifyColumnFamilies({
-    name: table.name,
-    modifications: [
-      {
-        id: 'cf1',
-        update: {
-          gcRule: GCRuleMaker.makeRule(updatedMetadata.rule),
-        },
+    const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceID);
+    const table = instance.table(tableID);
+    // Update a column family GC rule
+    const updatedMetadata = {
+      rule: {
+        versions: 1,
       },
-    ],
-  });
-  console.log(`Updated GC rule: ${JSON.stringify(apiResponse)}`);
-  // [END bigtable_update_gc_rule]
+    };
+
+    const [apiResponse] = await adminClient.modifyColumnFamilies({
+      name: table.name,
+      modifications: [
+        {
+          id: 'cf1',
+          update: {
+            gcRule: GCRuleMaker.makeRule(updatedMetadata.rule),
+          },
+        },
+      ],
+    });
+    console.log(`Updated GC rule: ${JSON.stringify(apiResponse)}`);
+    // [END bigtable_update_gc_rule]
+  }
 
   console.log('\nPrint updated column family cf1 GC rule...');
-  // [START bigtable_family_get_gc_rule]
-  // Retrieve column family metadata (Id, column family GC rule)
-  const [tableData] = await adminClient.getTable({
-    name: table.name,
-    view: 'FULL',
-  });
-  const metadata = tableData.columnFamilies['cf1'].gcRule;
-  console.log(`Metadata: ${JSON.stringify(metadata)}`);
-  // [END bigtable_family_get_gc_rule]
+  {
+    // [START bigtable_family_get_gc_rule]
+    const {Bigtable} = require('@google-cloud/bigtable');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceID);
+    const table = instance.table(tableID);
+    // Retrieve column family metadata (Id, column family GC rule)
+    const [tableData] = await adminClient.getTable({
+      name: table.name,
+      view: 'FULL',
+    });
+    const metadata = tableData.columnFamilies['cf1'].gcRule;
+    console.log(`Metadata: ${JSON.stringify(metadata)}`);
+    // [END bigtable_family_get_gc_rule]
+  }
 
   console.log('\nDelete a column family cf2...');
-  // [START bigtable_delete_family]
-  // Delete a column family
-  await adminClient.modifyColumnFamilies({
-    name: table.name,
-    modifications: [
-      {
-        id: 'cf2',
-        drop: true,
-      },
-    ],
-  });
-  console.log('cf2 deleted successfully\n');
-  // [END bigtable_delete_family]
+  {
+    // [START bigtable_delete_family]
+    const {Bigtable} = require('@google-cloud/bigtable');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceID);
+    const table = instance.table(tableID);
+    // Delete a column family
+    await adminClient.modifyColumnFamilies({
+      name: table.name,
+      modifications: [
+        {
+          id: 'cf2',
+          drop: true,
+        },
+      ],
+    });
+    console.log('cf2 deleted successfully\n');
+    // [END bigtable_delete_family]
+  }
   console.log(
     'Run node $0 delete --instance [instanceID] --table [tableID] to delete the table.\n',
   );
@@ -308,10 +396,11 @@ async function runTableOperations(instanceID, tableID) {
 async function deleteTable(instanceID, tableID) {
   // const instanceID = "my-instance";
   // const tableID = "my-bigtable-ID";
+
+  // [START bigtable_delete_table]
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
   const adminClient = new BigtableTableAdminClient();
   const projectId = await adminClient.getProjectId();
-  // [START bigtable_delete_table]
   // Delete the entire table
   console.log('Delete the table.');
   await adminClient.deleteTable({
