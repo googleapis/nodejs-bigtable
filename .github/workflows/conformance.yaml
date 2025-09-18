@@ -26,8 +26,8 @@ jobs:
       matrix:
         node: [ 18, 20 ]
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
+    - uses: actions/checkout@v5
       with:
         repository: googleapis/cloud-bigtable-clients-test
         ref: main
