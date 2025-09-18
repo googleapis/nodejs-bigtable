@@ -15,14 +15,13 @@
 'use strict';
 
 async function runInstanceOperations(instanceID, clusterID) {
-  const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-  const instanceAdminClient = new BigtableInstanceAdminClient();
-  const projectId = await instanceAdminClient.getProjectId();
-
   console.log('Check Instance Exists');
   // [START bigtable_check_instance_exists]
   let instanceExists = true;
   try {
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
     await instanceAdminClient.getInstance({
       name: `projects/${projectId}/instances/${instanceID}`,
     });
@@ -39,6 +38,9 @@ async function runInstanceOperations(instanceID, clusterID) {
     // [START bigtable_create_prod_instance]
     // Creates a Production Instance with the ID "ssd-instance"
     // with cluster id "ssd-cluster", 3 nodes and location us-central1-f
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
     const instanceOptions = {
       parent: `projects/${projectId}`,
@@ -69,46 +71,60 @@ async function runInstanceOperations(instanceID, clusterID) {
 
   console.log(); //for just a new-line
   console.log('Listing Instances:');
-  // [START bigtable_list_instances]
-  const [instances] = await instanceAdminClient.listInstances({
-    parent: `projects/${projectId}`,
-  });
-  instances.instances.forEach(instance => {
-    console.log(instance.name);
-  });
-  // [END bigtable_list_instances]
+  {
+    // [START bigtable_list_instances]
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
+    const [instances] = await instanceAdminClient.listInstances({
+      parent: `projects/${projectId}`,
+    });
+    instances.instances.forEach(instance => {
+      console.log(instance.name);
+    });
+    // [END bigtable_list_instances]
+  }
 
   console.log(); //for just a new-line
   console.log('Get Instance');
-  // [START bigtable_get_instance]
-  const [instance2] = await instanceAdminClient.getInstance({
-    name: `projects/${projectId}/instances/${instanceID}`,
-  });
-  console.log(`Instance ID: ${instance2.name}`);
-  console.log(`Instance Meta: ${JSON.stringify(instance2.labels)}`);
-  // [END bigtable_get_instance]
+  {
+    // [START bigtable_get_instance]
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
+    const [instance2] = await instanceAdminClient.getInstance({
+      name: `projects/${projectId}/instances/${instanceID}`,
+    });
+    console.log(`Instance ID: ${instance2.name}`);
+    console.log(`Instance Meta: ${JSON.stringify(instance2.labels)}`);
+    // [END bigtable_get_instance]
+  }
 
   console.log(); //for just a new-line
   console.log('Listing Clusters...');
-  // [START bigtable_get_clusters]
-  const [clusters] = await instanceAdminClient.listClusters({
-    parent: `projects/${projectId}/instances/${instanceID}`,
-  });
-  clusters.clusters.forEach(cluster => {
-    console.log(cluster.name);
-  });
-  // [END bigtable_get_clusters]
+  {
+    // [START bigtable_get_clusters]
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
+    const [clusters] = await instanceAdminClient.listClusters({
+      parent: `projects/${projectId}/instances/${instanceID}`,
+    });
+    clusters.clusters.forEach(cluster => {
+      console.log(cluster.name);
+    });
+    // [END bigtable_get_clusters]
+  }
 }
 
 // Creates a Development instance with the ID "hdd-instance"
 // with cluster ID "hdd-cluster" and location us-central1-f
 // Cluster nodes should not be set while creating Development Instance
 async function createDevInstance(instanceID, clusterID) {
+  // [START bigtable_create_dev_instance]
   const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
   const instanceAdminClient = new BigtableInstanceAdminClient();
   const projectId = await instanceAdminClient.getProjectId();
-
-  // [START bigtable_create_dev_instance]
   console.log(); //for just a new-line
   console.log('Creating a DEVELOPMENT Instance');
   // Set options to create an Instance
@@ -140,14 +156,12 @@ async function createDevInstance(instanceID, clusterID) {
 
 // Delete the Instance
 async function deleteInstance(instanceID) {
-  // Creates a client
-  const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-  const instanceAdminClient = new BigtableInstanceAdminClient();
-  const projectId = await instanceAdminClient.getProjectId();
-
   console.log(); //for just a new-line
   // [START bigtable_delete_instance]
   console.log('Deleting Instance');
+  const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+  const instanceAdminClient = new BigtableInstanceAdminClient();
+  const projectId = await instanceAdminClient.getProjectId();
   await instanceAdminClient.deleteInstance({
     name: `projects/${projectId}/instances/${instanceID}`,
   });
@@ -157,12 +171,11 @@ async function deleteInstance(instanceID) {
 
 // Add Cluster
 async function addCluster(instanceID, clusterID) {
-  const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-  const instanceAdminClient = new BigtableInstanceAdminClient();
-  const projectId = await instanceAdminClient.getProjectId();
-
   let instanceExists = true;
   try {
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
     await instanceAdminClient.getInstance({
       name: `projects/${projectId}/instances/${instanceID}`,
     });
@@ -177,6 +190,9 @@ async function addCluster(instanceID, clusterID) {
     console.log(); //for just a new-line
     console.log(`Adding Cluster to Instance ${instanceID}`);
     // [START bigtable_create_cluster]
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
     const clusterOptions = {
       parent: `projects/${projectId}/instances/${instanceID}`,
       clusterId: clusterID,
@@ -197,11 +213,10 @@ async function addCluster(instanceID, clusterID) {
 
 // Delete the Cluster
 async function deleteCluster(instanceID, clusterID) {
+  // [START bigtable_delete_cluster]
   const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
   const instanceAdminClient = new BigtableInstanceAdminClient();
   const projectId = await instanceAdminClient.getProjectId();
-
-  // [START bigtable_delete_cluster]
   console.log(); //for just a new-line
   console.log('Deleting Cluster');
   await instanceAdminClient.deleteCluster({
