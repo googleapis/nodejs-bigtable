@@ -468,11 +468,11 @@ const snippets = {
       let isConsistent = false;
       while (!isConsistent) {
         // 2. Check for consistency
-        const [consistent] = adminClient.checkConsistency({
+        const consistent = await adminClient.checkConsistency({
           name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
           consistencyToken: token,
         });
-        isConsistent = consistent;
+        isConsistent = consistent[0].consistent;
 
         if (isConsistent) {
           console.log('Data is consistent!');
