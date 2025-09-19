@@ -146,7 +146,7 @@ async function createDevInstance(instanceID, clusterID) {
   };
 
   // Create development instance with given options
-  const [instance, operation] =
+  const [operation, instance] =
     await instanceAdminClient.createInstance(options);
   await operation.promise();
   console.log(`Created development instance: ${instance.name}`);
