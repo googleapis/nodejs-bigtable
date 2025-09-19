@@ -136,14 +136,13 @@ async function createDevInstance(instanceID, clusterID) {
       labels: {'dev-label': 'dev-label'},
       type: 'DEVELOPMENT',
     },
-    clusters: [
-      {
-        id: clusterID,
+    clusters: {
+      [clusterID]: {
         location: `projects/${projectId}/locations/us-central1-f`,
-        serveNodes: 1,
+        // serveNodes: 1 // This cannot be specified for development instances
         defaultStorageType: 'HDD',
       },
-    ],
+    },
   };
 
   // Create development instance with given options
