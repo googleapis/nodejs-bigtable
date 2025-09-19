@@ -60,7 +60,7 @@ async function runInstanceOperations(instanceID, clusterID) {
     };
 
     // Create production instance with given options
-    const [prodInstance, operation] =
+    const [operation, prodInstance] =
       await instanceAdminClient.createInstance(instanceOptions);
     await operation.promise();
     console.log(`Created Instance: ${prodInstance.name}`);
