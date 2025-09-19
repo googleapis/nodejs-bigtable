@@ -39,6 +39,7 @@ import {
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
+import {GCRuleMaker} from './gc-rule-maker';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
@@ -1138,6 +1139,7 @@ module.exports = Bigtable;
 module.exports.v2 = v2;
 module.exports.Bigtable = Bigtable;
 module.exports.SqlTypes = SqlTypes;
+module.exports.GCRuleMaker = GCRuleMaker;
 
 export {v2};
 export {protos};
@@ -1363,5 +1365,5 @@ export {
   WaitForReplicationCallback,
   WaitForReplicationResponse,
 } from './table';
-export {GCRuleMaker} from './gc-rule-maker';
+export {GCRuleMaker};
 export {SqlTypes};
