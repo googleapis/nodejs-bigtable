@@ -37,8 +37,10 @@ const snippets = {
     };
 
     // creates a new Instance
-    const [newInstance, operation] =
+    const [operation, newInstance] =
       await instanceAdminClient.createInstance(options);
+    await operation.promise();
+    console.log(`Created Instance: ${newInstance.name}`);
     // let operations = result[1];
     // let apiResponse = result[2];
     // [END bigtable_api_create_instance]
