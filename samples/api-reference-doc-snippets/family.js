@@ -112,8 +112,8 @@ const snippets = {
   },
   setMetadata: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_set_family_meta]
-    const {BigtableTableAdminClient, GCRuleMaker} =
-      require('@google-cloud/bigtable').v2;
+    const {GCRuleMaker} = require('@google-cloud/bigtable');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
 
