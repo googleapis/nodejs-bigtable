@@ -32,12 +32,19 @@ async function main(
     // const backupId = 'YOUR_BACKUP_ID';
     const projectId = await tableAdminClient.getProjectId();
 
+    const seconds = Math.floor(
+      new Date(Date.now() + 7 * 60 * 60 * 1000).getTime() / 1000,
+      // 7 hours from now
+    );
     const request = {
       parent: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
       backupId: backupId,
       backup: {
         sourceTable: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
-        expireTime: new Date(Date.now() + 7 * 60 * 60 * 1000), // 7 hours from now
+        expireTime: {
+          seconds,
+          nanos: 0,
+        },
       },
     };
 
