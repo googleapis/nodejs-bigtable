@@ -203,7 +203,7 @@ async function addCluster(instanceID, clusterID) {
       },
     };
 
-    const [cluster, operation] =
+    const [operation, cluster] =
       await instanceAdminClient.createCluster(clusterOptions);
     await operation.promise();
     console.log(`Cluster created: ${cluster.name}`);
