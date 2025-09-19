@@ -50,6 +50,7 @@ const snippets = {
 
     const request = {
       name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
+      // ignoreWarnings: true, // uncomment this line to ignore warnings
     };
 
     instanceAdminClient
