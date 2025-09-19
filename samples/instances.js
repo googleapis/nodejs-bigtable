@@ -60,7 +60,7 @@ async function runInstanceOperations(instanceID, clusterID) {
     };
 
     // Create production instance with given options
-    const [prodInstance, operation] =
+    const [operation, prodInstance] =
       await instanceAdminClient.createInstance(instanceOptions);
     await operation.promise();
     console.log(`Created Instance: ${prodInstance.name}`);
@@ -136,18 +136,17 @@ async function createDevInstance(instanceID, clusterID) {
       labels: {'dev-label': 'dev-label'},
       type: 'DEVELOPMENT',
     },
-    clusters: [
-      {
-        id: clusterID,
+    clusters: {
+      [clusterID]: {
         location: `projects/${projectId}/locations/us-central1-f`,
-        serveNodes: 1,
+        // serveNodes: 1 // This cannot be specified for development instances
         defaultStorageType: 'HDD',
       },
-    ],
+    },
   };
 
   // Create development instance with given options
-  const [instance, operation] =
+  const [operation, instance] =
     await instanceAdminClient.createInstance(options);
   await operation.promise();
   console.log(`Created development instance: ${instance.name}`);
@@ -203,7 +202,7 @@ async function addCluster(instanceID, clusterID) {
       },
     };
 
-    const [cluster, operation] =
+    const [operation, cluster] =
       await instanceAdminClient.createCluster(clusterOptions);
     await operation.promise();
     console.log(`Cluster created: ${cluster.name}`);

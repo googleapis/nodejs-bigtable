@@ -30,10 +30,17 @@ async function main(
     // const backupId = 'YOUR_BACKUP_ID';
     const projectId = await tableAdminClient.getProjectId();
 
+    const seconds = Math.floor(
+      new Date(Date.now() + 7 * 60 * 60 * 1000).getTime() / 1000,
+      // 7 hours from now
+    );
     const request = {
       backup: {
         name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}/backups/${backupId}`,
-        expireTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+        expireTime: {
+          seconds,
+          nanos: 0,
+        },
       },
       updateMask: {
         paths: ['expire_time'],
