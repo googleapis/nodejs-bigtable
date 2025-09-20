@@ -428,6 +428,19 @@ export function createReadStreamInternal(
     rowStreamPipe(rowStream, userStream);
   };
 
+  // If the timeout is exceeded for the whole operation, bail with
+  // an error as the conformance test requires.
+  if (timeout) {
+    const deadlineTimer = setTimeout(() => {
+      const err = new Error(`Total timeout of ${timeout}ms exceeded.`);
+      (err as unknown as grpc.StatusObject).code =
+        grpc.status.DEADLINE_EXCEEDED;
+      userStream.destroy(err);
+    }, timeout);
+
+    userStream.on('close', () => clearTimeout(deadlineTimer));
+  }
+
   makeNewRequest();
   return userStream;
 }

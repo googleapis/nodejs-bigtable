@@ -26,13 +26,20 @@ const readRow = ({clientMap}) =>
     const bigtable = clientMap.get(clientId);
     const table = getTableInfo(bigtable, tableName);
     const row = table.row(rowKey);
-    const res = await row.get(columns);
-    const firstRow = getRowResponse(res[0]);
 
-    return {
-      status: {code: grpc.status.OK, details: []},
-      row: firstRow,
-    };
+    try {
+      const res = await row.get(columns);
+      const firstRow = getRowResponse(res[0]);
+
+      return {
+        status: {code: grpc.status.OK, details: []},
+        row: firstRow,
+      };
+    } catch (e) {
+      return {
+        status: e,
+      };
+    }
   });
 
 module.exports = readRow;
