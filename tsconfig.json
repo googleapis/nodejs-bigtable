@@ -20,10 +20,8 @@
     "src/v2/bigtable_client_config.json",
     "src/v2/bigtable_table_admin_client_config.json",
     "src/v2/bigtable_instance_admin_client_config.json",
-    "test-common/test-metrics-handler.ts",
-    "test-common/replace-timestamps.ts",
-    "test-common/expected-otel-export-input.ts",
-    "test-common/metrics-handler-fixture.ts",
+    "test-common/*.ts",
+    "test-common/**/*.ts",
     "protos/protos.json"
   ]
 }

@@ -41,7 +41,7 @@ class FakeOperationMetricsCollector extends OperationMetricsCollector {
   onAttemptStart() {}
   onAttemptComplete() {}
   onOperationStart() {}
-  handleStatusAndMetadata() {}
+  wrapRequest() {}
   onMetadataReceived() {}
   onRowReachesUser() {}
   onStatusMetadataReceived() {}
