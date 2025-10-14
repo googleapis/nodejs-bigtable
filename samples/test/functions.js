@@ -40,10 +40,20 @@ describe('functions', async () => {
   let ffProc;
 
   before(async () => {
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
+    const request = {
+      parent: `projects/${projectId}/instances/${INSTANCE_ID}`,
+      tableId: TABLE_ID,
+      table: {
+        columnFamilies: {
+          stats_summary: {},
+        },
+      },
+    };
+    await adminClient.createTable(request).catch(console.error);
     table = instance.table(TABLE_ID);
-
-    await table.create().catch(console.error);
-    await table.createFamily('stats_summary').catch(console.error);
 
     const rowsToInsert = [
       {

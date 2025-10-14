@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,30 +14,43 @@
 
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
+  tableId = 'YOUR_TABLE_ID',
   clusterId = 'YOUR_CLUSTER_ID',
   backupId = 'YOUR_BACKUP_ID',
 ) {
-  // [START bigtable_api_delete_backup]
+  // [START bigtable_api_restore_backup_no_optimization]
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-  const tableAdminClient = new BigtableTableAdminClient();
 
-  async function deleteBackup() {
+  async function restoreBackup() {
     /**
      * TODO(developer): Uncomment these variables before running the sample.
      */
     // const instanceId = 'YOUR_INSTANCE_ID';
+    // const tableId = 'YOUR_TABLE_ID';
     // const clusterId = 'YOUR_CLUSTER_ID';
     // const backupId = 'YOUR_BACKUP_ID';
-    const projectId = await tableAdminClient.getProjectId();
-    const request = {
-      name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}/backups/${backupId}`,
-    };
-    await tableAdminClient.deleteBackup(request);
-    console.log(`Backup ${backupId} was deleted successfully.`);
+
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
+
+    // Restore a table to an instance.
+    const [restoreLRO] = await adminClient.restoreTable({
+      parent: adminClient.instancePath(projectId, instanceId),
+      tableId,
+      backup: adminClient.backupPath(
+        projectId,
+        instanceId,
+        clusterId,
+        backupId,
+      ),
+    });
+    console.log('Waiting for restoreTable operation to complete...');
+    const [table] = await restoreLRO.promise();
+    console.log(`Table ${table.name} restored successfully.`);
   }
 
-  await deleteBackup();
-  // [END bigtable_api_delete_backup]
+  await restoreBackup();
+  // [END bigtable_api_restore_backup_no_optimization]
 }
 
 const args = process.argv.slice(2);

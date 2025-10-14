@@ -590,10 +590,9 @@ export class Bigtable {
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
 
-    const handlers =
-      options.metricsEnabled === true
-        ? [new GCPMetricsHandler(options as ClientOptions)]
-        : [];
+    const handlers = !(options.metricsEnabled === false)
+      ? [new GCPMetricsHandler(Object.assign({}, options) as ClientOptions)]
+      : [];
     this._metricsConfigManager = new ClientSideMetricsConfigManager(handlers);
   }
 
@@ -1364,4 +1363,5 @@ export {
   WaitForReplicationCallback,
   WaitForReplicationResponse,
 } from './table';
+export {GCRuleMaker} from './gc-rule-maker';
 export {SqlTypes};
