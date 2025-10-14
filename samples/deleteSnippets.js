@@ -17,7 +17,7 @@
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
-  deleteType = 'readRow'
+  deleteType = 'readRow',
 ) {
   // [START bigtable_deletes_print]
   const {Bigtable} = require('@google-cloud/bigtable');
@@ -96,7 +96,7 @@ async function main(
             key: 'phone#4c410523#20190502',
             method: 'delete',
           },
-        }
+        },
       );
       await printRows();
       // [END bigtable_check_and_mutate]
@@ -111,16 +111,39 @@ async function main(
     }
     case 'deleteColumnFamily': {
       // [START bigtable_delete_column_family]
-      const cf = table.family('stats_summary');
-      await cf.delete();
+      const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+      const adminClient = new BigtableTableAdminClient();
+      const projectId = await adminClient.getProjectId();
+      const request = {
+        name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+        modifications: [
+          {
+            id: 'stats_summary',
+            drop: true,
+          },
+        ],
+      };
+      await adminClient.modifyColumnFamilies(request);
       await printRows();
       // [END bigtable_delete_column_family]
       break;
     }
     case 'deleteTable': {
       // [START bigtable_delete_table]
-      await table.delete();
-      console.log(await table.exists({}));
+      const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+      const adminClient = new BigtableTableAdminClient();
+      const projectId = await adminClient.getProjectId();
+      const request = {
+        name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+      };
+      await adminClient.deleteTable(request);
+      console.log(
+        await adminClient
+          .getTable({
+            name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+          })
+          .catch(e => (e.code === 5 ? false : e)),
+      );
       // [END bigtable_delete_table]
       break;
     }
@@ -142,7 +165,7 @@ async function main(
               ? ` [${cell.labels.join(',')}]`
               : '';
             console.log(
-              `\t${columnQualifier}: ${cell.value} @${cell.timestamp}${labels}`
+              `\t${columnQualifier}: ${cell.value} @${cell.timestamp}${labels}`,
             );
           }
         }

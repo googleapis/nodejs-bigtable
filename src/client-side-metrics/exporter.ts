@@ -19,7 +19,7 @@ import {
   Histogram,
   ResourceMetrics,
 } from '@opentelemetry/sdk-metrics';
-import {ServiceError} from 'google-gax';
+import {ClientOptions, ServiceError} from 'google-gax';
 import {MetricServiceClient} from '@google-cloud/monitoring';
 import {google} from '@google-cloud/monitoring/build/protos/protos';
 import ICreateTimeSeriesRequest = google.monitoring.v3.ICreateTimeSeriesRequest;
@@ -41,7 +41,7 @@ function isCounterValue(
   dataPoint:
     | DataPoint<number>
     | DataPoint<Histogram>
-    | DataPoint<ExponentialHistogram>
+    | DataPoint<ExponentialHistogram>,
 ): dataPoint is DataPoint<number> {
   return typeof dataPoint.value === 'number';
 }
@@ -50,14 +50,16 @@ function getInterval(
   dataPoint:
     | DataPoint<number>
     | DataPoint<Histogram>
-    | DataPoint<ExponentialHistogram>
+    | DataPoint<ExponentialHistogram>,
 ) {
   return {
     endTime: {
       seconds: dataPoint.endTime[0],
+      nanos: dataPoint.endTime[1],
     },
     startTime: {
       seconds: dataPoint.startTime[0],
+      nanos: dataPoint.startTime[1],
     },
   };
 }
@@ -71,7 +73,7 @@ function getInterval(
  * send to the Google Cloud Monitoring dashboard
  */
 function getDistributionPoints(
-  dataPoint: DataPoint<Histogram> | DataPoint<ExponentialHistogram>
+  dataPoint: DataPoint<Histogram> | DataPoint<ExponentialHistogram>,
 ) {
   const value = dataPoint.value;
   return [
@@ -116,7 +118,7 @@ function getIntegerPoints(dataPoint: DataPoint<number>) {
  * getResource gets the resource object which is used for building the timeseries
  * object that will be sent to Google Cloud Monitoring dashboard
  *
- * @param {string} metricName The backend name of the metric that we want to record
+ * @param {string} projectId The name of the project
  * @param {DataPoint} dataPoint The datapoint containing the data we wish to
  * send to the Google Cloud Monitoring dashboard
  */
@@ -125,7 +127,7 @@ function getResource(
   dataPoint:
     | DataPoint<number>
     | DataPoint<Histogram>
-    | DataPoint<ExponentialHistogram>
+    | DataPoint<ExponentialHistogram>,
 ) {
   const resourceLabels = {
     cluster: dataPoint.attributes.cluster,
@@ -153,21 +155,22 @@ function getMetric(
   dataPoint:
     | DataPoint<number>
     | DataPoint<Histogram>
-    | DataPoint<ExponentialHistogram>
+    | DataPoint<ExponentialHistogram>,
 ) {
   const streaming = dataPoint.attributes.streaming;
   const app_profile = dataPoint.attributes.app_profile;
+  const status = dataPoint.attributes.status;
   return {
     type: metricName,
     labels: Object.assign(
       {
         method: dataPoint.attributes.method,
         client_uid: dataPoint.attributes.client_uid,
-        status: dataPoint.attributes.status,
         client_name: dataPoint.attributes.client_name,
       },
+      status ? {status} : null,
       streaming ? {streaming} : null,
-      app_profile ? {app_profile} : null
+      app_profile ? {app_profile} : null,
     ),
   };
 }
@@ -180,6 +183,7 @@ function getMetric(
  * metric attributes, data points, and aggregation information, into an object
  * that conforms to the expected request format of the Cloud Monitoring API.
  *
+ * @param projectId
  * @param {ResourceMetrics} exportArgs - The OpenTelemetry metrics data to be converted. This
  *   object contains resource attributes, scope information, and a list of
  *   metrics with their associated data points.
@@ -207,14 +211,10 @@ function getMetric(
  *
  *
  */
-export function metricsToRequest(exportArgs: ResourceMetrics) {
-  type WithSyncAttributes = {_syncAttributes: {[index: string]: string}};
-  const resourcesWithSyncAttributes =
-    exportArgs.resource as unknown as WithSyncAttributes;
-  const projectId =
-    resourcesWithSyncAttributes._syncAttributes[
-      'monitored_resource.project_id'
-    ];
+export function metricsToRequest(
+  projectId: string,
+  exportArgs: ResourceMetrics,
+) {
   const timeSeriesArray = [];
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
@@ -293,28 +293,39 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
  * @beta
  */
 export class CloudMonitoringExporter extends MetricExporter {
-  private monitoringClient = new MetricServiceClient();
+  private client: MetricServiceClient;
 
-  export(
+  constructor(options: ClientOptions) {
+    super();
+    if (options && options.apiEndpoint) {
+      // We want the MetricServiceClient to always hit its default endpoint.
+      delete options.apiEndpoint;
+    }
+    this.client = new MetricServiceClient(options);
+  }
+
+  async export(
     metrics: ResourceMetrics,
-    resultCallback: (result: ExportResult) => void
-  ): void {
+    resultCallback: (result: ExportResult) => void,
+  ): Promise<void> {
     (async () => {
       try {
-        const request = metricsToRequest(metrics);
-        await this.monitoringClient.createTimeSeries(
-          request as ICreateTimeSeriesRequest
+        const projectId = await this.client.getProjectId();
+        const request = metricsToRequest(projectId, metrics);
+        await this.client.createServiceTimeSeries(
+          request as ICreateTimeSeriesRequest,
         );
         // The resultCallback typically accepts a value equal to {code: x}
         // for some value x along with other info. When the code is equal to 0
         // then the operation completed successfully. When the code is not equal
-        // to 0 then the operation failed. Open telemetry logs errors to the
-        // console when the resultCallback passes in non-zero code values and
-        // logs nothing when the code is 0.
+        // to 0 then the operation failed. The resultCallback will not log
+        // anything to the console whether the error code was 0 or not.
         resultCallback({code: 0});
       } catch (error) {
         resultCallback(error as ServiceError);
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
   }
 }

@@ -14,40 +14,35 @@
 
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
-  tableId = 'YOUR_TABLE_ID',
   clusterId = 'YOUR_CLUSTER_ID',
-  backupId = 'YOUR_BACKUP_ID'
+  backupId = 'YOUR_BACKUP_ID',
 ) {
   // [START bigtable_api_get_backup]
-  const {Bigtable} = require('@google-cloud/bigtable');
-  const bigtable = new Bigtable();
+  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+  const tableAdminClient = new BigtableTableAdminClient();
 
   async function getBackup() {
     /**
      * TODO(developer): Uncomment these variables before running the sample.
      */
     // const instanceId = 'YOUR_INSTANCE_ID';
-    // const tableId = 'YOUR_TABLE_ID';
     // const clusterId = 'YOUR_CLUSTER_ID';
     // const backupId = 'YOUR_BACKUP_ID';
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-    const cluster = table.cluster(clusterId);
+    const projectId = await tableAdminClient.getProjectId();
 
-    // Create a reference to the backup before performing operations on it.
-    const backup = cluster.backup(backupId);
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}/backups/${backupId}`,
+    };
 
-    // Get the backup's metadata, with information such as when it will expire
-    // and how big it is.
-    const [metadata] = await backup.getMetadata();
+    const [metadata] = await tableAdminClient.getBackup(request);
     console.log(`The backup is ${metadata.sizeBytes} bytes.`);
 
     // Time properties have Date helpers to convert to a `PreciseDate`.
     console.log(
-      `The backup will auto-delete at ${metadata.expireDate.toISOString()}`
+      `The backup will auto-delete at ${new Date(metadata.expireTime.seconds * 1000).toISOString()}`,
     );
     console.log(
-      `The backup finished being created at ${metadata.endTime.toISOString()}`
+      `The backup finished being created at ${new Date(metadata.endTime.seconds * 1000).toISOString()}`,
     );
   }
 

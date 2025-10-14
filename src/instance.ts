@@ -19,6 +19,7 @@ import * as is from 'is';
 import * as extend from 'extend';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
+const concat = require('concat-stream');
 
 import snakeCase = require('lodash.snakecase');
 import {
@@ -70,6 +71,25 @@ import {Backup, RestoreTableCallback, RestoreTableResponse} from './backup';
 import {ClusterUtils} from './utils/cluster';
 import {AuthorizedView} from './authorized-view';
 
+import * as SqlTypes from './execute-query/types';
+import {
+  ExecuteQueryParameterValue,
+  QueryResultRow,
+} from './execute-query/values';
+import {ProtobufReaderTransformer} from './execute-query/protobufreadertransformer';
+import {ExecuteQueryStreamTransformWithMetadata} from './execute-query/queryresultrowtransformer';
+import {ExecuteQueryStreamWithMetadata} from './execute-query/values';
+import {
+  parseParameters,
+  parseParameterTypes,
+} from './execute-query/parameterparsing';
+import {MetadataConsumer} from './execute-query/metadataconsumer';
+import {
+  createCallerStream,
+  ExecuteQueryStateMachine,
+} from './execute-query/executequerystatemachine';
+import {PreparedStatement} from './execute-query/preparedstatement';
+
 export interface ClusterInfo extends BasicClusterConfig {
   id: string;
 }
@@ -116,35 +136,35 @@ export interface LongRunningResourceCallback<Resource> {
     err: ServiceError | null,
     resource?: Resource,
     operation?: Operation,
-    apiResponse?: IOperation
+    apiResponse?: IOperation,
   ): void;
 }
 export type CreateInstanceCallback = LongRunningResourceCallback<Instance>;
 export type CreateInstanceResponse = [Instance, Operation, IOperation];
 export type DeleteInstanceCallback = (
   err: ServiceError | null,
-  apiResponse?: google.protobuf.Empty
+  apiResponse?: google.protobuf.Empty,
 ) => void;
 export type DeleteInstanceResponse = [google.protobuf.Empty];
 export type InstanceExistsCallback = (
   err: ServiceError | null,
-  exists?: boolean
+  exists?: boolean,
 ) => void;
 export type InstanceExistsResponse = [boolean];
 export type GetInstanceCallback = (
   err: ServiceError | null,
   instance?: Instance,
-  apiResponse?: IInstance
+  apiResponse?: IInstance,
 ) => void;
 export type GetInstanceResponse = [Instance, IInstance];
 export type GetInstanceMetadataCallback = (
   err: ServiceError | null,
-  metadata?: IInstance
+  metadata?: IInstance,
 ) => void;
 export type GetInstanceMetadataResponse = [IInstance];
 export type SetInstanceMetadataCallback = (
   err: ServiceError | null,
-  apiResponse?: google.protobuf.Empty
+  apiResponse?: google.protobuf.Empty,
 ) => void;
 export type SetInstanceMetadataResponse = [google.protobuf.Empty];
 
@@ -153,6 +173,32 @@ export interface CreateTableFromBackupConfig {
   backup: Backup | string;
   gaxOptions?: CallOptions;
 }
+
+export type ExecuteQueryCallback = (
+  err: Error | null,
+  rows?: QueryResultRow[],
+) => void;
+
+export interface ExecuteQueryOptions {
+  preparedStatement: PreparedStatement;
+  parameters?: {[param: string]: ExecuteQueryParameterValue};
+  retryOptions?: CallOptions;
+  encoding?: BufferEncoding;
+}
+export type ExecuteQueryResponse = [QueryResultRow[]];
+
+export type PrepareStatementCallback = (
+  err: Error | null,
+  preparedStatement?: PreparedStatement,
+) => void;
+
+export interface PrepareStatementOptions {
+  query: string;
+  parameterTypes?: {[param: string]: SqlTypes.Type};
+  retryOptions?: CallOptions;
+  encoding?: BufferEncoding;
+}
+export type PrepareStatementResponse = [PreparedStatement];
 
 /**
  * Create an Instance object to interact with a Cloud Bigtable instance.
@@ -252,19 +298,19 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   create(
     options: InstanceOptions,
-    callback?: CreateInstanceCallback
+    callback?: CreateInstanceCallback,
   ): void | Promise<CreateInstanceResponse> {
     this.bigtable.createInstance(this.id, options, callback!);
   }
 
   createAppProfile(
     id: string,
-    options?: AppProfileOptions
+    options?: AppProfileOptions,
   ): Promise<CreateAppProfileResponse>;
   createAppProfile(
     id: string,
     options: AppProfileOptions,
-    callback: CreateAppProfileCallback
+    callback: CreateAppProfileCallback,
   ): void;
   createAppProfile(id: string, callback: CreateAppProfileCallback): void;
   /**
@@ -298,7 +344,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   createAppProfile(
     id: string,
     optionsOrCallback?: AppProfileOptions | CreateAppProfileCallback,
-    cb?: CreateAppProfileCallback
+    cb?: CreateAppProfileCallback,
   ): void | Promise<CreateAppProfileResponse> {
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -333,18 +379,18 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         }
 
         callback(...args);
-      }
+      },
     );
   }
 
   createCluster(
     id: string,
-    options?: CreateClusterOptions
+    options?: CreateClusterOptions,
   ): Promise<CreateClusterResponse>;
   createCluster(
     id: string,
     options: CreateClusterOptions,
-    callback: CreateClusterCallback
+    callback: CreateClusterCallback,
   ): void;
   createCluster(id: string, callback: CreateClusterCallback): void;
   /**
@@ -380,7 +426,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   createCluster(
     id: string,
     optionsOrCallback?: CreateClusterOptions | CreateClusterCallback,
-    cb?: CreateClusterCallback
+    cb?: CreateClusterCallback,
   ): void | Promise<CreateClusterResponse> {
     const options =
       typeof optionsOrCallback === 'object'
@@ -398,7 +444,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       reqOpts.cluster = ClusterUtils.getClusterBaseConfigWithFullLocation(
         options,
         this.bigtable.projectId,
-        undefined
+        undefined,
       );
     }
 
@@ -407,7 +453,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       typeof options.encryption !== 'undefined'
     ) {
       throw new Error(
-        'The cluster cannot have both `encryption` and `key` defined.'
+        'The cluster cannot have both `encryption` and `key` defined.',
       );
     }
 
@@ -439,18 +485,18 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         }
 
         callback(...args);
-      }
+      },
     );
   }
 
   createTable(
     id: string,
-    options?: CreateTableOptions
+    options?: CreateTableOptions,
   ): Promise<CreateTableResponse>;
   createTable(
     id: string,
     options: CreateTableOptions,
-    callback: CreateTableCallback
+    callback: CreateTableCallback,
   ): void;
   createTable(id: string, callback: CreateTableCallback): void;
   /**
@@ -480,7 +526,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   createTable(
     id: string,
     optionsOrCallback?: CreateTableOptions | CreateTableCallback,
-    cb?: CreateTableCallback
+    cb?: CreateTableCallback,
   ): void | Promise<CreateTableResponse> {
     if (!id) {
       throw new Error('An id is required to create a table.');
@@ -524,7 +570,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           }
           return families;
         },
-        {}
+        {},
       );
 
       reqOpts.table!.columnFamilies = columnFamilies;
@@ -545,7 +591,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         }
 
         callback(...args);
-      }
+      },
     );
   }
 
@@ -577,7 +623,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   delete(
     optionsOrCallback?: CallOptions | DeleteInstanceCallback,
-    cb?: DeleteInstanceCallback
+    cb?: DeleteInstanceCallback,
   ): void | Promise<DeleteInstanceResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -593,7 +639,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         },
         gaxOpts: gaxOptions,
       },
-      callback
+      callback,
     );
   }
 
@@ -615,7 +661,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   exists(
     optionsOrCallback?: CallOptions | InstanceExistsCallback,
-    cb?: InstanceExistsCallback
+    cb?: InstanceExistsCallback,
   ): void | Promise<InstanceExistsResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -652,7 +698,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   get(
     optionsOrCallback?: CallOptions | GetInstanceCallback,
-    cb?: GetInstanceCallback
+    cb?: GetInstanceCallback,
   ): void | Promise<GetInstanceResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -685,7 +731,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   getAppProfiles(
     optionsOrCallback?: CallOptions | GetAppProfilesCallback,
-    cb?: GetAppProfilesCallback
+    cb?: GetAppProfilesCallback,
   ): void | Promise<GetAppProfilesResponse> {
     const gaxOpts =
       typeof optionsOrCallback === 'object'
@@ -722,13 +768,13 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         }
         const appProfiles = resp!.map(appProfileObj => {
           const appProfile = this.appProfile(
-            appProfileObj.name!.split('/').pop()!
+            appProfileObj.name!.split('/').pop()!,
           );
           appProfile.metadata = appProfileObj;
           return appProfile;
         });
         callback(null, appProfiles, resp);
-      }
+      },
     );
   }
 
@@ -787,7 +833,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     const transformToAppProfile = (
       chunk: google.bigtable.admin.v2.IAppProfile,
       enc: string,
-      callback: Function
+      callback: Function,
     ) => {
       const appProfile = self.appProfile(chunk.name!.split('/').pop()!);
       appProfile.metadata = chunk;
@@ -799,9 +845,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         callback(
           new Error(
             `Resources from the following locations are currently not available\n${JSON.stringify(
-              failedLocations
-            )}`
-          )
+              failedLocations,
+            )}`,
+          ),
         );
       } else {
         callback();
@@ -847,7 +893,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   getBackups(
     optionsOrCallback?: GetBackupsOptions | GetBackupsCallback,
-    cb?: GetBackupsCallback
+    cb?: GetBackupsCallback,
   ): void | Promise<GetBackupsResponse> {
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -912,7 +958,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   getClusters(
     optionsOrCallback?: CallOptions | GetClustersCallback,
-    cb?: GetClustersCallback
+    cb?: GetClustersCallback,
   ): void | Promise<GetClustersResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -941,14 +987,14 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           return cluster;
         });
         callback(null, clusters, resp);
-      }
+      },
     );
   }
 
   getIamPolicy(options?: GetIamPolicyOptions): Promise<[Policy]>;
   getIamPolicy(
     options: GetIamPolicyOptions,
-    callback: GetIamPolicyCallback
+    callback: GetIamPolicyCallback,
   ): void;
   /**
    * @param {object} [options] Configuration object.
@@ -968,7 +1014,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   getIamPolicy(
     optionsOrCallback?: GetIamPolicyOptions | GetIamPolicyCallback,
-    callback?: GetIamPolicyCallback
+    callback?: GetIamPolicyCallback,
   ): void | Promise<GetIamPolicyResponse> {
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -1001,14 +1047,14 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           return;
         }
         callback!(null, Table.decodePolicyEtag(resp));
-      }
+      },
     );
   }
 
   getMetadata(options?: CallOptions): Promise<GetInstanceMetadataResponse>;
   getMetadata(
     options: CallOptions,
-    callback: GetInstanceMetadataCallback
+    callback: GetInstanceMetadataCallback,
   ): void;
   getMetadata(callback: GetInstanceMetadataCallback): void;
   /**
@@ -1026,7 +1072,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   getMetadata(
     optionsOrCallback?: CallOptions | GetInstanceMetadataCallback,
-    cb?: GetInstanceMetadataCallback
+    cb?: GetInstanceMetadataCallback,
   ): void | Promise<GetInstanceMetadataResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -1047,7 +1093,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           this.metadata = args[1];
         }
         callback(...args);
-      }
+      },
     );
   }
 
@@ -1079,7 +1125,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   getTables(
     optionsOrCallback?: GetTablesOptions | GetTablesCallback,
-    cb?: GetTablesCallback
+    cb?: GetTablesCallback,
   ): void | Promise<GetTablesResponse> {
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -1101,7 +1147,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           pageSize: (gaxOpts as GetBackupsOptions).pageSize,
           pageToken: (gaxOpts as GetBackupsOptions).pageToken,
         },
-        reqOpts
+        reqOpts,
       );
       delete (gaxOpts as GetBackupsOptions).pageSize;
       delete (gaxOpts as GetBackupsOptions).pageToken;
@@ -1126,7 +1172,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         }
 
         callback(...args);
-      }
+      },
     );
   }
 
@@ -1182,7 +1228,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           pageSize: (gaxOpts as GetBackupsOptions).pageSize,
           pageToken: (gaxOpts as GetBackupsOptions).pageToken,
         },
-        reqOpts
+        reqOpts,
       );
       delete (gaxOpts as GetBackupsOptions).pageSize;
       delete (gaxOpts as GetBackupsOptions).pageToken;
@@ -1193,7 +1239,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     const transformToTable = (
       chunk: google.bigtable.admin.v2.ITable,
       enc: string,
-      callback: Function
+      callback: Function,
     ) => {
       const table = self.table(chunk.name!.split('/').pop()!);
       table.metadata = chunk;
@@ -1211,11 +1257,11 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   }
 
   createTableFromBackup(
-    config: CreateTableFromBackupConfig
+    config: CreateTableFromBackupConfig,
   ): Promise<RestoreTableResponse>;
   createTableFromBackup(
     config: CreateTableFromBackupConfig,
-    callback: RestoreTableCallback
+    callback: RestoreTableCallback,
   ): void;
   /**
    * Create a new table by restoring from a completed backup.
@@ -1242,7 +1288,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   createTableFromBackup(
     config: CreateTableFromBackupConfig,
-    callback?: RestoreTableCallback
+    callback?: RestoreTableCallback,
   ): void | Promise<RestoreTableResponse> {
     if (!config.table) {
       throw new Error('A table id is required to restore from a backup.');
@@ -1266,25 +1312,25 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         }
       } catch (e) {
         throw new Error(
-          'A complete backup name (path) is required or a Backup object.'
+          'A complete backup name (path) is required or a Backup object.',
         );
       }
     }
 
     backup.restoreTo(
       {tableId: config.table, instance: this, gaxOptions: config.gaxOptions!},
-      callback!
+      callback!,
     );
   }
 
   setIamPolicy(
     policy: Policy,
-    gaxOptions?: CallOptions
+    gaxOptions?: CallOptions,
   ): Promise<SetIamPolicyResponse>;
   setIamPolicy(
     policy: Policy,
     gaxOptions: CallOptions,
-    callback: SetIamPolicyCallback
+    callback: SetIamPolicyCallback,
   ): void;
   setIamPolicy(policy: Policy, callback: SetIamPolicyCallback): void;
   /**
@@ -1300,7 +1346,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   setIamPolicy(
     policy: Policy,
     gaxOptionsOrCallback?: CallOptions | SetIamPolicyCallback,
-    callback?: SetIamPolicyCallback
+    callback?: SetIamPolicyCallback,
   ): void | Promise<SetIamPolicyResponse> {
     const gaxOptions =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
@@ -1329,18 +1375,18 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           callback!(err);
         }
         callback!(null, Table.decodePolicyEtag(resp));
-      }
+      },
     );
   }
 
   setMetadata(
     metadata: IInstance,
-    options?: CallOptions
+    options?: CallOptions,
   ): Promise<SetInstanceMetadataResponse>;
   setMetadata(
     metadata: IInstance,
     options: CallOptions,
-    callback: SetInstanceMetadataCallback
+    callback: SetInstanceMetadataCallback,
   ): void;
   setMetadata(metadata: IInstance, callback: SetInstanceMetadataCallback): void;
   /**
@@ -1363,7 +1409,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   setMetadata(
     metadata: IInstance,
     optionsOrCallback?: CallOptions | SetInstanceMetadataCallback,
-    cb?: SetInstanceMetadataCallback
+    cb?: SetInstanceMetadataCallback,
   ): void | Promise<SetInstanceMetadataResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -1395,7 +1441,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           this.metadata = args[1];
         }
         callback(...args);
-      }
+      },
     );
   }
 
@@ -1419,16 +1465,16 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
 
   testIamPermissions(
     permissions: string | string[],
-    gaxOptions?: CallOptions
+    gaxOptions?: CallOptions,
   ): Promise<TestIamPermissionsResponse>;
   testIamPermissions(
     permissions: string | string[],
-    callback: TestIamPermissionsCallback
+    callback: TestIamPermissionsCallback,
   ): void;
   testIamPermissions(
     permissions: string | string[],
     gaxOptions: CallOptions,
-    callback: TestIamPermissionsCallback
+    callback: TestIamPermissionsCallback,
   ): void;
   /**
    *
@@ -1446,7 +1492,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   testIamPermissions(
     permissions: string | string[],
     gaxOptionsOrCallback?: CallOptions | TestIamPermissionsCallback,
-    callback?: TestIamPermissionsCallback
+    callback?: TestIamPermissionsCallback,
   ): void | Promise<TestIamPermissionsResponse> {
     const gaxOptions =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
@@ -1473,7 +1519,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           return;
         }
         callback!(null, resp.permissions);
-      }
+      },
     );
   }
 
@@ -1485,6 +1531,206 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   view(tableName: string, viewName: string): AuthorizedView {
     return new AuthorizedView(this, tableName, viewName);
+  }
+
+  prepareStatement(
+    options: PrepareStatementOptions,
+  ): Promise<PrepareStatementResponse>;
+  prepareStatement(
+    options: PrepareStatementOptions,
+    callback: PrepareStatementCallback,
+  ): void;
+  prepareStatement(query: string): Promise<PrepareStatementResponse>;
+  prepareStatement(query: string, callback: PrepareStatementCallback): void;
+  /**
+   * Prepare an SQL query to be executed on an instance.
+   *
+   * @param {?string} [query] PreparedStatement object representing a query
+   *   to execute.
+   * @param {string} [opts.query] Query string for which we want to construct the preparedStatement object.
+   * @param {object} [opts.parameterTypes] Object mapping names of parameters to their types.
+   * Type hints should be constructed using factory functions such as {@link Int64}
+   * @param {CallOptions} [opts.retryOptions] gax's CallOptions wich are passed straight to gax.
+   *   The same retry options are also used when automatically refreshing the PreparedStatement.
+   *
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {?PreparedStatement} callback.preparedStatement The preparedStatement object used to perform the executeQuery operation.
+   *
+   */
+  prepareStatement(
+    queryOrOpts: string | PrepareStatementOptions,
+    callback?: PrepareStatementCallback,
+  ): void | Promise<PrepareStatementResponse> {
+    const opts: PrepareStatementOptions =
+      typeof queryOrOpts === 'string' ? {query: queryOrOpts} : queryOrOpts;
+
+    const protoParamTypes = parseParameterTypes(opts.parameterTypes || {});
+    const request = {
+      client: 'BigtableClient',
+      method: 'prepareQuery',
+      reqOpts: {
+        instanceName: this.name,
+        appProfileId: this.bigtable.appProfileId,
+        query: opts.query,
+        paramTypes: protoParamTypes,
+      },
+      gaxOpts: opts.retryOptions,
+    };
+    this.bigtable.request(request, (...args) => {
+      if (args[0]) {
+        callback!(args[0]);
+      }
+      try {
+        callback!(
+          null,
+          new PreparedStatement(
+            this.bigtable,
+            args[1]!,
+            request,
+            opts.parameterTypes || {},
+          ),
+        );
+      } catch (err) {
+        callback!(err as any, undefined);
+      }
+    });
+  }
+
+  executeQuery(options: ExecuteQueryOptions): Promise<ExecuteQueryResponse>;
+  executeQuery(
+    options: ExecuteQueryOptions,
+    callback: ExecuteQueryCallback,
+  ): void;
+  executeQuery(
+    preparedStatement: PreparedStatement,
+  ): Promise<ExecuteQueryResponse>;
+  executeQuery(
+    preparedStatement: PreparedStatement,
+    callback: ExecuteQueryCallback,
+  ): void;
+  /**
+   * Execute a SQL query on an instance.
+   *
+   *
+   * @param {?PreparedStatement} [preparedStatement] PreparedStatement object representing a query
+   *   to execute.
+   * @param {?object} [options] Configuration object. See
+   *     {@link Instance#createExecuteQueryStream} for a complete list of options.
+   *
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {?QueryResultRow[]} callback.rows List of rows.
+   * @param {?SqlTypes.ResultSetMetadata} callback.metadata Metadata for the response.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_execute_query
+   */
+  executeQuery(
+    preparedStatementOrOpts: PreparedStatement | ExecuteQueryOptions,
+    callback?: ExecuteQueryCallback,
+  ): void | Promise<ExecuteQueryResponse> {
+    let opts: ExecuteQueryOptions;
+    if (preparedStatementOrOpts instanceof PreparedStatement) {
+      opts = {preparedStatement: preparedStatementOrOpts};
+    } else {
+      opts = preparedStatementOrOpts;
+    }
+    const stream = this.createExecuteQueryStream(opts);
+
+    stream.on('error', callback!).pipe(
+      concat((rows: QueryResultRow[]) => {
+        callback!(null, rows);
+      }),
+    );
+  }
+
+  /**
+   * Execute a SQL query on an instance.
+   *
+   * @param {PreparedStatement} [preparedStatement] SQL query to execute. Parameters can be specified using @name notation.
+   * @param {object} [opts] Configuration object.
+   * @param {object} [opts.parameters] Object mapping names of parameters used in the query to JS values.
+   * @param {object} [opts.retryOptions] Retry options used for executing the query. Note that the only values
+   *   used are:
+   *   - retryOptions.retry.retryCodes
+   *   - retryOptions.retry.backoffSettings.maxRetries
+   *   - retryOptions.retry.backoffSettings.totalTimeoutMillis
+   *   - retryOptions.retry.backoffSettings.maxRetryDelayMillis
+   *   - retryOptions.retry.backoffSettings.retryDelayMultiplier
+   *   - retryOptions.retry.backoffSettings.initialRetryDelayMillis
+   * @returns {ExecuteQueryStreamWithMetadata}
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_create_query_stream
+   */
+  createExecuteQueryStream(
+    opts: ExecuteQueryOptions,
+  ): ExecuteQueryStreamWithMetadata {
+    /**
+     * We create the following streams:
+     * responseStream -> byteBuffer -> readerStream -> resultStream
+     *
+     * The last two (readerStream and resultStream) are connected using pumpify
+     * and returned to the caller.
+     *
+     * When a request is made responseStream and byteBuffer are created,
+     * connected using pumpify and piped to the readerStream.
+     *
+     * On retry, the old responseStream-byteBuffer pair is discarded and a
+     * new pair is crated.
+     *
+     * For more info please refer to comments in setupRetries function.
+     *
+     */
+    const metadataConsumer = new MetadataConsumer();
+
+    let callerCancelled = false;
+    const setCallerCancelled = (value: boolean) => {
+      callerCancelled = value;
+    };
+    const hasCallerCancelled = () => callerCancelled;
+
+    const resultStream = new ExecuteQueryStreamTransformWithMetadata(
+      metadataConsumer,
+      hasCallerCancelled,
+      opts.encoding,
+    );
+    const protoParams: {[k: string]: google.bigtable.v2.IValue} | null =
+      parseParameters(
+        opts.parameters || {},
+        opts.preparedStatement.getParameterTypes(),
+      );
+
+    const readerStream = new ProtobufReaderTransformer(metadataConsumer);
+
+    const reqOpts: google.bigtable.v2.IExecuteQueryRequest = {
+      instanceName: this.name,
+      appProfileId: this.bigtable.appProfileId,
+      params: protoParams,
+    };
+
+    // This creates a row stream which is two streams connected in a series.
+    const callerStream = createCallerStream(
+      readerStream,
+      resultStream,
+      metadataConsumer,
+      setCallerCancelled,
+    );
+
+    const stateMachine = new ExecuteQueryStateMachine(
+      this.bigtable,
+      callerStream,
+      opts.preparedStatement,
+      reqOpts,
+      opts.retryOptions?.retry,
+      opts.encoding,
+    );
+
+    // make sure stateMachine is not garbage collected as long as the callerStream.
+    callerStream._stateMachine = stateMachine;
+
+    return callerStream;
   }
 }
 

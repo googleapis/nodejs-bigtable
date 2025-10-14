@@ -30,6 +30,12 @@ import * as tblTypes from '../src/table';
 import {Bigtable, RequestOptions} from '../src';
 import {EventEmitter} from 'events';
 import {TableUtils} from '../src/utils/table';
+import {ClientSideMetricsConfigManager} from '../src/client-side-metrics/metrics-config-manager';
+import {OperationMetricsCollector} from '../src/client-side-metrics/operation-metrics-collector';
+import {SinonSpy} from 'sinon';
+import {TabularApiSurface} from '../src/tabular-api-surface';
+import {GetRowsOptions} from '../src/table';
+import {mutateInternal} from '../src/utils/mutateInternal';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
@@ -59,6 +65,24 @@ function createFake(klass: any) {
   };
 }
 
+class FakeMetricsCollector {
+  onOperationStart() {}
+  onOperationComplete() {}
+  onResponse() {}
+  onAttemptStart() {}
+  onAttemptComplete() {}
+  onMetadataReceived() {}
+  wrapRequest() {}
+  onStatusMetadataReceived() {}
+  onRowReachesUser() {}
+}
+
+class FakeMetricsConfigManager extends ClientSideMetricsConfigManager {
+  createOperation() {
+    return new FakeMetricsCollector() as unknown as OperationMetricsCollector;
+  }
+}
+
 const FakeFamily = createFake(Family);
 FakeFamily.formatRule_ = sinon.spy(rule => rule);
 
@@ -72,7 +96,7 @@ const FakeChunkTransformer = createFake(ChunkTransformer);
 FakeChunkTransformer.prototype._transform = function (
   rows: Row[],
   enc: {},
-  next: Function
+  next: Function,
 ) {
   rows.forEach(row => this.push(row));
   next();
@@ -100,6 +124,53 @@ const FakeFilter = {
   },
 };
 
+function getTableMock(
+  createReadStreamInternal: (
+    table: TabularApiSurface,
+    singleRow: boolean,
+    opts?: GetRowsOptions,
+  ) => PassThrough,
+) {
+  const FakeGetRows = proxyquire('../src/utils/getRowsInternal.js', {
+    './createReadStreamInternal': {
+      createReadStreamInternal: createReadStreamInternal,
+    },
+  });
+  const FakeMutateInternal = proxyquire('../src/utils/mutateInternal.js', {
+    '../row.js': {Row: FakeRow},
+    '../chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+    '../filter.js': {Filter: FakeFilter},
+    '../mutation.js': {Mutation: FakeMutation},
+    pumpify,
+  }).mutateInternal;
+  const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
+    '@google-cloud/promisify': fakePromisify,
+    './family.js': {Family: FakeFamily},
+    './mutation.js': {Mutation: FakeMutation},
+    './filter.js': {Filter: FakeFilter},
+    pumpify,
+    './row.js': {Row: FakeRow},
+    './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+    './utils/createReadStreamInternal': {
+      createReadStreamInternal,
+    },
+    './utils/mutateInternal': {
+      mutateInternal: FakeMutateInternal,
+    },
+    './utils/getRowsInternal': {
+      getRowsInternal: FakeGetRows.getRowsInternal,
+    },
+  }).TabularApiSurface;
+  const Table = proxyquire('../src/table.js', {
+    '@google-cloud/promisify': fakePromisify,
+    './family.js': {Family: FakeFamily},
+    './mutation.js': {Mutation: FakeMutation},
+    './row.js': {Row: FakeRow},
+    './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
+  }).Table;
+  return Table;
+}
+
 describe('Bigtable/Table', () => {
   const TABLE_ID = 'my-table';
   let INSTANCE: inst.Instance;
@@ -110,27 +181,26 @@ describe('Bigtable/Table', () => {
   let table: any;
 
   before(() => {
-    const FakeTabularApiSurface = proxyquire('../src/tabular-api-surface.js', {
-      '@google-cloud/promisify': fakePromisify,
-      './family.js': {Family: FakeFamily},
-      './mutation.js': {Mutation: FakeMutation},
-      './filter.js': {Filter: FakeFilter},
-      pumpify,
-      './row.js': {Row: FakeRow},
-      './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
-    }).TabularApiSurface;
-    Table = proxyquire('../src/table.js', {
-      '@google-cloud/promisify': fakePromisify,
-      './family.js': {Family: FakeFamily},
-      './mutation.js': {Mutation: FakeMutation},
-      './row.js': {Row: FakeRow},
-      './tabular-api-surface': {TabularApiSurface: FakeTabularApiSurface},
-    }).Table;
+    const FakeCreateReadStreamInternal = proxyquire(
+      '../src/utils/createReadStreamInternal.js',
+      {
+        '../row.js': {Row: FakeRow},
+        '../chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+        '../filter.js': {Filter: FakeFilter},
+        '../mutation.js': {Mutation: FakeMutation},
+        pumpify,
+      },
+    ).createReadStreamInternal;
+    Table = getTableMock(FakeCreateReadStreamInternal);
   });
 
   beforeEach(() => {
     INSTANCE = {
-      bigtable: {} as Bigtable,
+      bigtable: {
+        _metricsConfigManager: new FakeMetricsConfigManager(
+          [],
+        ) as ClientSideMetricsConfigManager,
+      } as Bigtable,
       name: 'a/b/c/d',
     } as inst.Instance;
     TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;
@@ -216,7 +286,7 @@ describe('Bigtable/Table', () => {
       table.instance.createTable = (
         id: string,
         options_: {},
-        callback: Function
+        callback: Function,
       ) => {
         assert.strictEqual(id, table.id);
         assert.strictEqual(options_, options);
@@ -230,7 +300,7 @@ describe('Bigtable/Table', () => {
       table.instance.createTable = (
         id: string,
         options: {},
-        callback: Function
+        callback: Function,
       ) => {
         assert.deepStrictEqual(options, {});
         callback(); // done()
@@ -340,7 +410,7 @@ describe('Bigtable/Table', () => {
       table.createBackup(BACKUP_ID, CONFIG, (err: Error) => {
         assert.strictEqual(
           err.message,
-          'No ready clusters eligible for backup.'
+          'No ready clusters eligible for backup.',
         );
         done();
       });
@@ -515,7 +585,7 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(family, null);
           assert.strictEqual(response, apiResponse);
           done();
-        }
+        },
       );
     });
 
@@ -539,7 +609,7 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(family.metadata, response);
           assert.strictEqual(apiResponse, response);
           done();
-        }
+        },
       );
     });
   });
@@ -567,7 +637,7 @@ describe('Bigtable/Table', () => {
       bigtableInstance.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
-          bigtableInstance.appProfileId
+          bigtableInstance.appProfileId,
         );
         done();
       };
@@ -722,7 +792,7 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (parseSpy as any).getCall(0).args[0],
-            options.filter
+            options.filter,
           );
           done();
         };
@@ -952,7 +1022,7 @@ describe('Bigtable/Table', () => {
         FakeChunkTransformer.prototype._transform = function (
           chunks: Array<{}>,
           enc: {},
-          next: Function
+          next: Function,
         ) {
           formattedRows.forEach(row => this.push(row));
           next();
@@ -1084,7 +1154,7 @@ describe('Bigtable/Table', () => {
         FakeChunkTransformer.prototype._transform = (
           chunks: {},
           enc: {},
-          next: Function
+          next: Function,
         ) => {
           next(error);
         };
@@ -1193,7 +1263,7 @@ describe('Bigtable/Table', () => {
         FakeChunkTransformer.prototype._transform = function (
           rows: Row[],
           enc: {},
-          next: Function
+          next: Function,
         ) {
           rows.forEach(row => this.push(row));
           this.lastRowKey = rows[rows.length - 1].key;
@@ -1233,7 +1303,7 @@ describe('Bigtable/Table', () => {
               range.end = (end as any).value || end;
             }
             return range;
-          }
+          },
         );
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1292,7 +1362,7 @@ describe('Bigtable/Table', () => {
         emitters = [
           ((stream: Writable) => {
             const cancelledError = new Error(
-              'do not retry me!'
+              'do not retry me!',
             ) as ServiceError;
             cancelledError.code = 1;
             stream.emit('error', cancelledError);
@@ -1592,7 +1662,7 @@ describe('Bigtable/Table', () => {
       const fakePrefix = 'b';
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const spy = ((FakeMutation as any).convertToBytes = sinon.spy(
-        () => fakePrefix
+        () => fakePrefix,
       ));
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1832,7 +1902,7 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         assert.strictEqual(
           config.reqOpts.options.requestedPolicyVersion,
-          requestedPolicyVersion
+          requestedPolicyVersion,
         );
         done();
       };
@@ -1904,7 +1974,7 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(clusterStates.get('cluster1'), 'READY');
           assert.strictEqual(clusterStates.get('cluster2'), 'INITIALIZING');
           done();
-        }
+        },
       );
     });
   });
@@ -2301,13 +2371,14 @@ describe('Bigtable/Table', () => {
 
   describe('getRows', () => {
     describe('success', () => {
+      let createReadStreamInternal: SinonSpy<[], PassThrough>;
       const fakeRows = [
         {key: 'c', data: {}},
         {key: 'd', data: {}},
       ];
 
       beforeEach(() => {
-        table.createReadStream = sinon.spy(() => {
+        createReadStreamInternal = sinon.spy(() => {
           const stream = new PassThrough({
             objectMode: true,
           });
@@ -2322,6 +2393,17 @@ describe('Bigtable/Table', () => {
 
           return stream;
         });
+        Table = getTableMock(createReadStreamInternal);
+        INSTANCE = {
+          bigtable: {
+            _metricsConfigManager: new FakeMetricsConfigManager(
+              [],
+            ) as ClientSideMetricsConfigManager,
+          } as Bigtable,
+          name: 'a/b/c/d',
+        } as inst.Instance;
+        TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;
+        table = new Table(INSTANCE, TABLE_ID);
       });
 
       it('should return the rows to the callback', done => {
@@ -2332,8 +2414,8 @@ describe('Bigtable/Table', () => {
           assert.deepStrictEqual(rows, fakeRows);
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const spy = (table as any).createReadStream.getCall(0);
-          assert.strictEqual(spy.args[0], options);
+          const spy = createReadStreamInternal.getCall(0);
+          assert.strictEqual((spy.args as any)[2], options);
           done();
         });
       });
@@ -2348,10 +2430,11 @@ describe('Bigtable/Table', () => {
     });
 
     describe('error', () => {
+      let createReadStreamInternal: SinonSpy<[], PassThrough>;
       const error = new Error('err');
 
       beforeEach(() => {
-        table.createReadStream = sinon.spy(() => {
+        createReadStreamInternal = sinon.spy(() => {
           const stream = new PassThrough({
             objectMode: true,
           });
@@ -2362,6 +2445,17 @@ describe('Bigtable/Table', () => {
 
           return stream;
         });
+        Table = getTableMock(createReadStreamInternal);
+        INSTANCE = {
+          bigtable: {
+            _metricsConfigManager: new FakeMetricsConfigManager(
+              [],
+            ) as ClientSideMetricsConfigManager,
+          } as Bigtable,
+          name: 'a/b/c/d',
+        } as inst.Instance;
+        TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;
+        table = new Table(INSTANCE, TABLE_ID);
       });
 
       it('should return the error to the callback', done => {
@@ -2470,7 +2564,7 @@ describe('Bigtable/Table', () => {
       bigtableInstance.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
-          bigtableInstance.appProfileId
+          bigtableInstance.appProfileId,
         );
         done();
       };
@@ -2695,13 +2789,13 @@ describe('Bigtable/Table', () => {
             (requestArgs[0].gaxOpts as any)['otherArgs']['headers'][
               'bigtable-attempt'
             ],
-            0
+            0,
           );
           assert.strictEqual(
             (requestArgs[1].gaxOpts as any)['otherArgs']['headers'][
               'bigtable-attempt'
             ],
-            1
+            1,
           );
           done();
         });
@@ -2799,7 +2893,7 @@ describe('Bigtable/Table', () => {
             } catch (e) {
               done(e);
             }
-          }
+          },
         );
       });
       it('should not retry unretriable errors', done => {
@@ -2874,13 +2968,13 @@ describe('Bigtable/Table', () => {
             (requestArgs[0].gaxOpts as any)['otherArgs']['headers'][
               'bigtable-attempt'
             ],
-            0
+            0,
           );
           assert.strictEqual(
             (requestArgs[1].gaxOpts as any)['otherArgs']['headers'][
               'bigtable-attempt'
             ],
-            1
+            1,
           );
           done();
         });
@@ -3008,7 +3102,7 @@ describe('Bigtable/Table', () => {
       bigtableInstance.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
-          bigtableInstance.appProfileId
+          bigtableInstance.appProfileId,
         );
         done();
       };
@@ -3167,7 +3261,7 @@ describe('Bigtable/Table', () => {
       table.bigtable.request = (config: any) => {
         assert.deepStrictEqual(
           config.reqOpts.policy.etag,
-          Buffer.from(policy.etag)
+          Buffer.from(policy.etag),
         );
         done();
       };
@@ -3242,7 +3336,7 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(Array.isArray(permissions), true);
           assert.deepStrictEqual(permissions, testPermissions);
           done();
-        }
+        },
       );
     });
 

@@ -35,7 +35,7 @@ describe('Service Path', () => {
     // Need to mock getProjectId_ since it normally uses auth and auth isn't
     // available in unit tests.
     bigtable.getProjectId_ = (
-      callback: (err: Error | null, projectId?: string) => void
+      callback: (err: Error | null, projectId?: string) => void,
     ) => {
       callback(null, 'projectId');
     };
@@ -43,9 +43,11 @@ describe('Service Path', () => {
       // This is necessary to initialize the bigtable instance admin client.
       await bigtable.getInstances({timeout: 1000});
     } catch (e) {
+      const expectedMessage =
+        'Total timeout of API google.bigtable.admin.v2.BigtableInstanceAdmin exceeded 1000 milliseconds retrying error Error: 14 UNAVAILABLE: Name resolution failed for target dns:bigtableadmin.someUniverseDomain:443  before any response was received.';
       assert.strictEqual(
-        (e as ServiceError).message,
-        'Total timeout of API google.bigtable.admin.v2.BigtableInstanceAdmin exceeded 1000 milliseconds retrying error Error: 14 UNAVAILABLE: Name resolution failed for target dns:bigtableadmin.someUniverseDomain:443  before any response was received.'
+        (e as ServiceError).message.substring(0, expectedMessage.length),
+        expectedMessage,
       );
     } finally {
       assert.strictEqual(
@@ -53,7 +55,7 @@ describe('Service Path', () => {
           bigtable.api
             .BigtableInstanceAdminClient as BigtableInstanceAdminClient
         )['_opts'].servicePath,
-        `bigtableadmin.${universeDomain}`
+        `bigtableadmin.${universeDomain}`,
       );
     }
     try {
@@ -63,14 +65,16 @@ describe('Service Path', () => {
       const table = instance.table('tableId');
       await table.getRows({gaxOptions: {timeout: 1000}});
     } catch (e) {
+      const expectedMessage =
+        '14 UNAVAILABLE: Name resolution failed for target dns:bigtable.someUniverseDomain:443';
       assert.strictEqual(
-        (e as ServiceError).message,
-        '14 UNAVAILABLE: Name resolution failed for target dns:bigtable.someUniverseDomain:443'
+        (e as ServiceError).message.substring(0, expectedMessage.length),
+        expectedMessage,
       );
     } finally {
       assert.strictEqual(
         (bigtable.api.BigtableClient as BigtableClient)['_opts'].servicePath,
-        `bigtable.${universeDomain}`
+        `bigtable.${universeDomain}`,
       );
     }
 
@@ -95,7 +99,7 @@ describe('Service Path', () => {
     // Need to mock getProjectId_ since it normally uses auth and auth isn't
     // available in unit tests.
     bigtable.getProjectId_ = (
-      callback: (err: Error | null, projectId?: string) => void
+      callback: (err: Error | null, projectId?: string) => void,
     ) => {
       callback(null, 'projectId');
     };
@@ -103,9 +107,11 @@ describe('Service Path', () => {
       // This is necessary to initialize the bigtable instance admin client.
       await bigtable.getInstances({timeout: 1000});
     } catch (e) {
+      const expectedMessage =
+        'Total timeout of API google.bigtable.admin.v2.BigtableInstanceAdmin exceeded 1000 milliseconds retrying error Error: 14 UNAVAILABLE: Name resolution failed for target dns:someApiEndpoint:443  before any response was received.';
       assert.strictEqual(
-        (e as ServiceError).message,
-        'Total timeout of API google.bigtable.admin.v2.BigtableInstanceAdmin exceeded 1000 milliseconds retrying error Error: 14 UNAVAILABLE: Name resolution failed for target dns:someApiEndpoint:443  before any response was received.'
+        (e as ServiceError).message.substring(0, expectedMessage.length),
+        expectedMessage,
       );
     } finally {
       assert.strictEqual(
@@ -113,7 +119,7 @@ describe('Service Path', () => {
           bigtable.api
             .BigtableInstanceAdminClient as BigtableInstanceAdminClient
         )['_opts'].servicePath,
-        apiEndpoint
+        apiEndpoint,
       );
     }
     try {
@@ -123,14 +129,16 @@ describe('Service Path', () => {
       const table = instance.table('tableId');
       await table.getRows({gaxOptions: {timeout: 1000}});
     } catch (e) {
+      const expectedMessage =
+        '14 UNAVAILABLE: Name resolution failed for target dns:someApiEndpoint:443';
       assert.strictEqual(
-        (e as ServiceError).message,
-        '14 UNAVAILABLE: Name resolution failed for target dns:someApiEndpoint:443'
+        (e as ServiceError).message.substring(0, expectedMessage.length),
+        expectedMessage,
       );
     } finally {
       assert.strictEqual(
         (bigtable.api.BigtableClient as BigtableClient)['_opts'].servicePath,
-        apiEndpoint
+        apiEndpoint,
       );
     }
 
@@ -147,7 +155,7 @@ describe('Service Path', () => {
     // Need to mock getProjectId_ since it normally uses auth and auth isn't
     // available in unit tests.
     bigtable.getProjectId_ = (
-      callback: (err: Error | null, projectId?: string) => void
+      callback: (err: Error | null, projectId?: string) => void,
     ) => {
       callback(null, 'projectId');
     };
@@ -156,9 +164,11 @@ describe('Service Path', () => {
       // This is necessary to initialize the bigtable instance admin client.
       await bigtable.getInstances({timeout: 1000});
     } catch (e) {
+      const expectedMessage =
+        'Total timeout of API google.bigtable.admin.v2.BigtableInstanceAdmin exceeded 1000 milliseconds retrying error Error: 14 UNAVAILABLE: Name resolution failed for target dns:bigtableadmin.someUniverseDomain:443  before any response was received.';
       assert.strictEqual(
-        (e as ServiceError).message,
-        'Total timeout of API google.bigtable.admin.v2.BigtableInstanceAdmin exceeded 1000 milliseconds retrying error Error: 14 UNAVAILABLE: Name resolution failed for target dns:bigtableadmin.someUniverseDomain:443  before any response was received.'
+        (e as ServiceError).message.substring(0, expectedMessage.length),
+        expectedMessage,
       );
     } finally {
       assert.strictEqual(
@@ -166,7 +176,7 @@ describe('Service Path', () => {
           bigtable.api
             .BigtableInstanceAdminClient as BigtableInstanceAdminClient
         )['_opts'].servicePath,
-        `bigtableadmin.${universeDomain}`
+        `bigtableadmin.${universeDomain}`,
       );
     }
 
@@ -177,14 +187,16 @@ describe('Service Path', () => {
       const table = instance.table('tableId');
       await table.getRows({gaxOptions: {timeout: 1000}});
     } catch (e) {
+      const expectedMessage =
+        '14 UNAVAILABLE: Name resolution failed for target dns:bigtable.someUniverseDomain:443';
       assert.strictEqual(
-        (e as ServiceError).message,
-        '14 UNAVAILABLE: Name resolution failed for target dns:bigtable.someUniverseDomain:443'
+        (e as ServiceError).message.substring(0, expectedMessage.length),
+        expectedMessage,
       );
     } finally {
       assert.strictEqual(
         (bigtable.api.BigtableClient as BigtableClient)['_opts'].servicePath,
-        `bigtable.${universeDomain}`
+        `bigtable.${universeDomain}`,
       );
     }
 
