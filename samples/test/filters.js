@@ -20,12 +20,14 @@ const {assert} = require('chai');
 const {describe, it, before, after} = require('mocha');
 const cp = require('child_process');
 const {obtainTestInstance} = require('./util');
+const {Bigtable} = require('@google-cloud/bigtable');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 const runId = uuid.v4().split('-')[0];
 const TABLE_ID = `mobile-time-series-${runId}`;
 
 describe('filters', async () => {
+  const bigtable = new Bigtable();
   let table;
   let INSTANCE_ID;
   const TIMESTAMP = new Date(2019, 5, 1);
@@ -34,13 +36,45 @@ describe('filters', async () => {
   TIMESTAMP_OLDER.setUTCHours(0);
 
   before(async () => {
-    const instance = await obtainTestInstance();
-    INSTANCE_ID = instance.id;
-    table = instance.table(TABLE_ID);
-
-    await table.create().catch(console.error);
-    await table.createFamily('stats_summary').catch(console.error);
-    await table.createFamily('cell_plan').catch(console.error);
+    const [instance] = await obtainTestInstance();
+    INSTANCE_ID = instance.displayName;
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
+    const instancePath = `projects/${projectId}/instances/${INSTANCE_ID}`;
+    const tablePath = `${instancePath}/tables/${TABLE_ID}`;
+    const request = {
+      parent: instancePath,
+      tableId: TABLE_ID,
+      table: {},
+    };
+    await adminClient.createTable(request).catch(console.error);
+    const handwrittenInstance = bigtable.instance(INSTANCE_ID);
+    table = handwrittenInstance.table(TABLE_ID);
+    const modifyFamiliesReq = {
+      name: tablePath,
+      modifications: [
+        {
+          id: 'stats_summary',
+          create: {},
+        },
+      ],
+    };
+    await adminClient
+      .modifyColumnFamilies(modifyFamiliesReq)
+      .catch(console.error);
+    const modifyFamiliesReq2 = {
+      name: tablePath,
+      modifications: [
+        {
+          id: 'cell_plan',
+          create: {},
+        },
+      ],
+    };
+    await adminClient
+      .modifyColumnFamilies(modifyFamiliesReq2)
+      .catch(console.error);
 
     const rowsToInsert = [
       {
@@ -189,12 +223,18 @@ describe('filters', async () => {
   });
 
   after(async () => {
-    await table.delete().catch(console.error);
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
+    const request = {
+      name: `projects/${projectId}/instances/${INSTANCE_ID}/tables/${TABLE_ID}`,
+    };
+    await adminClient.deleteTable(request).catch(console.error);
   });
 
   it('should filter with row sample', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterRowSample`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterRowSample`,
     );
     console.log('stdout', stdout);
     assert.include(stdout, 'Reading data for');
@@ -202,7 +242,7 @@ describe('filters', async () => {
 
   it('should filter with row regex', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterRowRegex`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterRowRegex`,
     );
 
     snapshot(stdout);
@@ -210,7 +250,7 @@ describe('filters', async () => {
 
   it('should filter with cells per col', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCellsPerCol`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCellsPerCol`,
     );
 
     snapshot(stdout);
@@ -218,7 +258,7 @@ describe('filters', async () => {
 
   it('should filter with cells per row', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCellsPerRow`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCellsPerRow`,
     );
 
     snapshot(stdout);
@@ -226,7 +266,7 @@ describe('filters', async () => {
 
   it('should filter with cells per row offset', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCellsPerRowOffset`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCellsPerRowOffset`,
     );
 
     snapshot(stdout);
@@ -234,7 +274,7 @@ describe('filters', async () => {
 
   it('should filter with col family regex', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterColFamilyRegex`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterColFamilyRegex`,
     );
 
     snapshot(stdout);
@@ -242,7 +282,7 @@ describe('filters', async () => {
 
   it('should filter with col qualifier regex', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterColQualifierRegex`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterColQualifierRegex`,
     );
 
     snapshot(stdout);
@@ -250,7 +290,7 @@ describe('filters', async () => {
 
   it('should filter with col range', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterColRange`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterColRange`,
     );
 
     snapshot(stdout);
@@ -258,7 +298,7 @@ describe('filters', async () => {
 
   it('should filter with value range', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterValueRange`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterValueRange`,
     );
 
     snapshot(stdout);
@@ -266,7 +306,7 @@ describe('filters', async () => {
 
   it('should filter with value regex', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterValueRegex`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterValueRegex`,
     );
 
     snapshot(stdout);
@@ -274,7 +314,7 @@ describe('filters', async () => {
 
   it('should filter with timestamp range', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterTimestampRange`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterTimestampRange`,
     );
 
     snapshot(stdout);
@@ -282,7 +322,7 @@ describe('filters', async () => {
 
   it('should filter with block all', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterBlockAll`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterBlockAll`,
     );
     const result = '';
     assert.equal(stdout, result);
@@ -290,7 +330,7 @@ describe('filters', async () => {
 
   it('should filter with pass all', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterPassAll`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterPassAll`,
     );
 
     snapshot(stdout);
@@ -298,7 +338,7 @@ describe('filters', async () => {
 
   it('should filter with strip value', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterStripValue`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterStripValue`,
     );
 
     snapshot(stdout);
@@ -306,28 +346,28 @@ describe('filters', async () => {
 
   it('should filter with label', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterApplyLabel`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterApplyLabel`,
     );
 
     snapshot(stdout);
   });
   it('should filter with chain', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterChain`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterChain`,
     );
 
     snapshot(stdout);
   });
   it('should filter with interleave', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterInterleave`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterInterleave`,
     );
 
     snapshot(stdout);
   });
   it('should filter with condition', async () => {
     const stdout = execSync(
-      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCondition`
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCondition`,
     );
 
     snapshot(stdout);

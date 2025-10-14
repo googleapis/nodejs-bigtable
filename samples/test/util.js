@@ -13,15 +13,16 @@
 // limitations under the License.
 
 const uuid = require('uuid');
-const {Bigtable} = require('@google-cloud/bigtable');
 const {after} = require('mocha');
 
 const PREFIX = 'gcloud-tests-';
 const runId = uuid.v4().split('-')[0];
 const instanceId = `${PREFIX}-${runId}`;
 const clusterId = `${PREFIX}-${runId}`;
-const bigtable = new Bigtable();
-let instance;
+
+const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+
+const instanceAdminClient = new BigtableInstanceAdminClient();
 
 let obtainPromise;
 
@@ -34,7 +35,7 @@ function generateId() {
  * Get instances created more than one hour ago.
  */
 async function getStaleInstances() {
-  const [instances] = await bigtable.getInstances();
+  const [instances] = await instanceAdminClient.listInstances();
   return instances
     .filter(i => i.id.match(PREFIX))
     .filter(i => {
@@ -62,28 +63,39 @@ async function obtainTestInstance() {
  * Create a testing cluster and the corresponding instance.
  */
 async function createTestInstance() {
-  instance = bigtable.instance(instanceId);
-  const [, operation] = await instance.create({
-    clusters: [
-      {
-        id: clusterId,
-        location: 'us-central1-c',
-        nodes: 3,
+  const projectId = await instanceAdminClient.getProjectId();
+  const location = 'us-central1-c';
+  const request = {
+    parent: `projects/${projectId}`,
+    instanceId: instanceId,
+    instance: {
+      displayName: instanceId,
+      labels: {
+        time_created: Date.now(),
       },
-    ],
-    labels: {
-      time_created: Date.now(),
     },
-  });
+    clusters: {
+      [clusterId]: {
+        location: `projects/${projectId}/locations/${location}`,
+        serveNodes: 1,
+        defaultStorageType: 'HDD',
+      },
+    },
+  };
+  const [operation] = await instanceAdminClient.createInstance(request);
   await operation.promise();
-  return instance;
+  return instanceAdminClient.getInstance({
+    name: `projects/${projectId}/instances/${instanceId}`,
+  });
 }
 
 /**
  * Delete the instance in a global hook.
  */
 after(async () => {
-  await instance.delete();
+  const projectId = await instanceAdminClient.getProjectId();
+  const instancePath = `projects/${projectId}/instances/${instanceId}`;
+  await instanceAdminClient.deleteInstance({name: instancePath});
 });
 
 module.exports = {generateId, getStaleInstances, obtainTestInstance};

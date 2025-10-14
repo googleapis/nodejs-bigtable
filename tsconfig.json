@@ -5,7 +5,7 @@
     "outDir": "build",
     "resolveJsonModule": true,
     "lib": [
-      "es2018",
+      "es2023",
       "dom"
     ]
   },
@@ -14,6 +14,14 @@
     "src/**/*.ts",
     "test/*.ts",
     "test/**/*.ts",
-    "system-test/*.ts"
+    "system-test/*.ts",
+    "testproxy/*.ts",
+    "testproxy/**/*.ts",
+    "src/v2/bigtable_client_config.json",
+    "src/v2/bigtable_table_admin_client_config.json",
+    "src/v2/bigtable_instance_admin_client_config.json",
+    "test-common/*.ts",
+    "test-common/**/*.ts",
+    "protos/protos.json"
   ]
 }

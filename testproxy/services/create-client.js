@@ -17,14 +17,26 @@ const normalizeCallback = require('./utils/normalize-callback.js');
 
 const grpc = require('@grpc/grpc-js');
 const {Bigtable} = require('../../build/src/index.js');
+const {
+  ClientSideMetricsConfigManager,
+} = require('../../build/src/client-side-metrics/metrics-config-manager');
 const {BigtableClient} = require('../../build/src/index.js').v2;
 
 const v2 = Symbol.for('v2');
+
+function durationToMilliseconds(duration) {
+  const secondsInMs = parseInt(duration.seconds, 10) * 1000;
+  const nanosInMs = duration.nanos / 1000000;
+  return secondsInMs + nanosInMs;
+}
 
 const createClient = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     // TODO: Handle refresh periods
     const {request} = rawRequest;
+    const clientConfig = JSON.parse(
+      JSON.stringify(require('../../src/v2/bigtable_client_config.json')),
+    );
     const {
       callCredential,
       clientId,
@@ -37,9 +49,9 @@ const createClient = ({clientMap}) =>
     if (!(clientId && projectId && instanceId && apiEndpoint)) {
       throw Object.assign(
         new Error(
-          'clientId, projectId, instanceId, and apiEndpoint must be provided.'
+          'clientId, projectId, instanceId, and apiEndpoint must be provided.',
         ),
-        {code: grpc.status.INVALID_ARGUMENT}
+        {code: grpc.status.INVALID_ARGUMENT},
       );
     }
 
@@ -54,13 +66,28 @@ const createClient = ({clientMap}) =>
     if (callCredential && callCredential.jsonServiceAccount) {
       authClient = JSON.parse(request.callCredential.jsonServiceAccount);
     }
+    if (request.perOperationTimeout) {
+      /**
+       * This block of code ensures the server times out for every method call
+       * after the amount of time specified in request.perOperationTimeout.
+       */
+      Object.entries(
+        clientConfig.interfaces['google.bigtable.v2.Bigtable'].methods,
+      ).forEach(([, v]) => {
+        v.timeout_millis = durationToMilliseconds(request.perOperationTimeout);
+      });
+    }
     const bigtable = new Bigtable({
       projectId,
       apiEndpoint,
       authClient,
       appProfileId,
-      clientConfig: require('../../src/v2/bigtable_client_config.json'),
+      clientConfig,
     });
+    const handlers = [];
+    bigtable._metricsConfigManager = new ClientSideMetricsConfigManager(
+      handlers,
+    );
     bigtable[v2] = new BigtableClient(bigtable.options.BigtableClient);
     clientMap.set(clientId, bigtable);
   });

@@ -16,15 +16,18 @@ import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {PreciseDate} from '@google-cloud/precise-date';
 import * as assert from 'assert';
 import {beforeEach, afterEach, describe, it, before, after} from 'mocha';
-import Q from 'p-queue';
 
 import {
   Backup,
   BackupTimestamp,
   Bigtable,
+  Entry,
   Instance,
   InstanceOptions,
+  MutateOptions,
+  SqlTypes,
 } from '../src';
+import {Mutation} from '../src/mutation';
 import {AppProfile} from '../src/app-profile.js';
 import {CopyBackupConfig} from '../src/backup.js';
 import {Cluster} from '../src/cluster.js';
@@ -33,7 +36,9 @@ import {Row} from '../src/row.js';
 import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
 import {generateId, PREFIX} from './common';
-import {Mutation} from '../src/mutation';
+import {BigtableTableAdminClient} from '../src/v2';
+import {ServiceError} from 'google-gax';
+import {BigtableDate, QueryResultRow} from '../src/execute-query/values';
 
 describe('Bigtable', () => {
   const bigtable = new Bigtable();
@@ -47,18 +52,13 @@ describe('Bigtable', () => {
 
   async function reapBackups(instance: Instance) {
     const [backups] = await instance.getBackups();
-    const q = new Q({concurrency: 5});
-    return Promise.all(
-      backups.map(backup => {
-        q.add(async () => {
-          try {
-            await backup.delete({timeout: 50 * 1000});
-          } catch (e) {
-            console.log(`Error deleting backup: ${backup.id}`);
-          }
-        });
-      })
-    );
+    for (const backup of backups) {
+      try {
+        await backup.delete({timeout: 50 * 1000});
+      } catch (e) {
+        console.log(`Error deleting backup: ${backup.id}`);
+      }
+    }
   }
 
   async function reapInstances() {
@@ -71,26 +71,26 @@ describe('Bigtable', () => {
         const oneHourAgo = new Date(Date.now() - 3600000);
         return !timeCreated || timeCreated <= oneHourAgo;
       });
-    const q = new Q({concurrency: 5});
     // need to delete backups first due to instance deletion precondition
-    await Promise.all(testInstances.map(instance => reapBackups(instance)));
-    await Promise.all(
-      testInstances.map(instance => {
-        q.add(async () => {
-          try {
-            await instance.delete();
-          } catch (e) {
-            console.log(`Error deleting instance: ${instance.id}`);
-          }
-        });
-      })
+    const deleteBackupPromises = testInstances.map(instance =>
+      reapBackups(instance),
     );
+    for (const backupPromise of deleteBackupPromises) {
+      await backupPromise;
+    }
+    for (const instance of testInstances) {
+      try {
+        await instance.delete();
+      } catch (e) {
+        console.log(`Error deleting instance: ${instance.id}`);
+      }
+    }
   }
 
   before(async () => {
     await reapInstances();
     const [, operation] = await INSTANCE.create(
-      createInstanceConfig(CLUSTER_ID, 'us-central1-c', 3, Date.now())
+      createInstanceConfig(CLUSTER_ID, 'us-central1-c', 3, Date.now()),
     );
 
     await operation.promise();
@@ -104,21 +104,21 @@ describe('Bigtable', () => {
   });
 
   after(async () => {
-    const q = new Q({concurrency: 5});
+    const q = [];
     const instances = [INSTANCE, DIFF_INSTANCE, CMEK_INSTANCE];
 
     // need to delete backups first due to instance deletion precondition
     await Promise.all(instances.map(instance => reapBackups(instance)));
     await Promise.all(
       instances.map(instance => {
-        q.add(async () => {
+        q.push(async () => {
           try {
             await instance.delete();
           } catch (e) {
             console.log(`Error deleting instance: ${instance.id}`);
           }
         });
-      })
+      }),
     );
   });
 
@@ -223,7 +223,7 @@ describe('Bigtable', () => {
         params: {cryptoKeyId},
         data: {purpose: 'ENCRYPT_DECRYPT'},
       });
-      cryptoKeyVersionName = resp.data.primary.name;
+      cryptoKeyVersionName = (resp.data as any).primary.name;
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_, operation] = await CMEK_INSTANCE.create({
@@ -286,8 +286,8 @@ describe('Bigtable', () => {
       } catch (e) {
         assert(
           (e as Error).message.includes(
-            'default keys and CMEKs are not allowed'
-          )
+            'default keys and CMEKs are not allowed',
+          ),
         );
       }
     });
@@ -342,7 +342,7 @@ describe('Bigtable', () => {
       const [metadata] = await APP_PROFILE.getMetadata();
       assert.strictEqual(
         metadata.name,
-        APP_PROFILE.name.replace('{{projectId}}', bigtable.projectId)
+        APP_PROFILE.name.replace('{{projectId}}', bigtable.projectId),
       );
     });
 
@@ -357,7 +357,7 @@ describe('Bigtable', () => {
       const [updatedAppProfile] = await APP_PROFILE.get();
       assert.strictEqual(
         updatedAppProfile.metadata!.description,
-        options.description
+        options.description,
       );
       assert.deepStrictEqual(updatedAppProfile.metadata!.singleClusterRouting, {
         clusterId: CLUSTER_ID,
@@ -477,7 +477,7 @@ describe('Bigtable', () => {
       const [metadata] = await TABLE.getMetadata();
       assert.strictEqual(
         metadata.name,
-        TABLE.name.replace('{{projectId}}', bigtable.projectId)
+        TABLE.name.replace('{{projectId}}', bigtable.projectId),
       );
     });
 
@@ -790,6 +790,100 @@ describe('Bigtable', () => {
     });
 
     describe('fetching data', () => {
+      it('should execute a query', async () => {
+        const [preparedStatement] = await INSTANCE.prepareStatement({
+          query:
+            'SELECT @stringParam AS strCol, @bytesParam as bytesCol, @int64Param AS intCol, @doubleParam AS doubleCol,\n' +
+            '@floatParam AS floatCol, @boolParam AS boolCol, @tsParam AS tsCol, @dateParam AS dateCol,\n' +
+            '@byteArrayParam AS byteArrayCol, @stringArrayParam AS stringArrayCol, @intArrayParam AS intArrayCol,\n' +
+            '@floatArrayParam AS floatArrayCol, @doubleArrayParam AS doubleArrayCol, @boolArrayParam AS boolArrayCol,\n' +
+            '@tsArrayParam AS tsArrayCol, @dateArrayParam AS dateArrayCol',
+          parameterTypes: {
+            bytesParam: SqlTypes.Bytes(),
+            intArrayParam: SqlTypes.Array(SqlTypes.Int64()),
+            dateArrayParam: SqlTypes.Array(SqlTypes.Date()),
+            stringParam: SqlTypes.String(),
+            byteArrayParam: SqlTypes.Array(SqlTypes.Bytes()),
+            doubleArrayParam: SqlTypes.Array(SqlTypes.Float64()),
+            boolArrayParam: SqlTypes.Array(SqlTypes.Bool()),
+            doubleParam: SqlTypes.Float64(),
+            floatParam: SqlTypes.Float32(),
+            dateParam: SqlTypes.Date(),
+            floatArrayParam: SqlTypes.Array(SqlTypes.Float32()),
+            tsArrayParam: SqlTypes.Array(SqlTypes.Timestamp()),
+            int64Param: SqlTypes.Int64(),
+            boolParam: SqlTypes.Bool(),
+            tsParam: SqlTypes.Timestamp(),
+            stringArrayParam: SqlTypes.Array(SqlTypes.String()),
+          },
+        });
+        const params = {
+          bytesParam: Buffer.from('test'),
+          intArrayParam: [BigInt(1), BigInt(2), BigInt(3)],
+          dateArrayParam: [
+            new BigtableDate(2025, 5, 14),
+            new BigtableDate(2025, 5, 13),
+          ],
+          stringParam: 'test',
+          byteArrayParam: [Buffer.from('test')],
+          doubleArrayParam: [1.0, 2.0, 3.0],
+          boolArrayParam: [true, false],
+          doubleParam: 1.0,
+          floatParam: 1.0,
+          dateParam: new BigtableDate(2025, 5, 14),
+          floatArrayParam: [1.0, 2.0, 3.0],
+          tsArrayParam: [
+            new PreciseDate(Date.now()),
+            new PreciseDate(Date.now()),
+          ],
+          int64Param: BigInt(123),
+          boolParam: true,
+          tsParam: new PreciseDate(Date.now()),
+          stringArrayParam: ['test', 'test'],
+        };
+        const [rows] = (await INSTANCE.executeQuery({
+          preparedStatement,
+          parameters: params,
+        })) as any as [Row[]];
+        assert(rows[0] instanceof QueryResultRow);
+        assert.deepStrictEqual(rows[0].get('strCol'), params.stringParam);
+        assert.deepStrictEqual(rows[0].get('bytesCol'), params.bytesParam);
+        assert.deepStrictEqual(rows[0].get('intCol'), params.int64Param);
+        assert.deepStrictEqual(rows[0].get('doubleCol'), params.doubleParam);
+        assert.deepStrictEqual(rows[0].get('floatCol'), params.floatParam);
+        assert.deepStrictEqual(rows[0].get('boolCol'), params.boolParam);
+        assert.deepStrictEqual(rows[0].get('tsCol'), params.tsParam);
+        assert.deepStrictEqual(rows[0].get('dateCol'), params.dateParam);
+        assert.deepStrictEqual(
+          rows[0].get('byteArrayCol'),
+          params.byteArrayParam,
+        );
+        assert.deepStrictEqual(
+          rows[0].get('stringArrayCol'),
+          params.stringArrayParam,
+        );
+        assert.deepStrictEqual(
+          rows[0].get('intArrayCol'),
+          params.intArrayParam,
+        );
+        assert.deepStrictEqual(
+          rows[0].get('floatArrayCol'),
+          params.floatArrayParam,
+        );
+        assert.deepStrictEqual(
+          rows[0].get('doubleArrayCol'),
+          params.doubleArrayParam,
+        );
+        assert.deepStrictEqual(
+          rows[0].get('boolArrayCol'),
+          params.boolArrayParam,
+        );
+        assert.deepStrictEqual(rows[0].get('tsArrayCol'), params.tsArrayParam);
+        assert.deepStrictEqual(
+          rows[0].get('dateArrayCol'),
+          params.dateArrayParam,
+        );
+      });
       it('should get rows', async () => {
         const [rows] = await TABLE.getRows();
         assert.strictEqual(rows.length, 4);
@@ -1270,7 +1364,7 @@ describe('Bigtable', () => {
     // Struct, Date, or PreciseDate, to keep things easy this uses PreciseDate.
     const expireTime = new PreciseDate(PreciseDate.now() + 8 * 60 * 60 * 1000);
     const updateExpireTime = new PreciseDate(
-      expireTime.getTime() + 2 + 60 * 60 * 1000
+      expireTime.getTime() + 2 + 60 * 60 * 1000,
     );
 
     before(async () => {
@@ -1282,11 +1376,11 @@ describe('Bigtable', () => {
       await op.promise();
       backupNameFromCluster = replaceProjectIdToken(
         `${CLUSTER.name}/backups/${backupIdFromCluster}`,
-        bigtable.projectId
+        bigtable.projectId,
       );
       backupNameFromTable = replaceProjectIdToken(
         `${CLUSTER.name}/backups/${backupIdFromTable}`,
-        bigtable.projectId
+        bigtable.projectId,
       );
     });
 
@@ -1369,7 +1463,12 @@ describe('Bigtable', () => {
 
     it('should restore a backup to a different instance', async () => {
       const [, operation] = await DIFF_INSTANCE.create(
-        createInstanceConfig(generateId('d-clust'), 'us-east1-c', 3, Date.now())
+        createInstanceConfig(
+          generateId('d-clust'),
+          'us-east1-c',
+          3,
+          Date.now(),
+        ),
       );
       await operation.promise();
       const [iExists] = await DIFF_INSTANCE.exists();
@@ -1434,6 +1533,13 @@ describe('Bigtable', () => {
         PreciseDate.now() + (8 + 600) * 60 * 60 * 1000;
       const copyExpireTime = new PreciseDate(copyExpireTimeMilliseconds);
 
+      beforeEach(async () => {
+        // Sleep here for just over a minute so that the system tests don't
+        // experience quota issues due to too many requests per minute.
+        await new Promise(resolve => {
+          setTimeout(resolve, 60001);
+        });
+      });
       /*
         This function checks that when a backup is copied using the provided
         config that a new backup is created on the instance.
@@ -1441,7 +1547,7 @@ describe('Bigtable', () => {
       async function testCopyBackup(
         backup: Backup,
         config: CopyBackupConfig,
-        instance: Instance
+        instance: Instance,
       ) {
         // Get a list of backup ids before the copy
         const [backupsBeforeCopy] = await instance.getBackups();
@@ -1466,13 +1572,13 @@ describe('Bigtable', () => {
               backupPath
                 .split('/')
                 .map((item, index) => (index === 1 ? '{{projectId}}' : item))
-                .join('/')
+                .join('/'),
             );
           }
           // Check that there is now one more backup
           const [backupsAfterCopy] = await instance.getBackups();
           const newBackups = backupsAfterCopy.filter(
-            backup => !backupIdsBeforeCopy.includes(backup.id)
+            backup => !backupIdsBeforeCopy.includes(backup.id),
           );
           assert.strictEqual(newBackups.length, 1);
           const [fetchedNewBackup] = newBackups;
@@ -1488,7 +1594,7 @@ describe('Bigtable', () => {
       describe('should create backup of a table and copy it in the same cluster', async () => {
         async function testWithExpiryTimes(
           sourceTestExpireTime: BackupTimestamp,
-          copyTestExpireTime: BackupTimestamp
+          copyTestExpireTime: BackupTimestamp,
         ) {
           const [backup, op] = await TABLE.createBackup(generateId('backup'), {
             expireTime: sourceTestExpireTime,
@@ -1507,7 +1613,7 @@ describe('Bigtable', () => {
                 id: generateId('backup'),
                 expireTime: copyTestExpireTime,
               },
-              INSTANCE
+              INSTANCE,
             );
           } finally {
             await backup.delete();
@@ -1521,13 +1627,13 @@ describe('Bigtable', () => {
           // For example: sourceExpireTime.toStruct() = {seconds: 1706659851, nanos: 981000000}
           await testWithExpiryTimes(
             sourceExpireTime.toStruct(),
-            copyExpireTime.toStruct()
+            copyExpireTime.toStruct(),
           );
         });
         it('should copy to the same cluster with date expiry times', async () => {
           await testWithExpiryTimes(
             new Date(sourceExpireTimeMilliseconds),
-            new Date(copyExpireTimeMilliseconds)
+            new Date(copyExpireTimeMilliseconds),
           );
         });
       });
@@ -1570,7 +1676,7 @@ describe('Bigtable', () => {
               id: generateId('backup'),
               expireTime: copyExpireTime,
             },
-            instance
+            instance,
           );
           await instance.delete();
         } finally {
@@ -1592,7 +1698,7 @@ describe('Bigtable', () => {
           {
             // Create destination cluster with given options
             const [, operation] = await INSTANCE.cluster(
-              destinationClusterId
+              destinationClusterId,
             ).create({
               location: 'us-central1-b',
               nodes: 3,
@@ -1607,7 +1713,7 @@ describe('Bigtable', () => {
               id: generateId('backup'),
               expireTime: copyExpireTime,
             },
-            INSTANCE
+            INSTANCE,
           );
         } finally {
           await backup.delete();
@@ -1628,10 +1734,10 @@ describe('Bigtable', () => {
           const bigtableSecondaryProject = new Bigtable(
             process.env.GCLOUD_PROJECT2
               ? {projectId: process.env.GCLOUD_PROJECT2}
-              : {}
+              : {},
           );
           const secondInstance = bigtableSecondaryProject.instance(
-            generateId('instance')
+            generateId('instance'),
           );
           const destinationClusterId = generateId('cluster');
           {
@@ -1659,7 +1765,7 @@ describe('Bigtable', () => {
               id: generateId('backup'),
               expireTime: copyExpireTime,
             },
-            secondInstance
+            secondInstance,
           );
           await secondInstance.delete();
         } finally {
@@ -1689,7 +1795,7 @@ describe('Bigtable', () => {
           backupId,
           {
             expireTime: sourceExpireTime,
-          }
+          },
         );
         try {
           await createBackupOperation.promise();
@@ -1710,6 +1816,565 @@ describe('Bigtable', () => {
         } finally {
           await backup.delete();
         }
+      });
+    });
+  });
+  describe('AuthorizedViews', () => {
+    const tableId = generateId('table');
+    const familyName = generateId('column-family-name');
+    const rowId = generateId('row-id');
+    const otherRowId = generateId('row-id');
+    const authorizedViewId = generateId('authorized-view-id');
+    const columnIdInView = generateId('column-id');
+    const columnIdNotInView = generateId('column-id');
+    const cellValueInView = generateId('cell-value');
+    const cellValueInView2 = generateId('cell-value');
+    const cellValueNotInView = generateId('cell-value');
+    const newCellValue = generateId('cell-value');
+    const authorizedViewTable = INSTANCE.table(tableId);
+    const authorizedView = INSTANCE.view(tableId, authorizedViewId);
+    const columnIdInViewData = {
+      value: cellValueInView,
+      labels: [],
+      timestamp: '77000',
+    };
+    const columnIdInViewData2 = {
+      value: cellValueInView2,
+      labels: [],
+      timestamp: '77000',
+    };
+    const columnIdNotInViewData = {
+      value: cellValueNotInView,
+      labels: [],
+      timestamp: '77000',
+    };
+    const newCellValueData = {
+      value: newCellValue,
+      labels: [],
+      timestamp: '77000',
+    };
+    let authorizedViewTableFullName: string;
+    let authorizedViewFullName: string;
+
+    /**
+     * getErrorMessage gets the error message that the test would expect
+     * for a particular authorizedViewFullName.
+     *
+     * @param authorizedViewFullName The full name of the authorized view.
+     * This method should only be called after authorizedViewFullName has
+     * been initialized.
+     */
+    function getErrorMessage(authorizedViewFullName: string) {
+      return `Cannot mutate from ${authorizedViewFullName} because the mutation contains cells outside the Authorized View.`;
+    }
+
+    /**
+     * Resets the table to a stable state after running a test.
+     *
+     */
+    async function resetTable() {
+      // Change the cell value back to what it was:
+      await authorizedViewTable.deleteRows(rowId);
+      const firstMutation = {
+        key: rowId,
+        data: {
+          [familyName]: {
+            [columnIdInView]: columnIdInViewData,
+            [columnIdNotInView]: columnIdNotInViewData,
+          },
+        },
+      } as {} as Entry;
+      await authorizedViewTable.insert(firstMutation, {});
+    }
+
+    /**
+     * Creates the table used for the tests.
+     */
+    async function createTable() {
+      {
+        // Create a table with just one row.
+        await authorizedViewTable.create({});
+        await authorizedViewTable.createFamily(familyName);
+        await authorizedViewTable.insert([
+          {
+            key: rowId,
+            data: {
+              [familyName]: {
+                [columnIdInView]: columnIdInViewData,
+                [columnIdNotInView]: columnIdNotInViewData,
+              },
+            },
+          },
+          {
+            key: otherRowId,
+            data: {
+              [familyName]: {
+                [columnIdInView]: columnIdInViewData,
+              },
+            },
+          },
+        ]);
+        // The following operations must be performed after table.insert because bigtable.projectId needs to be assigned.
+        authorizedViewTableFullName = authorizedViewTable.name.replace(
+          '{{projectId}}',
+          bigtable.projectId,
+        );
+        authorizedViewFullName = `${authorizedViewTableFullName}/authorizedViews/${authorizedViewId}`;
+      }
+      {
+        // Create an authorized view that the integration tests can use.
+        // The view should only see the columnIdInView column.
+        const bigtableClient = bigtable.api[
+          'BigtableTableAdminClient'
+        ] as BigtableTableAdminClient;
+        await bigtableClient.createAuthorizedView({
+          parent: authorizedViewTableFullName,
+          authorizedViewId,
+          authorizedView: {
+            etag: `${authorizedViewId}-etag`,
+            deletionProtection: false,
+            subsetView: {
+              rowPrefixes: [Buffer.from(rowId)],
+              familySubsets: {
+                [familyName]: {
+                  qualifiers: [Buffer.from(columnIdInView)],
+                },
+              },
+            },
+          },
+        });
+      }
+    }
+
+    before(async () => {
+      await createTable();
+    });
+
+    afterEach(async () => {
+      // Add an after hook to ensure that none of the tests change the table.
+      const rows = (await authorizedViewTable.getRows())[0];
+      assert.strictEqual(rows.length, 2);
+      assert.strictEqual(rows[0].id, rowId);
+      assert.deepStrictEqual(rows[0].data, {
+        [familyName]: {
+          [columnIdInView]: [columnIdInViewData],
+          [columnIdNotInView]: [columnIdNotInViewData],
+        },
+      });
+      assert.strictEqual(rows[1].id, otherRowId);
+      assert.deepStrictEqual(rows[1].data, {
+        [familyName]: {
+          [columnIdInView]: [columnIdInViewData],
+        },
+      });
+    });
+
+    describe('ReadRows grpc calls', () => {
+      it('should call getRows for the authorized view', async () => {
+        const rows = (await authorizedView.getRows())[0];
+        // The getRows call will only get one of the rows and only display
+        // one of the columns visible in the view.
+        assert.strictEqual(rows[0].id, rowId);
+        assert.deepStrictEqual(rows[0].data, {
+          [familyName]: {
+            [columnIdInView]: [columnIdInViewData],
+          },
+        });
+      });
+      it('should call createReadStream for the authorized view', done => {
+        (async () => {
+          try {
+            const stream = await authorizedView.createReadStream();
+            let receivedDataCount = 0;
+            stream.on('data', row => {
+              assert.strictEqual(row.id, rowId);
+              assert.deepStrictEqual(row.data, {
+                [familyName]: {
+                  [columnIdInView]: [columnIdInViewData],
+                },
+              });
+              receivedDataCount = receivedDataCount + 1;
+            });
+            stream.on('error', () => {
+              done('An error should not have occurred');
+            });
+            stream.on('end', () => {
+              assert.strictEqual(receivedDataCount, 1);
+              done();
+            });
+          } catch (e: unknown) {
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
+    describe('MutateRows grpc calls', () => {
+      describe('For erroneous calls', () => {
+        it('should fail when writing to a row not in the authorized view', async () => {
+          const mutation = {
+            key: otherRowId,
+            data: {
+              [familyName]: {
+                [columnIdInView]: newCellValue,
+              },
+            },
+            method: Mutation.methods.INSERT,
+          } as {} as Entry;
+          try {
+            await authorizedView.mutate(mutation, {} as MutateOptions);
+            assert.fail('The mutate call should have failed');
+          } catch (e: unknown) {
+            assert.strictEqual(
+              (e as ServiceError).message,
+              getErrorMessage(authorizedViewFullName),
+            );
+          }
+        });
+        it('should fail when writing to a column not in the authorized view', async () => {
+          const mutation = {
+            key: rowId,
+            data: {
+              [familyName]: {
+                [columnIdNotInView]: newCellValue,
+              },
+            },
+            method: Mutation.methods.INSERT,
+          } as {} as Entry;
+          try {
+            await authorizedView.mutate(mutation, {} as MutateOptions);
+            assert.fail('The mutate call should have failed');
+          } catch (e: unknown) {
+            assert.strictEqual(
+              (e as ServiceError).message,
+              getErrorMessage(authorizedViewFullName),
+            );
+          }
+        });
+      });
+      it('should mutate a row for a row/column in view', async () => {
+        // Change the cell in view to a new value.
+        const firstMutation = {
+          key: rowId,
+          data: {
+            [familyName]: {
+              [columnIdInView]: newCellValueData,
+            },
+          },
+          method: Mutation.methods.INSERT,
+        } as {} as Entry;
+        await authorizedView.mutate(firstMutation, {} as MutateOptions);
+        // Ensure the new cell value change took place
+        const rows = (await authorizedView.getRows())[0];
+        assert.strictEqual(rows[0].id, rowId);
+        assert.deepStrictEqual(rows[0].data, {
+          [familyName]: {
+            [columnIdInView]: [newCellValueData],
+          },
+        });
+        // Change the cell value back to what it was before
+        const secondMutation = {
+          key: rowId,
+          data: {
+            [familyName]: {
+              [columnIdInView]: columnIdInViewData,
+            },
+          },
+          method: Mutation.methods.INSERT,
+        } as {} as Entry;
+        await authorizedView.mutate(secondMutation, {} as MutateOptions);
+      });
+      it('should insert a row for a row/column in view', async () => {
+        // Change the cell in view to a new value.
+        const firstMutation = {
+          key: rowId,
+          data: {
+            [familyName]: {
+              [columnIdInView]: newCellValueData,
+            },
+          },
+        } as {} as Entry;
+        await authorizedView.insert(firstMutation, {});
+        // Ensure the new cell value change took place
+        const rows = (await authorizedView.getRows())[0];
+        assert.strictEqual(rows[0].id, rowId);
+        assert.deepStrictEqual(rows[0].data, {
+          [familyName]: {
+            [columnIdInView]: [newCellValueData],
+          },
+        });
+        // Change the cell value back to what it was before
+        const secondMutation = {
+          key: rowId,
+          data: {
+            [familyName]: {
+              [columnIdInView]: columnIdInViewData,
+            },
+          },
+          method: Mutation.methods.INSERT,
+        } as {} as Entry;
+        await authorizedView.insert(secondMutation, {});
+      });
+    });
+    describe('SampleRowKeys grpc calls', () => {
+      /**
+       * This function is for converting a buffer to an integer equal to the
+       * total value of the buffer. It is useful for comparing the sampleRowKeys
+       * return value to the row identifier since the difference between the
+       * total value of these buffers is expected to be exactly 1.
+       *
+       * @param buffer The buffer being mapped to be used for comparisons.
+       */
+      function convertBufferToInt(buffer: Uint8Array) {
+        return buffer
+          .reverse()
+          .reduce(
+            (accumulator, currentValue, index) =>
+              accumulator + Math.pow(currentValue, index),
+            0,
+          );
+      }
+
+      it('should get a sample of row keys', async () => {
+        const rowKeys = await authorizedView.sampleRowKeys();
+        assert.strictEqual(rowKeys.length, 1);
+        assert.strictEqual(rowKeys[0].length, 1);
+        assert.deepStrictEqual(
+          convertBufferToInt(rowKeys[0][0].key),
+          convertBufferToInt(Buffer.from(rowId)) + 1,
+        );
+      });
+      it('should call sampleRowKeysStream for the authorized view', done => {
+        (async () => {
+          try {
+            const stream = await authorizedView.sampleRowKeysStream();
+            let receivedDataCount = 0;
+            stream.on('data', (row: {key: Uint8Array; offset: string}) => {
+              assert.deepStrictEqual(
+                convertBufferToInt(row.key),
+                convertBufferToInt(Buffer.from(rowId)) + 1,
+              );
+              receivedDataCount = receivedDataCount + 1;
+            });
+            stream.on('error', () => {
+              done('An error should not have occurred');
+            });
+            stream.on('end', () => {
+              assert.strictEqual(receivedDataCount, 1);
+              done();
+            });
+          } catch (e: unknown) {
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
+    describe('CheckAndMutate grpc calls', () => {
+      it('should error when the request is made for the row key not in a view', done => {
+        (async () => {
+          try {
+            try {
+              await authorizedView.filter(
+                {
+                  rowId: 'some-row-key',
+                  filter: {
+                    column: columnIdInView,
+                  },
+                },
+                {
+                  onMatch: [
+                    {
+                      key: rowId,
+                      method: 'delete',
+                    },
+                  ],
+                },
+              );
+              done('The call to filter should have failed.');
+            } catch (e: unknown) {
+              assert.strictEqual(
+                (e as ServiceError).details,
+                getErrorMessage(authorizedViewFullName),
+              );
+              done();
+            }
+          } catch (e: unknown) {
+            // Will reach this point if there is an assertion error.
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+      it('should call filter for the authorized view', done => {
+        (async () => {
+          try {
+            // Add the row so that the cell offset filter takes effect:
+            await authorizedViewTable.insert([
+              {
+                key: rowId,
+                data: {
+                  [familyName]: {
+                    [columnIdInView]: [columnIdInViewData, columnIdInViewData2],
+                  },
+                },
+              },
+            ]);
+            const rowsAfterAddition = (await authorizedViewTable.getRows())[0];
+            assert.strictEqual(rowsAfterAddition.length, 2);
+            assert.strictEqual(rowsAfterAddition[0].id, rowId);
+            assert.deepStrictEqual(
+              rowsAfterAddition[0].data[familyName][columnIdNotInView].length,
+              1,
+            );
+            assert.deepStrictEqual(
+              rowsAfterAddition[0].data[familyName][columnIdInView].length,
+              2,
+            );
+            assert.strictEqual(rowsAfterAddition[1].id, otherRowId);
+            assert.deepStrictEqual(rowsAfterAddition[1].data, {
+              [familyName]: {
+                [columnIdInView]: [columnIdInViewData],
+              },
+            });
+            // Call filter to conduct a checkAndMutate operation.
+            const mutations = [
+              {
+                method: 'delete',
+                data: [`${familyName}:${columnIdInView}`],
+              },
+            ];
+            await authorizedView.filter(
+              {
+                rowId: rowId,
+                filter: {
+                  row: {
+                    cellOffset: 1,
+                  },
+                },
+              },
+              {
+                onMatch: mutations,
+              },
+            );
+            // Check the rows to ensure the row was deleted by calling `filter`.
+            const rows = (await authorizedViewTable.getRows())[0];
+            assert.strictEqual(rows.length, 2);
+            assert.strictEqual(rows[0].id, rowId);
+            assert.deepStrictEqual(rows[0].data, {
+              [familyName]: {
+                [columnIdNotInView]: [columnIdNotInViewData],
+                // [columnIdInView] is deleted by checkAndMutate
+              },
+            });
+            assert.strictEqual(rows[1].id, otherRowId);
+            assert.deepStrictEqual(rows[1].data, {
+              [familyName]: {
+                [columnIdInView]: [columnIdInViewData],
+              },
+            });
+            // Add the row that was deleted back:
+            await authorizedViewTable.insert([
+              {
+                key: rowId,
+                data: {
+                  [familyName]: {
+                    [columnIdInView]: {
+                      value: cellValueInView,
+                      labels: [],
+                      timestamp: 77000,
+                    },
+                  },
+                },
+              },
+            ]);
+            done();
+          } catch (e: unknown) {
+            done(e);
+          }
+        })().catch(err => {
+          throw err;
+        });
+      });
+    });
+    describe('ReadModifyWriteRow grpc calls', () => {
+      it('should apply read/modify/write rules to a row', async () => {
+        // Append a value to the table:
+        const rule = {
+          column: `${familyName}:${columnIdInView}`,
+          append: '-appended-value',
+        };
+        await authorizedView.createRules({
+          rowId,
+          rules: rule,
+        });
+        // Check that the operation was performed correctly:
+        const rows = (await authorizedView.getRows())[0];
+        rows[0].data[familyName][columnIdInView][0].timestamp = '77000';
+        assert.strictEqual(rows.length, 1);
+        assert.strictEqual(rows[0].id, rowId);
+        assert.deepStrictEqual(rows[0].data, {
+          [familyName]: {
+            [columnIdInView]: [
+              {
+                value: `${cellValueInView}-appended-value`,
+                labels: [],
+                timestamp: '77000',
+              },
+              columnIdInViewData,
+            ],
+          },
+        });
+        await resetTable();
+      });
+      it('should apply increment to a row', async () => {
+        // First set the row in view cell value to a numeric value:
+        const originalValue = Math.floor(Math.random() * 1000000000);
+        await authorizedViewTable.deleteRows(rowId);
+        const firstMutation = {
+          key: rowId,
+          data: {
+            [familyName]: {
+              [columnIdInView]: {
+                value: originalValue,
+                labels: [],
+                timestamp: '77000',
+              },
+              [columnIdNotInView]: columnIdNotInViewData,
+            },
+          },
+        } as {} as Entry;
+        await authorizedViewTable.insert(firstMutation, {});
+        // Next, increment the value:
+        await authorizedView.increment(
+          {
+            rowId,
+            column: `${familyName}:${columnIdInView}`,
+          },
+          1,
+        );
+        const rows = (await authorizedView.getRows())[0];
+        rows[0].data[familyName][columnIdInView][0].timestamp = '77000';
+        assert.deepStrictEqual(rows[0].data, {
+          [familyName]: {
+            [columnIdInView]: [
+              {
+                value: originalValue + 1,
+                labels: [],
+                timestamp: '77000',
+              },
+              {
+                value: originalValue,
+                labels: [],
+                timestamp: '77000',
+              },
+            ],
+          },
+        });
+        await resetTable();
       });
     });
   });
@@ -1803,7 +2468,7 @@ function createInstanceConfig(
   clusterId: string,
   location: string,
   nodes: number,
-  time_created: number
+  time_created: number,
 ) {
   return {
     clusters: [

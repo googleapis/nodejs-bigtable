@@ -34,7 +34,7 @@ describe('Cluster', () => {
   async function checkMetadata(
     cluster: Cluster,
     compareValues: SetClusterMetadataOptions,
-    isConfigDefined: boolean
+    isConfigDefined: boolean,
   ): Promise<void> {
     const metadata = await cluster.getMetadata({});
     const {clusterConfig, serveNodes} = metadata[0];
@@ -44,17 +44,17 @@ describe('Cluster', () => {
       assert.equal(
         clusterConfig.clusterAutoscalingConfig?.autoscalingLimits
           ?.minServeNodes,
-        compareValues.minServeNodes
+        compareValues.minServeNodes,
       );
       assert.equal(
         clusterConfig.clusterAutoscalingConfig?.autoscalingLimits
           ?.maxServeNodes,
-        compareValues.maxServeNodes
+        compareValues.maxServeNodes,
       );
       assert.equal(
         clusterConfig.clusterAutoscalingConfig?.autoscalingTargets
           ?.cpuUtilizationPercent,
-        compareValues.cpuUtilizationPercent
+        compareValues.cpuUtilizationPercent,
       );
     } else {
       assert.equal(isConfigDefined, false);
@@ -74,13 +74,13 @@ describe('Cluster', () => {
   }
   async function createStandardNewInstance(
     clusterId: string,
-    nodes: number
+    nodes: number,
   ): Promise<void> {
     return await createNewInstance(standardCreationClusters(clusterId, nodes));
   }
   function standardCreationClusters(
     clusterId: string,
-    nodes: number
+    nodes: number,
   ): ClusterInfo[] {
     return [
       {
@@ -186,7 +186,7 @@ describe('Cluster', () => {
             ...createClusterOptions,
             nodes: minServeNodes,
           },
-          true
+          true,
         );
       });
       it('should create an instance and then create clusters for automatic scaling', async () => {
@@ -202,7 +202,7 @@ describe('Cluster', () => {
             ...createClusterOptions,
             nodes: minServeNodes,
           },
-          true
+          true,
         );
       });
     });
@@ -227,7 +227,7 @@ describe('Cluster', () => {
           {
             nodes: updateNodes,
           },
-          false
+          false,
         );
       });
       it('should change cluster to autoscaling', async () => {
@@ -248,7 +248,7 @@ describe('Cluster', () => {
             maxServeNodes,
             cpuUtilizationPercent,
           },
-          true
+          true,
         );
       });
       describe('Using an incorrect configuration', () => {
@@ -322,7 +322,7 @@ describe('Cluster', () => {
           {
             nodes: updateNodes,
           },
-          false
+          false,
         );
       });
       it('should change autoscaling properties', async () => {
@@ -346,7 +346,7 @@ describe('Cluster', () => {
             maxServeNodes: newMaxServeNodes,
             cpuUtilizationPercent: newCpuUtilizationPercent,
           },
-          true
+          true,
         );
       });
     });

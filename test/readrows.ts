@@ -21,7 +21,7 @@ import {GoogleError} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
-import {ReadRowsImpl} from './utils/readRowsImpl';
+import {ReadRowsImpl} from '../test-common/utils/readRowsImpl';
 
 import {
   ReadRowsServiceParameters,
@@ -90,7 +90,7 @@ describe('Bigtable/ReadRows', () => {
 
     service.setService({
       ReadRows: ReadRowsImpl.createService(
-        STANDARD_SERVICE_WITHOUT_ERRORS
+        STANDARD_SERVICE_WITHOUT_ERRORS,
       ) as ServerImplementationInterface,
     });
 
@@ -120,7 +120,7 @@ describe('Bigtable/ReadRows', () => {
   it('should create read stream and read synchronously using Transform stream', done => {
     service.setService({
       ReadRows: ReadRowsImpl.createService(
-        STANDARD_SERVICE_WITHOUT_ERRORS
+        STANDARD_SERVICE_WITHOUT_ERRORS,
       ) as ServerImplementationInterface,
     });
 
@@ -168,7 +168,7 @@ describe('Bigtable/ReadRows', () => {
     setWindowsTestTimeout(this);
     service.setService({
       ReadRows: ReadRowsImpl.createService(
-        STANDARD_SERVICE_WITHOUT_ERRORS
+        STANDARD_SERVICE_WITHOUT_ERRORS,
       ) as ServerImplementationInterface,
     });
 
@@ -220,7 +220,7 @@ describe('Bigtable/ReadRows', () => {
 
     service.setService({
       ReadRows: ReadRowsImpl.createService(
-        STANDARD_SERVICE_WITHOUT_ERRORS
+        STANDARD_SERVICE_WITHOUT_ERRORS,
       ) as ServerImplementationInterface,
     });
 
@@ -260,7 +260,7 @@ describe('Bigtable/ReadRows', () => {
 
     service.setService({
       ReadRows: ReadRowsImpl.createService(
-        STANDARD_SERVICE_WITHOUT_ERRORS
+        STANDARD_SERVICE_WITHOUT_ERRORS,
       ) as ServerImplementationInterface,
     });
 
@@ -344,7 +344,7 @@ describe('Bigtable/ReadRows', () => {
       readStream.on('end', () => {
         assert.strictEqual(
           receivedRowCount,
-          STANDARD_KEY_TO - STANDARD_KEY_FROM
+          STANDARD_KEY_TO - STANDARD_KEY_FROM,
         );
         assert.strictEqual(lastKeyReceived, STANDARD_KEY_TO - 1);
         done();
@@ -400,7 +400,109 @@ describe('Bigtable/ReadRows', () => {
       } catch (error) {
         done(error);
       }
-    })();
+    })().catch(err => {
+      throw err;
+    });
+  });
+  it('should return row data in the right order with a predictable sleep function', function (done) {
+    this.timeout(600000);
+    const keyFrom = undefined;
+    const keyTo = undefined;
+    // the server will error after sending this chunk (not row)
+    const errorAfterChunkNo = 100;
+    const dataResults = [];
+
+    // keyTo and keyFrom are not provided so they will be determined from
+    // the request that is passed in.
+    service.setService({
+      ReadRows: ReadRowsImpl.createService({
+        errorAfterChunkNo: 100, // the server will error after sending this chunk (not row)
+        valueSize: 1,
+        chunkSize: 1,
+        chunksPerResponse: 1,
+        debugLog,
+      }) as ServerImplementationInterface,
+    });
+    const sleep = (ticks: number) => {
+      // Adds an event to the end of the event loop `ticks` times
+      // This creates a predictable delay using the event loop and
+      // allows the streams to create a predictable amount of back pressure.
+      return new Promise(resolve => {
+        const nextEventLoop = () => {
+          if (ticks > 0) {
+            ticks = ticks - 1;
+            setImmediate(nextEventLoop);
+          } else {
+            resolve(ticks);
+          }
+        };
+        nextEventLoop();
+      });
+    };
+    (async () => {
+      try {
+        // 150 rows must be enough to reproduce issues with losing the data and to create backpressure
+        const stream = table.createReadStream({
+          start: '00000000',
+          end: '00000150',
+        });
+
+        for await (const row of stream) {
+          dataResults.push(row.id);
+          // sleep parameter needs to be high enough to produce backpressure.
+          await sleep(4000);
+        }
+        const expectedResults = Array.from(Array(150).keys())
+          .map(i => '00000000' + i.toString())
+          .map(i => i.slice(-8));
+        assert.deepStrictEqual(dataResults, expectedResults);
+        done();
+      } catch (error) {
+        done(error);
+      }
+    })().catch(err => {
+      throw err;
+    });
+  });
+
+  it.skip('pitfall: should not request full table scan during a retry on a transient error', async () => {
+    const requests = [];
+
+    const TRANSIENT_ERROR_SERVICE: ReadRowsServiceParameters = {
+      chunkSize: CHUNK_SIZE,
+      valueSize: VALUE_SIZE,
+      chunksPerResponse: CHUNKS_PER_RESPONSE,
+      keyFrom: STANDARD_KEY_FROM,
+      keyTo: STANDARD_KEY_TO,
+      deadlineExceededError: true,
+      hook: request => {
+        requests.push(request);
+      },
+      debugLog,
+    };
+
+    async function readRowsWithDeadline() {
+      service.setService({
+        ReadRows: ReadRowsImpl.createService(
+          TRANSIENT_ERROR_SERVICE,
+        ) as ServerImplementationInterface,
+      });
+
+      const rows = await table.getRows();
+      return rows;
+    }
+
+    try {
+      await readRowsWithDeadline();
+      assert.fail('Should have thrown error');
+    } catch (err) {
+      if (err instanceof GoogleError) {
+        assert.equal(err.code, 'DEADLINE_EXCEEDED');
+      }
+
+      // Assert that no retry attempted.
+      assert.strictEqual(requests.length, 1);
+    }
   });
 
   after(async () => {

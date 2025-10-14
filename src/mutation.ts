@@ -127,9 +127,10 @@ export class Mutation {
    */
   static convertFromBytes(
     bytes: Buffer | string,
-    options?: ConvertFromBytesOptions
+    options?: ConvertFromBytesOptions,
   ): Buffer | Value | string {
-    const buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
+    const buf =
+      bytes instanceof Buffer ? bytes : Buffer.from(bytes as string, 'base64');
     if (options && options.isPossibleNumber && buf.length === 8) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const num = Long.fromBytes(buf as any).toNumber();
@@ -334,7 +335,7 @@ export class Mutation {
       }
 
       const column = Mutation.parseColumnName(
-        (mutation as MutationSettingsObj).column!
+        (mutation as MutationSettingsObj).column!,
       );
 
       if (!column.qualifier) {
@@ -350,7 +351,7 @@ export class Mutation {
       if ((mutation as MutationSettingsObj).time) {
         timeRange = Mutation.createTimeRange(
           (mutation as MutationSettingsObj).time!.start as Date,
-          (mutation as MutationSettingsObj).time!.end as Date
+          (mutation as MutationSettingsObj).time!.end as Date,
         );
       }
 
@@ -358,7 +359,7 @@ export class Mutation {
         deleteFromColumn: {
           familyName: column.family!,
           columnQualifier: Mutation.convertToBytes(
-            column.qualifier
+            column.qualifier,
           ) as Uint8Array,
           timeRange,
         },
