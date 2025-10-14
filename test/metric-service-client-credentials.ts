@@ -27,7 +27,7 @@ describe('Bigtable/MetricServiceClientCredentials', () => {
     class FakeExporter {
       constructor(options: ClientOptions) {
         try {
-          assert.strictEqual(options, clientOptions);
+          assert.deepStrictEqual(options, clientOptions);
           done();
         } catch (e) {
           done(e);
@@ -91,7 +91,7 @@ describe('Bigtable/MetricServiceClientCredentials', () => {
     class FakeMetricServiceClient {
       constructor(options: ClientOptions) {
         try {
-          assert.strictEqual(options, clientOptions);
+          assert.deepStrictEqual(options, clientOptions);
           done();
         } catch (e) {
           done(e);
