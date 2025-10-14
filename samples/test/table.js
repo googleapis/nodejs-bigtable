@@ -16,8 +16,6 @@
 
 const uuid = require('uuid');
 const {describe, it, before, after} = require('mocha');
-const {Bigtable} = require('@google-cloud/bigtable');
-const bigtable = new Bigtable();
 
 const INSTANCE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
@@ -25,21 +23,30 @@ const TABLE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming r
 
 const tableSnippets = require('./table.js');
 
-const instance = bigtable.instance(INSTANCE_ID);
-
 describe.skip('Table Snippets', () => {
   before(async () => {
     try {
-      const [, operation] = await instance.create({
-        clusters: [
-          {
-            name: CLUSTER_ID,
-            location: 'us-central1-f',
-            storage: 'hdd',
+      const {BigtableInstanceAdminClient} =
+        require('@google-cloud/bigtable').v2;
+      const instanceAdminClient = new BigtableInstanceAdminClient();
+      const projectId = await instanceAdminClient.getProjectId();
+      const request = {
+        parent: `projects/${projectId}`,
+        instanceId: INSTANCE_ID,
+        instance: {
+          displayName: INSTANCE_ID,
+          labels: {},
+          type: 'DEVELOPMENT',
+        },
+        clusters: {
+          [CLUSTER_ID]: {
+            location: `projects/${projectId}/locations/us-central1-f`,
+            serveNodes: 1,
+            defaultStorageType: 'HDD',
           },
-        ],
-        type: 'DEVELOPMENT',
-      });
+        },
+      };
+      const [, operation] = await instanceAdminClient.createInstance(request);
       await operation.promise();
     } catch (err) {
       // Handle the error.
@@ -47,7 +54,19 @@ describe.skip('Table Snippets', () => {
   });
 
   after(async () => {
-    await instance.delete().catch(console.error);
+    try {
+      const {BigtableInstanceAdminClient} =
+        require('@google-cloud/bigtable').v2;
+      const instanceAdminClient = new BigtableInstanceAdminClient();
+      const projectId = await instanceAdminClient.getProjectId();
+      const instancePath = instanceAdminClient.instancePath(
+        projectId,
+        INSTANCE_ID,
+      );
+      await instanceAdminClient.deleteInstance({name: instancePath});
+    } catch (err) {
+      // Handle the error.
+    }
   });
 
   it('should create a table', () => {
@@ -100,5 +119,9 @@ describe.skip('Table Snippets', () => {
 
   it('should delete table', () => {
     tableSnippets.delTable(INSTANCE_ID, TABLE_ID);
+  });
+
+  it('should check consistency', () => {
+    tableSnippets.consistency(INSTANCE_ID, TABLE_ID);
   });
 });
