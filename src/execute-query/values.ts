@@ -16,7 +16,13 @@ import {Duplex, Readable} from 'stream';
 import * as SqlTypes from './types';
 import {PreciseDate} from '@google-cloud/precise-date';
 import {NamedList} from './namedlist';
-const CRC32C = require('fast-crc32c');
+
+// fast-crc32c will segfault on import on non-x64 architectures, due to a
+// lack of SSE instructions.
+const CRC32C =
+  process.arch === 'x64'
+    ? require('fast-crc32c')
+    : require('fast-crc32c/impls/js_crc32c');
 
 export type BigtableMap = EncodedKeyMap;
 
