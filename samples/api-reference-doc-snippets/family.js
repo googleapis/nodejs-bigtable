@@ -21,7 +21,7 @@ const snippets = {
     const projectId = await adminClient.getProjectId();
 
     const request = {
-      name: adminClient.tablePath(projectId, instanceId, tableId),
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
       modifications: [
         {
           id: familyId,
@@ -48,7 +48,7 @@ const snippets = {
     const projectId = await adminClient.getProjectId();
 
     const request = {
-      name: adminClient.tablePath(projectId, instanceId, tableId),
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
       view: 'FAMILY_VIEW_BASIC',
     };
 
@@ -72,7 +72,7 @@ const snippets = {
     const projectId = await adminClient.getProjectId();
 
     const request = {
-      name: adminClient.tablePath(projectId, instanceId, tableId),
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
       view: 'FULL',
     };
 
@@ -95,7 +95,7 @@ const snippets = {
     const projectId = await adminClient.getProjectId();
 
     const request = {
-      name: adminClient.tablePath(projectId, instanceId, tableId),
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
       view: 'FULL',
     };
 
@@ -124,7 +124,7 @@ const snippets = {
     };
 
     const request = {
-      name: adminClient.tablePath(projectId, instanceId, tableId),
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
       modifications: [
         {
           id: familyId,
@@ -152,7 +152,7 @@ const snippets = {
     const projectId = await adminClient.getProjectId();
 
     const request = {
-      name: adminClient.tablePath(projectId, instanceId, tableId),
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
       modifications: [
         {
           id: familyId,

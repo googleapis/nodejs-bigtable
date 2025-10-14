@@ -40,7 +40,7 @@ async function runTableOperations(instanceID, tableID) {
     // Create table if does not exist
     console.log(`Table does not exist. Creating table ${tableID}`);
     const request = {
-      parent: adminClient.instancePath(projectId, instanceID),
+      parent: `projects/${projectId}/instances/${instanceID}`,
       tableId: tableID,
       table: {
         columnFamilies: {
@@ -315,7 +315,7 @@ async function deleteTable(instanceID, tableID) {
   // Delete the entire table
   console.log('Delete the table.');
   await adminClient.deleteTable({
-    name: adminClient.tablePath(projectId, instanceID, tableID),
+    name: `projects/${projectId}/instances/${instanceID}/tables/${tableID}`,
   });
   console.log(`Table deleted: ${tableID}`);
   // [END bigtable_delete_table]

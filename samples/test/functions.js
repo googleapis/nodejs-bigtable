@@ -44,7 +44,7 @@ describe('functions', async () => {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const request = {
-      parent: adminClient.instancePath(projectId, INSTANCE_ID),
+      parent: `projects/${projectId}/instances/${INSTANCE_ID}`,
       tableId: TABLE_ID,
       table: {
         columnFamilies: {

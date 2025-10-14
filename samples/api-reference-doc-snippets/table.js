@@ -22,7 +22,7 @@ const snippets = {
     const adminClient = new BigtableTableAdminClient();
     const projectId = await adminClient.getProjectId();
     const request = {
-      parent: adminClient.instancePath(projectId, instanceId),
+      parent: `projects/${projectId}/instances/${instanceId}`,
       tableId: tableId,
       table: {
         columnFamilies: {
@@ -49,7 +49,7 @@ const snippets = {
     const projectId = await adminClient.getProjectId();
 
     const request = {
-      name: adminClient.tablePath(projectId, instanceId, tableId),
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
     };
 
     try {
@@ -73,7 +73,7 @@ const snippets = {
     const projectId = await adminClient.getProjectId();
 
     const request = {
-      name: adminClient.tablePath(projectId, instanceId, tableId),
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
     };
 
     adminClient
@@ -95,7 +95,7 @@ const snippets = {
     const projectId = await adminClient.getProjectId();
 
     const request = {
-      name: adminClient.tablePath(projectId, instanceId, tableId),
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
       view: 'FULL',
     };
 
@@ -129,7 +129,7 @@ const snippets = {
 
     adminClient
       .modifyColumnFamilies({
-        name: adminClient.tablePath(projectId, instanceId, tableId),
+        name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
         modifications: [
           {
             id: familyId,
@@ -156,7 +156,7 @@ const snippets = {
     const projectId = await adminClient.getProjectId();
 
     const request = {
-      name: adminClient.tablePath(projectId, instanceId, tableId),
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
       view: 'FULL',
     };
 
@@ -347,7 +347,7 @@ const snippets = {
     const projectId = await adminClient.getProjectId();
 
     const request = {
-      resource: adminClient.tablePath(projectId, instanceId, tableId),
+      resource: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
     };
 
     adminClient
@@ -377,7 +377,7 @@ const snippets = {
     };
 
     const request = {
-      resource: adminClient.tablePath(projectId, instanceId, tableId),
+      resource: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
       policy: policy,
     };
 
@@ -401,7 +401,7 @@ const snippets = {
     const permissions = ['bigtable.tables.get', 'bigtable.tables.readRows'];
 
     const request = {
-      resource: adminClient.tablePath(projectId, instanceId, tableId),
+      resource: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
       permissions: permissions,
     };
 
@@ -439,7 +439,7 @@ const snippets = {
     const projectId = await adminClient.getProjectId();
 
     const request = {
-      name: adminClient.tablePath(projectId, instanceId, tableId),
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
     };
 
     adminClient
@@ -461,7 +461,7 @@ const snippets = {
       // 1. Generate a consistency token.
       const token = (
         await adminClient.generateConsistencyToken({
-          name: adminClient.tablePath(projectId, instanceId, tableId),
+          name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
         })
       )[0].consistencyToken;
       console.log('Generated consistency token:', token);
@@ -469,7 +469,7 @@ const snippets = {
       while (!isConsistent) {
         // 2. Check for consistency
         const [consistent] = adminClient.checkConsistency({
-          name: adminClient.tablePath(projectId, instanceId, tableId),
+          name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
           consistencyToken: token,
         });
         isConsistent = consistent;
