@@ -24,6 +24,7 @@ import {
 } from 'google-gax';
 import * as gax from 'google-gax';
 import * as protos from '../protos/protos';
+import * as SqlTypes from './execute-query/types';
 
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
@@ -589,10 +590,9 @@ export class Bigtable {
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
 
-    const handlers =
-      options.metricsEnabled === true
-        ? [new GCPMetricsHandler(options as ClientOptions)]
-        : [];
+    const handlers = !(options.metricsEnabled === false)
+      ? [new GCPMetricsHandler(Object.assign({}, options) as ClientOptions)]
+      : [];
     this._metricsConfigManager = new ClientSideMetricsConfigManager(handlers);
   }
 
@@ -1137,6 +1137,7 @@ promisifyAll(Bigtable, {
 module.exports = Bigtable;
 module.exports.v2 = v2;
 module.exports.Bigtable = Bigtable;
+module.exports.SqlTypes = SqlTypes;
 
 export {v2};
 export {protos};
@@ -1362,3 +1363,5 @@ export {
   WaitForReplicationCallback,
   WaitForReplicationResponse,
 } from './table';
+export {GCRuleMaker} from './gc-rule-maker';
+export {SqlTypes};

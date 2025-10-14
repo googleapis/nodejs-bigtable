@@ -14,28 +14,25 @@
 
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
-  tableId = 'YOUR_TABLE_ID',
   clusterId = 'YOUR_CLUSTER_ID',
   backupId = 'YOUR_BACKUP_ID',
 ) {
   // [START bigtable_api_delete_backup]
-  const {Bigtable} = require('@google-cloud/bigtable');
-  const bigtable = new Bigtable();
+  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+  const tableAdminClient = new BigtableTableAdminClient();
 
   async function deleteBackup() {
     /**
      * TODO(developer): Uncomment these variables before running the sample.
      */
     // const instanceId = 'YOUR_INSTANCE_ID';
-    // const tableId = 'YOUR_TABLE_ID';
     // const clusterId = 'YOUR_CLUSTER_ID';
     // const backupId = 'YOUR_BACKUP_ID';
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-    const cluster = table.cluster(clusterId);
-    const backup = cluster.backup(backupId);
-
-    await backup.delete();
+    const projectId = await tableAdminClient.getProjectId();
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}/backups/${backupId}`,
+    };
+    await tableAdminClient.deleteBackup(request);
     console.log(`Backup ${backupId} was deleted successfully.`);
   }
 

@@ -26,7 +26,6 @@ import * as path from 'path'; // Import the 'path' module
 import * as gax from 'google-gax';
 import * as proxyquire from 'proxyquire';
 import {GCPMetricsHandler} from '../../src/client-side-metrics/gcp-metrics-handler';
-import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 const protoPath = path.join(
   __dirname,
   '../../protos/google/bigtable/v2/response_params.proto',
@@ -90,6 +89,12 @@ describe('Bigtable/MetricsCollector', () => {
       bigtable = new FakeBigtable();
 
       async fakeMethod(): Promise<void> {
+        class FakeUserStream {
+          getTotalDurationMs() {
+            return 1256;
+          }
+        }
+        const userStream = new FakeUserStream();
         function createMetadata(duration: string) {
           return {
             internalRepr: new Map([
@@ -135,13 +140,11 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '5. Client receives first row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '6. User receives first row.\n';
-          metricsCollector.onRowReachesUser();
           logger.value += '7. Client receives metadata.\n';
           metricsCollector.onMetadataReceived(createMetadata('102'));
           logger.value += '8. Client receives second row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '9. User receives second row.\n';
-          metricsCollector.onRowReachesUser();
           logger.value += '10. A transient error occurs.\n';
           metricsCollector.onAttemptComplete(grpc.status.DEADLINE_EXCEEDED);
           logger.value += '11. After a timeout, the second attempt is made.\n';
@@ -153,16 +156,17 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '14. Client receives third row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '15. User receives third row.\n';
-          metricsCollector.onRowReachesUser();
           logger.value += '16. Client receives metadata.\n';
           metricsCollector.onMetadataReceived(createMetadata('104'));
           logger.value += '17. Client receives fourth row.\n';
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '18. User receives fourth row.\n';
-          metricsCollector.onRowReachesUser();
           logger.value += '19. User reads row 1\n';
           logger.value += '20. Stream ends, operation completes\n';
-          metricsCollector.onOperationComplete(grpc.status.OK);
+          metricsCollector.onOperationComplete(
+            grpc.status.OK,
+            userStream.getTotalDurationMs(),
+          );
         }
       }
     }
