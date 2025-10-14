@@ -172,13 +172,13 @@ export interface CreateTableOptions {
 export type CreateTableCallback = (
   err: ServiceError | null,
   table?: Table,
-  apiResponse?: google.bigtable.admin.v2.Table
+  apiResponse?: google.bigtable.admin.v2.Table,
 ) => void;
 export type CreateTableResponse = [Table, google.bigtable.admin.v2.Table];
 
 export type TableExistsCallback = (
   err: ServiceError | null,
-  exists?: boolean
+  exists?: boolean,
 ) => void;
 export type TableExistsResponse = [boolean];
 
@@ -241,66 +241,66 @@ The Entry type is expected to be in the following format:
 
 export type DeleteTableCallback = (
   err: ServiceError | null,
-  apiResponse?: google.protobuf.Empty
+  apiResponse?: google.protobuf.Empty,
 ) => void;
 export type DeleteTableResponse = [google.protobuf.Empty];
 export type CheckConsistencyCallback = (
   err: ServiceError | null,
-  consistent?: boolean
+  consistent?: boolean,
 ) => void;
 export type CheckConsistencyResponse = [boolean];
 export type GenerateConsistencyTokenCallback = (
   err: ServiceError | null,
-  token?: string
+  token?: string,
 ) => void;
 export type GenerateConsistencyTokenResponse = [string];
 export type WaitForReplicationCallback = (
   err: ServiceError | null,
-  wait?: boolean
+  wait?: boolean,
 ) => void;
 export type WaitForReplicationResponse = [boolean];
 export type TruncateCallback = (
   err: ServiceError | null,
-  apiResponse?: google.protobuf.Empty
+  apiResponse?: google.protobuf.Empty,
 ) => void;
 export type TruncateResponse = [google.protobuf.Empty];
 export type SampleRowKeysCallback = (
   err: ServiceError | null,
-  keys?: string[]
+  keys?: string[],
 ) => void;
 export type SampleRowsKeysResponse = [{key: Uint8Array; offset: string}[]];
 export type DeleteRowsCallback = (
   err: ServiceError | null,
-  apiResponse?: google.protobuf.Empty
+  apiResponse?: google.protobuf.Empty,
 ) => void;
 export type DeleteRowsResponse = [google.protobuf.Empty];
 export type GetMetadataCallback = (
   err: ServiceError | null,
-  apiResponse: google.bigtable.admin.v2.ITable
+  apiResponse: google.bigtable.admin.v2.ITable,
 ) => void;
 export type GetMetadataResponse = [google.bigtable.admin.v2.Table];
 export type GetTableCallback = (
   err: ServiceError | null,
   table?: Table,
-  apiResponse?: google.bigtable.admin.v2.ITable
+  apiResponse?: google.bigtable.admin.v2.ITable,
 ) => void;
 export type GetTableResponse = [Table, google.bigtable.admin.v2.Table];
 export type GetTablesCallback = (
   err: ServiceError | null,
   tables?: Table[],
-  apiResponse?: google.bigtable.admin.v2.ITable[]
+  apiResponse?: google.bigtable.admin.v2.ITable[],
 ) => void;
 export type GetTablesResponse = [Table[], google.bigtable.admin.v2.Table[]];
 export type GetFamiliesCallback = (
   err: ServiceError | null,
   families?: Family[],
-  apiResponse?: IColumnFamily
+  apiResponse?: IColumnFamily,
 ) => void;
 export type GetFamiliesResponse = [Family[], IColumnFamily];
 export type GetReplicationStatesCallback = (
   err: ServiceError | null,
   clusterStates?: Map<string, google.bigtable.admin.v2.Table.IClusterState>,
-  apiResponse?: {}
+  apiResponse?: {},
 ) => void;
 export type GetReplicationStatesResponse = [
   Map<string, google.bigtable.admin.v2.Table.IClusterState>,
@@ -415,7 +415,7 @@ export class Table extends TabularApiSurface {
    */
   create(
     optionsOrCallback?: CreateTableOptions | CreateTableCallback,
-    cb?: CreateTableCallback
+    cb?: CreateTableCallback,
   ): void | Promise<CreateTableResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -426,17 +426,17 @@ export class Table extends TabularApiSurface {
 
   createBackup(
     id: string,
-    config: CreateBackupConfig
+    config: CreateBackupConfig,
   ): Promise<CreateBackupResponse>;
   createBackup(
     id: string,
     config: CreateBackupConfig,
-    callback: CreateBackupCallback
+    callback: CreateBackupCallback,
   ): void;
   createBackup(
     id: string,
     config: CreateBackupConfig,
-    callback: CreateBackupCallback
+    callback: CreateBackupCallback,
   ): void;
   /**
    * Backup a table with cluster auto selection.
@@ -468,7 +468,7 @@ export class Table extends TabularApiSurface {
   createBackup(
     id: string,
     config: CreateBackupConfig,
-    callback?: CreateBackupCallback
+    callback?: CreateBackupCallback,
   ): void | Promise<CreateBackupResponse> {
     if (!id) {
       throw new TypeError('An id is required to create a backup.');
@@ -503,19 +503,19 @@ export class Table extends TabularApiSurface {
           table: this.name,
           ...config,
         },
-        callback!
+        callback!,
       );
     });
   }
 
   createFamily(
     id: string,
-    options?: CreateFamilyOptions
+    options?: CreateFamilyOptions,
   ): Promise<CreateFamilyResponse>;
   createFamily(
     id: string,
     options: CreateFamilyOptions,
-    callback: CreateFamilyCallback
+    callback: CreateFamilyCallback,
   ): void;
   createFamily(id: string, callback: CreateFamilyCallback): void;
   /**
@@ -554,7 +554,7 @@ export class Table extends TabularApiSurface {
   createFamily(
     id: string,
     optionsOrCallback?: CreateFamilyOptions | CreateFamilyCallback,
-    cb?: CreateFamilyCallback
+    cb?: CreateFamilyCallback,
   ): void | Promise<CreateFamilyResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -595,7 +595,7 @@ export class Table extends TabularApiSurface {
         const family = this.family(id);
         family.metadata = resp;
         callback(null, family, resp);
-      }
+      },
     );
   }
 
@@ -617,7 +617,7 @@ export class Table extends TabularApiSurface {
    */
   delete(
     optionsOrCallback?: CallOptions | DeleteTableCallback,
-    cb?: DeleteTableCallback
+    cb?: DeleteTableCallback,
   ): void | Promise<DeleteTableResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -632,18 +632,18 @@ export class Table extends TabularApiSurface {
         },
         gaxOpts: gaxOptions,
       },
-      callback
+      callback,
     );
   }
 
   deleteRows(
     prefix: string,
-    gaxOptions?: CallOptions
+    gaxOptions?: CallOptions,
   ): Promise<DeleteRowsResponse>;
   deleteRows(
     prefix: string,
     gaxOptions: CallOptions,
-    callback: DeleteRowsCallback
+    callback: DeleteRowsCallback,
   ): void;
   deleteRows(prefix: string, callback: DeleteRowsCallback): void;
   /**
@@ -665,7 +665,7 @@ export class Table extends TabularApiSurface {
   deleteRows(
     prefix: string,
     optionsOrCallback?: CallOptions | DeleteRowsCallback,
-    cb?: DeleteRowsCallback
+    cb?: DeleteRowsCallback,
   ): void | Promise<DeleteRowsResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -685,7 +685,7 @@ export class Table extends TabularApiSurface {
         reqOpts,
         gaxOpts: gaxOptions,
       },
-      callback
+      callback,
     );
   }
 
@@ -707,7 +707,7 @@ export class Table extends TabularApiSurface {
    */
   exists(
     optionsOrCallback?: CallOptions | TableExistsCallback,
-    cb?: TableExistsCallback
+    cb?: TableExistsCallback,
   ): void | Promise<TableExistsResponse> {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -775,7 +775,7 @@ export class Table extends TabularApiSurface {
    */
   get(
     optionsOrCallback?: GetTableOptions | GetTableCallback,
-    cb?: GetTableCallback
+    cb?: GetTableCallback,
   ): void | Promise<GetTableResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -802,7 +802,7 @@ export class Table extends TabularApiSurface {
   getIamPolicy(options?: GetIamPolicyOptions): Promise<[Policy]>;
   getIamPolicy(
     options: GetIamPolicyOptions,
-    callback: GetIamPolicyCallback
+    callback: GetIamPolicyCallback,
   ): void;
   /**
    * @param {object} [options] Configuration object.
@@ -822,7 +822,7 @@ export class Table extends TabularApiSurface {
    */
   getIamPolicy(
     optionsOrCallback?: GetIamPolicyOptions | GetIamPolicyCallback,
-    callback?: GetIamPolicyCallback
+    callback?: GetIamPolicyCallback,
   ): void | Promise<GetIamPolicyResponse> {
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -855,7 +855,7 @@ export class Table extends TabularApiSurface {
           return;
         }
         callback!(null, Table.decodePolicyEtag(resp));
-      }
+      },
     );
   }
 
@@ -877,7 +877,7 @@ export class Table extends TabularApiSurface {
    */
   getFamilies(
     optionsOrCallback?: CallOptions | GetFamiliesCallback,
-    cb?: GetFamiliesCallback
+    cb?: GetFamiliesCallback,
   ): void | Promise<GetFamiliesResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -898,11 +898,11 @@ export class Table extends TabularApiSurface {
   }
 
   getReplicationStates(
-    gaxOptions?: CallOptions
+    gaxOptions?: CallOptions,
   ): Promise<GetReplicationStatesResponse>;
   getReplicationStates(
     gaxOptions: CallOptions,
-    callback: GetReplicationStatesCallback
+    callback: GetReplicationStatesCallback,
   ): void;
   getReplicationStates(callback: GetReplicationStatesCallback): void;
   /**
@@ -937,7 +937,7 @@ export class Table extends TabularApiSurface {
    */
   getReplicationStates(
     optionsOrCallback?: CallOptions | GetReplicationStatesCallback,
-    cb?: GetReplicationStatesCallback
+    cb?: GetReplicationStatesCallback,
   ): void | Promise<GetReplicationStatesResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -957,7 +957,7 @@ export class Table extends TabularApiSurface {
         google.bigtable.admin.v2.Table.IClusterState
       >();
       Object.keys(metadata.clusterStates!).map(clusterId =>
-        clusterStates.set(clusterId, metadata.clusterStates![clusterId])
+        clusterStates.set(clusterId, metadata.clusterStates![clusterId]),
       );
       callback(null, clusterStates, metadata);
     });
@@ -983,7 +983,7 @@ export class Table extends TabularApiSurface {
    */
   getMetadata(
     optionsOrCallback?: GetMetadataOptions | GetMetadataCallback,
-    cb?: GetMetadataCallback
+    cb?: GetMetadataCallback,
   ): void | Promise<GetMetadataResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -1005,19 +1005,19 @@ export class Table extends TabularApiSurface {
           this.metadata = args[1];
         }
         callback(...args);
-      }
+      },
     );
   }
 
   setIamPolicy(
     policy: Policy,
-    gaxOptions?: CallOptions
+    gaxOptions?: CallOptions,
   ): Promise<SetIamPolicyResponse>;
   setIamPolicy(policy: Policy, callback: SetIamPolicyCallback): void;
   setIamPolicy(
     policy: Policy,
     gaxOptions: CallOptions,
-    callback: SetIamPolicyCallback
+    callback: SetIamPolicyCallback,
   ): void;
   /**
    * @param {object} [gaxOptions] Request configuration options, outlined
@@ -1032,7 +1032,7 @@ export class Table extends TabularApiSurface {
   setIamPolicy(
     policy: Policy,
     gaxOptionsOrCallback?: CallOptions | SetIamPolicyCallback,
-    callback?: SetIamPolicyCallback
+    callback?: SetIamPolicyCallback,
   ): void | Promise<SetIamPolicyResponse> {
     const gaxOptions =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
@@ -1042,7 +1042,7 @@ export class Table extends TabularApiSurface {
         : callback!;
 
     if (policy.etag !== null && policy.etag !== undefined) {
-      (policy.etag as {} as Buffer) = Buffer.from(policy.etag);
+      (policy.etag as {} as Buffer) = Buffer.from(policy.etag as string);
     }
     const reqOpts = {
       resource: this.name,
@@ -1060,22 +1060,22 @@ export class Table extends TabularApiSurface {
           callback!(err);
         }
         callback!(null, Table.decodePolicyEtag(resp));
-      }
+      },
     );
   }
 
   testIamPermissions(
     permissions: string | string[],
-    gaxOptions?: CallOptions
+    gaxOptions?: CallOptions,
   ): Promise<TestIamPermissionsResponse>;
   testIamPermissions(
     permissions: string | string[],
-    callback: TestIamPermissionsCallback
+    callback: TestIamPermissionsCallback,
   ): void;
   testIamPermissions(
     permissions: string | string[],
     gaxOptions: CallOptions,
-    callback: TestIamPermissionsCallback
+    callback: TestIamPermissionsCallback,
   ): void;
   /**
    *
@@ -1093,7 +1093,7 @@ export class Table extends TabularApiSurface {
   testIamPermissions(
     permissions: string | string[],
     gaxOptionsOrCallback?: CallOptions | TestIamPermissionsCallback,
-    callback?: TestIamPermissionsCallback
+    callback?: TestIamPermissionsCallback,
   ): void | Promise<TestIamPermissionsResponse> {
     const gaxOptions =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
@@ -1120,7 +1120,7 @@ export class Table extends TabularApiSurface {
           return;
         }
         callback!(null, resp.permissions);
-      }
+      },
     );
   }
 
@@ -1150,7 +1150,7 @@ export class Table extends TabularApiSurface {
    */
   truncate(
     optionsOrCallback?: CallOptions | TruncateCallback,
-    cb?: TruncateCallback
+    cb?: TruncateCallback,
   ): void | Promise<TruncateResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
@@ -1167,7 +1167,7 @@ export class Table extends TabularApiSurface {
         reqOpts,
         gaxOpts: gaxOptions,
       },
-      callback
+      callback,
     );
   }
 
@@ -1183,7 +1183,7 @@ export class Table extends TabularApiSurface {
    * @param {?Boolean} callback.resp Boolean value.
    */
   waitForReplication(
-    callback?: WaitForReplicationCallback
+    callback?: WaitForReplicationCallback,
   ): void | Promise<WaitForReplicationResponse> {
     // handler for generated consistency-token
     const tokenHandler: GenerateConsistencyTokenCallback = (err, token) => {
@@ -1196,7 +1196,7 @@ export class Table extends TabularApiSurface {
         () => {
           callback!(null, false);
         },
-        10 * 60 * 1000
+        10 * 60 * 1000,
       );
 
       // method checks if retrial is required & init retrial with 5 sec
@@ -1236,7 +1236,7 @@ export class Table extends TabularApiSurface {
    * @param {?String} callback.token The generated consistency token.
    */
   generateConsistencyToken(
-    callback?: GenerateConsistencyTokenCallback
+    callback?: GenerateConsistencyTokenCallback,
   ): void | Promise<GenerateConsistencyTokenResponse> {
     const reqOpts = {
       name: this.name,
@@ -1253,7 +1253,7 @@ export class Table extends TabularApiSurface {
           return;
         }
         callback!(null, res.consistencyToken);
-      }
+      },
     );
   }
 
@@ -1268,7 +1268,7 @@ export class Table extends TabularApiSurface {
    */
   checkConsistency(
     token: string,
-    callback?: CheckConsistencyCallback
+    callback?: CheckConsistencyCallback,
   ): void | Promise<CheckConsistencyResponse> {
     const reqOpts = {
       name: this.name,
@@ -1286,7 +1286,7 @@ export class Table extends TabularApiSurface {
           return;
         }
         callback!(null, res.consistent);
-      }
+      },
     );
   }
   /**

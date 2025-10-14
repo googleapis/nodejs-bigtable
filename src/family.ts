@@ -188,7 +188,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
     if (rules.length === 1) {
       if (ruleObj.union) {
         throw new Error(
-          'A union must have more than one garbage collection rule.'
+          'A union must have more than one garbage collection rule.',
         );
       }
       return rules[0];
@@ -226,7 +226,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    */
   create(
     options?: CreateFamilyOptions | CreateFamilyCallback,
-    callback?: CreateFamilyCallback
+    callback?: CreateFamilyCallback,
   ): void | Promise<CreateFamilyResponse> {
     callback = typeof options === 'function' ? options : callback!;
     options = typeof options === 'object' ? options : {};
@@ -252,7 +252,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    */
   delete(
     gaxOptions?: CallOptions | DeleteFamilyCallback,
-    callback?: DeleteFamilyCallback
+    callback?: DeleteFamilyCallback,
   ): void | Promise<DeleteFamilyResponse> {
     callback = typeof gaxOptions === 'function' ? gaxOptions : callback!;
     gaxOptions = typeof gaxOptions === 'object' ? gaxOptions : {};
@@ -272,7 +272,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
         },
         gaxOpts: gaxOptions,
       },
-      callback
+      callback,
     );
   }
 
@@ -294,7 +294,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    */
   exists(
     opts?: CallOptions | FamilyExistsCallback,
-    cb?: FamilyExistsCallback
+    cb?: FamilyExistsCallback,
   ): void | Promise<FamilyExistsResponse> {
     const callback = typeof opts === 'function' ? opts : cb!;
     const gaxOptions = typeof opts === 'object' ? opts : {};
@@ -339,7 +339,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    */
   get(
     opts?: GetFamilyOptions | GetFamilyCallback,
-    cb?: GetFamilyCallback
+    cb?: GetFamilyCallback,
   ): void | Promise<GetFamilyResponse> {
     const callback = typeof opts === 'function' ? opts : cb!;
     const options = typeof opts === 'object' ? opts : {};
@@ -365,7 +365,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
   getMetadata(gaxOptions?: CallOptions): Promise<GetFamilyMetadataResponse>;
   getMetadata(
     gaxOptions: CallOptions,
-    callback: GetFamilyMetadataCallback
+    callback: GetFamilyMetadataCallback,
   ): void;
   getMetadata(callback: GetFamilyMetadataCallback): void;
   /**
@@ -383,7 +383,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    */
   getMetadata(
     opts?: CallOptions | GetFamilyMetadataCallback,
-    cb?: GetFamilyMetadataCallback
+    cb?: GetFamilyMetadataCallback,
   ): void | Promise<GetFamilyMetadataResponse> {
     const callback = typeof opts === 'function' ? opts : cb!;
     const gaxOptions = typeof opts === 'object' ? opts : {};
@@ -409,16 +409,16 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
 
   setMetadata(
     metadata: SetFamilyMetadataOptions,
-    gaxOptions?: CallOptions
+    gaxOptions?: CallOptions,
   ): Promise<SetFamilyMetadataResponse>;
   setMetadata(
     metadata: SetFamilyMetadataOptions,
     gaxOptions: CallOptions,
-    callback: SetFamilyMetadataCallback
+    callback: SetFamilyMetadataCallback,
   ): void;
   setMetadata(
     metadata: SetFamilyMetadataOptions,
-    callback: SetFamilyMetadataCallback
+    callback: SetFamilyMetadataCallback,
   ): void;
   /**
    * Set the column family's metadata.
@@ -443,7 +443,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
   setMetadata(
     metadata: SetFamilyMetadataOptions,
     opts?: CallOptions | SetFamilyMetadataCallback,
-    cb?: SetFamilyMetadataCallback
+    cb?: SetFamilyMetadataCallback,
   ): void | Promise<SetFamilyMetadataResponse> {
     const callback = typeof opts === 'function' ? opts : cb!;
     const gaxOptions = typeof opts === 'object' ? opts : {};
@@ -477,7 +477,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
 
         this.metadata = resp.columnFamilies[this.id];
         callback(null, this.metadata, resp);
-      }
+      },
     );
   }
 }

@@ -40,16 +40,24 @@ describe('Bigtable/AuthorizedViews', () => {
     function mockCallbackRequest(
       done: mocha.Done,
       compareFn: (requestCount: number) => unknown,
-      resp?: {}
+      resp?: {},
     ) {
       let requestCount = 0;
       table.bigtable.request = (
         config?: any,
-        callback?: RequestCallback<any>
+        callback?: RequestCallback<any>,
       ) => {
         try {
           requestCount++;
           delete config['retryOpts'];
+          if (
+            config &&
+            config.gaxOpts &&
+            config.gaxOpts.otherArgs &&
+            config.gaxOpts.otherArgs.options
+          ) {
+            delete config.gaxOpts.otherArgs['options'];
+          }
           assert.deepStrictEqual(config, compareFn(requestCount));
         } catch (err: unknown) {
           done(err);
@@ -125,7 +133,7 @@ describe('Bigtable/AuthorizedViews', () => {
                   },
                   rowsLimit: 5,
                 },
-                getBaseRequestOptions(requestCount)
+                getBaseRequestOptions(requestCount),
               ),
             };
           });
@@ -147,7 +155,9 @@ describe('Bigtable/AuthorizedViews', () => {
             await table.createReadStream(opts);
             await view.createReadStream(opts);
             done();
-          })();
+          })().catch(err => {
+            throw err;
+          });
         });
         it('requests for getRows should match', done => {
           setupReadRows(done);
@@ -165,7 +175,9 @@ describe('Bigtable/AuthorizedViews', () => {
             await table.getRows(opts);
             await view.getRows(opts);
             done();
-          })();
+          })().catch(err => {
+            throw err;
+          });
         });
       });
       describe('should make MutateRows grpc requests', () => {
@@ -233,7 +245,9 @@ describe('Bigtable/AuthorizedViews', () => {
             view.maxRetries = 0;
             await view.mutate(mutation, {gaxOptions});
             done();
-          })();
+          })().catch(err => {
+            throw err;
+          });
         });
         it('requests for insert should match', done => {
           (async () => {
@@ -257,7 +271,9 @@ describe('Bigtable/AuthorizedViews', () => {
             view.maxRetries = 0;
             await view.insert(mutation, gaxOptions);
             done();
-          })();
+          })().catch(err => {
+            throw err;
+          });
         });
       });
       describe('should make SampleRowKeys grpc requests', () => {
@@ -290,7 +306,9 @@ describe('Bigtable/AuthorizedViews', () => {
             await table.sampleRowKeys(opts);
             await view.sampleRowKeys(opts);
             done();
-          })();
+          })().catch(err => {
+            throw err;
+          });
         });
         it('requests for sampleRowKeysStream should match', done => {
           setupSampleRowKeys(done);
@@ -299,7 +317,9 @@ describe('Bigtable/AuthorizedViews', () => {
             await table.sampleRowKeysStream(gaxOptions);
             await view.sampleRowKeysStream(gaxOptions);
             done();
-          })();
+          })().catch(err => {
+            throw err;
+          });
         });
       });
     });
@@ -327,6 +347,7 @@ describe('Bigtable/AuthorizedViews', () => {
                 method: 'readModifyWriteRow',
                 gaxOpts: {
                   maxRetries: 4,
+                  otherArgs: {},
                 },
                 reqOpts: Object.assign(
                   {
@@ -340,7 +361,7 @@ describe('Bigtable/AuthorizedViews', () => {
                       },
                     ],
                   },
-                  getBaseRequestOptions(requestCount)
+                  getBaseRequestOptions(requestCount),
                 ),
               };
             },
@@ -364,7 +385,7 @@ describe('Bigtable/AuthorizedViews', () => {
                   },
                 ],
               },
-            }
+            },
           );
         }
 
@@ -379,7 +400,9 @@ describe('Bigtable/AuthorizedViews', () => {
             await row.createRules(rule, gaxOpts);
             await view.createRules({rules: rule, rowId: rowId}, gaxOpts);
             done();
-          })();
+          })().catch(err => {
+            throw err;
+          });
         });
         it('requests for increment should match', done => {
           setupReadModifyWriteRow(done);
@@ -390,7 +413,9 @@ describe('Bigtable/AuthorizedViews', () => {
             await row.increment(column, 7, gaxOpts);
             await view.increment({column, rowId}, 7, gaxOpts);
             done();
-          })();
+          })().catch(err => {
+            throw err;
+          });
         });
       });
       describe('should make checkAndMutateRequest grpc requests', () => {
@@ -409,6 +434,7 @@ describe('Bigtable/AuthorizedViews', () => {
                 method: 'checkAndMutateRow',
                 gaxOpts: {
                   maxRetries: 4,
+                  otherArgs: {},
                 },
                 reqOpts: Object.assign(
                   {
@@ -428,7 +454,7 @@ describe('Bigtable/AuthorizedViews', () => {
                     ],
                     falseMutations: [],
                   },
-                  getBaseRequestOptions(requestCount)
+                  getBaseRequestOptions(requestCount),
                 ),
               };
             },
@@ -452,7 +478,7 @@ describe('Bigtable/AuthorizedViews', () => {
                   },
                 ],
               },
-            }
+            },
           );
         }
 
@@ -478,10 +504,12 @@ describe('Bigtable/AuthorizedViews', () => {
               {
                 onMatch: mutations,
                 gaxOptions: {maxRetries: 4},
-              }
+              },
             );
             done();
-          })();
+          })().catch(err => {
+            throw err;
+          });
         });
       });
     });

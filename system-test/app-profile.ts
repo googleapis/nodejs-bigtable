@@ -28,7 +28,7 @@ describe('📦 App Profile', () => {
     // Creates an app profile and returns information containing the app profile response.
     async function createProfile(
       instance: Instance,
-      options: AppProfileOptions
+      options: AppProfileOptions,
     ): Promise<AppProfile> {
       const appProfileId = generateId('app-profile');
       await instance.createAppProfile(appProfileId, options);
@@ -77,7 +77,7 @@ describe('📦 App Profile', () => {
       const appProfile = await createProfile(instance, options);
       assert.deepStrictEqual(
         appProfile.metadata?.singleClusterRouting?.clusterId,
-        options.routing.id
+        options.routing.id,
       );
     });
 
@@ -91,7 +91,7 @@ describe('📦 App Profile', () => {
       const appProfile = await createProfile(instance, options);
       assert.deepStrictEqual(
         new Set(appProfile.metadata?.multiClusterRoutingUseAny?.clusterIds),
-        new Set([...options.routing].map(cluster => cluster.id))
+        new Set([...options.routing].map(cluster => cluster.id)),
       );
     });
 
@@ -102,7 +102,7 @@ describe('📦 App Profile', () => {
       const appProfile = await createProfile(instance, options);
       assert.deepStrictEqual(
         new Set(appProfile.metadata?.multiClusterRoutingUseAny?.clusterIds),
-        new Set([...options.routing])
+        new Set([...options.routing]),
       );
     });
 
@@ -113,7 +113,7 @@ describe('📦 App Profile', () => {
       const appProfile = await createProfile(instance, options);
       assert.deepStrictEqual(
         appProfile.metadata?.multiClusterRoutingUseAny?.clusterIds,
-        []
+        [],
       );
     });
 
@@ -124,7 +124,7 @@ describe('📦 App Profile', () => {
       const appProfile = await createProfile(instance, options);
       assert.deepStrictEqual(
         appProfile.metadata?.singleClusterRouting?.clusterId,
-        clusterIds[1]
+        clusterIds[1],
       );
       const newOptions = {
         routing: new Set([
@@ -136,9 +136,9 @@ describe('📦 App Profile', () => {
       const appProfileAfterUpdate = (await appProfile.get())[0];
       assert.deepStrictEqual(
         new Set(
-          appProfileAfterUpdate.metadata?.multiClusterRoutingUseAny?.clusterIds
+          appProfileAfterUpdate.metadata?.multiClusterRoutingUseAny?.clusterIds,
         ),
-        new Set([...newOptions.routing].map(cluster => cluster.id))
+        new Set([...newOptions.routing].map(cluster => cluster.id)),
       );
     });
   });

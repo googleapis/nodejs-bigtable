@@ -34,7 +34,7 @@ const readModifyWriteRow = ({clientMap}) =>
     const table = getTableInfo(bigtable, tableName);
     const row = table.row(handWrittenRequest.id);
     try {
-      const result = await row.createRules(handWrittenRequest.rules);
+      const [result] = await row.createRules(handWrittenRequest.rules);
       return {
         status: {code: grpc.status.OK, details: []},
         row: result.row,
@@ -42,7 +42,7 @@ const readModifyWriteRow = ({clientMap}) =>
     } catch (e) {
       return {
         status: {
-          code: e.code,
+          code: e.code ? e.code : grpc.status.UNKNOWN,
           details: [],
           message: e.message,
         },
