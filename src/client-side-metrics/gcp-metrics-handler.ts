@@ -31,6 +31,7 @@ const {
 } = require('@opentelemetry/sdk-metrics');
 import * as os from 'os';
 import * as crypto from 'crypto';
+import {MethodName} from './client-side-metrics-attributes';
 
 /**
  * Generates a unique client identifier string.
@@ -97,7 +98,7 @@ function createInstruments(exporter: PushMetricExporter): MetricsInstruments {
       new View({
         instrumentName: name,
         name,
-        aggregation: name.endsWith('latencies')
+        aggregation: !name.endsWith('latencies')
           ? Aggregation.Sum()
           : new ExplicitBucketHistogramAggregation(latencyBuckets),
       }),
@@ -251,13 +252,19 @@ export class GCPMetricsHandler implements IMetricsHandler {
       status: data.status,
       ...commonAttributes,
     });
-    otelInstruments.firstResponseLatencies.record(data.firstResponseLatency, {
-      status: data.status,
-      ...commonAttributes,
-    });
-    for (const applicationLatency of data.applicationLatencies) {
+    if (
+      data.metricsCollectorData.method === MethodName.READ_ROWS ||
+      data.metricsCollectorData.method === MethodName.READ_ROW
+    ) {
+      otelInstruments.firstResponseLatencies.record(data.firstResponseLatency, {
+        status: data.status,
+        ...commonAttributes,
+      });
+    }
+
+    if (data.applicationLatency) {
       otelInstruments.applicationBlockingLatencies.record(
-        applicationLatency,
+        data.applicationLatency,
         commonAttributes,
       );
     }
