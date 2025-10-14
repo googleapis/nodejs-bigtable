@@ -13,15 +13,24 @@
 // limitations under the License.
 
 const snippets = {
-  create: (instanceId, clusterId) => {
+  create: async (instanceId, clusterId) => {
     // [START bigtable_api_create_cluster]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const cluster = instance.cluster(clusterId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    cluster
-      .create()
+    const request = {
+      parent: `projects/${projectId}/instances/${instanceId}`,
+      clusterId: clusterId,
+      cluster: {
+        location: `projects/${projectId}/locations/us-central1-f`,
+        serveNodes: 1,
+        defaultStorageType: 'HDD',
+      },
+    };
+
+    instanceAdminClient
+      .createCluster(request)
       .then(result => {
         const cluster = result[0];
         const operation = result[1];
@@ -33,15 +42,18 @@ const snippets = {
     // [END bigtable_api_create_cluster]
   },
 
-  delete: (instanceId, clusterId) => {
+  delete: async (instanceId, clusterId) => {
     // [START bigtable_api_delete_cluster]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const cluster = instance.cluster(clusterId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    cluster
-      .delete()
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
+    };
+
+    instanceAdminClient
+      .deleteCluster(request)
       .then(result => {
         const apiResponse = result[0];
       })
@@ -51,33 +63,42 @@ const snippets = {
     // [END bigtable_api_delete_cluster]
   },
 
-  exists: (instanceId, clusterId) => {
+  exists: async (instanceId, clusterId) => {
     // [START bigtable_api_exists_cluster]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const cluster = instance.cluster(clusterId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    cluster
-      .exists()
-      .then(result => {
-        const exists = result[0];
-      })
-      .catch(err => {
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
+    };
+
+    try {
+      await instanceAdminClient.getCluster(request);
+      console.log('Cluster exists.');
+    } catch (err) {
+      if (err.code === 5) {
+        console.log('Cluster does not exist.');
+      } else {
         // Handle the error.
-      });
+        console.error(err);
+      }
+    }
     // [END bigtable_api_exists_cluster]
   },
 
-  get: (instanceId, clusterId) => {
+  get: async (instanceId, clusterId) => {
     // [START bigtable_api_get_cluster]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const cluster = instance.cluster(clusterId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    cluster
-      .get()
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
+    };
+
+    instanceAdminClient
+      .getCluster(request)
       .then(result => {
         const cluster = result[0];
         const apiResponse = result[1];
@@ -88,15 +109,18 @@ const snippets = {
     // [END bigtable_api_get_cluster]
   },
 
-  getMeta: (instanceId, clusterId) => {
+  getMeta: async (instanceId, clusterId) => {
     // [START bigtable_api_cluster_get_meta]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const cluster = instance.cluster(clusterId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    cluster
-      .getMetadata()
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
+    };
+
+    instanceAdminClient
+      .getCluster(request)
       .then(result => {
         const metadata = result[0];
         const apiResponse = result[1];
@@ -107,19 +131,26 @@ const snippets = {
     // [END bigtable_api_cluster_get_meta]
   },
 
-  setMeta: (instanceId, clusterId) => {
+  setMeta: async (instanceId, clusterId) => {
     // [START bigtable_api_cluster_set_meta]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const cluster = instance.cluster(clusterId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    const metadata = {
-      nodes: 4,
+    const cluster = {
+      name: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}`,
+      serveNodes: 4,
     };
 
-    cluster
-      .setMetadata(metadata)
+    const request = {
+      cluster: cluster,
+      updateMask: {
+        paths: ['serve_nodes'],
+      },
+    };
+
+    instanceAdminClient
+      .updateCluster(request)
       .then(result => {
         const operation = result[0];
         const apiResponse = result[1];
