@@ -18,30 +18,44 @@ const {assert} = require('chai');
 const {describe, it, before, after} = require('mocha');
 const uuid = require('uuid');
 const {execSync} = require('child_process');
-const {Bigtable} = require('@google-cloud/bigtable');
 
 const exec = cmd => execSync(cmd, {encoding: 'utf8'});
 
-const bigtable = new Bigtable();
 const clusterId = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const instanceId = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const instance = bigtable.instance(instanceId);
 
 describe('instances', () => {
   before(async () => {
-    const [, operation] = await instance.create({
-      clusters: [
-        {
-          id: clusterId,
-          location: 'us-central1-c',
-          nodes: 3,
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
+    const request = {
+      parent: `projects/${projectId}`,
+      instanceId: instanceId,
+      instance: {
+        displayName: instanceId,
+        labels: {},
+        type: 'PRODUCTION',
+      },
+      clusters: {
+        [clusterId]: {
+          location: `projects/${projectId}/locations/us-central1-c`,
+          serveNodes: 3,
+          defaultStorageType: 'SSD',
         },
-      ],
-    });
+      },
+    };
+    const [operation] = await instanceAdminClient.createInstance(request);
     await operation.promise();
   });
 
-  after(() => instance.delete());
+  after(async () => {
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
+    const instancePath = `projects/${projectId}/instances/${instanceId}`;
+    await instanceAdminClient.deleteInstance({name: instancePath});
+  });
 
   it('should list zones', () => {
     const output = exec(
