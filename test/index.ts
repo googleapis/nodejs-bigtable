@@ -155,31 +155,31 @@ describe('Bigtable', () => {
       const bigtable = Bigtable();
       assert.strictEqual(
         bigtable.options.BigtableClient['grpc.keepalive_time_ms'],
-        30000
+        30000,
       );
       assert.strictEqual(
         bigtable.options.BigtableClient['grpc.keepalive_timeout_ms'],
-        10000
+        10000,
       );
 
       assert.strictEqual(
         bigtable.options.BigtableInstanceAdminClient['grpc.keepalive_time_ms'],
-        30000
+        30000,
       );
       assert.strictEqual(
         bigtable.options.BigtableInstanceAdminClient[
           'grpc.keepalive_timeout_ms'
         ],
-        10000
+        10000,
       );
 
       assert.strictEqual(
         bigtable.options.BigtableTableAdminClient['grpc.keepalive_time_ms'],
-        30000
+        30000,
       );
       assert.strictEqual(
         bigtable.options.BigtableTableAdminClient['grpc.keepalive_timeout_ms'],
-        10000
+        10000,
       );
     });
 
@@ -203,8 +203,8 @@ describe('Bigtable', () => {
               'grpc.keepalive_time_ms': 30000,
               'grpc.keepalive_timeout_ms': 10000,
             },
-            options
-          )
+            options,
+          ),
         );
         return fakeGoogleAuthInstance;
       };
@@ -234,7 +234,7 @@ describe('Bigtable', () => {
           'grpc.keepalive_time_ms': 30000,
           'grpc.keepalive_timeout_ms': 10000,
         },
-        options
+        options,
       );
 
       assert.deepStrictEqual(bigtable.options, {
@@ -244,7 +244,7 @@ describe('Bigtable', () => {
           {
             servicePath: 'bigtable.googleapis.com',
           },
-          expectedOptions
+          expectedOptions,
         ),
         BigtableInstanceAdminClient: Object.assign(
           {},
@@ -252,7 +252,7 @@ describe('Bigtable', () => {
           {
             servicePath: 'bigtableadmin.googleapis.com',
           },
-          expectedOptions
+          expectedOptions,
         ),
         BigtableTableAdminClient: Object.assign(
           {},
@@ -260,7 +260,7 @@ describe('Bigtable', () => {
           {
             servicePath: 'bigtableadmin.googleapis.com',
           },
-          expectedOptions
+          expectedOptions,
         ),
       });
     });
@@ -284,31 +284,31 @@ describe('Bigtable', () => {
           'grpc.keepalive_time_ms': 30000,
           'grpc.keepalive_timeout_ms': 10000,
         },
-        options
+        options,
       );
 
       const bigtable = new Bigtable(options);
 
       assert.strictEqual(
         bigtable.customEndpoint,
-        process.env.BIGTABLE_EMULATOR_HOST
+        process.env.BIGTABLE_EMULATOR_HOST,
       );
 
       assert.deepStrictEqual(bigtable.options, {
         BigtableClient: Object.assign(
           {},
           bigtable.options['BigtableClient'],
-          expectedOptions
+          expectedOptions,
         ),
         BigtableInstanceAdminClient: Object.assign(
           {},
           bigtable.options['BigtableInstanceAdminClient'],
-          expectedOptions
+          expectedOptions,
         ),
         BigtableTableAdminClient: Object.assign(
           {},
           bigtable.options['BigtableTableAdminClient'],
-          expectedOptions
+          expectedOptions,
         ),
       });
     });
@@ -331,7 +331,7 @@ describe('Bigtable', () => {
           'grpc.keepalive_time_ms': 30000,
           'grpc.keepalive_timeout_ms': 10000,
         },
-        options
+        options,
       );
 
       const bigtable = new Bigtable(options);
@@ -342,17 +342,17 @@ describe('Bigtable', () => {
         BigtableClient: Object.assign(
           {},
           bigtable.options['BigtableClient'],
-          expectedOptions
+          expectedOptions,
         ),
         BigtableInstanceAdminClient: Object.assign(
           {},
           bigtable.options['BigtableInstanceAdminClient'],
-          expectedOptions
+          expectedOptions,
         ),
         BigtableTableAdminClient: Object.assign(
           {},
           bigtable.options['BigtableTableAdminClient'],
-          expectedOptions
+          expectedOptions,
         ),
       });
     });
@@ -446,13 +446,13 @@ describe('Bigtable', () => {
         {
           displayName: 'robocop',
         },
-        OPTIONS
+        OPTIONS,
       );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtable.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.instance.displayName,
-          options.displayName
+          options.displayName,
         );
         done();
       };
@@ -483,7 +483,7 @@ describe('Bigtable', () => {
             env: 'prod',
           },
         },
-        OPTIONS
+        OPTIONS,
       );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtable.request = (config: any) => {
@@ -496,7 +496,7 @@ describe('Bigtable', () => {
     it('should respect the clusters option', done => {
       const fakeLocation = Cluster.getLocation_(
         PROJECT_ID,
-        OPTIONS.clusters[0].location
+        OPTIONS.clusters[0].location,
       );
       const fakeStorage = 20;
       FakeCluster.getStorageType_ = (storage: {}) => {
@@ -531,7 +531,7 @@ describe('Bigtable', () => {
           config.reqOpts.clusters['my-cluster'].encryptionConfig,
           {
             kmsKeyName: key,
-          }
+          },
         );
         done();
       };
@@ -547,7 +547,7 @@ describe('Bigtable', () => {
             },
           ],
         },
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -563,7 +563,7 @@ describe('Bigtable', () => {
           config.reqOpts.clusters['my-cluster'].encryptionConfig,
           {
             kmsKeyName: key,
-          }
+          },
         );
         done();
       };
@@ -581,7 +581,7 @@ describe('Bigtable', () => {
             },
           ],
         },
-        assert.ifError
+        assert.ifError,
       );
     });
 
@@ -605,7 +605,7 @@ describe('Bigtable', () => {
               },
             ],
           },
-          assert.ifError
+          assert.ifError,
         );
       }, /A cluster was provided with both `encryption` and `key` defined\./);
     });
@@ -623,7 +623,7 @@ describe('Bigtable', () => {
           assert.strictEqual(instance, undefined);
           assert.strictEqual(operation, undefined);
           done();
-        }
+        },
       );
     });
 
@@ -651,7 +651,7 @@ describe('Bigtable', () => {
           assert.strictEqual(args[1], responseArg2);
           assert.strictEqual(args[2], responseArg3);
           done();
-        }
+        },
       );
     });
 
@@ -748,7 +748,7 @@ describe('Bigtable', () => {
           err: Error,
           instances: Instance[],
           failedLocations: string[],
-          apiResponse: {}
+          apiResponse: {},
         ) => {
           assert.ifError(err);
           assert.strictEqual(instances[0], fakeInstances[0]);
@@ -758,7 +758,7 @@ describe('Bigtable', () => {
           assert.strictEqual(failedLocations, response.failedLocations);
           assert.strictEqual(apiResponse, response);
           done();
-        }
+        },
       );
     });
   });
@@ -1222,7 +1222,7 @@ describe('Bigtable', () => {
             done();
           } else {
             assert.fail(
-              'The request did not fail, but it should have because the connection is closed'
+              'The request did not fail, but it should have because the connection is closed',
             );
           }
         });

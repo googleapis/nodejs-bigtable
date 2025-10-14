@@ -13,19 +13,25 @@
 // limitations under the License.
 
 const snippets = {
-  create: (instanceId, appProfileId) => {
+  create: async (instanceId, appProfileId) => {
     // [START bigtable_api_create_app_profile]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const appProfile = instance.appProfile(appProfileId);
-    // set routing policy, required for creating an app-profile
-    const options = {
-      routing: 'any',
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
+
+    const appProfile = {
+      name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
+      multiClusterRoutingUseAny: {},
     };
 
-    appProfile
-      .create(options)
+    const request = {
+      parent: `projects/${projectId}/instances/${instanceId}`,
+      appProfileId: appProfileId,
+      appProfile: appProfile,
+    };
+
+    instanceAdminClient
+      .createAppProfile(request)
       .then(result => {
         const appProfile = result[0];
         const apiResponse = result[1];
@@ -36,15 +42,18 @@ const snippets = {
     // [END bigtable_api_create_app_profile]
   },
 
-  delete: (instanceId, appProfileId) => {
+  delete: async (instanceId, appProfileId) => {
     // [START bigtable_api_delete_app_profile]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const appProfile = instance.appProfile(appProfileId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    appProfile
-      .delete()
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
+    };
+
+    instanceAdminClient
+      .deleteAppProfile(request)
       .then(result => {
         const apiResponse = result[0];
       })
@@ -54,33 +63,42 @@ const snippets = {
     // [END bigtable_api_delete_app_profile]
   },
 
-  exists: (instanceId, appProfileId) => {
+  exists: async (instanceId, appProfileId) => {
     // [START bigtable_api_exists_app_profile]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const appProfile = instance.appProfile(appProfileId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    appProfile
-      .exists()
-      .then(result => {
-        const exists = result[0];
-      })
-      .catch(err => {
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
+    };
+
+    try {
+      await instanceAdminClient.getAppProfile(request);
+      console.log('App profile exists.');
+    } catch (err) {
+      if (err.code === 5) {
+        console.log('App profile does not exist.');
+      } else {
         // Handle the error.
-      });
+        console.error(err);
+      }
+    }
     // [END bigtable_api_exists_app_profile]
   },
 
-  get: (instanceId, appProfileId) => {
+  get: async (instanceId, appProfileId) => {
     // [START bigtable_api_get_app_profile]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const appProfile = instance.appProfile(appProfileId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    appProfile
-      .get()
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
+    };
+
+    instanceAdminClient
+      .getAppProfile(request)
       .then(result => {
         const appProfile = result[0];
         const apiResponse = result[1];
@@ -91,15 +109,18 @@ const snippets = {
     // [END bigtable_api_get_app_profile]
   },
 
-  getMeta: (instanceId, appProfileId) => {
+  getMeta: async (instanceId, appProfileId) => {
     // [START bigtable_api_app_profile_get_meta]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const appProfile = instance.appProfile(appProfileId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    appProfile
-      .getMetadata()
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
+    };
+
+    instanceAdminClient
+      .getAppProfile(request)
       .then(result => {
         const metadata = result[0];
         const apiResponse = result[1];
@@ -110,22 +131,27 @@ const snippets = {
     // [END bigtable_api_app_profile_get_meta]
   },
 
-  setMeta: (instanceId, appProfileId, clusterId) => {
+  setMeta: async (instanceId, appProfileId, clusterId) => {
     // [START bigtable_api_app_profile_set_meta]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const cluster = instance.cluster(clusterId);
-    const appProfile = instance.appProfile(appProfileId);
+    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const projectId = await instanceAdminClient.getProjectId();
 
-    const metadata = {
+    const appProfile = {
+      name: `projects/${projectId}/instances/${instanceId}/appProfiles/${appProfileId}`,
       description: 'My Updated App Profile',
-      routing: cluster,
-      allowTransactionalWrites: true,
+      multiClusterRoutingUseAny: {},
     };
 
-    appProfile
-      .setMetadata(metadata)
+    const request = {
+      appProfile: appProfile,
+      updateMask: {
+        paths: ['description', 'multi_cluster_routing_use_any'],
+      },
+    };
+
+    instanceAdminClient
+      .updateAppProfile(request)
       .then(result => {
         const apiResponse = result[0];
       })

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {OperationMetricsCollector} from './client-side-metrics/operation-metrics-collector';
+
 const dotProp = require('dot-prop');
 import {Filter, RawFilter} from './filter';
 import {
@@ -30,6 +32,11 @@ import {TabularApiSurface} from './tabular-api-surface';
 import arrify = require('arrify');
 import {Bigtable} from './index';
 import {CallOptions} from 'google-gax';
+import {
+  MethodName,
+  StreamingState,
+} from './client-side-metrics/client-side-metrics-attributes';
+import {createMetricsUnaryInterceptorProvider} from './client-side-metrics/metric-interceptor';
 
 interface TabularApiSurfaceRequest {
   tableName?: string;
@@ -66,7 +73,7 @@ class RowDataUtils {
     filter: RawFilter,
     properties: RowProperties,
     configOrCallback?: FilterConfig | FilterCallback,
-    cb?: FilterCallback
+    cb?: FilterCallback,
   ) {
     const config = typeof configOrCallback === 'object' ? configOrCallback : {};
     const callback =
@@ -79,29 +86,47 @@ class RowDataUtils {
         trueMutations: createFlatMutationsList(config.onMatch!),
         falseMutations: createFlatMutationsList(config.onNoMatch!),
       },
-      properties.reqOpts
+      properties.reqOpts,
     );
     properties.requestData.data = {};
+    // 1. Create a metrics collector.
+    const metricsCollector = new OperationMetricsCollector(
+      properties.requestData.table,
+      MethodName.CHECK_AND_MUTATE_ROW,
+      StreamingState.UNARY,
+      (
+        properties.requestData.table as any
+      ).bigtable._metricsConfigManager!.metricsHandlers,
+    );
+    // 2. Tell the metrics collector an attempt has been started.
+    metricsCollector.onOperationStart();
+    // 3. Make a unary call with gax options that include interceptors. The
+    // interceptors are built from a method that hooks them up to the
+    // metrics collector
     properties.requestData.bigtable.request<google.bigtable.v2.ICheckAndMutateRowResponse>(
       {
         client: 'BigtableClient',
         method: 'checkAndMutateRow',
         reqOpts,
-        gaxOpts: config.gaxOptions,
+        gaxOpts: createMetricsUnaryInterceptorProvider(
+          config.gaxOptions ?? {},
+          metricsCollector,
+        ),
       },
       (err, apiResponse) => {
+        metricsCollector.onOperationComplete(err ? err.code : 0);
         if (err) {
           callback(err, null, apiResponse);
           return;
         }
 
         callback(null, apiResponse!.predicateMatched, apiResponse);
-      }
+      },
     );
 
     function createFlatMutationsList(entries: FilterConfigOption[]) {
       const e2 = arrify(entries).map(
-        entry => Mutation.parse(entry as Mutation).mutations!
+        entry => Mutation.parse(entry as Mutation).mutations!,
       );
       return e2.reduce((a, b) => a.concat(b), []);
     }
@@ -109,7 +134,7 @@ class RowDataUtils {
 
   static formatFamilies_Util(
     families: google.bigtable.v2.IFamily[],
-    options?: FormatFamiliesOptions
+    options?: FormatFamiliesOptions,
   ) {
     const data = {} as {[index: string]: {}};
     options = options || {};
@@ -119,7 +144,7 @@ class RowDataUtils {
       };
       family.columns!.forEach(column => {
         const qualifier = Mutation.convertFromBytes(
-          column.qualifier as string
+          column.qualifier as string,
         ) as string;
         familyData[qualifier] = column.cells!.map(cell => {
           let value = cell.value;
@@ -154,7 +179,7 @@ class RowDataUtils {
     rules: Rule | Rule[],
     properties: RowProperties,
     optionsOrCallback?: CallOptions | CreateRulesCallback,
-    cb?: CreateRulesCallback
+    cb?: CreateRulesCallback,
   ) {
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
@@ -166,19 +191,19 @@ class RowDataUtils {
     }
 
     rules = arrify(rules).map(rule => {
-      const column = Mutation.parseColumnName(rule.column);
+      const column = Mutation.parseColumnName((rule as Rule).column);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const ruleData: any = {
         familyName: column.family,
         columnQualifier: Mutation.convertToBytes(column.qualifier!),
       };
 
-      if (rule.append) {
-        ruleData.appendValue = Mutation.convertToBytes(rule.append);
+      if ((rule as Rule).append) {
+        ruleData.appendValue = Mutation.convertToBytes((rule as Rule).append);
       }
 
-      if (rule.increment) {
-        ruleData.incrementAmount = rule.increment;
+      if ((rule as Rule).increment) {
+        ruleData.incrementAmount = (rule as Rule).increment;
       }
 
       return ruleData;
@@ -190,17 +215,37 @@ class RowDataUtils {
         rowKey: Mutation.convertToBytes(properties.requestData.id),
         rules,
       },
-      properties.reqOpts
+      properties.reqOpts,
     );
     properties.requestData.data = {};
+    // 1. Create a metrics collector.
+    const metricsCollector = new OperationMetricsCollector(
+      properties.requestData.table,
+      MethodName.READ_MODIFY_WRITE_ROW,
+      StreamingState.UNARY,
+      (
+        properties.requestData.table as any
+      ).bigtable._metricsConfigManager!.metricsHandlers,
+    );
+    // 2. Tell the metrics collector an attempt has been started.
+    metricsCollector.onOperationStart();
+    // 3. Make a unary call with gax options that include interceptors. The
+    // interceptors are built from a method that hooks them up to the
+    // metrics collector
     properties.requestData.bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
       {
         client: 'BigtableClient',
         method: 'readModifyWriteRow',
         reqOpts,
-        gaxOpts: gaxOptions,
+        gaxOpts: createMetricsUnaryInterceptorProvider(
+          gaxOptions,
+          metricsCollector,
+        ),
       },
-      callback
+      (err, ...args) => {
+        metricsCollector.onOperationComplete(err ? err.code : 0);
+        callback(err, ...args);
+      },
     );
   }
 
@@ -217,7 +262,7 @@ class RowDataUtils {
     properties: RowProperties,
     valueOrOptionsOrCallback?: number | CallOptions | IncrementCallback,
     optionsOrCallback?: CallOptions | IncrementCallback,
-    cb?: IncrementCallback
+    cb?: IncrementCallback,
   ) {
     const value =
       typeof valueOrOptionsOrCallback === 'number'
