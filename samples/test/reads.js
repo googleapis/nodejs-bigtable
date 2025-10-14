@@ -19,24 +19,39 @@ const snapshot = require('snap-shot-it');
 const {describe, it, before} = require('mocha');
 const cp = require('child_process');
 const {obtainTestInstance} = require('./util');
+const {Bigtable} = require('@google-cloud/bigtable');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 describe('reads', async () => {
+  const bigtable = new Bigtable();
   let INSTANCE_ID;
   let table;
 
   before(async () => {
-    const instance = await obtainTestInstance();
-    INSTANCE_ID = instance.id;
+    const [instance] = await obtainTestInstance();
+    INSTANCE_ID = instance.displayName;
 
     const TIMESTAMP = new Date(2019, 5, 1);
     TIMESTAMP.setUTCHours(0);
 
-    table = instance.table(TABLE_ID);
-    await table.create();
-    await table.createFamily('stats_summary');
+    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+    const adminClient = new BigtableTableAdminClient();
+    const projectId = await adminClient.getProjectId();
+    const instancePath = `projects/${projectId}/instances/${INSTANCE_ID}`;
+    const request = {
+      parent: instancePath,
+      tableId: TABLE_ID,
+      table: {
+        columnFamilies: {
+          stats_summary: {},
+        },
+      },
+    };
+    await adminClient.createTable(request);
+    const handwrittenInstance = bigtable.instance(INSTANCE_ID);
+    table = handwrittenInstance.table(TABLE_ID);
 
     const rowsToInsert = [
       {
@@ -146,42 +161,42 @@ describe('reads', async () => {
 
   it('should read part of one row', async () => {
     const stdout = execSync(
-      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowPartial`
+      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowPartial`,
     );
     snapshot(stdout);
   });
 
   it('should read multiple rows', async () => {
     const stdout = execSync(
-      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRows`
+      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRows`,
     );
     snapshot(stdout);
   });
 
   it('should read a range of rows', async () => {
     const stdout = execSync(
-      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowRange`
+      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowRange`,
     );
     snapshot(stdout);
   });
 
   it('should read multiple ranges of rows', async () => {
     const stdout = execSync(
-      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowRanges`
+      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowRanges`,
     );
     snapshot(stdout);
   });
 
   it('should read using a row prefix', async () => {
     const stdout = execSync(
-      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readPrefix`
+      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readPrefix`,
     );
     snapshot(stdout);
   });
 
   it('should read with a filter', async () => {
     const stdout = execSync(
-      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readFilter`
+      `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readFilter`,
     );
 
     snapshot(stdout);

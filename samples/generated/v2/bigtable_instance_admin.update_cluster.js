@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 'use strict';
 
-function main(location, state, defaultStorageType, encryptionConfig) {
+function main(location, state, nodeScalingFactor, defaultStorageType, encryptionConfig) {
   // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateCluster_async]
   /**
    * This snippet has been automatically generated and should be regarded as a code template only.
@@ -45,10 +45,15 @@ function main(location, state, defaultStorageType, encryptionConfig) {
    */
   // const state = {}
   /**
-   *  The number of nodes allocated to this cluster. More nodes enable higher
-   *  throughput and more consistent performance.
+   *  The number of nodes in the cluster. If no value is set,
+   *  Cloud Bigtable automatically allocates nodes based on your data footprint
+   *  and optimized for 50% storage utilization.
    */
   // const serveNodes = 1234
+  /**
+   *  Immutable. The node scaling factor of this cluster.
+   */
+  // const nodeScalingFactor = {}
   /**
    *  Configuration for this cluster.
    */
@@ -74,6 +79,7 @@ function main(location, state, defaultStorageType, encryptionConfig) {
     const request = {
       location,
       state,
+      nodeScalingFactor,
       defaultStorageType,
       encryptionConfig,
     };

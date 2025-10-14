@@ -16,9 +16,15 @@ import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import * as extend from 'extend';
-import {GoogleAuth, CallOptions, grpc as gaxVendoredGrpc} from 'google-gax';
+import {
+  GoogleAuth,
+  CallOptions,
+  grpc as gaxVendoredGrpc,
+  ClientOptions,
+} from 'google-gax';
 import * as gax from 'google-gax';
 import * as protos from '../protos/protos';
+import * as SqlTypes from './execute-query/types';
 
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
@@ -28,6 +34,7 @@ import {
   CreateInstanceCallback,
   CreateInstanceResponse,
   IInstance,
+  ClusterInfo,
 } from './instance';
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
@@ -35,6 +42,8 @@ import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
+import {ClientSideMetricsConfigManager} from './client-side-metrics/metrics-config-manager';
+import {GCPMetricsHandler} from './client-side-metrics/gcp-metrics-handler';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -52,7 +61,7 @@ export interface GetInstancesCallback {
     err: ServiceError | null,
     result?: Instance[],
     failedLocations?: string[],
-    response?: google.bigtable.admin.v2.IListInstancesResponse
+    response?: google.bigtable.admin.v2.IListInstancesResponse,
   ): void;
 }
 export type GetInstancesResponse = [
@@ -100,6 +109,66 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
    * Internal only.
    */
   BigtableTableAdminClient?: gax.ClientOptions;
+
+  metricsEnabled?: boolean;
+}
+
+/**
+ * Retrieves the universe domain, if configured.
+ *
+ * This function checks for a universe domain in the following order:
+ * 1. The `universeDomain` property within the provided options.
+ * 2. The `universeDomain` or `universe_domain` property within the `opts` object.
+ * 3. The `GOOGLE_CLOUD_UNIVERSE_DOMAIN` environment variable.
+ *
+ * If a universe domain is found in any of these locations, it is returned.
+ * Otherwise, the function returns `undefined`.
+ *
+ * @param {BigtableOptions} options - The Bigtable client options.
+ * @param {gax.ClientOptions} [gaxOpts] - Optional gax client options.
+ * @returns {string | undefined} The universe domain, or `undefined` if not found.
+ */
+function getUniverseDomainOnly(
+  options: BigtableOptions,
+  gaxOpts?: gax.ClientOptions,
+): string | undefined {
+  // From https://github.com/googleapis/nodejs-bigtable/blob/589540475b0b2a055018a1cb6e475800fdd46a37/src/v2/bigtable_client.ts#L120-L128.
+  // This code for universe domain was taken from the Gapic Layer.
+  // It is reused here to build the service path.
+  const universeDomainEnvVar =
+    typeof process === 'object' && typeof process.env === 'object'
+      ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
+      : undefined;
+  return (
+    gaxOpts?.universeDomain ??
+    gaxOpts?.universe_domain ??
+    options?.universeDomain ??
+    universeDomainEnvVar
+  );
+}
+
+/**
+ * Retrieves the universe domain options from the provided options.
+ *
+ * This function examines the provided BigtableOptions and an optional
+ * gax.ClientOptions object to determine the universe domain to be used.
+ * It prioritizes the `universeDomain` property in the options, then checks
+ * for `universeDomain` or `universe_domain` in the gax options, and finally
+ * falls back to the `GOOGLE_CLOUD_UNIVERSE_DOMAIN` environment variable.
+ * If a universe domain is found, it returns an object containing the
+ * `universeDomain` property; otherwise, it returns `null`.
+ *
+ * @param {BigtableOptions} options - The Bigtable client options.
+ * @param {gax.ClientOptions} [gaxOpts] - Optional gax client options.
+ * @returns {{universeDomain: string} | null} An object containing the `universeDomain` property if found,
+ *   otherwise `null`.
+ */
+function getUniverseDomainOptions(
+  options: BigtableOptions,
+  gaxOpts?: gax.ClientOptions,
+): {universeDomain: string} | null {
+  const universeDomainOnly = getUniverseDomainOnly(options, gaxOpts);
+  return universeDomainOnly ? {universeDomain: universeDomainOnly} : null;
 }
 
 /**
@@ -108,23 +177,18 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * This function retrieves the domain from gax.ClientOptions passed in or via an environment variable.
  * It defaults to 'googleapis.com' if none has been set.
  * @param {string} [prefix] The prefix for the domain.
- * @param {gax.ClientOptions} [opts] The gax client options
+ * @param {BigtableOptions} [options] The options passed into the Bigtable client.
+ * @param {gax.ClientOptions} [gaxOpts] The gax client options.
  * @returns {string} The universe domain.
  */
-function getDomain(prefix: string, opts?: gax.ClientOptions) {
-  // From https://github.com/googleapis/nodejs-bigtable/blob/589540475b0b2a055018a1cb6e475800fdd46a37/src/v2/bigtable_client.ts#L120-L128.
-  // This code for universe domain was taken from the Gapic Layer.
-  // It is reused here to build the service path.
-  const universeDomainEnvVar =
-    typeof process === 'object' && typeof process.env === 'object'
-      ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
-      : undefined;
-  return `${prefix}.${
-    opts?.universeDomain ??
-    opts?.universe_domain ??
-    universeDomainEnvVar ??
-    'googleapis.com'
-  }`;
+function getDomain(
+  prefix: string,
+  options: BigtableOptions,
+  gaxOpts?: gax.ClientOptions,
+): string {
+  const universeDomainOnly = getUniverseDomainOnly(options, gaxOpts);
+  const suffix = universeDomainOnly ? universeDomainOnly : 'googleapis.com';
+  return `${prefix}.${suffix}`;
 }
 
 /**
@@ -420,6 +484,7 @@ export class Bigtable {
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
+  _metricsConfigManager: ClientSideMetricsConfigManager;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -466,10 +531,11 @@ export class Bigtable {
     const dataOptions = Object.assign(
       {},
       baseOptions,
+      getUniverseDomainOptions(options, options.BigtableClient),
       {
         servicePath:
           customEndpointBaseUrl ||
-          getDomain('bigtable', options.BigtableClient),
+          getDomain('bigtable', options, options.BigtableClient),
         'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
         'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
         'grpc.gcpApiConfig': grpcGcp.createGcpApiConfig({
@@ -481,28 +547,34 @@ export class Bigtable {
           },
         }),
       },
-      options
+      options,
     ) as gax.ClientOptions;
 
     const adminOptions = Object.assign(
       {},
       baseOptions,
+      getUniverseDomainOptions(options, options.BigtableTableAdminClient),
       {
         servicePath:
           customEndpointBaseUrl ||
-          getDomain('bigtableadmin', options.BigtableClient),
+          getDomain('bigtableadmin', options, options.BigtableTableAdminClient),
       },
-      options
+      options,
     );
     const instanceAdminOptions = Object.assign(
       {},
       baseOptions,
+      getUniverseDomainOptions(options, options.BigtableInstanceAdminClient),
       {
         servicePath:
           customEndpointBaseUrl ||
-          getDomain('bigtableadmin', options.BigtableClient),
+          getDomain(
+            'bigtableadmin',
+            options,
+            options.BigtableInstanceAdminClient,
+          ),
       },
-      options
+      options,
     );
 
     this.options = {
@@ -517,16 +589,21 @@ export class Bigtable {
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
+
+    const handlers = !(options.metricsEnabled === false)
+      ? [new GCPMetricsHandler(Object.assign({}, options) as ClientOptions)]
+      : [];
+    this._metricsConfigManager = new ClientSideMetricsConfigManager(handlers);
   }
 
   createInstance(
     id: string,
-    options: InstanceOptions
+    options: InstanceOptions,
   ): Promise<CreateInstanceResponse>;
   createInstance(
     id: string,
     options: InstanceOptions,
-    callback: CreateInstanceCallback
+    callback: CreateInstanceCallback,
   ): void;
   /**
    * Create a Cloud Bigtable instance.
@@ -607,16 +684,16 @@ export class Bigtable {
   createInstance(
     id: string,
     options: InstanceOptions,
-    callback?: CreateInstanceCallback
+    callback?: CreateInstanceCallback,
   ): void | Promise<CreateInstanceResponse> {
     if (typeof options !== 'object') {
       throw new Error(
-        'A configuration object is required to create an instance.'
+        'A configuration object is required to create an instance.',
       );
     }
     if (!options.clusters) {
       throw new Error(
-        'At least one cluster configuration object is required to create an instance.'
+        'At least one cluster configuration object is required to create an instance.',
       );
     }
     const reqOpts = {
@@ -634,44 +711,49 @@ export class Bigtable {
 
     reqOpts.clusters = arrify(options.clusters).reduce(
       (clusters, cluster) => {
-        if (!cluster.id) {
+        // TOD: Find a way to eliminate all ClusterInfo casts in this file.
+        if (!(cluster as ClusterInfo).id) {
           throw new Error(
-            'A cluster was provided without an `id` property defined.'
+            'A cluster was provided without an `id` property defined.',
           );
         }
 
         if (
-          typeof cluster.key !== 'undefined' &&
-          typeof cluster.encryption !== 'undefined'
+          typeof (cluster as ClusterInfo).key !== 'undefined' &&
+          typeof (cluster as ClusterInfo).encryption !== 'undefined'
         ) {
           throw new Error(
-            'A cluster was provided with both `encryption` and `key` defined.'
+            'A cluster was provided with both `encryption` and `key` defined.',
           );
         }
-        ClusterUtils.validateClusterMetadata(cluster);
-        clusters[cluster.id!] =
+        ClusterUtils.validateClusterMetadata(cluster as ClusterInfo);
+        clusters[(cluster as ClusterInfo).id!] =
           ClusterUtils.getClusterBaseConfigWithFullLocation(
-            cluster,
+            cluster as ClusterInfo,
             this.projectId,
-            undefined
+            undefined,
           );
-        Object.assign(clusters[cluster.id!], {
-          defaultStorageType: Cluster.getStorageType_(cluster.storage!),
+        Object.assign(clusters[(cluster as ClusterInfo).id!], {
+          defaultStorageType: Cluster.getStorageType_(
+            (cluster as ClusterInfo).storage!,
+          ),
         });
 
-        if (cluster.key) {
-          clusters[cluster.id!].encryptionConfig = {
-            kmsKeyName: cluster.key,
+        if ((cluster as ClusterInfo).key) {
+          clusters[(cluster as ClusterInfo).id!].encryptionConfig = {
+            kmsKeyName: (cluster as ClusterInfo).key,
           };
         }
 
-        if (cluster.encryption) {
-          clusters[cluster.id!].encryptionConfig = cluster.encryption;
+        if ((cluster as ClusterInfo).encryption) {
+          clusters[(cluster as ClusterInfo).id!].encryptionConfig = (
+            cluster as ClusterInfo
+          ).encryption;
         }
 
         return clusters;
       },
-      {} as {[index: string]: google.bigtable.admin.v2.ICluster}
+      {} as {[index: string]: google.bigtable.admin.v2.ICluster},
     );
 
     this.request(
@@ -687,7 +769,7 @@ export class Bigtable {
           args.splice(1, 0, this.instance(id));
         }
         callback!(...args);
-      }
+      },
     );
   }
 
@@ -751,7 +833,7 @@ export class Bigtable {
    */
   getInstances(
     gaxOptionsOrCallback?: CallOptions | GetInstancesCallback,
-    callback?: GetInstancesCallback
+    callback?: GetInstancesCallback,
   ): void | Promise<GetInstancesResponse> {
     const gaxOptions =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
@@ -782,7 +864,7 @@ export class Bigtable {
           return instance;
         });
         callback!(null, instances, resp.failedLocations, resp);
-      }
+      },
     );
   }
 
@@ -812,7 +894,7 @@ export class Bigtable {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   request<T = any>(
     config: RequestOptions,
-    callback?: (err: ServiceError | null, resp?: T) => void
+    callback?: (err: ServiceError | null, resp?: T) => void,
   ): void | AbortableDuplex {
     const isStreamMode = !callback;
 
@@ -820,7 +902,7 @@ export class Bigtable {
     let stream: AbortableDuplex;
 
     const prepareGaxRequest = (
-      callback: (err: Error | null, fn?: Function) => void
+      callback: (err: Error | null, fn?: Function) => void,
     ) => {
       this.getProjectId_((err, projectId) => {
         if (err) {
@@ -842,7 +924,7 @@ export class Bigtable {
         const requestFn = (gaxClient as any)[config.method!].bind(
           gaxClient,
           reqOpts,
-          config.gaxOpts
+          config.gaxOpts,
         );
         callback(null, requestFn);
       });
@@ -888,7 +970,7 @@ export class Bigtable {
           noResponseRetries: 0,
           objectMode: true,
         },
-        config.retryOpts
+        config.retryOpts,
       );
 
       config.gaxOpts = Object.assign(config.gaxOpts || {}, {
@@ -904,6 +986,7 @@ export class Bigtable {
         gaxStream
           .on('error', stream.destroy.bind(stream))
           .on('metadata', stream.emit.bind(stream, 'metadata'))
+          .on('status', stream.emit.bind(stream, 'status'))
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
       });
@@ -937,7 +1020,7 @@ export class Bigtable {
    */
   close(): Promise<void[]> {
     const combined = Object.keys(this.api).map(clientType =>
-      this.api[clientType].close()
+      this.api[clientType].close(),
     );
     return Promise.all(combined);
   }
@@ -1054,6 +1137,7 @@ promisifyAll(Bigtable, {
 module.exports = Bigtable;
 module.exports.v2 = v2;
 module.exports.Bigtable = Bigtable;
+module.exports.SqlTypes = SqlTypes;
 
 export {v2};
 export {protos};
@@ -1279,3 +1363,5 @@ export {
   WaitForReplicationCallback,
   WaitForReplicationResponse,
 } from './table';
+export {GCRuleMaker} from './gc-rule-maker';
+export {SqlTypes};

@@ -4,6 +4,102 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [6.4.1](https://github.com/googleapis/nodejs-bigtable/compare/v6.4.0...v6.4.1) (2025-09-09)
+
+
+### Bug Fixes
+
+* Directly import JS-native impl for crc32c on non-x64 platforms to avoid segfault ([#1715](https://github.com/googleapis/nodejs-bigtable/issues/1715)) ([9848963](https://github.com/googleapis/nodejs-bigtable/commit/98489637befe779df0438f466eecb0428222a29a))
+
+## [6.4.0](https://github.com/googleapis/nodejs-bigtable/compare/v6.3.0...v6.4.0) (2025-08-21)
+
+
+### Features
+
+* Enable csm by default ([#1695](https://github.com/googleapis/nodejs-bigtable/issues/1695)) ([9744aa3](https://github.com/googleapis/nodejs-bigtable/commit/9744aa355e87c2170019c52b58d1045160f19e7c))
+* For application latencies timed stream a few cosmetic changes are needed ([#1645](https://github.com/googleapis/nodejs-bigtable/issues/1645)) ([75d1a6f](https://github.com/googleapis/nodejs-bigtable/commit/75d1a6f5bc8d8cd74214bdf3c9db9d06786f9575))
+
+## [6.3.0](https://github.com/googleapis/nodejs-bigtable/compare/v6.2.0...v6.3.0) (2025-08-11)
+
+
+### Features
+
+* Add client side metrics for checkAndMutateRow calls ([#1661](https://github.com/googleapis/nodejs-bigtable/issues/1661)) ([c258ea1](https://github.com/googleapis/nodejs-bigtable/commit/c258ea1b29203aad3eaaf9cfe64ddabb8c1018bf))
+* Add client side metrics for readModifyWriteRow calls ([#1656](https://github.com/googleapis/nodejs-bigtable/issues/1656)) ([2129312](https://github.com/googleapis/nodejs-bigtable/commit/2129312401bf9f5b8e51b13ac576cb765de401df))
+* Client side metrics support for mutateRows ([#1638](https://github.com/googleapis/nodejs-bigtable/issues/1638)) ([7601e4d](https://github.com/googleapis/nodejs-bigtable/commit/7601e4da115ff6a5da411cc857917b579c70ced7))
+* Collect client side metrics for sampleRowKeys calls ([#1660](https://github.com/googleapis/nodejs-bigtable/issues/1660)) ([6ed98fa](https://github.com/googleapis/nodejs-bigtable/commit/6ed98faefe446e67f83fd5394aae30374fd3ec3a))
+* For client side metrics, record metrics as MUTATE_ROW for single row mutates ([#1650](https://github.com/googleapis/nodejs-bigtable/issues/1650)) ([f190a8c](https://github.com/googleapis/nodejs-bigtable/commit/f190a8c322498ddfbe73406759a43a268c16bdc4))
+* Record ReadRows application latencies for client side metrics ([#1647](https://github.com/googleapis/nodejs-bigtable/issues/1647)) ([8af801b](https://github.com/googleapis/nodejs-bigtable/commit/8af801b3ecd7ff5e30e6c8cc67bd4123bdf34ee9))
+
+
+### Bug Fixes
+
+* FirstResponseLatencies should only be collected for readRows calls ([#1658](https://github.com/googleapis/nodejs-bigtable/issues/1658)) ([99cf5a6](https://github.com/googleapis/nodejs-bigtable/commit/99cf5a6010249ed0eedd88f23b2d32cacb106c07))
+
+## [6.2.0](https://github.com/googleapis/nodejs-bigtable/compare/v6.1.0...v6.2.0) (2025-07-23)
+
+
+### Features
+
+* Add client side metrics collection to readRows calls ([#1571](https://github.com/googleapis/nodejs-bigtable/issues/1571)) ([71f4d78](https://github.com/googleapis/nodejs-bigtable/commit/71f4d78422137c88f1521be45004982367dbda31))
+* Add plumbing to support unary calls for client side metric collection ([#1631](https://github.com/googleapis/nodejs-bigtable/issues/1631)) ([c267ede](https://github.com/googleapis/nodejs-bigtable/commit/c267ede0140aa29bc75feada93899a4945980375))
+* Add support for Execute Query ([#1613](https://github.com/googleapis/nodejs-bigtable/issues/1613)) ([e3894ed](https://github.com/googleapis/nodejs-bigtable/commit/e3894edf4fc881153432f77ce976141397dc0348))
+* Initial timed stream implementation for application latencies ([#1639](https://github.com/googleapis/nodejs-bigtable/issues/1639)) ([ca490e8](https://github.com/googleapis/nodejs-bigtable/commit/ca490e80f2359156475e52c5f72fe0a9fe8e9740))
+
+
+### Bug Fixes
+
+* In Client-side metrics makes sure that the right views get created for the right metrics ([#1590](https://github.com/googleapis/nodejs-bigtable/issues/1590)) ([6cb7cdd](https://github.com/googleapis/nodejs-bigtable/commit/6cb7cddf42ff1fe29b2ae4a729739bc12c3d4942))
+
+## [6.1.0](https://github.com/googleapis/nodejs-bigtable/compare/v6.0.0...v6.1.0) (2025-05-30)
+
+
+### Features
+
+* Add full support for Universe Domain ([#1604](https://github.com/googleapis/nodejs-bigtable/issues/1604)) ([4562e23](https://github.com/googleapis/nodejs-bigtable/commit/4562e2329e734c0c9d9f00cfa83aa2be13e9a7fe))
+
+## [6.0.0](https://github.com/googleapis/nodejs-bigtable/compare/v5.1.2...v6.0.0) (2025-04-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* migrate to Node 18 ([#1582](https://github.com/googleapis/nodejs-bigtable/issues/1582))
+
+### Features
+
+* Add fields and the BackupType proto for Hot Backups ([#1439](https://github.com/googleapis/nodejs-bigtable/issues/1439)) ([433a8e3](https://github.com/googleapis/nodejs-bigtable/commit/433a8e347b21dbdba5b810141ecedbcc0daa9177))
+* Add MergeToCell to Mutation APIs ([433a8e3](https://github.com/googleapis/nodejs-bigtable/commit/433a8e347b21dbdba5b810141ecedbcc0daa9177))
+* Add min, max, hll aggregators and more types ([433a8e3](https://github.com/googleapis/nodejs-bigtable/commit/433a8e347b21dbdba5b810141ecedbcc0daa9177))
+* Add plumbing PR for client side metrics to support the open telemetry instruments ([#1569](https://github.com/googleapis/nodejs-bigtable/issues/1569)) ([c37a451](https://github.com/googleapis/nodejs-bigtable/commit/c37a451c52ff5639fc9f5e76c88e93ba549fe6c9))
+* Add the MetricsCollector for client side metrics ([#1566](https://github.com/googleapis/nodejs-bigtable/issues/1566)) ([d475ef2](https://github.com/googleapis/nodejs-bigtable/commit/d475ef2131ab1d18d70b2666d9f3405ad8a21449))
+* Add the plumbing for application blocking latencies client side metrics ([#1575](https://github.com/googleapis/nodejs-bigtable/issues/1575)) ([967f440](https://github.com/googleapis/nodejs-bigtable/commit/967f440fbcdc29040dddfae561b03f3c3462b671))
+* Bigtable authorized views requests on the Data plane ([#1509](https://github.com/googleapis/nodejs-bigtable/issues/1509)) ([da373b5](https://github.com/googleapis/nodejs-bigtable/commit/da373b5dcc51b459527c0797ac237c073364ca36))
+* Move the metrics handler fixture ([#1570](https://github.com/googleapis/nodejs-bigtable/issues/1570)) ([c97ebcc](https://github.com/googleapis/nodejs-bigtable/commit/c97ebcc6b9b8c36e0f39b79dd3ab75aaef6c52c5))
+* Publish ProtoRows Message ([433a8e3](https://github.com/googleapis/nodejs-bigtable/commit/433a8e347b21dbdba5b810141ecedbcc0daa9177))
+* Publish the Cloud Bigtable ExecuteQuery API ([433a8e3](https://github.com/googleapis/nodejs-bigtable/commit/433a8e347b21dbdba5b810141ecedbcc0daa9177))
+* Update Go Bigtable import path ([433a8e3](https://github.com/googleapis/nodejs-bigtable/commit/433a8e347b21dbdba5b810141ecedbcc0daa9177))
+* Update Go Datastore import path ([433a8e3](https://github.com/googleapis/nodejs-bigtable/commit/433a8e347b21dbdba5b810141ecedbcc0daa9177))
+
+
+### Bug Fixes
+
+* Address assertion error in TestReadRows_Retry_LastScannedRow conformance test ([#1521](https://github.com/googleapis/nodejs-bigtable/issues/1521)) ([0552638](https://github.com/googleapis/nodejs-bigtable/commit/0552638ca4c820dadcd66633d1f555ab3e5b1937))
+* Check and mutate generic header conformance test ([#1551](https://github.com/googleapis/nodejs-bigtable/issues/1551)) ([7f1099a](https://github.com/googleapis/nodejs-bigtable/commit/7f1099afbd5af1639b843285a9ce6358f067e50e))
+* Conformance test sample rowkeys generic deadline ([#1562](https://github.com/googleapis/nodejs-bigtable/issues/1562)) ([2fdf98f](https://github.com/googleapis/nodejs-bigtable/commit/2fdf98f9398761046f41bd58e00258f0d4963a3d))
+* Fix plumbing errors for client side metrics collection ([#1583](https://github.com/googleapis/nodejs-bigtable/issues/1583)) ([574c2f4](https://github.com/googleapis/nodejs-bigtable/commit/574c2f473e88174c05889e0294b2d25de2ad11dd))
+* Fix TestReadRows_Generic_CloseClient conformance test by passing grpc status codes for closed client errors ([#1524](https://github.com/googleapis/nodejs-bigtable/issues/1524)) ([8524174](https://github.com/googleapis/nodejs-bigtable/commit/8524174d9214c4391e9f1c06458c206acd685dc2))
+* Paused scan test is now fixed  ([#1539](https://github.com/googleapis/nodejs-bigtable/issues/1539)) ([d009a8f](https://github.com/googleapis/nodejs-bigtable/commit/d009a8f9bb86c2efa192e98e565cd7b305700ff9))
+* Sample rowkey generic header conformance test ([#1550](https://github.com/googleapis/nodejs-bigtable/issues/1550)) ([6ef7671](https://github.com/googleapis/nodejs-bigtable/commit/6ef76713dc8823cfb2131a60f3a09174d42b655c))
+* TestMutateRow_Generic_Headers ([#1540](https://github.com/googleapis/nodejs-bigtable/issues/1540)) ([f6176c1](https://github.com/googleapis/nodejs-bigtable/commit/f6176c110f832dbacc14ac60fa1870e69aa139ce))
+* Update owlbot.py to exculde sync repo ([#1549](https://github.com/googleapis/nodejs-bigtable/issues/1549)) ([f1ad565](https://github.com/googleapis/nodejs-bigtable/commit/f1ad565b321b0d45baed5c3304b4a9990c4b9c41))
+* Update sync-repo-settings.yaml to make owl bot optional ([#1547](https://github.com/googleapis/nodejs-bigtable/issues/1547)) ([d745412](https://github.com/googleapis/nodejs-bigtable/commit/d745412dd43965d5d8ac7f83c823314043bc0fca))
+* Use the universe domain if it is provided by the user ([#1563](https://github.com/googleapis/nodejs-bigtable/issues/1563)) ([d26ecb8](https://github.com/googleapis/nodejs-bigtable/commit/d26ecb8d2260b434d2f37abf28b92e50db25c45d))
+
+
+### Miscellaneous Chores
+
+* Migrate to Node 18 ([#1582](https://github.com/googleapis/nodejs-bigtable/issues/1582)) ([e50b67d](https://github.com/googleapis/nodejs-bigtable/commit/e50b67da62f9640c10a32bd9e0ff067fc522a7b0))
+
 ## [5.1.2](https://github.com/googleapis/nodejs-bigtable/compare/v5.1.1...v5.1.2) (2024-07-22)
 
 
