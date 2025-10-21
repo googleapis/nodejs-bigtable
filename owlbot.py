@@ -18,6 +18,7 @@ import logging
 import os
 from pathlib import Path
 from synthtool import _tracked_paths
+from typing import AnyStr
 import shutil
 
 logging.basicConfig(level=logging.DEBUG)
@@ -25,25 +26,61 @@ logging.basicConfig(level=logging.DEBUG)
 staging = Path("owl-bot-staging")
 
 if staging.is_dir():
+    versions = ['v2']
+    versions_admin = [f"admin/{p}" for p in versions]
+
     logging.info(f"Copying files from staging directory ${staging}.")
 
+    src_paths = {}
+    src_files = {}
+    for version in versions + versions_admin:
+        src_paths[version] = staging / version
+        src_files[version] = [src_paths[version] / fn for fn in os.listdir(src_paths[version])]
 
     # Copy bigtable library.
     # src/index.ts src/v2/index.ts has added AdminClients manually, we don't wanna override it.
     # src/*.ts is a added layer for the client libraries, they need extra setting in tsconfig.json & tslint.json
     # Tracking issues: 1. https://github.com/googleapis/nodejs-bigtable/issues/636
     #                  2. https://github.com/googleapis/nodejs-bigtable/issues/635
-    for version in ['v2']:
-        library = staging / version
+    for version in versions:
+        library = src_paths[version]
         _tracked_paths.add(library)
-        s.copy([library], excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json', '.github/sync-repo-settings.yaml'])
+        admin_files = filter(
+            lambda f: str(f).find('_admin') >= 0,
+            src_files[version]
+        )
+        s.copy([library], excludes=[
+            'package.json',
+            'README.md',
+            'src/index.ts',
+            'src/v2/index.ts',
+            'tsconfig.json',
+            'tslint.json',
+            '.github/sync-repo-settings.yaml',
+        ].extend(admin_files))
 
-    # Copy the admin library.
-    # Not override system-test for admin/v2, just keep the v2 version.
-    for version in ['v2']:
-        library = staging / 'admin' / version
+    # Copy the admin library pieces and knit them in.
+    # Don't override system-test for admin/v2, just keep the v2 version.
+    for version in versions:
+        admin_path = f"admin/{version}"
+        library = src_paths[admin_path]
+        classes = library / 'src' / 'v2'
+        samples = library / 'samples' / 'generated'
+        tests = library / 'test'
         _tracked_paths.add(library)
-        s.copy([library], excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json', 'system-test/fixtures/sample/src/index.ts', 'system-test/fixtures/sample/src/index.js', '.github/sync-repo-settings.yaml'])
+
+        def mergeIndex(new_text: str, orig: str, p):
+            newline = '\n'
+            export_lines = new_text.split(newline)
+            exports = [l for l in export_lines if l[:len('export')] == 'export']
+            return orig + f"{newline}{newline.join(list(exports))}{newline}"
+
+        os.system(f"mkdir -p src/{admin_path}")
+        s.copy([classes / '*admin*'], destination=f"src/{admin_path}", merge = mergeIndex)
+        os.system(f"mkdir -p samples/generated/{admin_path}")
+        s.copy([samples / 'v2' / '*admin*'], destination=f"samples/generated/{admin_path}")
+        os.system(f"mkdir -p test/{admin_path}")
+        s.copy([tests / '*admin*.ts'], destination=f"test/{admin_path}")
 
     # Replace the client name for generated system-test.
     system_test_files=['system-test/fixtures/sample/src/index.ts','system-test/fixtures/sample/src/index.js']
