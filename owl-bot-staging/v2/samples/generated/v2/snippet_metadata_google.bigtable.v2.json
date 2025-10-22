@@ -1,0 +1,643 @@
+{
+  "clientLibrary": {
+    "name": "nodejs-bigtable",
+    "version": "0.1.0",
+    "language": "TYPESCRIPT",
+    "apis": [
+      {
+        "id": "google.bigtable.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_ReadRows_async",
+      "title": "Bigtable readRows Sample",
+      "origin": "API_DEFINITION",
+      "description": " Streams back the contents of all requested rows in key order, optionally applying the same Reader filter to each. Depending on their size, rows and cells may be broken up across multiple responses, but atomicity of each row will still be preserved. See the ReadRowsResponse documentation for details.",
+      "canonical": true,
+      "file": "bigtable.read_rows.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 104,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "ReadRows",
+        "fullName": "google.bigtable.v2.Bigtable.ReadRows",
+        "async": true,
+        "parameters": [
+          {
+            "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "materialized_view_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "rows",
+            "type": ".google.bigtable.v2.RowSet"
+          },
+          {
+            "name": "filter",
+            "type": ".google.bigtable.v2.RowFilter"
+          },
+          {
+            "name": "rows_limit",
+            "type": "TYPE_INT64"
+          },
+          {
+            "name": "request_stats_view",
+            "type": ".google.bigtable.v2.ReadRowsRequest.RequestStatsView"
+          },
+          {
+            "name": "reversed",
+            "type": "TYPE_BOOL"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.ReadRowsResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "ReadRows",
+          "fullName": "google.bigtable.v2.Bigtable.ReadRows",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_SampleRowKeys_async",
+      "title": "Bigtable sampleRowKeys Sample",
+      "origin": "API_DEFINITION",
+      "description": " Returns a sample of row keys in the table. The returned row keys will delimit contiguous sections of the table of approximately equal size, which can be used to break up the data for distributed tasks like mapreduces.",
+      "canonical": true,
+      "file": "bigtable.sample_row_keys.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 74,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "SampleRowKeys",
+        "fullName": "google.bigtable.v2.Bigtable.SampleRowKeys",
+        "async": true,
+        "parameters": [
+          {
+            "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "materialized_view_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.SampleRowKeysResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "SampleRowKeys",
+          "fullName": "google.bigtable.v2.Bigtable.SampleRowKeys",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_MutateRow_async",
+      "title": "Bigtable mutateRow Sample",
+      "origin": "API_DEFINITION",
+      "description": " Mutates a row atomically. Cells already present in the row are left unchanged unless explicitly changed by `mutation`.",
+      "canonical": true,
+      "file": "bigtable.mutate_row.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 84,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "MutateRow",
+        "fullName": "google.bigtable.v2.Bigtable.MutateRow",
+        "async": true,
+        "parameters": [
+          {
+            "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "row_key",
+            "type": "TYPE_BYTES"
+          },
+          {
+            "name": "mutations",
+            "type": "TYPE_MESSAGE[]"
+          },
+          {
+            "name": "idempotency",
+            "type": ".google.bigtable.v2.Idempotency"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.MutateRowResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "MutateRow",
+          "fullName": "google.bigtable.v2.Bigtable.MutateRow",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_MutateRows_async",
+      "title": "Bigtable mutateRows Sample",
+      "origin": "API_DEFINITION",
+      "description": " Mutates multiple rows in a batch. Each individual row is mutated atomically as in MutateRow, but the entire batch is not executed atomically.",
+      "canonical": true,
+      "file": "bigtable.mutate_rows.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 78,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "MutateRows",
+        "fullName": "google.bigtable.v2.Bigtable.MutateRows",
+        "async": true,
+        "parameters": [
+          {
+            "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "entries",
+            "type": "TYPE_MESSAGE[]"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.MutateRowsResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "MutateRows",
+          "fullName": "google.bigtable.v2.Bigtable.MutateRows",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_CheckAndMutateRow_async",
+      "title": "Bigtable checkAndMutateRow Sample",
+      "origin": "API_DEFINITION",
+      "description": " Mutates a row atomically based on the output of a predicate Reader filter.",
+      "canonical": true,
+      "file": "bigtable.check_and_mutate_row.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 96,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "CheckAndMutateRow",
+        "fullName": "google.bigtable.v2.Bigtable.CheckAndMutateRow",
+        "async": true,
+        "parameters": [
+          {
+            "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "row_key",
+            "type": "TYPE_BYTES"
+          },
+          {
+            "name": "predicate_filter",
+            "type": ".google.bigtable.v2.RowFilter"
+          },
+          {
+            "name": "true_mutations",
+            "type": "TYPE_MESSAGE[]"
+          },
+          {
+            "name": "false_mutations",
+            "type": "TYPE_MESSAGE[]"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.CheckAndMutateRowResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "CheckAndMutateRow",
+          "fullName": "google.bigtable.v2.Bigtable.CheckAndMutateRow",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_PingAndWarm_async",
+      "title": "Bigtable pingAndWarm Sample",
+      "origin": "API_DEFINITION",
+      "description": " Warm up associated instance metadata for this connection. This call is not required but may be useful for connection keep-alive.",
+      "canonical": true,
+      "file": "bigtable.ping_and_warm.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 60,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "PingAndWarm",
+        "fullName": "google.bigtable.v2.Bigtable.PingAndWarm",
+        "async": true,
+        "parameters": [
+          {
+            "name": "name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.PingAndWarmResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "PingAndWarm",
+          "fullName": "google.bigtable.v2.Bigtable.PingAndWarm",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_ReadModifyWriteRow_async",
+      "title": "Bigtable readModifyWriteRow Sample",
+      "origin": "API_DEFINITION",
+      "description": " Modifies a row atomically on the server. The method reads the latest existing timestamp and value from the specified columns and writes a new entry based on pre-defined read/modify/write rules. The new value for the timestamp is the greater of the existing timestamp or the current server time. The method returns the new contents of all modified cells.",
+      "canonical": true,
+      "file": "bigtable.read_modify_write_row.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 81,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "ReadModifyWriteRow",
+        "fullName": "google.bigtable.v2.Bigtable.ReadModifyWriteRow",
+        "async": true,
+        "parameters": [
+          {
+            "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "row_key",
+            "type": "TYPE_BYTES"
+          },
+          {
+            "name": "rules",
+            "type": "TYPE_MESSAGE[]"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.ReadModifyWriteRowResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "ReadModifyWriteRow",
+          "fullName": "google.bigtable.v2.Bigtable.ReadModifyWriteRow",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_GenerateInitialChangeStreamPartitions_async",
+      "title": "Bigtable generateInitialChangeStreamPartitions Sample",
+      "origin": "API_DEFINITION",
+      "description": " Returns the current list of partitions that make up the table's change stream. The union of partitions will cover the entire keyspace. Partitions can be read with `ReadChangeStream`. NOTE: This API is only intended to be used by Apache Beam BigtableIO.",
+      "canonical": true,
+      "file": "bigtable.generate_initial_change_stream_partitions.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 64,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "GenerateInitialChangeStreamPartitions",
+        "fullName": "google.bigtable.v2.Bigtable.GenerateInitialChangeStreamPartitions",
+        "async": true,
+        "parameters": [
+          {
+            "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "GenerateInitialChangeStreamPartitions",
+          "fullName": "google.bigtable.v2.Bigtable.GenerateInitialChangeStreamPartitions",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_ReadChangeStream_async",
+      "title": "Bigtable readChangeStream Sample",
+      "origin": "API_DEFINITION",
+      "description": " Reads changes from a table's change stream. Changes will reflect both user-initiated mutations and mutations that are caused by garbage collection. NOTE: This API is only intended to be used by Apache Beam BigtableIO.",
+      "canonical": true,
+      "file": "bigtable.read_change_stream.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 98,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "ReadChangeStream",
+        "fullName": "google.bigtable.v2.Bigtable.ReadChangeStream",
+        "async": true,
+        "parameters": [
+          {
+            "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "partition",
+            "type": ".google.bigtable.v2.StreamPartition"
+          },
+          {
+            "name": "start_time",
+            "type": ".google.protobuf.Timestamp"
+          },
+          {
+            "name": "continuation_tokens",
+            "type": ".google.bigtable.v2.StreamContinuationTokens"
+          },
+          {
+            "name": "end_time",
+            "type": ".google.protobuf.Timestamp"
+          },
+          {
+            "name": "heartbeat_duration",
+            "type": ".google.protobuf.Duration"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.ReadChangeStreamResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "ReadChangeStream",
+          "fullName": "google.bigtable.v2.Bigtable.ReadChangeStream",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_PrepareQuery_async",
+      "title": "Bigtable prepareQuery Sample",
+      "origin": "API_DEFINITION",
+      "description": " Prepares a GoogleSQL query for execution on a particular Bigtable instance.",
+      "canonical": true,
+      "file": "bigtable.prepare_query.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 85,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "PrepareQuery",
+        "fullName": "google.bigtable.v2.Bigtable.PrepareQuery",
+        "async": true,
+        "parameters": [
+          {
+            "name": "instance_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "query",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "proto_format",
+            "type": ".google.bigtable.v2.ProtoFormat"
+          },
+          {
+            "name": "param_types",
+            "type": "TYPE_MESSAGE[]"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.PrepareQueryResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "PrepareQuery",
+          "fullName": "google.bigtable.v2.Bigtable.PrepareQuery",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_ExecuteQuery_async",
+      "title": "Bigtable executeQuery Sample",
+      "origin": "API_DEFINITION",
+      "description": " Executes a SQL query against a particular Bigtable instance.",
+      "canonical": true,
+      "file": "bigtable.execute_query.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 117,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "ExecuteQuery",
+        "fullName": "google.bigtable.v2.Bigtable.ExecuteQuery",
+        "async": true,
+        "parameters": [
+          {
+            "name": "instance_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "query",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "prepared_query",
+            "type": "TYPE_BYTES"
+          },
+          {
+            "name": "proto_format",
+            "type": ".google.bigtable.v2.ProtoFormat"
+          },
+          {
+            "name": "resume_token",
+            "type": "TYPE_BYTES"
+          },
+          {
+            "name": "params",
+            "type": "TYPE_MESSAGE[]"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.ExecuteQueryResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "ExecuteQuery",
+          "fullName": "google.bigtable.v2.Bigtable.ExecuteQuery",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    }
+  ]
+}
