@@ -49,7 +49,7 @@ if staging.is_dir():
             lambda f: str(f).find('_admin') >= 0,
             src_files[version]
         )
-        s.copy([library], excludes=[
+        excludes = [
             'package.json',
             'README.md',
             'src/index.ts',
@@ -57,7 +57,10 @@ if staging.is_dir():
             'tsconfig.json',
             'tslint.json',
             '.github/sync-repo-settings.yaml',
-        ].extend(admin_files))
+            '.OwlBot.yaml',
+        ] + list(admin_files)
+        logging.info(f"excluding files for non-admin: {excludes}")
+        s.copy([library], excludes = excludes)
 
     # Copy the admin library pieces and knit them in.
     # Don't override system-test for admin/v2, just keep the v2 version.
@@ -69,14 +72,14 @@ if staging.is_dir():
         tests = library / 'test'
         _tracked_paths.add(library)
 
-        def mergeIndex(new_text: str, orig: str, p):
-            newline = '\n'
-            export_lines = new_text.split(newline)
-            exports = [l for l in export_lines if l[:len('export')] == 'export']
-            return orig + f"{newline}{newline.join(list(exports))}{newline}"
+        #def mergeIndex(new_text: str, orig: str, p):
+        #    newline = '\n'
+        #    export_lines = new_text.split(newline)
+        #    exports = [l for l in export_lines if l[:len('export')] == 'export']
+        #    return orig + f"{newline}{newline.join(list(exports))}{newline}"
 
         os.system(f"mkdir -p src/{admin_path}")
-        s.copy([classes / '*admin*'], destination=f"src/{admin_path}", merge = mergeIndex)
+        s.copy([classes / '*'], destination=f"src/{admin_path}") #, merge = mergeIndex)
         os.system(f"mkdir -p samples/generated/{admin_path}")
         s.copy([samples / 'v2' / '*admin*'], destination=f"samples/generated/{admin_path}")
         os.system(f"mkdir -p test/{admin_path}")
