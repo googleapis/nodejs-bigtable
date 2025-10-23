@@ -18,7 +18,7 @@
 
 
 /* eslint-disable node/no-missing-require, no-unused-vars */
-const bigtable = require('bigtable');
+const bigtable = require('@google-cloud/bigtable');
 
 function main() {
   const bigtableClient = new bigtable.BigtableClient();

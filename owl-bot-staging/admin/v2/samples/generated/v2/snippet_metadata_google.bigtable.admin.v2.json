@@ -13,7 +13,7 @@
   "snippets": [
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateInstance_async",
-      "title": "BigtableInstanceAdmin createInstance Sample",
+      "title": "bigtable createInstance Sample",
       "origin": "API_DEFINITION",
       "description": " Create an instance within a project. Note that exactly one of Cluster.serve_nodes and Cluster.cluster_config.cluster_autoscaling_config can be set. If serve_nodes is set to non-zero, then the cluster is manually scaled. If cluster_config.cluster_autoscaling_config is non-empty, then autoscaling is enabled.",
       "canonical": true,
@@ -65,7 +65,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_GetInstance_async",
-      "title": "BigtableInstanceAdmin getInstance Sample",
+      "title": "bigtable getInstance Sample",
       "origin": "API_DEFINITION",
       "description": " Gets information about an instance.",
       "canonical": true,
@@ -105,7 +105,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_ListInstances_async",
-      "title": "BigtableInstanceAdmin listInstances Sample",
+      "title": "bigtable listInstances Sample",
       "origin": "API_DEFINITION",
       "description": " Lists information about instances in a project.",
       "canonical": true,
@@ -149,7 +149,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateInstance_async",
-      "title": "BigtableInstanceAdmin updateInstance Sample",
+      "title": "bigtable updateInstance Sample",
       "origin": "API_DEFINITION",
       "description": " Updates an instance within a project. This method updates only the display name and type for an Instance. To update other Instance properties, such as labels, use PartialUpdateInstance.",
       "canonical": true,
@@ -221,7 +221,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_PartialUpdateInstance_async",
-      "title": "BigtableInstanceAdmin partialUpdateInstance Sample",
+      "title": "bigtable partialUpdateInstance Sample",
       "origin": "API_DEFINITION",
       "description": " Partially updates an instance within a project. This method can modify all fields of an Instance and is the preferred way to update an Instance.",
       "canonical": true,
@@ -265,7 +265,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_DeleteInstance_async",
-      "title": "BigtableInstanceAdmin deleteInstance Sample",
+      "title": "bigtable deleteInstance Sample",
       "origin": "API_DEFINITION",
       "description": " Delete an instance from a project.",
       "canonical": true,
@@ -305,7 +305,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateCluster_async",
-      "title": "BigtableInstanceAdmin createCluster Sample",
+      "title": "bigtable createCluster Sample",
       "origin": "API_DEFINITION",
       "description": " Creates a cluster within an instance. Note that exactly one of Cluster.serve_nodes and Cluster.cluster_config.cluster_autoscaling_config can be set. If serve_nodes is set to non-zero, then the cluster is manually scaled. If cluster_config.cluster_autoscaling_config is non-empty, then autoscaling is enabled.",
       "canonical": true,
@@ -353,7 +353,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_GetCluster_async",
-      "title": "BigtableInstanceAdmin getCluster Sample",
+      "title": "bigtable getCluster Sample",
       "origin": "API_DEFINITION",
       "description": " Gets information about a cluster.",
       "canonical": true,
@@ -393,7 +393,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_ListClusters_async",
-      "title": "BigtableInstanceAdmin listClusters Sample",
+      "title": "bigtable listClusters Sample",
       "origin": "API_DEFINITION",
       "description": " Lists information about clusters in an instance.",
       "canonical": true,
@@ -437,7 +437,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateCluster_async",
-      "title": "BigtableInstanceAdmin updateCluster Sample",
+      "title": "bigtable updateCluster Sample",
       "origin": "API_DEFINITION",
       "description": " Updates a cluster within an instance. Note that UpdateCluster does not support updating cluster_config.cluster_autoscaling_config. In order to update it, you must use PartialUpdateCluster.",
       "canonical": true,
@@ -505,7 +505,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_PartialUpdateCluster_async",
-      "title": "BigtableInstanceAdmin partialUpdateCluster Sample",
+      "title": "bigtable partialUpdateCluster Sample",
       "origin": "API_DEFINITION",
       "description": " Partially updates a cluster within a project. This method is the preferred way to update a Cluster. To enable and update autoscaling, set cluster_config.cluster_autoscaling_config. When autoscaling is enabled, serve_nodes is treated as an OUTPUT_ONLY field, meaning that updates to it are ignored. Note that an update cannot simultaneously set serve_nodes to non-zero and cluster_config.cluster_autoscaling_config to non-empty, and also specify both in the update_mask. To disable autoscaling, clear cluster_config.cluster_autoscaling_config, and explicitly set a serve_node count via the update_mask.",
       "canonical": true,
@@ -549,7 +549,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_DeleteCluster_async",
-      "title": "BigtableInstanceAdmin deleteCluster Sample",
+      "title": "bigtable deleteCluster Sample",
       "origin": "API_DEFINITION",
       "description": " Deletes a cluster from an instance.",
       "canonical": true,
@@ -589,7 +589,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateAppProfile_async",
-      "title": "BigtableInstanceAdmin createAppProfile Sample",
+      "title": "bigtable createAppProfile Sample",
       "origin": "API_DEFINITION",
       "description": " Creates an app profile within an instance.",
       "canonical": true,
@@ -641,7 +641,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_GetAppProfile_async",
-      "title": "BigtableInstanceAdmin getAppProfile Sample",
+      "title": "bigtable getAppProfile Sample",
       "origin": "API_DEFINITION",
       "description": " Gets information about an app profile.",
       "canonical": true,
@@ -681,7 +681,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_ListAppProfiles_async",
-      "title": "BigtableInstanceAdmin listAppProfiles Sample",
+      "title": "bigtable listAppProfiles Sample",
       "origin": "API_DEFINITION",
       "description": " Lists information about app profiles in an instance.",
       "canonical": true,
@@ -729,7 +729,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateAppProfile_async",
-      "title": "BigtableInstanceAdmin updateAppProfile Sample",
+      "title": "bigtable updateAppProfile Sample",
       "origin": "API_DEFINITION",
       "description": " Updates an app profile within an instance.",
       "canonical": true,
@@ -777,7 +777,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_DeleteAppProfile_async",
-      "title": "BigtableInstanceAdmin deleteAppProfile Sample",
+      "title": "bigtable deleteAppProfile Sample",
       "origin": "API_DEFINITION",
       "description": " Deletes an app profile from an instance.",
       "canonical": true,
@@ -821,7 +821,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_GetIamPolicy_async",
-      "title": "BigtableInstanceAdmin getIamPolicy Sample",
+      "title": "bigtable getIamPolicy Sample",
       "origin": "API_DEFINITION",
       "description": " Gets the access control policy for an instance resource. Returns an empty policy if an instance exists but does not have a policy set.",
       "canonical": true,
@@ -865,7 +865,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_SetIamPolicy_async",
-      "title": "BigtableInstanceAdmin setIamPolicy Sample",
+      "title": "bigtable setIamPolicy Sample",
       "origin": "API_DEFINITION",
       "description": " Sets the access control policy on an instance resource. Replaces any existing policy.",
       "canonical": true,
@@ -913,7 +913,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_TestIamPermissions_async",
-      "title": "BigtableInstanceAdmin testIamPermissions Sample",
+      "title": "bigtable testIamPermissions Sample",
       "origin": "API_DEFINITION",
       "description": " Returns permissions that the caller has on the specified instance resource.",
       "canonical": true,
@@ -957,7 +957,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_ListHotTablets_async",
-      "title": "BigtableInstanceAdmin listHotTablets Sample",
+      "title": "bigtable listHotTablets Sample",
       "origin": "API_DEFINITION",
       "description": " Lists hot tablets in a cluster, within the time range provided. Hot tablets are ordered based on CPU usage.",
       "canonical": true,
@@ -1013,7 +1013,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateLogicalView_async",
-      "title": "BigtableInstanceAdmin createLogicalView Sample",
+      "title": "bigtable createLogicalView Sample",
       "origin": "API_DEFINITION",
       "description": " Creates a logical view within an instance.",
       "canonical": true,
@@ -1061,7 +1061,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_GetLogicalView_async",
-      "title": "BigtableInstanceAdmin getLogicalView Sample",
+      "title": "bigtable getLogicalView Sample",
       "origin": "API_DEFINITION",
       "description": " Gets information about a logical view.",
       "canonical": true,
@@ -1101,7 +1101,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_ListLogicalViews_async",
-      "title": "BigtableInstanceAdmin listLogicalViews Sample",
+      "title": "bigtable listLogicalViews Sample",
       "origin": "API_DEFINITION",
       "description": " Lists information about logical views in an instance.",
       "canonical": true,
@@ -1149,7 +1149,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateLogicalView_async",
-      "title": "BigtableInstanceAdmin updateLogicalView Sample",
+      "title": "bigtable updateLogicalView Sample",
       "origin": "API_DEFINITION",
       "description": " Updates a logical view within an instance.",
       "canonical": true,
@@ -1193,7 +1193,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_DeleteLogicalView_async",
-      "title": "BigtableInstanceAdmin deleteLogicalView Sample",
+      "title": "bigtable deleteLogicalView Sample",
       "origin": "API_DEFINITION",
       "description": " Deletes a logical view from an instance.",
       "canonical": true,
@@ -1237,7 +1237,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateMaterializedView_async",
-      "title": "BigtableInstanceAdmin createMaterializedView Sample",
+      "title": "bigtable createMaterializedView Sample",
       "origin": "API_DEFINITION",
       "description": " Creates a materialized view within an instance.",
       "canonical": true,
@@ -1285,7 +1285,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_GetMaterializedView_async",
-      "title": "BigtableInstanceAdmin getMaterializedView Sample",
+      "title": "bigtable getMaterializedView Sample",
       "origin": "API_DEFINITION",
       "description": " Gets information about a materialized view.",
       "canonical": true,
@@ -1325,7 +1325,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_ListMaterializedViews_async",
-      "title": "BigtableInstanceAdmin listMaterializedViews Sample",
+      "title": "bigtable listMaterializedViews Sample",
       "origin": "API_DEFINITION",
       "description": " Lists information about materialized views in an instance.",
       "canonical": true,
@@ -1373,7 +1373,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateMaterializedView_async",
-      "title": "BigtableInstanceAdmin updateMaterializedView Sample",
+      "title": "bigtable updateMaterializedView Sample",
       "origin": "API_DEFINITION",
       "description": " Updates a materialized view within an instance.",
       "canonical": true,
@@ -1417,7 +1417,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_DeleteMaterializedView_async",
-      "title": "BigtableInstanceAdmin deleteMaterializedView Sample",
+      "title": "bigtable deleteMaterializedView Sample",
       "origin": "API_DEFINITION",
       "description": " Deletes a materialized view from an instance.",
       "canonical": true,
@@ -1461,7 +1461,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CreateTable_async",
-      "title": "BigtableInstanceAdmin createTable Sample",
+      "title": "bigtable createTable Sample",
       "origin": "API_DEFINITION",
       "description": " Creates a new table in the specified instance. The table can be created with a full set of initial column families, specified in the request.",
       "canonical": true,
@@ -1513,7 +1513,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CreateTableFromSnapshot_async",
-      "title": "BigtableInstanceAdmin createTableFromSnapshot Sample",
+      "title": "bigtable createTableFromSnapshot Sample",
       "origin": "API_DEFINITION",
       "description": " Creates a new table from the specified snapshot. The target table must not exist. The snapshot and the table must be in the same instance. Note: This is a private alpha release of Cloud Bigtable snapshots. This feature is not currently available to most Cloud Bigtable customers. This feature might be changed in backward-incompatible ways and is not recommended for production use. It is not subject to any SLA or deprecation policy.",
       "canonical": true,
@@ -1561,7 +1561,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_ListTables_async",
-      "title": "BigtableInstanceAdmin listTables Sample",
+      "title": "bigtable listTables Sample",
       "origin": "API_DEFINITION",
       "description": " Lists all tables served from a specified instance.",
       "canonical": true,
@@ -1613,7 +1613,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GetTable_async",
-      "title": "BigtableInstanceAdmin getTable Sample",
+      "title": "bigtable getTable Sample",
       "origin": "API_DEFINITION",
       "description": " Gets metadata information about the specified table.",
       "canonical": true,
@@ -1657,7 +1657,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_UpdateTable_async",
-      "title": "BigtableInstanceAdmin updateTable Sample",
+      "title": "bigtable updateTable Sample",
       "origin": "API_DEFINITION",
       "description": " Updates a specified table.",
       "canonical": true,
@@ -1705,7 +1705,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_DeleteTable_async",
-      "title": "BigtableInstanceAdmin deleteTable Sample",
+      "title": "bigtable deleteTable Sample",
       "origin": "API_DEFINITION",
       "description": " Permanently deletes a specified table and all of its data.",
       "canonical": true,
@@ -1745,7 +1745,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_UndeleteTable_async",
-      "title": "BigtableInstanceAdmin undeleteTable Sample",
+      "title": "bigtable undeleteTable Sample",
       "origin": "API_DEFINITION",
       "description": " Restores a specified table which was accidentally deleted.",
       "canonical": true,
@@ -1785,7 +1785,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CreateAuthorizedView_async",
-      "title": "BigtableInstanceAdmin createAuthorizedView Sample",
+      "title": "bigtable createAuthorizedView Sample",
       "origin": "API_DEFINITION",
       "description": " Creates a new AuthorizedView in a table.",
       "canonical": true,
@@ -1833,7 +1833,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_ListAuthorizedViews_async",
-      "title": "BigtableInstanceAdmin listAuthorizedViews Sample",
+      "title": "bigtable listAuthorizedViews Sample",
       "origin": "API_DEFINITION",
       "description": " Lists all AuthorizedViews from a specific table.",
       "canonical": true,
@@ -1885,7 +1885,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GetAuthorizedView_async",
-      "title": "BigtableInstanceAdmin getAuthorizedView Sample",
+      "title": "bigtable getAuthorizedView Sample",
       "origin": "API_DEFINITION",
       "description": " Gets information from a specified AuthorizedView.",
       "canonical": true,
@@ -1929,7 +1929,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_UpdateAuthorizedView_async",
-      "title": "BigtableInstanceAdmin updateAuthorizedView Sample",
+      "title": "bigtable updateAuthorizedView Sample",
       "origin": "API_DEFINITION",
       "description": " Updates an AuthorizedView in a table.",
       "canonical": true,
@@ -1977,7 +1977,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_DeleteAuthorizedView_async",
-      "title": "BigtableInstanceAdmin deleteAuthorizedView Sample",
+      "title": "bigtable deleteAuthorizedView Sample",
       "origin": "API_DEFINITION",
       "description": " Permanently deletes a specified AuthorizedView.",
       "canonical": true,
@@ -2021,7 +2021,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_ModifyColumnFamilies_async",
-      "title": "BigtableInstanceAdmin modifyColumnFamilies Sample",
+      "title": "bigtable modifyColumnFamilies Sample",
       "origin": "API_DEFINITION",
       "description": " Performs a series of column family modifications on the specified table. Either all or none of the modifications will occur before this method returns, but data requests received prior to that point may see a table where only some modifications have taken effect.",
       "canonical": true,
@@ -2069,7 +2069,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_DropRowRange_async",
-      "title": "BigtableInstanceAdmin dropRowRange Sample",
+      "title": "bigtable dropRowRange Sample",
       "origin": "API_DEFINITION",
       "description": " Permanently drop/delete a row range from a specified table. The request can specify whether to delete all rows in a table, or only those that match a particular prefix.",
       "canonical": true,
@@ -2117,7 +2117,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GenerateConsistencyToken_async",
-      "title": "BigtableInstanceAdmin generateConsistencyToken Sample",
+      "title": "bigtable generateConsistencyToken Sample",
       "origin": "API_DEFINITION",
       "description": " Generates a consistency token for a Table, which can be used in CheckConsistency to check whether mutations to the table that finished before this call started have been replicated. The tokens will be available for 90 days.",
       "canonical": true,
@@ -2157,7 +2157,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CheckConsistency_async",
-      "title": "BigtableInstanceAdmin checkConsistency Sample",
+      "title": "bigtable checkConsistency Sample",
       "origin": "API_DEFINITION",
       "description": " Checks replication consistency based on a consistency token, that is, if replication has caught up based on the conditions specified in the token and the check request.",
       "canonical": true,
@@ -2209,7 +2209,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_SnapshotTable_async",
-      "title": "BigtableInstanceAdmin snapshotTable Sample",
+      "title": "bigtable snapshotTable Sample",
       "origin": "API_DEFINITION",
       "description": " Creates a new snapshot in the specified cluster from the specified source table. The cluster and the table must be in the same instance. Note: This is a private alpha release of Cloud Bigtable snapshots. This feature is not currently available to most Cloud Bigtable customers. This feature might be changed in backward-incompatible ways and is not recommended for production use. It is not subject to any SLA or deprecation policy.",
       "canonical": true,
@@ -2265,7 +2265,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GetSnapshot_async",
-      "title": "BigtableInstanceAdmin getSnapshot Sample",
+      "title": "bigtable getSnapshot Sample",
       "origin": "API_DEFINITION",
       "description": " Gets metadata information about the specified snapshot. Note: This is a private alpha release of Cloud Bigtable snapshots. This feature is not currently available to most Cloud Bigtable customers. This feature might be changed in backward-incompatible ways and is not recommended for production use. It is not subject to any SLA or deprecation policy.",
       "canonical": true,
@@ -2305,7 +2305,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_ListSnapshots_async",
-      "title": "BigtableInstanceAdmin listSnapshots Sample",
+      "title": "bigtable listSnapshots Sample",
       "origin": "API_DEFINITION",
       "description": " Lists all snapshots associated with the specified cluster. Note: This is a private alpha release of Cloud Bigtable snapshots. This feature is not currently available to most Cloud Bigtable customers. This feature might be changed in backward-incompatible ways and is not recommended for production use. It is not subject to any SLA or deprecation policy.",
       "canonical": true,
@@ -2353,7 +2353,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_DeleteSnapshot_async",
-      "title": "BigtableInstanceAdmin deleteSnapshot Sample",
+      "title": "bigtable deleteSnapshot Sample",
       "origin": "API_DEFINITION",
       "description": " Permanently deletes the specified snapshot. Note: This is a private alpha release of Cloud Bigtable snapshots. This feature is not currently available to most Cloud Bigtable customers. This feature might be changed in backward-incompatible ways and is not recommended for production use. It is not subject to any SLA or deprecation policy.",
       "canonical": true,
@@ -2393,7 +2393,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CreateBackup_async",
-      "title": "BigtableInstanceAdmin createBackup Sample",
+      "title": "bigtable createBackup Sample",
       "origin": "API_DEFINITION",
       "description": " Starts creating a new Cloud Bigtable Backup.  The returned backup [long-running operation][google.longrunning.Operation] can be used to track creation of the backup. The [metadata][google.longrunning.Operation.metadata] field type is [CreateBackupMetadata][google.bigtable.admin.v2.CreateBackupMetadata]. The [response][google.longrunning.Operation.response] field type is [Backup][google.bigtable.admin.v2.Backup], if successful. Cancelling the returned operation will stop the creation and delete the backup.",
       "canonical": true,
@@ -2441,7 +2441,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GetBackup_async",
-      "title": "BigtableInstanceAdmin getBackup Sample",
+      "title": "bigtable getBackup Sample",
       "origin": "API_DEFINITION",
       "description": " Gets metadata on a pending or completed Cloud Bigtable Backup.",
       "canonical": true,
@@ -2481,7 +2481,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_UpdateBackup_async",
-      "title": "BigtableInstanceAdmin updateBackup Sample",
+      "title": "bigtable updateBackup Sample",
       "origin": "API_DEFINITION",
       "description": " Updates a pending or completed Cloud Bigtable Backup.",
       "canonical": true,
@@ -2525,7 +2525,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_DeleteBackup_async",
-      "title": "BigtableInstanceAdmin deleteBackup Sample",
+      "title": "bigtable deleteBackup Sample",
       "origin": "API_DEFINITION",
       "description": " Deletes a pending or completed Cloud Bigtable backup.",
       "canonical": true,
@@ -2565,7 +2565,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_ListBackups_async",
-      "title": "BigtableInstanceAdmin listBackups Sample",
+      "title": "bigtable listBackups Sample",
       "origin": "API_DEFINITION",
       "description": " Lists Cloud Bigtable backups. Returns both completed and pending backups.",
       "canonical": true,
@@ -2621,7 +2621,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async",
-      "title": "BigtableInstanceAdmin restoreTable Sample",
+      "title": "bigtable restoreTable Sample",
       "origin": "API_DEFINITION",
       "description": " Create a new table by restoring from a completed backup.  The returned table [long-running operation][google.longrunning.Operation] can be used to track the progress of the operation, and to cancel it.  The [metadata][google.longrunning.Operation.metadata] field type is [RestoreTableMetadata][google.bigtable.admin.v2.RestoreTableMetadata].  The [response][google.longrunning.Operation.response] type is [Table][google.bigtable.admin.v2.Table], if successful.",
       "canonical": true,
@@ -2669,7 +2669,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CopyBackup_async",
-      "title": "BigtableInstanceAdmin copyBackup Sample",
+      "title": "bigtable copyBackup Sample",
       "origin": "API_DEFINITION",
       "description": " Copy a Cloud Bigtable backup to a new backup in the destination cluster located in the destination instance and project.",
       "canonical": true,
@@ -2721,7 +2721,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GetIamPolicy_async",
-      "title": "BigtableInstanceAdmin getIamPolicy Sample",
+      "title": "bigtable getIamPolicy Sample",
       "origin": "API_DEFINITION",
       "description": " Gets the access control policy for a Bigtable resource. Returns an empty policy if the resource exists but does not have a policy set.",
       "canonical": true,
@@ -2765,7 +2765,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_SetIamPolicy_async",
-      "title": "BigtableInstanceAdmin setIamPolicy Sample",
+      "title": "bigtable setIamPolicy Sample",
       "origin": "API_DEFINITION",
       "description": " Sets the access control policy on a Bigtable resource. Replaces any existing policy.",
       "canonical": true,
@@ -2813,7 +2813,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_TestIamPermissions_async",
-      "title": "BigtableInstanceAdmin testIamPermissions Sample",
+      "title": "bigtable testIamPermissions Sample",
       "origin": "API_DEFINITION",
       "description": " Returns permissions that the caller has on the specified Bigtable resource.",
       "canonical": true,
@@ -2857,7 +2857,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CreateSchemaBundle_async",
-      "title": "BigtableInstanceAdmin createSchemaBundle Sample",
+      "title": "bigtable createSchemaBundle Sample",
       "origin": "API_DEFINITION",
       "description": " Creates a new schema bundle in the specified table.",
       "canonical": true,
@@ -2905,7 +2905,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_UpdateSchemaBundle_async",
-      "title": "BigtableInstanceAdmin updateSchemaBundle Sample",
+      "title": "bigtable updateSchemaBundle Sample",
       "origin": "API_DEFINITION",
       "description": " Updates a schema bundle in the specified table.",
       "canonical": true,
@@ -2953,7 +2953,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GetSchemaBundle_async",
-      "title": "BigtableInstanceAdmin getSchemaBundle Sample",
+      "title": "bigtable getSchemaBundle Sample",
       "origin": "API_DEFINITION",
       "description": " Gets metadata information about the specified schema bundle.",
       "canonical": true,
@@ -2993,7 +2993,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_ListSchemaBundles_async",
-      "title": "BigtableInstanceAdmin listSchemaBundles Sample",
+      "title": "bigtable listSchemaBundles Sample",
       "origin": "API_DEFINITION",
       "description": " Lists all schema bundles associated with the specified table.",
       "canonical": true,
@@ -3041,7 +3041,7 @@
     },
     {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_DeleteSchemaBundle_async",
-      "title": "BigtableInstanceAdmin deleteSchemaBundle Sample",
+      "title": "bigtable deleteSchemaBundle Sample",
       "origin": "API_DEFINITION",
       "description": " Deletes a schema bundle in the specified table.",
       "canonical": true,

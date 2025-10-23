@@ -16,7 +16,7 @@
 // ** https://github.com/googleapis/gapic-generator-typescript **
 // ** All changes to this file may be overwritten. **
 
-import {BigtableInstanceAdminClient, BigtableTableAdminClient} from 'admin';
+import {BigtableInstanceAdminClient, BigtableTableAdminClient} from '@google-cloud/bigtable';
 
 // check that the client class type name can be used
 function doStuffWithBigtableInstanceAdminClient(client: BigtableInstanceAdminClient) {

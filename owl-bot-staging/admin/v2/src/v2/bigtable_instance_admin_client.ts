@@ -49,7 +49,7 @@ export class BigtableInstanceAdminClient {
   private _defaults: {[method: string]: gax.CallSettings};
   private _universeDomain: string;
   private _servicePath: string;
-  private _log = logging.log('admin');
+  private _log = logging.log('bigtable');
 
   auth: gax.GoogleAuth;
   descriptors: Descriptors = {
@@ -118,6 +118,9 @@ export class BigtableInstanceAdminClient {
     const clientConfig = opts?.clientConfig ?? {};
     const fallback = opts?.fallback ?? (typeof window !== 'undefined' && typeof window?.fetch === 'function');
     opts = Object.assign({servicePath, port, clientConfig, fallback}, opts);
+
+    // Request numeric enum values if REST transport is used.
+    opts.numericEnums = true;
 
     // If scopes are unset in options and we're connecting to a non-default endpoint, set scopes just in case.
     if (servicePath !== this._servicePath && !('scopes' in opts)) {

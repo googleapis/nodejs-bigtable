@@ -17,7 +17,7 @@ const path = require('path');
 module.exports = {
   entry: './src/index.ts',
   output: {
-    library: 'Bigtable',
+    library: 'bigtable',
     filename: './bigtable.js',
   },
   node: {

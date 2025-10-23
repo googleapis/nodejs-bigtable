@@ -40,7 +40,7 @@ function main(resource) {
   // const options = {}
 
   // Imports the Admin library
-  const {BigtableTableAdminClient} = require('admin').v2;
+  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
 
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();

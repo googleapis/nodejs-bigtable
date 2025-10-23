@@ -16,7 +16,7 @@
 // ** https://github.com/googleapis/gapic-generator-typescript **
 // ** All changes to this file may be overwritten. **
 
-import {BigtableClient} from 'bigtable';
+import {BigtableClient} from '@google-cloud/bigtable';
 
 // check that the client class type name can be used
 function doStuffWithBigtableClient(client: BigtableClient) {

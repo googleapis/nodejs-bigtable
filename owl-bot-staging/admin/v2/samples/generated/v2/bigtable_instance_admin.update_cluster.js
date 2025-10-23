@@ -69,7 +69,7 @@ function main(location, state, nodeScalingFactor, defaultStorageType, encryption
   // const encryptionConfig = {}
 
   // Imports the Admin library
-  const {BigtableInstanceAdminClient} = require('admin').v2;
+  const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
 
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();

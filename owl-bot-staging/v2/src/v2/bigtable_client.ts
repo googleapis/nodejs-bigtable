@@ -116,6 +116,9 @@ export class BigtableClient {
     const fallback = opts?.fallback ?? (typeof window !== 'undefined' && typeof window?.fetch === 'function');
     opts = Object.assign({servicePath, port, clientConfig, fallback}, opts);
 
+    // Request numeric enum values if REST transport is used.
+    opts.numericEnums = true;
+
     // If scopes are unset in options and we're connecting to a non-default endpoint, set scopes just in case.
     if (servicePath !== this._servicePath && !('scopes' in opts)) {
       opts['scopes'] = staticMembers.scopes;
@@ -393,8 +396,6 @@ export class BigtableClient {
  *   The first element of the array is an object representing {@link protos.google.bigtable.v2.MutateRowResponse|MutateRowResponse}.
  *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
  *   for more details and examples.
- * @example <caption>include:samples/generated/v2/bigtable.mutate_row.js</caption>
- * region_tag:bigtable_v2_generated_Bigtable_MutateRow_async
  */
   mutateRow(
       request?: protos.google.bigtable.v2.IMutateRowRequest,
@@ -551,8 +552,6 @@ export class BigtableClient {
  *   The first element of the array is an object representing {@link protos.google.bigtable.v2.CheckAndMutateRowResponse|CheckAndMutateRowResponse}.
  *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
  *   for more details and examples.
- * @example <caption>include:samples/generated/v2/bigtable.check_and_mutate_row.js</caption>
- * region_tag:bigtable_v2_generated_Bigtable_CheckAndMutateRow_async
  */
   checkAndMutateRow(
       request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
@@ -682,8 +681,6 @@ export class BigtableClient {
  *   The first element of the array is an object representing {@link protos.google.bigtable.v2.PingAndWarmResponse|PingAndWarmResponse}.
  *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
  *   for more details and examples.
- * @example <caption>include:samples/generated/v2/bigtable.ping_and_warm.js</caption>
- * region_tag:bigtable_v2_generated_Bigtable_PingAndWarm_async
  */
   pingAndWarm(
       request?: protos.google.bigtable.v2.IPingAndWarmRequest,
@@ -822,8 +819,6 @@ export class BigtableClient {
  *   The first element of the array is an object representing {@link protos.google.bigtable.v2.ReadModifyWriteRowResponse|ReadModifyWriteRowResponse}.
  *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
  *   for more details and examples.
- * @example <caption>include:samples/generated/v2/bigtable.read_modify_write_row.js</caption>
- * region_tag:bigtable_v2_generated_Bigtable_ReadModifyWriteRow_async
  */
   readModifyWriteRow(
       request?: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
@@ -971,8 +966,6 @@ export class BigtableClient {
  *   The first element of the array is an object representing {@link protos.google.bigtable.v2.PrepareQueryResponse|PrepareQueryResponse}.
  *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
  *   for more details and examples.
- * @example <caption>include:samples/generated/v2/bigtable.prepare_query.js</caption>
- * region_tag:bigtable_v2_generated_Bigtable_PrepareQuery_async
  */
   prepareQuery(
       request?: protos.google.bigtable.v2.IPrepareQueryRequest,
@@ -1131,8 +1124,6 @@ export class BigtableClient {
  *   An object stream which emits {@link protos.google.bigtable.v2.ReadRowsResponse|ReadRowsResponse} on 'data' event.
  *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming | documentation }
  *   for more details and examples.
- * @example <caption>include:samples/generated/v2/bigtable.read_rows.js</caption>
- * region_tag:bigtable_v2_generated_Bigtable_ReadRows_async
  */
   readRows(
       request?: protos.google.bigtable.v2.IReadRowsRequest,
@@ -1226,8 +1217,6 @@ export class BigtableClient {
  *   An object stream which emits {@link protos.google.bigtable.v2.SampleRowKeysResponse|SampleRowKeysResponse} on 'data' event.
  *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming | documentation }
  *   for more details and examples.
- * @example <caption>include:samples/generated/v2/bigtable.sample_row_keys.js</caption>
- * region_tag:bigtable_v2_generated_Bigtable_SampleRowKeys_async
  */
   sampleRowKeys(
       request?: protos.google.bigtable.v2.ISampleRowKeysRequest,
@@ -1322,8 +1311,6 @@ export class BigtableClient {
  *   An object stream which emits {@link protos.google.bigtable.v2.MutateRowsResponse|MutateRowsResponse} on 'data' event.
  *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming | documentation }
  *   for more details and examples.
- * @example <caption>include:samples/generated/v2/bigtable.mutate_rows.js</caption>
- * region_tag:bigtable_v2_generated_Bigtable_MutateRows_async
  */
   mutateRows(
       request?: protos.google.bigtable.v2.IMutateRowsRequest,
@@ -1397,8 +1384,6 @@ export class BigtableClient {
  *   An object stream which emits {@link protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse|GenerateInitialChangeStreamPartitionsResponse} on 'data' event.
  *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming | documentation }
  *   for more details and examples.
- * @example <caption>include:samples/generated/v2/bigtable.generate_initial_change_stream_partitions.js</caption>
- * region_tag:bigtable_v2_generated_Bigtable_GenerateInitialChangeStreamPartitions_async
  */
   generateInitialChangeStreamPartitions(
       request?: protos.google.bigtable.v2.IGenerateInitialChangeStreamPartitionsRequest,
@@ -1466,8 +1451,6 @@ export class BigtableClient {
  *   An object stream which emits {@link protos.google.bigtable.v2.ReadChangeStreamResponse|ReadChangeStreamResponse} on 'data' event.
  *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming | documentation }
  *   for more details and examples.
- * @example <caption>include:samples/generated/v2/bigtable.read_change_stream.js</caption>
- * region_tag:bigtable_v2_generated_Bigtable_ReadChangeStream_async
  */
   readChangeStream(
       request?: protos.google.bigtable.v2.IReadChangeStreamRequest,
@@ -1555,8 +1538,6 @@ export class BigtableClient {
  *   An object stream which emits {@link protos.google.bigtable.v2.ExecuteQueryResponse|ExecuteQueryResponse} on 'data' event.
  *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming | documentation }
  *   for more details and examples.
- * @example <caption>include:samples/generated/v2/bigtable.execute_query.js</caption>
- * region_tag:bigtable_v2_generated_Bigtable_ExecuteQuery_async
  */
   executeQuery(
       request?: protos.google.bigtable.v2.IExecuteQueryRequest,

@@ -6,7 +6,7 @@
 
 [//]: # "releaseLevel"
 
-[![npm version](https://img.shields.io/npm/v/admin.svg)](https://www.npmjs.org/package/admin)
+[![npm version](https://img.shields.io/npm/v/@google-cloud/bigtable.svg)](https://www.npmjs.org/package/@google-cloud/bigtable)
 
 Cloud Bigtable Admin API client for Node.js
 
@@ -44,7 +44,7 @@ Google APIs Client Libraries, in [Client Libraries Explained][explained].
 ### Installing the client library
 
 ```bash
-npm install admin
+npm install @google-cloud/bigtable
 ```
 
 [//]: # "partials.body"
@@ -73,7 +73,7 @@ best-efforts basis with the following warnings:
 Client libraries targeting some end-of-life versions of Node.js are available, and
 can be installed through npm [dist-tags](https://docs.npmjs.com/cli/dist-tag).
 The dist-tags follow the naming convention `legacy-(version)`.
-For example, `npm install admin@legacy-8` installs client libraries
+For example, `npm install @google-cloud/bigtable@legacy-8` installs client libraries
 for versions compatible with Node.js 8.
 
 ## Versioning

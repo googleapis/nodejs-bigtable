@@ -43,7 +43,7 @@ module.exports = {
     copyright: 'Copyright 2025 Google LLC',
     includeDate: false,
     sourceFiles: false,
-    systemName: 'admin',
+    systemName: '@google-cloud/bigtable',
     theme: 'lumen',
     default: {
       outputSourceFiles: false

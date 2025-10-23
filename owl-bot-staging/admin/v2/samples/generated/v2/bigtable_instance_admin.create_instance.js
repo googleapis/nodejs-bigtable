@@ -53,7 +53,7 @@ function main(parent, instanceId, instance, clusters) {
   // const clusters = [1,2,3,4]
 
   // Imports the Admin library
-  const {BigtableInstanceAdminClient} = require('admin').v2;
+  const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
 
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();

@@ -17,8 +17,8 @@ const path = require('path');
 module.exports = {
   entry: './src/index.ts',
   output: {
-    library: 'BigtableInstanceAdmin',
-    filename: './bigtable-instance-admin.js',
+    library: 'bigtable',
+    filename: './bigtable.js',
   },
   node: {
     child_process: 'empty',

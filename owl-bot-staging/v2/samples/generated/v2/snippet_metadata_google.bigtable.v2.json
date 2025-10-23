@@ -13,16 +13,16 @@
   "snippets": [
     {
       "regionTag": "bigtable_v2_generated_Bigtable_ReadRows_async",
-      "title": "Bigtable readRows Sample",
+      "title": "bigtable readRows Sample",
       "origin": "API_DEFINITION",
       "description": " Streams back the contents of all requested rows in key order, optionally applying the same Reader filter to each. Depending on their size, rows and cells may be broken up across multiple responses, but atomicity of each row will still be preserved. See the ReadRowsResponse documentation for details.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.read_rows.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 25,
-          "end": 104,
+          "start": 29,
+          "end": 108,
           "type": "FULL"
         }
       ],
@@ -85,16 +85,16 @@
     },
     {
       "regionTag": "bigtable_v2_generated_Bigtable_SampleRowKeys_async",
-      "title": "Bigtable sampleRowKeys Sample",
+      "title": "bigtable sampleRowKeys Sample",
       "origin": "API_DEFINITION",
       "description": " Returns a sample of row keys in the table. The returned row keys will delimit contiguous sections of the table of approximately equal size, which can be used to break up the data for distributed tasks like mapreduces.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.sample_row_keys.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 25,
-          "end": 74,
+          "start": 29,
+          "end": 78,
           "type": "FULL"
         }
       ],
@@ -137,16 +137,16 @@
     },
     {
       "regionTag": "bigtable_v2_generated_Bigtable_MutateRow_async",
-      "title": "Bigtable mutateRow Sample",
+      "title": "bigtable mutateRow Sample",
       "origin": "API_DEFINITION",
       "description": " Mutates a row atomically. Cells already present in the row are left unchanged unless explicitly changed by `mutation`.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.mutate_row.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 25,
-          "end": 84,
+          "start": 29,
+          "end": 88,
           "type": "FULL"
         }
       ],
@@ -197,16 +197,16 @@
     },
     {
       "regionTag": "bigtable_v2_generated_Bigtable_MutateRows_async",
-      "title": "Bigtable mutateRows Sample",
+      "title": "bigtable mutateRows Sample",
       "origin": "API_DEFINITION",
       "description": " Mutates multiple rows in a batch. Each individual row is mutated atomically as in MutateRow, but the entire batch is not executed atomically.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.mutate_rows.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 25,
-          "end": 78,
+          "start": 29,
+          "end": 82,
           "type": "FULL"
         }
       ],
@@ -249,16 +249,16 @@
     },
     {
       "regionTag": "bigtable_v2_generated_Bigtable_CheckAndMutateRow_async",
-      "title": "Bigtable checkAndMutateRow Sample",
+      "title": "bigtable checkAndMutateRow Sample",
       "origin": "API_DEFINITION",
       "description": " Mutates a row atomically based on the output of a predicate Reader filter.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.check_and_mutate_row.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 25,
-          "end": 96,
+          "start": 29,
+          "end": 100,
           "type": "FULL"
         }
       ],
@@ -313,16 +313,16 @@
     },
     {
       "regionTag": "bigtable_v2_generated_Bigtable_PingAndWarm_async",
-      "title": "Bigtable pingAndWarm Sample",
+      "title": "bigtable pingAndWarm Sample",
       "origin": "API_DEFINITION",
       "description": " Warm up associated instance metadata for this connection. This call is not required but may be useful for connection keep-alive.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.ping_and_warm.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 25,
-          "end": 60,
+          "start": 29,
+          "end": 64,
           "type": "FULL"
         }
       ],
@@ -357,16 +357,16 @@
     },
     {
       "regionTag": "bigtable_v2_generated_Bigtable_ReadModifyWriteRow_async",
-      "title": "Bigtable readModifyWriteRow Sample",
+      "title": "bigtable readModifyWriteRow Sample",
       "origin": "API_DEFINITION",
       "description": " Modifies a row atomically on the server. The method reads the latest existing timestamp and value from the specified columns and writes a new entry based on pre-defined read/modify/write rules. The new value for the timestamp is the greater of the existing timestamp or the current server time. The method returns the new contents of all modified cells.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.read_modify_write_row.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 25,
-          "end": 81,
+          "start": 29,
+          "end": 85,
           "type": "FULL"
         }
       ],
@@ -413,16 +413,16 @@
     },
     {
       "regionTag": "bigtable_v2_generated_Bigtable_GenerateInitialChangeStreamPartitions_async",
-      "title": "Bigtable generateInitialChangeStreamPartitions Sample",
+      "title": "bigtable generateInitialChangeStreamPartitions Sample",
       "origin": "API_DEFINITION",
       "description": " Returns the current list of partitions that make up the table's change stream. The union of partitions will cover the entire keyspace. Partitions can be read with `ReadChangeStream`. NOTE: This API is only intended to be used by Apache Beam BigtableIO.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.generate_initial_change_stream_partitions.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 25,
-          "end": 64,
+          "start": 29,
+          "end": 68,
           "type": "FULL"
         }
       ],
@@ -457,16 +457,16 @@
     },
     {
       "regionTag": "bigtable_v2_generated_Bigtable_ReadChangeStream_async",
-      "title": "Bigtable readChangeStream Sample",
+      "title": "bigtable readChangeStream Sample",
       "origin": "API_DEFINITION",
       "description": " Reads changes from a table's change stream. Changes will reflect both user-initiated mutations and mutations that are caused by garbage collection. NOTE: This API is only intended to be used by Apache Beam BigtableIO.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.read_change_stream.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 25,
-          "end": 98,
+          "start": 29,
+          "end": 102,
           "type": "FULL"
         }
       ],
@@ -521,16 +521,16 @@
     },
     {
       "regionTag": "bigtable_v2_generated_Bigtable_PrepareQuery_async",
-      "title": "Bigtable prepareQuery Sample",
+      "title": "bigtable prepareQuery Sample",
       "origin": "API_DEFINITION",
       "description": " Prepares a GoogleSQL query for execution on a particular Bigtable instance.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.prepare_query.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 25,
-          "end": 85,
+          "start": 29,
+          "end": 89,
           "type": "FULL"
         }
       ],
@@ -577,16 +577,16 @@
     },
     {
       "regionTag": "bigtable_v2_generated_Bigtable_ExecuteQuery_async",
-      "title": "Bigtable executeQuery Sample",
+      "title": "bigtable executeQuery Sample",
       "origin": "API_DEFINITION",
       "description": " Executes a SQL query against a particular Bigtable instance.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.execute_query.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 25,
-          "end": 117,
+          "start": 29,
+          "end": 121,
           "type": "FULL"
         }
       ],
