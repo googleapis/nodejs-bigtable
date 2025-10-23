@@ -29,13 +29,13 @@ if staging.is_dir():
     versions = ['v2']
     versions_admin = [f"admin/{p}" for p in versions]
 
-    logging.info(f"Copying files from staging directory ${staging}.")
+    logging.info(f"Copying files from staging directory {staging}.")
 
     src_paths = {}
     src_files = {}
     for version in versions + versions_admin:
         src_paths[version] = staging / version
-        src_files[version] = [src_paths[version] / fn for fn in os.listdir(src_paths[version])]
+        src_files[version] = list([fn for fn in src_paths[version].glob('**/*.*')])
 
     # Copy bigtable library.
     # src/index.ts src/v2/index.ts has added AdminClients manually, we don't wanna override it.
@@ -67,10 +67,27 @@ if staging.is_dir():
     for version in versions:
         admin_path = f"admin/{version}"
         library = src_paths[admin_path]
-        classes = library / 'src' / 'v2'
+        inProtoPath = f"protos/google/bigtable/{admin_path}"
+        protos = library / inProtoPath
+        classes = library / 'src' / version
         samples = library / 'samples' / 'generated'
         tests = library / 'test'
         _tracked_paths.add(library)
+        #print(version, library, inProtoPath, protos, classes, samples, tests, src_files[version])
+
+        # We also have to munge the proto paths in the *_proto_list.json due to making it a level deeper.
+        # That also applies to the classes themselves.
+        classesStr = str(classes)
+        jsons = [fn
+                    for fn
+                    in src_files[admin_path]
+                    if str(fn)[:len(classesStr)] == classesStr]
+        #print('selected files', jsons)
+        for jfn in jsons:
+            logging.info(f"munging json file: {str(jfn)}")
+            contents = jfn.read_text()
+            contents = contents.replace('../..', '../../..')
+            jfn.write_text(contents)
 
         #def mergeIndex(new_text: str, orig: str, p):
         #    newline = '\n'
@@ -78,6 +95,8 @@ if staging.is_dir():
         #    exports = [l for l in export_lines if l[:len('export')] == 'export']
         #    return orig + f"{newline}{newline.join(list(exports))}{newline}"
 
+        os.system(f"mkdir -p {inProtoPath}")
+        s.copy([protos / '*'], destination=inProtoPath)
         os.system(f"mkdir -p src/{admin_path}")
         s.copy([classes / '*'], destination=f"src/{admin_path}") #, merge = mergeIndex)
         os.system(f"mkdir -p samples/generated/{admin_path}")
