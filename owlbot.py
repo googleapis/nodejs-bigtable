@@ -65,9 +65,9 @@ if staging.is_dir():
     # Copy the admin library pieces and knit them in.
     # Don't override system-test for admin/v2, just keep the v2 version.
     for version in versions:
-        admin_path = f"admin/{version}"
-        library = src_paths[admin_path]
-        inProtoPath = f"protos/google/bigtable/{admin_path}"
+        admin_version = f"admin/{version}"
+        library = src_paths[admin_version]
+        inProtoPath = f"protos/google/bigtable/{admin_version}"
         protos = library / inProtoPath
         classes = library / 'src' / version
         samples = library / 'samples' / 'generated'
@@ -80,14 +80,27 @@ if staging.is_dir():
         classesStr = str(classes)
         jsons = [fn
                     for fn
-                    in src_files[admin_path]
+                    in src_files[admin_version]
                     if str(fn)[:len(classesStr)] == classesStr]
         #print('selected files', jsons)
         for jfn in jsons:
             logging.info(f"munging json file: {str(jfn)}")
             contents = jfn.read_text()
-            contents = contents.replace('../..', '../../..')
+            contents = contents.replace("'../..", "'../../..")
+            contents = contents.replace('"../..', '"../../..')
             jfn.write_text(contents)
+
+        # Also to the tests that import stuff from src. ../ -> ../../../
+        testsStr = str(tests)
+        tfns = [fn
+                    for fn
+                    in src_files[admin_version]
+                    if str(fn)[:len(testsStr)] == testsStr]
+        for tfn in tfns:
+            logging.info(f"munging test file: {str(tfn)}")
+            contents = tfn.read_text()
+            contents = contents.replace("'../", "'../../../")
+            tfn.write_text(contents)
 
         #def mergeIndex(new_text: str, orig: str, p):
         #    newline = '\n'
@@ -97,12 +110,12 @@ if staging.is_dir():
 
         os.system(f"mkdir -p {inProtoPath}")
         s.copy([protos / '*'], destination=inProtoPath)
-        os.system(f"mkdir -p src/{admin_path}")
-        s.copy([classes / '*'], destination=f"src/{admin_path}") #, merge = mergeIndex)
-        os.system(f"mkdir -p samples/generated/{admin_path}")
-        s.copy([samples / 'v2' / '*admin*'], destination=f"samples/generated/{admin_path}")
-        os.system(f"mkdir -p test/{admin_path}")
-        s.copy([tests / '*admin*.ts'], destination=f"test/{admin_path}")
+        os.system(f"mkdir -p src/{admin_version}")
+        s.copy([classes / '*'], destination=f"src/{admin_version}") #, merge = mergeIndex)
+        os.system(f"mkdir -p samples/generated/{admin_version}")
+        s.copy([samples / 'v2' / '*admin*'], destination=f"samples/generated/{admin_version}")
+        os.system(f"mkdir -p test/{admin_version}")
+        s.copy([tests / '*admin*.ts'], destination=f"test/{admin_version}")
 
     # Replace the client name for generated system-test.
     system_test_files=['system-test/fixtures/sample/src/index.ts','system-test/fixtures/sample/src/index.js']
