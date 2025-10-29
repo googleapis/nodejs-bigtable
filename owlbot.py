@@ -38,7 +38,7 @@ if staging.is_dir():
         src_files[version] = list([fn for fn in src_paths[version].glob('**/*.*')])
 
     # Copy bigtable library.
-    # src/index.ts src/v2/index.ts has added AdminClients manually, we don't wanna override it.
+    # src/index.ts src/admin/v2/index.ts has added AdminClients manually, we don't wanna override it.
     # src/*.ts is a added layer for the client libraries, they need extra setting in tsconfig.json & tslint.json
     # Tracking issues: 1. https://github.com/googleapis/nodejs-bigtable/issues/636
     #                  2. https://github.com/googleapis/nodejs-bigtable/issues/635
@@ -73,7 +73,6 @@ if staging.is_dir():
         samples = library / 'samples' / 'generated'
         tests = library / 'test'
         _tracked_paths.add(library)
-        #print(version, library, inProtoPath, protos, classes, samples, tests, src_files[version])
 
         # We also have to munge the proto paths in the *_proto_list.json due to making it a level deeper.
         # That also applies to the classes themselves.
@@ -82,7 +81,6 @@ if staging.is_dir():
                     for fn
                     in src_files[admin_version]
                     if str(fn)[:len(classesStr)] == classesStr]
-        #print('selected files', jsons)
         for jfn in jsons:
             logging.info(f"munging json file: {str(jfn)}")
             contents = jfn.read_text()
@@ -102,16 +100,10 @@ if staging.is_dir():
             contents = contents.replace("'../", "'../../../")
             tfn.write_text(contents)
 
-        #def mergeIndex(new_text: str, orig: str, p):
-        #    newline = '\n'
-        #    export_lines = new_text.split(newline)
-        #    exports = [l for l in export_lines if l[:len('export')] == 'export']
-        #    return orig + f"{newline}{newline.join(list(exports))}{newline}"
-
         os.system(f"mkdir -p {inProtoPath}")
         s.copy([protos / '*'], destination=inProtoPath)
         os.system(f"mkdir -p src/{admin_version}")
-        s.copy([classes / '*'], destination=f"src/{admin_version}") #, merge = mergeIndex)
+        s.copy([classes / '*'], destination=f"src/{admin_version}")
         os.system(f"mkdir -p samples/generated/{admin_version}")
         s.copy([samples / 'v2' / '*admin*'], destination=f"samples/generated/{admin_version}")
         os.system(f"mkdir -p test/{admin_version}")
