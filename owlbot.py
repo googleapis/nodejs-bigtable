@@ -100,6 +100,18 @@ if staging.is_dir():
             contents = contents.replace("'../", "'../../../")
             tfn.write_text(contents)
 
+        # Finally, the samples. .v2 -> .admin.v2
+        samplesStr = str(samples)
+        sfns = [fn
+                    for fn
+                    in src_files[admin_version]
+                    if str(fn)[:len(samplesStr)] == samplesStr]
+        for sfn in sfns:
+            logging.info(f"munging sample file: {str(sfn)}")
+            contents = sfn.read_text()
+            contents = contents.replace(').v2', ').admin.v2')
+            sfn.write_text(contents)
+
         os.system(f"mkdir -p {inProtoPath}")
         s.copy([protos / '*'], destination=inProtoPath)
         os.system(f"mkdir -p src/{admin_version}")
