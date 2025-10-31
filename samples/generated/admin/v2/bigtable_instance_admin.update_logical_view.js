@@ -41,7 +41,7 @@ function main(logicalView) {
   // const updateMask = {}
 
   // Imports the Admin library
-  const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
+  const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').admin.v2;
 
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
