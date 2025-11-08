@@ -11374,6 +11374,9 @@ export namespace google {
 
                 /** FeatureFlags directAccessRequested */
                 directAccessRequested?: (boolean|null);
+
+                /** FeatureFlags peerInfo */
+                peerInfo?: (boolean|null);
             }
 
             /** Represents a FeatureFlags. */
@@ -11411,6 +11414,9 @@ export namespace google {
 
                 /** FeatureFlags directAccessRequested. */
                 public directAccessRequested: boolean;
+
+                /** FeatureFlags peerInfo. */
+                public peerInfo: boolean;
 
                 /**
                  * Creates a new FeatureFlags instance using the specified properties.
@@ -11490,6 +11496,142 @@ export namespace google {
                 public static getTypeUrl(typeUrlPrefix?: string): string;
             }
 
+            /** Properties of a PeerInfo. */
+            interface IPeerInfo {
+
+                /** PeerInfo googleFrontendId */
+                googleFrontendId?: (number|Long|string|null);
+
+                /** PeerInfo applicationFrontendId */
+                applicationFrontendId?: (number|Long|string|null);
+
+                /** PeerInfo applicationFrontendZone */
+                applicationFrontendZone?: (string|null);
+
+                /** PeerInfo applicationFrontendSubzone */
+                applicationFrontendSubzone?: (string|null);
+
+                /** PeerInfo transportType */
+                transportType?: (google.bigtable.v2.PeerInfo.TransportType|keyof typeof google.bigtable.v2.PeerInfo.TransportType|null);
+            }
+
+            /** Represents a PeerInfo. */
+            class PeerInfo implements IPeerInfo {
+
+                /**
+                 * Constructs a new PeerInfo.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IPeerInfo);
+
+                /** PeerInfo googleFrontendId. */
+                public googleFrontendId: (number|Long|string);
+
+                /** PeerInfo applicationFrontendId. */
+                public applicationFrontendId: (number|Long|string);
+
+                /** PeerInfo applicationFrontendZone. */
+                public applicationFrontendZone: string;
+
+                /** PeerInfo applicationFrontendSubzone. */
+                public applicationFrontendSubzone: string;
+
+                /** PeerInfo transportType. */
+                public transportType: (google.bigtable.v2.PeerInfo.TransportType|keyof typeof google.bigtable.v2.PeerInfo.TransportType);
+
+                /**
+                 * Creates a new PeerInfo instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns PeerInfo instance
+                 */
+                public static create(properties?: google.bigtable.v2.IPeerInfo): google.bigtable.v2.PeerInfo;
+
+                /**
+                 * Encodes the specified PeerInfo message. Does not implicitly {@link google.bigtable.v2.PeerInfo.verify|verify} messages.
+                 * @param message PeerInfo message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IPeerInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified PeerInfo message, length delimited. Does not implicitly {@link google.bigtable.v2.PeerInfo.verify|verify} messages.
+                 * @param message PeerInfo message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IPeerInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a PeerInfo message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns PeerInfo
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.PeerInfo;
+
+                /**
+                 * Decodes a PeerInfo message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns PeerInfo
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.PeerInfo;
+
+                /**
+                 * Verifies a PeerInfo message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a PeerInfo message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns PeerInfo
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.PeerInfo;
+
+                /**
+                 * Creates a plain object from a PeerInfo message. Also converts values to other types if specified.
+                 * @param message PeerInfo
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.PeerInfo, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this PeerInfo to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for PeerInfo
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            namespace PeerInfo {
+
+                /** TransportType enum. */
+                enum TransportType {
+                    TRANSPORT_TYPE_UNKNOWN = 0,
+                    TRANSPORT_TYPE_EXTERNAL = 1,
+                    TRANSPORT_TYPE_CLOUD_PATH = 2,
+                    TRANSPORT_TYPE_DIRECT_ACCESS = 3,
+                    TRANSPORT_TYPE_SESSION_UNKNOWN = 4,
+                    TRANSPORT_TYPE_SESSION_EXTERNAL = 5,
+                    TRANSPORT_TYPE_SESSION_CLOUD_PATH = 6,
+                    TRANSPORT_TYPE_SESSION_DIRECT_ACCESS = 7
+                }
+            }
+
             /** Properties of a ResponseParams. */
             interface IResponseParams {
 
@@ -11498,6 +11640,9 @@ export namespace google {
 
                 /** ResponseParams clusterId */
                 clusterId?: (string|null);
+
+                /** ResponseParams afeId */
+                afeId?: (number|Long|string|null);
             }
 
             /** Represents a ResponseParams. */
@@ -11514,6 +11659,9 @@ export namespace google {
 
                 /** ResponseParams clusterId. */
                 public clusterId?: (string|null);
+
+                /** ResponseParams afeId. */
+                public afeId?: (number|Long|string|null);
 
                 /**
                  * Creates a new ResponseParams instance using the specified properties.

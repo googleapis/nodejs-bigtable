@@ -27889,6 +27889,7 @@
                      * @property {boolean|null} [clientSideMetricsEnabled] FeatureFlags clientSideMetricsEnabled
                      * @property {boolean|null} [trafficDirectorEnabled] FeatureFlags trafficDirectorEnabled
                      * @property {boolean|null} [directAccessRequested] FeatureFlags directAccessRequested
+                     * @property {boolean|null} [peerInfo] FeatureFlags peerInfo
                      */
     
                     /**
@@ -27979,6 +27980,14 @@
                     FeatureFlags.prototype.directAccessRequested = false;
     
                     /**
+                     * FeatureFlags peerInfo.
+                     * @member {boolean} peerInfo
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @instance
+                     */
+                    FeatureFlags.prototype.peerInfo = false;
+    
+                    /**
                      * Creates a new FeatureFlags instance using the specified properties.
                      * @function create
                      * @memberof google.bigtable.v2.FeatureFlags
@@ -28020,6 +28029,8 @@
                             writer.uint32(/* id 9, wireType 0 =*/72).bool(message.trafficDirectorEnabled);
                         if (message.directAccessRequested != null && Object.hasOwnProperty.call(message, "directAccessRequested"))
                             writer.uint32(/* id 10, wireType 0 =*/80).bool(message.directAccessRequested);
+                        if (message.peerInfo != null && Object.hasOwnProperty.call(message, "peerInfo"))
+                            writer.uint32(/* id 11, wireType 0 =*/88).bool(message.peerInfo);
                         return writer;
                     };
     
@@ -28092,6 +28103,10 @@
                                     message.directAccessRequested = reader.bool();
                                     break;
                                 }
+                            case 11: {
+                                    message.peerInfo = reader.bool();
+                                    break;
+                                }
                             default:
                                 reader.skipType(tag & 7);
                                 break;
@@ -28154,6 +28169,9 @@
                         if (message.directAccessRequested != null && message.hasOwnProperty("directAccessRequested"))
                             if (typeof message.directAccessRequested !== "boolean")
                                 return "directAccessRequested: boolean expected";
+                        if (message.peerInfo != null && message.hasOwnProperty("peerInfo"))
+                            if (typeof message.peerInfo !== "boolean")
+                                return "peerInfo: boolean expected";
                         return null;
                     };
     
@@ -28187,6 +28205,8 @@
                             message.trafficDirectorEnabled = Boolean(object.trafficDirectorEnabled);
                         if (object.directAccessRequested != null)
                             message.directAccessRequested = Boolean(object.directAccessRequested);
+                        if (object.peerInfo != null)
+                            message.peerInfo = Boolean(object.peerInfo);
                         return message;
                     };
     
@@ -28213,6 +28233,7 @@
                             object.clientSideMetricsEnabled = false;
                             object.trafficDirectorEnabled = false;
                             object.directAccessRequested = false;
+                            object.peerInfo = false;
                         }
                         if (message.reverseScans != null && message.hasOwnProperty("reverseScans"))
                             object.reverseScans = message.reverseScans;
@@ -28232,6 +28253,8 @@
                             object.trafficDirectorEnabled = message.trafficDirectorEnabled;
                         if (message.directAccessRequested != null && message.hasOwnProperty("directAccessRequested"))
                             object.directAccessRequested = message.directAccessRequested;
+                        if (message.peerInfo != null && message.hasOwnProperty("peerInfo"))
+                            object.peerInfo = message.peerInfo;
                         return object;
                     };
     
@@ -28264,6 +28287,407 @@
                     return FeatureFlags;
                 })();
     
+                v2.PeerInfo = (function() {
+    
+                    /**
+                     * Properties of a PeerInfo.
+                     * @memberof google.bigtable.v2
+                     * @interface IPeerInfo
+                     * @property {number|Long|null} [googleFrontendId] PeerInfo googleFrontendId
+                     * @property {number|Long|null} [applicationFrontendId] PeerInfo applicationFrontendId
+                     * @property {string|null} [applicationFrontendZone] PeerInfo applicationFrontendZone
+                     * @property {string|null} [applicationFrontendSubzone] PeerInfo applicationFrontendSubzone
+                     * @property {google.bigtable.v2.PeerInfo.TransportType|null} [transportType] PeerInfo transportType
+                     */
+    
+                    /**
+                     * Constructs a new PeerInfo.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a PeerInfo.
+                     * @implements IPeerInfo
+                     * @constructor
+                     * @param {google.bigtable.v2.IPeerInfo=} [properties] Properties to set
+                     */
+                    function PeerInfo(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * PeerInfo googleFrontendId.
+                     * @member {number|Long} googleFrontendId
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @instance
+                     */
+                    PeerInfo.prototype.googleFrontendId = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                    /**
+                     * PeerInfo applicationFrontendId.
+                     * @member {number|Long} applicationFrontendId
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @instance
+                     */
+                    PeerInfo.prototype.applicationFrontendId = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                    /**
+                     * PeerInfo applicationFrontendZone.
+                     * @member {string} applicationFrontendZone
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @instance
+                     */
+                    PeerInfo.prototype.applicationFrontendZone = "";
+    
+                    /**
+                     * PeerInfo applicationFrontendSubzone.
+                     * @member {string} applicationFrontendSubzone
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @instance
+                     */
+                    PeerInfo.prototype.applicationFrontendSubzone = "";
+    
+                    /**
+                     * PeerInfo transportType.
+                     * @member {google.bigtable.v2.PeerInfo.TransportType} transportType
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @instance
+                     */
+                    PeerInfo.prototype.transportType = 0;
+    
+                    /**
+                     * Creates a new PeerInfo instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @static
+                     * @param {google.bigtable.v2.IPeerInfo=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.PeerInfo} PeerInfo instance
+                     */
+                    PeerInfo.create = function create(properties) {
+                        return new PeerInfo(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified PeerInfo message. Does not implicitly {@link google.bigtable.v2.PeerInfo.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @static
+                     * @param {google.bigtable.v2.IPeerInfo} message PeerInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PeerInfo.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.googleFrontendId != null && Object.hasOwnProperty.call(message, "googleFrontendId"))
+                            writer.uint32(/* id 1, wireType 0 =*/8).int64(message.googleFrontendId);
+                        if (message.applicationFrontendId != null && Object.hasOwnProperty.call(message, "applicationFrontendId"))
+                            writer.uint32(/* id 2, wireType 0 =*/16).int64(message.applicationFrontendId);
+                        if (message.applicationFrontendZone != null && Object.hasOwnProperty.call(message, "applicationFrontendZone"))
+                            writer.uint32(/* id 3, wireType 2 =*/26).string(message.applicationFrontendZone);
+                        if (message.applicationFrontendSubzone != null && Object.hasOwnProperty.call(message, "applicationFrontendSubzone"))
+                            writer.uint32(/* id 4, wireType 2 =*/34).string(message.applicationFrontendSubzone);
+                        if (message.transportType != null && Object.hasOwnProperty.call(message, "transportType"))
+                            writer.uint32(/* id 5, wireType 0 =*/40).int32(message.transportType);
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified PeerInfo message, length delimited. Does not implicitly {@link google.bigtable.v2.PeerInfo.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @static
+                     * @param {google.bigtable.v2.IPeerInfo} message PeerInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PeerInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a PeerInfo message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.PeerInfo} PeerInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PeerInfo.decode = function decode(reader, length, error) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.PeerInfo();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            if (tag === error)
+                                break;
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.googleFrontendId = reader.int64();
+                                    break;
+                                }
+                            case 2: {
+                                    message.applicationFrontendId = reader.int64();
+                                    break;
+                                }
+                            case 3: {
+                                    message.applicationFrontendZone = reader.string();
+                                    break;
+                                }
+                            case 4: {
+                                    message.applicationFrontendSubzone = reader.string();
+                                    break;
+                                }
+                            case 5: {
+                                    message.transportType = reader.int32();
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a PeerInfo message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.PeerInfo} PeerInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PeerInfo.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a PeerInfo message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    PeerInfo.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.googleFrontendId != null && message.hasOwnProperty("googleFrontendId"))
+                            if (!$util.isInteger(message.googleFrontendId) && !(message.googleFrontendId && $util.isInteger(message.googleFrontendId.low) && $util.isInteger(message.googleFrontendId.high)))
+                                return "googleFrontendId: integer|Long expected";
+                        if (message.applicationFrontendId != null && message.hasOwnProperty("applicationFrontendId"))
+                            if (!$util.isInteger(message.applicationFrontendId) && !(message.applicationFrontendId && $util.isInteger(message.applicationFrontendId.low) && $util.isInteger(message.applicationFrontendId.high)))
+                                return "applicationFrontendId: integer|Long expected";
+                        if (message.applicationFrontendZone != null && message.hasOwnProperty("applicationFrontendZone"))
+                            if (!$util.isString(message.applicationFrontendZone))
+                                return "applicationFrontendZone: string expected";
+                        if (message.applicationFrontendSubzone != null && message.hasOwnProperty("applicationFrontendSubzone"))
+                            if (!$util.isString(message.applicationFrontendSubzone))
+                                return "applicationFrontendSubzone: string expected";
+                        if (message.transportType != null && message.hasOwnProperty("transportType"))
+                            switch (message.transportType) {
+                            default:
+                                return "transportType: enum value expected";
+                            case 0:
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 4:
+                            case 5:
+                            case 6:
+                            case 7:
+                                break;
+                            }
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a PeerInfo message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.PeerInfo} PeerInfo
+                     */
+                    PeerInfo.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.PeerInfo)
+                            return object;
+                        var message = new $root.google.bigtable.v2.PeerInfo();
+                        if (object.googleFrontendId != null)
+                            if ($util.Long)
+                                (message.googleFrontendId = $util.Long.fromValue(object.googleFrontendId)).unsigned = false;
+                            else if (typeof object.googleFrontendId === "string")
+                                message.googleFrontendId = parseInt(object.googleFrontendId, 10);
+                            else if (typeof object.googleFrontendId === "number")
+                                message.googleFrontendId = object.googleFrontendId;
+                            else if (typeof object.googleFrontendId === "object")
+                                message.googleFrontendId = new $util.LongBits(object.googleFrontendId.low >>> 0, object.googleFrontendId.high >>> 0).toNumber();
+                        if (object.applicationFrontendId != null)
+                            if ($util.Long)
+                                (message.applicationFrontendId = $util.Long.fromValue(object.applicationFrontendId)).unsigned = false;
+                            else if (typeof object.applicationFrontendId === "string")
+                                message.applicationFrontendId = parseInt(object.applicationFrontendId, 10);
+                            else if (typeof object.applicationFrontendId === "number")
+                                message.applicationFrontendId = object.applicationFrontendId;
+                            else if (typeof object.applicationFrontendId === "object")
+                                message.applicationFrontendId = new $util.LongBits(object.applicationFrontendId.low >>> 0, object.applicationFrontendId.high >>> 0).toNumber();
+                        if (object.applicationFrontendZone != null)
+                            message.applicationFrontendZone = String(object.applicationFrontendZone);
+                        if (object.applicationFrontendSubzone != null)
+                            message.applicationFrontendSubzone = String(object.applicationFrontendSubzone);
+                        switch (object.transportType) {
+                        default:
+                            if (typeof object.transportType === "number") {
+                                message.transportType = object.transportType;
+                                break;
+                            }
+                            break;
+                        case "TRANSPORT_TYPE_UNKNOWN":
+                        case 0:
+                            message.transportType = 0;
+                            break;
+                        case "TRANSPORT_TYPE_EXTERNAL":
+                        case 1:
+                            message.transportType = 1;
+                            break;
+                        case "TRANSPORT_TYPE_CLOUD_PATH":
+                        case 2:
+                            message.transportType = 2;
+                            break;
+                        case "TRANSPORT_TYPE_DIRECT_ACCESS":
+                        case 3:
+                            message.transportType = 3;
+                            break;
+                        case "TRANSPORT_TYPE_SESSION_UNKNOWN":
+                        case 4:
+                            message.transportType = 4;
+                            break;
+                        case "TRANSPORT_TYPE_SESSION_EXTERNAL":
+                        case 5:
+                            message.transportType = 5;
+                            break;
+                        case "TRANSPORT_TYPE_SESSION_CLOUD_PATH":
+                        case 6:
+                            message.transportType = 6;
+                            break;
+                        case "TRANSPORT_TYPE_SESSION_DIRECT_ACCESS":
+                        case 7:
+                            message.transportType = 7;
+                            break;
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a PeerInfo message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @static
+                     * @param {google.bigtable.v2.PeerInfo} message PeerInfo
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    PeerInfo.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.googleFrontendId = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.googleFrontendId = options.longs === String ? "0" : 0;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.applicationFrontendId = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.applicationFrontendId = options.longs === String ? "0" : 0;
+                            object.applicationFrontendZone = "";
+                            object.applicationFrontendSubzone = "";
+                            object.transportType = options.enums === String ? "TRANSPORT_TYPE_UNKNOWN" : 0;
+                        }
+                        if (message.googleFrontendId != null && message.hasOwnProperty("googleFrontendId"))
+                            if (typeof message.googleFrontendId === "number")
+                                object.googleFrontendId = options.longs === String ? String(message.googleFrontendId) : message.googleFrontendId;
+                            else
+                                object.googleFrontendId = options.longs === String ? $util.Long.prototype.toString.call(message.googleFrontendId) : options.longs === Number ? new $util.LongBits(message.googleFrontendId.low >>> 0, message.googleFrontendId.high >>> 0).toNumber() : message.googleFrontendId;
+                        if (message.applicationFrontendId != null && message.hasOwnProperty("applicationFrontendId"))
+                            if (typeof message.applicationFrontendId === "number")
+                                object.applicationFrontendId = options.longs === String ? String(message.applicationFrontendId) : message.applicationFrontendId;
+                            else
+                                object.applicationFrontendId = options.longs === String ? $util.Long.prototype.toString.call(message.applicationFrontendId) : options.longs === Number ? new $util.LongBits(message.applicationFrontendId.low >>> 0, message.applicationFrontendId.high >>> 0).toNumber() : message.applicationFrontendId;
+                        if (message.applicationFrontendZone != null && message.hasOwnProperty("applicationFrontendZone"))
+                            object.applicationFrontendZone = message.applicationFrontendZone;
+                        if (message.applicationFrontendSubzone != null && message.hasOwnProperty("applicationFrontendSubzone"))
+                            object.applicationFrontendSubzone = message.applicationFrontendSubzone;
+                        if (message.transportType != null && message.hasOwnProperty("transportType"))
+                            object.transportType = options.enums === String ? $root.google.bigtable.v2.PeerInfo.TransportType[message.transportType] === undefined ? message.transportType : $root.google.bigtable.v2.PeerInfo.TransportType[message.transportType] : message.transportType;
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this PeerInfo to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    PeerInfo.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for PeerInfo
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.PeerInfo
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    PeerInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.PeerInfo";
+                    };
+    
+                    /**
+                     * TransportType enum.
+                     * @name google.bigtable.v2.PeerInfo.TransportType
+                     * @enum {number}
+                     * @property {number} TRANSPORT_TYPE_UNKNOWN=0 TRANSPORT_TYPE_UNKNOWN value
+                     * @property {number} TRANSPORT_TYPE_EXTERNAL=1 TRANSPORT_TYPE_EXTERNAL value
+                     * @property {number} TRANSPORT_TYPE_CLOUD_PATH=2 TRANSPORT_TYPE_CLOUD_PATH value
+                     * @property {number} TRANSPORT_TYPE_DIRECT_ACCESS=3 TRANSPORT_TYPE_DIRECT_ACCESS value
+                     * @property {number} TRANSPORT_TYPE_SESSION_UNKNOWN=4 TRANSPORT_TYPE_SESSION_UNKNOWN value
+                     * @property {number} TRANSPORT_TYPE_SESSION_EXTERNAL=5 TRANSPORT_TYPE_SESSION_EXTERNAL value
+                     * @property {number} TRANSPORT_TYPE_SESSION_CLOUD_PATH=6 TRANSPORT_TYPE_SESSION_CLOUD_PATH value
+                     * @property {number} TRANSPORT_TYPE_SESSION_DIRECT_ACCESS=7 TRANSPORT_TYPE_SESSION_DIRECT_ACCESS value
+                     */
+                    PeerInfo.TransportType = (function() {
+                        var valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "TRANSPORT_TYPE_UNKNOWN"] = 0;
+                        values[valuesById[1] = "TRANSPORT_TYPE_EXTERNAL"] = 1;
+                        values[valuesById[2] = "TRANSPORT_TYPE_CLOUD_PATH"] = 2;
+                        values[valuesById[3] = "TRANSPORT_TYPE_DIRECT_ACCESS"] = 3;
+                        values[valuesById[4] = "TRANSPORT_TYPE_SESSION_UNKNOWN"] = 4;
+                        values[valuesById[5] = "TRANSPORT_TYPE_SESSION_EXTERNAL"] = 5;
+                        values[valuesById[6] = "TRANSPORT_TYPE_SESSION_CLOUD_PATH"] = 6;
+                        values[valuesById[7] = "TRANSPORT_TYPE_SESSION_DIRECT_ACCESS"] = 7;
+                        return values;
+                    })();
+    
+                    return PeerInfo;
+                })();
+    
                 v2.ResponseParams = (function() {
     
                     /**
@@ -28272,6 +28696,7 @@
                      * @interface IResponseParams
                      * @property {string|null} [zoneId] ResponseParams zoneId
                      * @property {string|null} [clusterId] ResponseParams clusterId
+                     * @property {number|Long|null} [afeId] ResponseParams afeId
                      */
     
                     /**
@@ -28305,6 +28730,14 @@
                      */
                     ResponseParams.prototype.clusterId = null;
     
+                    /**
+                     * ResponseParams afeId.
+                     * @member {number|Long|null|undefined} afeId
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @instance
+                     */
+                    ResponseParams.prototype.afeId = null;
+    
                     // OneOf field names bound to virtual getters and setters
                     var $oneOfFields;
     
@@ -28317,6 +28750,12 @@
                     // Virtual OneOf for proto3 optional field
                     Object.defineProperty(ResponseParams.prototype, "_clusterId", {
                         get: $util.oneOfGetter($oneOfFields = ["clusterId"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+    
+                    // Virtual OneOf for proto3 optional field
+                    Object.defineProperty(ResponseParams.prototype, "_afeId", {
+                        get: $util.oneOfGetter($oneOfFields = ["afeId"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
     
@@ -28348,6 +28787,8 @@
                             writer.uint32(/* id 1, wireType 2 =*/10).string(message.zoneId);
                         if (message.clusterId != null && Object.hasOwnProperty.call(message, "clusterId"))
                             writer.uint32(/* id 2, wireType 2 =*/18).string(message.clusterId);
+                        if (message.afeId != null && Object.hasOwnProperty.call(message, "afeId"))
+                            writer.uint32(/* id 3, wireType 0 =*/24).int64(message.afeId);
                         return writer;
                     };
     
@@ -28390,6 +28831,10 @@
                                 }
                             case 2: {
                                     message.clusterId = reader.string();
+                                    break;
+                                }
+                            case 3: {
+                                    message.afeId = reader.int64();
                                     break;
                                 }
                             default:
@@ -28438,6 +28883,11 @@
                             if (!$util.isString(message.clusterId))
                                 return "clusterId: string expected";
                         }
+                        if (message.afeId != null && message.hasOwnProperty("afeId")) {
+                            properties._afeId = 1;
+                            if (!$util.isInteger(message.afeId) && !(message.afeId && $util.isInteger(message.afeId.low) && $util.isInteger(message.afeId.high)))
+                                return "afeId: integer|Long expected";
+                        }
                         return null;
                     };
     
@@ -28457,6 +28907,15 @@
                             message.zoneId = String(object.zoneId);
                         if (object.clusterId != null)
                             message.clusterId = String(object.clusterId);
+                        if (object.afeId != null)
+                            if ($util.Long)
+                                (message.afeId = $util.Long.fromValue(object.afeId)).unsigned = false;
+                            else if (typeof object.afeId === "string")
+                                message.afeId = parseInt(object.afeId, 10);
+                            else if (typeof object.afeId === "number")
+                                message.afeId = object.afeId;
+                            else if (typeof object.afeId === "object")
+                                message.afeId = new $util.LongBits(object.afeId.low >>> 0, object.afeId.high >>> 0).toNumber();
                         return message;
                     };
     
@@ -28482,6 +28941,14 @@
                             object.clusterId = message.clusterId;
                             if (options.oneofs)
                                 object._clusterId = "clusterId";
+                        }
+                        if (message.afeId != null && message.hasOwnProperty("afeId")) {
+                            if (typeof message.afeId === "number")
+                                object.afeId = options.longs === String ? String(message.afeId) : message.afeId;
+                            else
+                                object.afeId = options.longs === String ? $util.Long.prototype.toString.call(message.afeId) : options.longs === Number ? new $util.LongBits(message.afeId.low >>> 0, message.afeId.high >>> 0).toNumber() : message.afeId;
+                            if (options.oneofs)
+                                object._afeId = "afeId";
                         }
                         return object;
                     };
