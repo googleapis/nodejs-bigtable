@@ -50,7 +50,7 @@ function main(parent, appProfileId, appProfile) {
   // const ignoreWarnings = true
 
   // Imports the Admin library
-  const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').admin.v2;
+  const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
 
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
