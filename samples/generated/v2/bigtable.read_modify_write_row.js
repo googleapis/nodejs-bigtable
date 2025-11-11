@@ -59,8 +59,7 @@ function main(rowKey, rules) {
   /**
    *  Required. Rules specifying how the specified row's contents are to be
    *  transformed into writes. Entries are applied in order, meaning that earlier
-   *  rules will affect the results of later ones. At least one entry must be
-   *  specified, and there can be at most 100000 rules.
+   *  rules will affect the results of later ones.
    */
   // const rules = [1,2,3,4]
 

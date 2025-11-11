@@ -146,7 +146,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 88,
+          "end": 83,
           "type": "FULL"
         }
       ],
@@ -174,10 +174,6 @@
           {
             "name": "mutations",
             "type": "TYPE_MESSAGE[]"
-          },
-          {
-            "name": "idempotency",
-            "type": ".google.bigtable.v2.Idempotency"
           }
         ],
         "resultType": ".google.bigtable.v2.MutateRowResponse",
@@ -366,7 +362,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 85,
+          "end": 84,
           "type": "FULL"
         }
       ],
@@ -415,7 +411,7 @@
       "regionTag": "bigtable_v2_generated_Bigtable_GenerateInitialChangeStreamPartitions_async",
       "title": "bigtable generateInitialChangeStreamPartitions Sample",
       "origin": "API_DEFINITION",
-      "description": " Returns the current list of partitions that make up the table's change stream. The union of partitions will cover the entire keyspace. Partitions can be read with `ReadChangeStream`. NOTE: This API is only intended to be used by Apache Beam BigtableIO.",
+      "description": " NOTE: This API is intended to be used by Apache Beam BigtableIO. Returns the current list of partitions that make up the table's change stream. The union of partitions will cover the entire keyspace. Partitions can be read with `ReadChangeStream`.",
       "canonical": false,
       "file": "bigtable.generate_initial_change_stream_partitions.js",
       "language": "JAVASCRIPT",
@@ -459,7 +455,7 @@
       "regionTag": "bigtable_v2_generated_Bigtable_ReadChangeStream_async",
       "title": "bigtable readChangeStream Sample",
       "origin": "API_DEFINITION",
-      "description": " Reads changes from a table's change stream. Changes will reflect both user-initiated mutations and mutations that are caused by garbage collection. NOTE: This API is only intended to be used by Apache Beam BigtableIO.",
+      "description": " NOTE: This API is intended to be used by Apache Beam BigtableIO. Reads changes from a table's change stream. Changes will reflect both user-initiated mutations and mutations that are caused by garbage collection.",
       "canonical": false,
       "file": "bigtable.read_change_stream.js",
       "language": "JAVASCRIPT",

@@ -39,7 +39,6 @@ import {
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
-import * as admin from './admin';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
@@ -1136,13 +1135,11 @@ promisifyAll(Bigtable, {
  */
 
 module.exports = Bigtable;
-module.exports.admin = admin;
 module.exports.v2 = v2;
 module.exports.Bigtable = Bigtable;
 module.exports.SqlTypes = SqlTypes;
 
 export {v2};
-export {admin};
 export {protos};
 export {
   AppProfile,

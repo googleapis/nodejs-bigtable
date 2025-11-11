@@ -1578,14 +1578,6 @@
                             "(google.api.field_behavior)": "OUTPUT_ONLY",
                             "proto3_optional": true
                           }
-                        },
-                        "tags": {
-                          "keyType": "string",
-                          "type": "string",
-                          "id": 12,
-                          "options": {
-                            "(google.api.field_behavior)": "OPTIONAL"
-                          }
                         }
                       },
                       "nested": {
@@ -1971,13 +1963,6 @@
                         "etag": {
                           "type": "string",
                           "id": 3,
-                          "options": {
-                            "(google.api.field_behavior)": "OPTIONAL"
-                          }
-                        },
-                        "deletionProtection": {
-                          "type": "bool",
-                          "id": 6,
                           "options": {
                             "(google.api.field_behavior)": "OPTIONAL"
                           }
@@ -2634,7 +2619,7 @@
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:getIamPolicy",
                             "(google.api.http).body": "*",
-                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/tables/*/schemaBundles/*}:getIamPolicy",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:getIamPolicy",
                             "(google.api.http).additional_bindings.body": "*",
                             "(google.api.method_signature)": "resource"
                           },
@@ -2643,20 +2628,10 @@
                               "(google.api.http)": {
                                 "post": "/v2/{resource=projects/*/instances/*/tables/*}:getIamPolicy",
                                 "body": "*",
-                                "additional_bindings": [
-                                  {
-                                    "post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:getIamPolicy",
-                                    "body": "*"
-                                  },
-                                  {
-                                    "post": "/v2/{resource=projects/*/instances/*/tables/*/authorizedViews/*}:getIamPolicy",
-                                    "body": "*"
-                                  },
-                                  {
-                                    "post": "/v2/{resource=projects/*/instances/*/tables/*/schemaBundles/*}:getIamPolicy",
-                                    "body": "*"
-                                  }
-                                ]
+                                "additional_bindings": {
+                                  "post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:getIamPolicy",
+                                  "body": "*"
+                                }
                               }
                             },
                             {
@@ -2670,7 +2645,7 @@
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:setIamPolicy",
                             "(google.api.http).body": "*",
-                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/tables/*/schemaBundles/*}:setIamPolicy",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:setIamPolicy",
                             "(google.api.http).additional_bindings.body": "*",
                             "(google.api.method_signature)": "resource,policy"
                           },
@@ -2679,20 +2654,10 @@
                               "(google.api.http)": {
                                 "post": "/v2/{resource=projects/*/instances/*/tables/*}:setIamPolicy",
                                 "body": "*",
-                                "additional_bindings": [
-                                  {
-                                    "post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:setIamPolicy",
-                                    "body": "*"
-                                  },
-                                  {
-                                    "post": "/v2/{resource=projects/*/instances/*/tables/*/authorizedViews/*}:setIamPolicy",
-                                    "body": "*"
-                                  },
-                                  {
-                                    "post": "/v2/{resource=projects/*/instances/*/tables/*/schemaBundles/*}:setIamPolicy",
-                                    "body": "*"
-                                  }
-                                ]
+                                "additional_bindings": {
+                                  "post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:setIamPolicy",
+                                  "body": "*"
+                                }
                               }
                             },
                             {
@@ -2706,7 +2671,7 @@
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:testIamPermissions",
                             "(google.api.http).body": "*",
-                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/tables/*/schemaBundles/*}:testIamPermissions",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:testIamPermissions",
                             "(google.api.http).additional_bindings.body": "*",
                             "(google.api.method_signature)": "resource,permissions"
                           },
@@ -2715,134 +2680,14 @@
                               "(google.api.http)": {
                                 "post": "/v2/{resource=projects/*/instances/*/tables/*}:testIamPermissions",
                                 "body": "*",
-                                "additional_bindings": [
-                                  {
-                                    "post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:testIamPermissions",
-                                    "body": "*"
-                                  },
-                                  {
-                                    "post": "/v2/{resource=projects/*/instances/*/tables/*/authorizedViews/*}:testIamPermissions",
-                                    "body": "*"
-                                  },
-                                  {
-                                    "post": "/v2/{resource=projects/*/instances/*/tables/*/schemaBundles/*}:testIamPermissions",
-                                    "body": "*"
-                                  }
-                                ]
+                                "additional_bindings": {
+                                  "post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:testIamPermissions",
+                                  "body": "*"
+                                }
                               }
                             },
                             {
                               "(google.api.method_signature)": "resource,permissions"
-                            }
-                          ]
-                        },
-                        "CreateSchemaBundle": {
-                          "requestType": "CreateSchemaBundleRequest",
-                          "responseType": "google.longrunning.Operation",
-                          "options": {
-                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*/tables/*}/schemaBundles",
-                            "(google.api.http).body": "schema_bundle",
-                            "(google.api.method_signature)": "parent,schema_bundle_id,schema_bundle",
-                            "(google.longrunning.operation_info).response_type": "SchemaBundle",
-                            "(google.longrunning.operation_info).metadata_type": "CreateSchemaBundleMetadata"
-                          },
-                          "parsedOptions": [
-                            {
-                              "(google.api.http)": {
-                                "post": "/v2/{parent=projects/*/instances/*/tables/*}/schemaBundles",
-                                "body": "schema_bundle"
-                              }
-                            },
-                            {
-                              "(google.api.method_signature)": "parent,schema_bundle_id,schema_bundle"
-                            },
-                            {
-                              "(google.longrunning.operation_info)": {
-                                "response_type": "SchemaBundle",
-                                "metadata_type": "CreateSchemaBundleMetadata"
-                              }
-                            }
-                          ]
-                        },
-                        "UpdateSchemaBundle": {
-                          "requestType": "UpdateSchemaBundleRequest",
-                          "responseType": "google.longrunning.Operation",
-                          "options": {
-                            "(google.api.http).patch": "/v2/{schema_bundle.name=projects/*/instances/*/tables/*/schemaBundles/*}",
-                            "(google.api.http).body": "schema_bundle",
-                            "(google.api.method_signature)": "schema_bundle,update_mask",
-                            "(google.longrunning.operation_info).response_type": "SchemaBundle",
-                            "(google.longrunning.operation_info).metadata_type": "UpdateSchemaBundleMetadata"
-                          },
-                          "parsedOptions": [
-                            {
-                              "(google.api.http)": {
-                                "patch": "/v2/{schema_bundle.name=projects/*/instances/*/tables/*/schemaBundles/*}",
-                                "body": "schema_bundle"
-                              }
-                            },
-                            {
-                              "(google.api.method_signature)": "schema_bundle,update_mask"
-                            },
-                            {
-                              "(google.longrunning.operation_info)": {
-                                "response_type": "SchemaBundle",
-                                "metadata_type": "UpdateSchemaBundleMetadata"
-                              }
-                            }
-                          ]
-                        },
-                        "GetSchemaBundle": {
-                          "requestType": "GetSchemaBundleRequest",
-                          "responseType": "SchemaBundle",
-                          "options": {
-                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/tables/*/schemaBundles/*}",
-                            "(google.api.method_signature)": "name"
-                          },
-                          "parsedOptions": [
-                            {
-                              "(google.api.http)": {
-                                "get": "/v2/{name=projects/*/instances/*/tables/*/schemaBundles/*}"
-                              }
-                            },
-                            {
-                              "(google.api.method_signature)": "name"
-                            }
-                          ]
-                        },
-                        "ListSchemaBundles": {
-                          "requestType": "ListSchemaBundlesRequest",
-                          "responseType": "ListSchemaBundlesResponse",
-                          "options": {
-                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*/tables/*}/schemaBundles",
-                            "(google.api.method_signature)": "parent"
-                          },
-                          "parsedOptions": [
-                            {
-                              "(google.api.http)": {
-                                "get": "/v2/{parent=projects/*/instances/*/tables/*}/schemaBundles"
-                              }
-                            },
-                            {
-                              "(google.api.method_signature)": "parent"
-                            }
-                          ]
-                        },
-                        "DeleteSchemaBundle": {
-                          "requestType": "DeleteSchemaBundleRequest",
-                          "responseType": "google.protobuf.Empty",
-                          "options": {
-                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/tables/*/schemaBundles/*}",
-                            "(google.api.method_signature)": "name"
-                          },
-                          "parsedOptions": [
-                            {
-                              "(google.api.http)": {
-                                "delete": "/v2/{name=projects/*/instances/*/tables/*/schemaBundles/*}"
-                              }
-                            },
-                            {
-                              "(google.api.method_signature)": "name"
                             }
                           ]
                         }
@@ -3761,153 +3606,6 @@
                         }
                       }
                     },
-                    "CreateSchemaBundleRequest": {
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
-                          }
-                        },
-                        "schemaBundleId": {
-                          "type": "string",
-                          "id": 2,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED"
-                          }
-                        },
-                        "schemaBundle": {
-                          "type": "SchemaBundle",
-                          "id": 3,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED"
-                          }
-                        }
-                      }
-                    },
-                    "CreateSchemaBundleMetadata": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "startTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 2
-                        },
-                        "endTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "UpdateSchemaBundleRequest": {
-                      "fields": {
-                        "schemaBundle": {
-                          "type": "SchemaBundle",
-                          "id": 1,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED"
-                          }
-                        },
-                        "updateMask": {
-                          "type": "google.protobuf.FieldMask",
-                          "id": 2,
-                          "options": {
-                            "(google.api.field_behavior)": "OPTIONAL"
-                          }
-                        },
-                        "ignoreWarnings": {
-                          "type": "bool",
-                          "id": 3,
-                          "options": {
-                            "(google.api.field_behavior)": "OPTIONAL"
-                          }
-                        }
-                      }
-                    },
-                    "UpdateSchemaBundleMetadata": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "startTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 2
-                        },
-                        "endTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "GetSchemaBundleRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/SchemaBundle"
-                          }
-                        }
-                      }
-                    },
-                    "ListSchemaBundlesRequest": {
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).child_type": "bigtableadmin.googleapis.com/SchemaBundle"
-                          }
-                        },
-                        "pageSize": {
-                          "type": "int32",
-                          "id": 2
-                        },
-                        "pageToken": {
-                          "type": "string",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "ListSchemaBundlesResponse": {
-                      "fields": {
-                        "schemaBundles": {
-                          "rule": "repeated",
-                          "type": "SchemaBundle",
-                          "id": 1
-                        },
-                        "nextPageToken": {
-                          "type": "string",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "DeleteSchemaBundleRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/SchemaBundle"
-                          }
-                        },
-                        "etag": {
-                          "type": "string",
-                          "id": 2,
-                          "options": {
-                            "(google.api.field_behavior)": "OPTIONAL"
-                          }
-                        }
-                      }
-                    },
                     "RestoreInfo": {
                       "oneofs": {
                         "sourceInfo": {
@@ -4429,52 +4127,6 @@
                         "BACKUP": 1
                       }
                     },
-                    "ProtoSchema": {
-                      "fields": {
-                        "protoDescriptors": {
-                          "type": "bytes",
-                          "id": 2,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED"
-                          }
-                        }
-                      }
-                    },
-                    "SchemaBundle": {
-                      "options": {
-                        "(google.api.resource).type": "bigtableadmin.googleapis.com/SchemaBundle",
-                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/tables/{table}/schemaBundles/{schema_bundle}",
-                        "(google.api.resource).plural": "schemaBundles",
-                        "(google.api.resource).singular": "schemaBundle"
-                      },
-                      "oneofs": {
-                        "type": {
-                          "oneof": [
-                            "protoSchema"
-                          ]
-                        }
-                      },
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1,
-                          "options": {
-                            "(google.api.field_behavior)": "IDENTIFIER"
-                          }
-                        },
-                        "protoSchema": {
-                          "type": "ProtoSchema",
-                          "id": 2
-                        },
-                        "etag": {
-                          "type": "string",
-                          "id": 3,
-                          "options": {
-                            "(google.api.field_behavior)": "OPTIONAL"
-                          }
-                        }
-                      }
-                    },
                     "Type": {
                       "oneofs": {
                         "kind": {
@@ -4490,9 +4142,7 @@
                             "aggregateType",
                             "structType",
                             "arrayType",
-                            "mapType",
-                            "protoType",
-                            "enumType"
+                            "mapType"
                           ]
                         }
                       },
@@ -4544,14 +4194,6 @@
                         "mapType": {
                           "type": "Map",
                           "id": 4
-                        },
-                        "protoType": {
-                          "type": "Proto",
-                          "id": 13
-                        },
-                        "enumType": {
-                          "type": "Enum",
-                          "id": 14
                         }
                       },
                       "nested": {
@@ -4780,30 +4422,6 @@
                             }
                           }
                         },
-                        "Proto": {
-                          "fields": {
-                            "schemaBundleId": {
-                              "type": "string",
-                              "id": 1
-                            },
-                            "messageName": {
-                              "type": "string",
-                              "id": 2
-                            }
-                          }
-                        },
-                        "Enum": {
-                          "fields": {
-                            "schemaBundleId": {
-                              "type": "string",
-                              "id": 1
-                            },
-                            "enumName": {
-                              "type": "string",
-                              "id": 2
-                            }
-                          }
-                        },
                         "Array": {
                           "fields": {
                             "elementType": {
@@ -4911,10 +4529,10 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readRows",
                         "(google.api.http).body": "*",
-                        "(google.api.http).additional_bindings.post": "/v2/{materialized_view_name=projects/*/instances/*/materializedViews/*}:readRows",
+                        "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readRows",
                         "(google.api.http).additional_bindings.body": "*",
-                        "(google.api.routing).routing_parameters.field": "materialized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{name=projects/*/instances/*}/**",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,app_profile_id"
                       },
                       "parsedOptions": [
@@ -4922,16 +4540,10 @@
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:readRows",
                             "body": "*",
-                            "additional_bindings": [
-                              {
-                                "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readRows",
-                                "body": "*"
-                              },
-                              {
-                                "post": "/v2/{materialized_view_name=projects/*/instances/*/materializedViews/*}:readRows",
-                                "body": "*"
-                              }
-                            ]
+                            "additional_bindings": {
+                              "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readRows",
+                              "body": "*"
+                            }
                           }
                         },
                         {
@@ -4946,11 +4558,7 @@
                               },
                               {
                                 "field": "authorized_view_name",
-                                "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
-                              },
-                              {
-                                "field": "materialized_view_name",
-                                "path_template": "{name=projects/*/instances/*}/**"
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -4969,23 +4577,18 @@
                       "responseStream": true,
                       "options": {
                         "(google.api.http).get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys",
-                        "(google.api.http).additional_bindings.get": "/v2/{materialized_view_name=projects/*/instances/*/materializedViews/*}:sampleRowKeys",
-                        "(google.api.routing).routing_parameters.field": "materialized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{name=projects/*/instances/*}/**",
+                        "(google.api.http).additional_bindings.get": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:sampleRowKeys",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
                             "get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys",
-                            "additional_bindings": [
-                              {
-                                "get": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:sampleRowKeys"
-                              },
-                              {
-                                "get": "/v2/{materialized_view_name=projects/*/instances/*/materializedViews/*}:sampleRowKeys"
-                              }
-                            ]
+                            "additional_bindings": {
+                              "get": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:sampleRowKeys"
+                            }
                           }
                         },
                         {
@@ -5000,11 +4603,7 @@
                               },
                               {
                                 "field": "authorized_view_name",
-                                "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
-                              },
-                              {
-                                "field": "materialized_view_name",
-                                "path_template": "{name=projects/*/instances/*}/**"
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -5026,7 +4625,7 @@
                         "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:mutateRow",
                         "(google.api.http).additional_bindings.body": "*",
                         "(google.api.routing).routing_parameters.field": "authorized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}/**",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,row_key,mutations,app_profile_id"
                       },
                       "parsedOptions": [
@@ -5052,7 +4651,7 @@
                               },
                               {
                                 "field": "authorized_view_name",
-                                "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -5075,7 +4674,7 @@
                         "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:mutateRows",
                         "(google.api.http).additional_bindings.body": "*",
                         "(google.api.routing).routing_parameters.field": "authorized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}/**",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,entries,app_profile_id"
                       },
                       "parsedOptions": [
@@ -5101,7 +4700,7 @@
                               },
                               {
                                 "field": "authorized_view_name",
-                                "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -5123,7 +4722,7 @@
                         "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:checkAndMutateRow",
                         "(google.api.http).additional_bindings.body": "*",
                         "(google.api.routing).routing_parameters.field": "authorized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}/**",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,row_key,predicate_filter,true_mutations,false_mutations,app_profile_id"
                       },
                       "parsedOptions": [
@@ -5149,7 +4748,7 @@
                               },
                               {
                                 "field": "authorized_view_name",
-                                "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -5209,7 +4808,7 @@
                         "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readModifyWriteRow",
                         "(google.api.http).additional_bindings.body": "*",
                         "(google.api.routing).routing_parameters.field": "authorized_view_name",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}/**",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,row_key,rules,app_profile_id"
                       },
                       "parsedOptions": [
@@ -5235,7 +4834,7 @@
                               },
                               {
                                 "field": "authorized_view_name",
-                                "path_template": "{table_name=projects/*/instances/*/tables/*}/**"
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -5584,10 +5183,6 @@
                       "options": {
                         "(google.api.field_behavior)": "REQUIRED"
                       }
-                    },
-                    "idempotency": {
-                      "type": "Idempotency",
-                      "id": 8
                     }
                   }
                 },
@@ -5639,10 +5234,6 @@
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
                           }
-                        },
-                        "idempotency": {
-                          "type": "Idempotency",
-                          "id": 3
                         }
                       }
                     }
@@ -6846,18 +6437,6 @@
                     }
                   }
                 },
-                "Idempotency": {
-                  "fields": {
-                    "token": {
-                      "type": "bytes",
-                      "id": 1
-                    },
-                    "startTime": {
-                      "type": "google.protobuf.Timestamp",
-                      "id": 2
-                    }
-                  }
-                },
                 "Type": {
                   "oneofs": {
                     "kind": {
@@ -6873,9 +6452,7 @@
                         "aggregateType",
                         "structType",
                         "arrayType",
-                        "mapType",
-                        "protoType",
-                        "enumType"
+                        "mapType"
                       ]
                     }
                   },
@@ -6927,14 +6504,6 @@
                     "mapType": {
                       "type": "Map",
                       "id": 4
-                    },
-                    "protoType": {
-                      "type": "Proto",
-                      "id": 13
-                    },
-                    "enumType": {
-                      "type": "Enum",
-                      "id": 14
                     }
                   },
                   "nested": {
@@ -6962,12 +6531,7 @@
                           },
                           "nested": {
                             "Raw": {
-                              "fields": {
-                                "escapeNulls": {
-                                  "type": "bool",
-                                  "id": 1
-                                }
-                              }
+                              "fields": {}
                             }
                           }
                         }
@@ -7011,12 +6575,7 @@
                               "fields": {}
                             },
                             "Utf8Bytes": {
-                              "fields": {
-                                "nullEscapeChar": {
-                                  "type": "string",
-                                  "id": 1
-                                }
-                              }
+                              "fields": {}
                             }
                           }
                         }
@@ -7034,8 +6593,7 @@
                           "oneofs": {
                             "encoding": {
                               "oneof": [
-                                "bigEndianBytes",
-                                "orderedCodeBytes"
+                                "bigEndianBytes"
                               ]
                             }
                           },
@@ -7043,10 +6601,6 @@
                             "bigEndianBytes": {
                               "type": "BigEndianBytes",
                               "id": 1
-                            },
-                            "orderedCodeBytes": {
-                              "type": "OrderedCodeBytes",
-                              "id": 2
                             }
                           },
                           "nested": {
@@ -7054,15 +6608,9 @@
                               "fields": {
                                 "bytesType": {
                                   "type": "Bytes",
-                                  "id": 1,
-                                  "options": {
-                                    "deprecated": true
-                                  }
+                                  "id": 1
                                 }
                               }
-                            },
-                            "OrderedCodeBytes": {
-                              "fields": {}
                             }
                           }
                         }
@@ -7078,29 +6626,7 @@
                       "fields": {}
                     },
                     "Timestamp": {
-                      "fields": {
-                        "encoding": {
-                          "type": "Encoding",
-                          "id": 1
-                        }
-                      },
-                      "nested": {
-                        "Encoding": {
-                          "oneofs": {
-                            "encoding": {
-                              "oneof": [
-                                "unixMicrosInt64"
-                              ]
-                            }
-                          },
-                          "fields": {
-                            "unixMicrosInt64": {
-                              "type": "Int64.Encoding",
-                              "id": 1
-                            }
-                          }
-                        }
-                      }
+                      "fields": {}
                     },
                     "Date": {
                       "fields": {}
@@ -7111,10 +6637,6 @@
                           "rule": "repeated",
                           "type": "Field",
                           "id": 1
-                        },
-                        "encoding": {
-                          "type": "Encoding",
-                          "id": 2
                         }
                       },
                       "nested": {
@@ -7129,71 +6651,6 @@
                               "id": 2
                             }
                           }
-                        },
-                        "Encoding": {
-                          "oneofs": {
-                            "encoding": {
-                              "oneof": [
-                                "singleton",
-                                "delimitedBytes",
-                                "orderedCodeBytes"
-                              ]
-                            }
-                          },
-                          "fields": {
-                            "singleton": {
-                              "type": "Singleton",
-                              "id": 1
-                            },
-                            "delimitedBytes": {
-                              "type": "DelimitedBytes",
-                              "id": 2
-                            },
-                            "orderedCodeBytes": {
-                              "type": "OrderedCodeBytes",
-                              "id": 3
-                            }
-                          },
-                          "nested": {
-                            "Singleton": {
-                              "fields": {}
-                            },
-                            "DelimitedBytes": {
-                              "fields": {
-                                "delimiter": {
-                                  "type": "bytes",
-                                  "id": 1
-                                }
-                              }
-                            },
-                            "OrderedCodeBytes": {
-                              "fields": {}
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "Proto": {
-                      "fields": {
-                        "schemaBundleId": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "messageName": {
-                          "type": "string",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "Enum": {
-                      "fields": {
-                        "schemaBundleId": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "enumName": {
-                          "type": "string",
-                          "id": 2
                         }
                       }
                     },
