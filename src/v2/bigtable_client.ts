@@ -27,7 +27,7 @@ import type {
 import {PassThrough} from 'stream';
 import * as protos from '../../protos/protos';
 import jsonProtos = require('../../protos/protos.json');
-import {loggingUtils as logging, decodeAnyProtosInArray} from 'google-gax';
+import {loggingUtils as logging} from 'google-gax';
 
 /**
  * Client JSON configuration object, loaded from
@@ -471,9 +471,6 @@ export class BigtableClient {
    *   Required. Changes to be atomically applied to the specified row. Entries
    *   are applied in order, meaning that earlier mutations can be masked by later
    *   ones. Must contain at least one entry and at most 100000.
-   * @param {google.bigtable.v2.Idempotency} request.idempotency
-   *   If set consistently across retries, prevents this mutation from being
-   *   double applied to aggregate column families within a 15m window.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -576,12 +573,15 @@ export class BigtableClient {
           .toString()
           .match(
             RegExp(
-              '(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)(?:/.*)?',
+              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)',
             ),
           );
         if (match) {
-          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
-          Object.assign(routingParameter, {table_name: parameterValue});
+          const parameterValue =
+            match.groups?.['authorized_view_name'] ?? fieldValue;
+          Object.assign(routingParameter, {
+            authorized_view_name: parameterValue,
+          });
         }
       }
     }
@@ -614,23 +614,7 @@ export class BigtableClient {
           this._log.info('mutateRow response %j', response);
           return [response, options, rawResponse];
         },
-      )
-      .catch((error: any) => {
-        if (
-          error &&
-          'statusDetails' in error &&
-          error.statusDetails instanceof Array
-        ) {
-          const protos = this._gaxModule.protobuf.Root.fromJSON(
-            jsonProtos,
-          ) as unknown as gax.protobuf.Type;
-          error.statusDetails = decodeAnyProtosInArray(
-            error.statusDetails,
-            protos,
-          );
-        }
-        throw error;
-      });
+      );
   }
   /**
    * Mutates a row atomically based on the output of a predicate Reader filter.
@@ -776,12 +760,15 @@ export class BigtableClient {
           .toString()
           .match(
             RegExp(
-              '(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)(?:/.*)?',
+              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)',
             ),
           );
         if (match) {
-          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
-          Object.assign(routingParameter, {table_name: parameterValue});
+          const parameterValue =
+            match.groups?.['authorized_view_name'] ?? fieldValue;
+          Object.assign(routingParameter, {
+            authorized_view_name: parameterValue,
+          });
         }
       }
     }
@@ -816,23 +803,7 @@ export class BigtableClient {
           this._log.info('checkAndMutateRow response %j', response);
           return [response, options, rawResponse];
         },
-      )
-      .catch((error: any) => {
-        if (
-          error &&
-          'statusDetails' in error &&
-          error.statusDetails instanceof Array
-        ) {
-          const protos = this._gaxModule.protobuf.Root.fromJSON(
-            jsonProtos,
-          ) as unknown as gax.protobuf.Type;
-          error.statusDetails = decodeAnyProtosInArray(
-            error.statusDetails,
-            protos,
-          );
-        }
-        throw error;
-      });
+      );
   }
   /**
    * Warm up associated instance metadata for this connection.
@@ -967,23 +938,7 @@ export class BigtableClient {
           this._log.info('pingAndWarm response %j', response);
           return [response, options, rawResponse];
         },
-      )
-      .catch((error: any) => {
-        if (
-          error &&
-          'statusDetails' in error &&
-          error.statusDetails instanceof Array
-        ) {
-          const protos = this._gaxModule.protobuf.Root.fromJSON(
-            jsonProtos,
-          ) as unknown as gax.protobuf.Type;
-          error.statusDetails = decodeAnyProtosInArray(
-            error.statusDetails,
-            protos,
-          );
-        }
-        throw error;
-      });
+      );
   }
   /**
    * Modifies a row atomically on the server. The method reads the latest
@@ -1015,8 +970,7 @@ export class BigtableClient {
    * @param {number[]} request.rules
    *   Required. Rules specifying how the specified row's contents are to be
    *   transformed into writes. Entries are applied in order, meaning that earlier
-   *   rules will affect the results of later ones. At least one entry must be
-   *   specified, and there can be at most 100000 rules.
+   *   rules will affect the results of later ones.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -1121,12 +1075,15 @@ export class BigtableClient {
           .toString()
           .match(
             RegExp(
-              '(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)(?:/.*)?',
+              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)',
             ),
           );
         if (match) {
-          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
-          Object.assign(routingParameter, {table_name: parameterValue});
+          const parameterValue =
+            match.groups?.['authorized_view_name'] ?? fieldValue;
+          Object.assign(routingParameter, {
+            authorized_view_name: parameterValue,
+          });
         }
       }
     }
@@ -1161,23 +1118,7 @@ export class BigtableClient {
           this._log.info('readModifyWriteRow response %j', response);
           return [response, options, rawResponse];
         },
-      )
-      .catch((error: any) => {
-        if (
-          error &&
-          'statusDetails' in error &&
-          error.statusDetails instanceof Array
-        ) {
-          const protos = this._gaxModule.protobuf.Root.fromJSON(
-            jsonProtos,
-          ) as unknown as gax.protobuf.Type;
-          error.statusDetails = decodeAnyProtosInArray(
-            error.statusDetails,
-            protos,
-          );
-        }
-        throw error;
-      });
+      );
   }
   /**
    * Prepares a GoogleSQL query for execution on a particular Bigtable instance.
@@ -1330,23 +1271,7 @@ export class BigtableClient {
           this._log.info('prepareQuery response %j', response);
           return [response, options, rawResponse];
         },
-      )
-      .catch((error: any) => {
-        if (
-          error &&
-          'statusDetails' in error &&
-          error.statusDetails instanceof Array
-        ) {
-          const protos = this._gaxModule.protobuf.Root.fromJSON(
-            jsonProtos,
-          ) as unknown as gax.protobuf.Type;
-          error.statusDetails = decodeAnyProtosInArray(
-            error.statusDetails,
-            protos,
-          );
-        }
-        throw error;
-      });
+      );
   }
 
   /**
@@ -1451,24 +1376,15 @@ export class BigtableClient {
           .toString()
           .match(
             RegExp(
-              '(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)(?:/.*)?',
+              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)',
             ),
           );
         if (match) {
-          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
-          Object.assign(routingParameter, {table_name: parameterValue});
-        }
-      }
-    }
-    {
-      const fieldValue = request.materializedViewName;
-      if (fieldValue !== undefined && fieldValue !== null) {
-        const match = fieldValue
-          .toString()
-          .match(RegExp('(?<name>projects/[^/]+/instances/[^/]+)(?:/.*)?'));
-        if (match) {
-          const parameterValue = match.groups?.['name'] ?? fieldValue;
-          Object.assign(routingParameter, {name: parameterValue});
+          const parameterValue =
+            match.groups?.['authorized_view_name'] ?? fieldValue;
+          Object.assign(routingParameter, {
+            authorized_view_name: parameterValue,
+          });
         }
       }
     }
@@ -1559,24 +1475,15 @@ export class BigtableClient {
           .toString()
           .match(
             RegExp(
-              '(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)(?:/.*)?',
+              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)',
             ),
           );
         if (match) {
-          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
-          Object.assign(routingParameter, {table_name: parameterValue});
-        }
-      }
-    }
-    {
-      const fieldValue = request.materializedViewName;
-      if (fieldValue !== undefined && fieldValue !== null) {
-        const match = fieldValue
-          .toString()
-          .match(RegExp('(?<name>projects/[^/]+/instances/[^/]+)(?:/.*)?'));
-        if (match) {
-          const parameterValue = match.groups?.['name'] ?? fieldValue;
-          Object.assign(routingParameter, {name: parameterValue});
+          const parameterValue =
+            match.groups?.['authorized_view_name'] ?? fieldValue;
+          Object.assign(routingParameter, {
+            authorized_view_name: parameterValue,
+          });
         }
       }
     }
@@ -1668,12 +1575,15 @@ export class BigtableClient {
           .toString()
           .match(
             RegExp(
-              '(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)(?:/.*)?',
+              '(?<authorized_view_name>projects/[^/]+/instances/[^/]+/tables/[^/]+/authorizedViews/[^/]+)',
             ),
           );
         if (match) {
-          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
-          Object.assign(routingParameter, {table_name: parameterValue});
+          const parameterValue =
+            match.groups?.['authorized_view_name'] ?? fieldValue;
+          Object.assign(routingParameter, {
+            authorized_view_name: parameterValue,
+          });
         }
       }
     }
@@ -1687,10 +1597,10 @@ export class BigtableClient {
   }
 
   /**
+   * NOTE: This API is intended to be used by Apache Beam BigtableIO.
    * Returns the current list of partitions that make up the table's
    * change stream. The union of partitions will cover the entire keyspace.
    * Partitions can be read with `ReadChangeStream`.
-   * NOTE: This API is only intended to be used by Apache Beam BigtableIO.
    *
    * @param {Object} request
    *   The request object that will be sent.
@@ -1733,10 +1643,10 @@ export class BigtableClient {
   }
 
   /**
+   * NOTE: This API is intended to be used by Apache Beam BigtableIO.
    * Reads changes from a table's change stream. Changes will
    * reflect both user-initiated mutations and mutations that are caused by
    * garbage collection.
-   * NOTE: This API is only intended to be used by Apache Beam BigtableIO.
    *
    * @param {Object} request
    *   The request object that will be sent.
@@ -1762,10 +1672,10 @@ export class BigtableClient {
    *   the position. Tokens are delivered on the stream as part of `Heartbeat`
    *   and `CloseStream` messages.
    *
-   *   If a single token is provided, the token's partition must exactly match
-   *   the request's partition. If multiple tokens are provided, as in the case
+   *   If a single token is provided, the token’s partition must exactly match
+   *   the request’s partition. If multiple tokens are provided, as in the case
    *   of a partition merge, the union of the token partitions must exactly
-   *   cover the request's partition. Otherwise, INVALID_ARGUMENT will be
+   *   cover the request’s partition. Otherwise, INVALID_ARGUMENT will be
    *   returned.
    * @param {google.protobuf.Timestamp} request.endTime
    *   If specified, OK will be returned when the stream advances beyond
