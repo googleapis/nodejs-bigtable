@@ -11,12 +11,17 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-'use strict';
 
-const getTableInfo = (bigtable, tableName) => {
-  const [, , , instanceId, , tableId] = tableName.split('/');
-  const instance = bigtable.instance(instanceId);
-  return instance.table(tableId);
-};
+import {normalizeCallback} from './utils';
 
-module.exports = getTableInfo;
+export const closeClient = ({clientMap}) =>
+  normalizeCallback(async rawRequest => {
+    const request = rawRequest.request;
+    const {clientId} = request;
+    const bigtable = clientMap.get(clientId);
+
+    if (bigtable) {
+      await bigtable.close();
+      return {};
+    }
+  });

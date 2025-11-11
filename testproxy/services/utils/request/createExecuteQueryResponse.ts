@@ -59,8 +59,8 @@ export async function parseMetadata(preparedStatement: PreparedStatement) {
   });
   return values.map(v =>
     protos.google.bigtable.v2.ColumnMetadata.create({
-      name: v[0] as any,
-      type: v[1] as any,
+      name: v[0] as string,
+      type: v[1] as protos.google.bigtable.v2.IType,
     }),
   );
 }

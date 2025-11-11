@@ -11,15 +11,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-'use strict';
 
-const grpc = require('@grpc/grpc-js');
-const {
-  getSRKRequest,
-} = require('../../build/testproxy/services/utils/request/sampleRowKeys.js');
-const normalizeCallback = require('./utils/normalize-callback.js');
+import * as grpc from '@grpc/grpc-js';
+import {getSRKRequest} from './utils/request/sampleRowKeys';
+import {normalizeCallback} from './utils';
 
-const sampleRowKeys = ({clientMap}) =>
+export const sampleRowKeys = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {clientId, request: sampleRowKeysRequest} = request;
@@ -43,5 +40,3 @@ const sampleRowKeys = ({clientMap}) =>
       };
     }
   });
-
-module.exports = sampleRowKeys;

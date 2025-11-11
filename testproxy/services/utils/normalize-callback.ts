@@ -11,18 +11,19 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-'use strict';
 
-const grpc = require('@grpc/grpc-js');
+import * as grpc from '@grpc/grpc-js';
 
-const {callbackify} = require('node:util');
+import {callbackify} from 'node:util';
 
-const normalizeCallback = fn =>
+export const normalizeCallback = (fn: Function) =>
   callbackify(async (...args) => {
     let res;
     try {
       res = await fn(...args);
-    } catch (e) {
+    } catch (err) {
+      const e = err as Error;
+
       // sends original errors directly to standard error since
       // callbackify is going to swallow them later
       console.error(e);
@@ -38,5 +39,3 @@ const normalizeCallback = fn =>
     }
     return res;
   });
-
-module.exports = normalizeCallback;

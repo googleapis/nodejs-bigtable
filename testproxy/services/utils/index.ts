@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,24 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-'use strict';
 
-const normalizeCallback = require('./utils/normalize-callback.js');
-
-const v2 = Symbol.for('v2');
-
-const removeClient = ({clientMap}) =>
-  normalizeCallback(async rawRequest => {
-    const request = rawRequest.request;
-    const {clientId} = request;
-    const bigtable = clientMap.get(clientId);
-
-    if (bigtable) {
-      await bigtable[v2].close();
-      await bigtable.close();
-      clientMap.delete(clientId);
-      return {};
-    }
-  });
-
-module.exports = removeClient;
+export * from './client-map';
+export * from './get-row-response';
+export * from './get-table-info';
+export * from './normalize-callback';

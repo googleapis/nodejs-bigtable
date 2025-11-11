@@ -11,43 +11,47 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-'use strict';
 
-const grpc = require('@grpc/grpc-js');
+import * as grpc from '@grpc/grpc-js';
 
-const normalizeCallback = require('./utils/normalize-callback.js');
-const {
-  getRMWRRequestInverse,
-} = require('../../build/testproxy/services/utils/request/readModifyWriteRow.js');
-const getTableInfo = require('./utils/get-table-info');
+import {normalizeCallback, getTableInfo} from './utils';
 
-const readModifyWriteRow = ({clientMap}) =>
+export const bulkMutateRows = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
-    const {clientId, request: readModifyWriteRow} = request;
-    const {appProfileId, tableName} = readModifyWriteRow;
-    const handWrittenRequest = getRMWRRequestInverse(readModifyWriteRow);
+    const {request: mutateRequest} = request;
+    const {entries, tableName} = mutateRequest;
+
+    const {clientId} = request;
     const bigtable = clientMap.get(clientId);
-    if (appProfileId && appProfileId !== '') {
-      bigtable.appProfileId = appProfileId;
-    }
     const table = getTableInfo(bigtable, tableName);
-    const row = table.row(handWrittenRequest.id);
     try {
-      const [result] = await row.createRules(handWrittenRequest.rules);
+      const mutateOptions = {
+        rawMutation: true,
+      };
+      await table.mutate(entries, mutateOptions);
       return {
         status: {code: grpc.status.OK, details: []},
-        row: result.row,
+        entries: [],
       };
     } catch (e) {
+      const error = e as Error;
+      const entries = error.errors
+        ? Array.from(error.errors.entries()).map(([index, entry]) => ({
+            index: index + 1,
+            status: {
+              code: entry.code,
+              message: entry.message,
+            },
+          }))
+        : [];
       return {
         status: {
-          code: e.code ? e.code : grpc.status.UNKNOWN,
+          code: error.code ? error.code : grpc.status.UNKNOWN,
           details: [],
-          message: e.message,
+          message: error.message,
         },
+        entries,
       };
     }
   });
-
-module.exports = readModifyWriteRow;

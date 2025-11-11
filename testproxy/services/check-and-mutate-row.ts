@@ -11,18 +11,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-'use strict';
 
-const grpc = require('@grpc/grpc-js');
+import * as grpc from '@grpc/grpc-js';
 
-const normalizeCallback = require('./utils/normalize-callback.js');
-const getTableInfo = require('./utils/get-table-info');
-const {
-  createFlatMutationsListWithFnInverse,
-} = require('../../build/testproxy/services/utils/request/createFlatMutationsList.js');
-const {
-  mutationParseInverse,
-} = require('../../build/testproxy/services/utils/request/mutateInverse.js');
+import {normalizeCallback, getTableInfo} from './utils';
+import {createFlatMutationsListWithFnInverse} from './utils/request/createFlatMutationsList';
+import {mutationParseInverse} from './utils/request/mutateInverse';
 
 /**
  * Transforms mutations from the gRPC layer format to the handwritten layer format.
@@ -66,7 +60,7 @@ function convertFromBytes(bytes) {
   }
 }
 
-const checkAndMutateRow = ({clientMap}) =>
+export const checkAndMutateRow = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {clientId, request: checkAndMutateRowRequest} = request;
@@ -98,5 +92,3 @@ const checkAndMutateRow = ({clientMap}) =>
       };
     }
   });
-
-module.exports = checkAndMutateRow;

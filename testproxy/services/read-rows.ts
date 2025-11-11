@@ -11,13 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-'use strict';
 
-const grpc = require('@grpc/grpc-js');
+import * as grpc from '@grpc/grpc-js';
 
-const normalizeCallback = require('./utils/normalize-callback.js');
-const getRowResponse = require('./utils/get-row-response.js');
-const getTableInfo = require('./utils/get-table-info.js');
+import {normalizeCallback, getRowResponse, getTableInfo} from './utils';
 
 const getRowsOptions = readRowsRequest => {
   const getRowsRequest = {};
@@ -56,7 +53,7 @@ const getReadRowsRequest = request => {
   return readRowsRequest;
 };
 
-const readRows = ({clientMap}) =>
+export const readRows = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const request = rawRequest.request;
     const {clientId} = request;
@@ -81,5 +78,3 @@ const readRows = ({clientMap}) =>
       };
     }
   });
-
-module.exports = readRows;

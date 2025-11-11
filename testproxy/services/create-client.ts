@@ -11,16 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-'use strict';
 
-const normalizeCallback = require('./utils/normalize-callback.js');
+import {normalizeCallback} from './utils';
 
-const grpc = require('@grpc/grpc-js');
-const {Bigtable} = require('../../build/src/index.js');
-const {
-  ClientSideMetricsConfigManager,
-} = require('../../build/src/client-side-metrics/metrics-config-manager');
-const {BigtableClient} = require('../../build/src/index.js').v2;
+import * as grpc from '@grpc/grpc-js';
+import {Bigtable} from '../../src';
+import {ClientSideMetricsConfigManager} from '../../src/client-side-metrics/metrics-config-manager';
+import {BigtableClient} from '../../src/v2';
 
 const v2 = Symbol.for('v2');
 
@@ -30,7 +27,7 @@ function durationToMilliseconds(duration) {
   return secondsInMs + nanosInMs;
 }
 
-const createClient = ({clientMap}) =>
+export const createClient = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     // TODO: Handle refresh periods
     const {request} = rawRequest;
@@ -91,5 +88,3 @@ const createClient = ({clientMap}) =>
     bigtable[v2] = new BigtableClient(bigtable.options.BigtableClient);
     clientMap.set(clientId, bigtable);
   });
-
-module.exports = createClient;

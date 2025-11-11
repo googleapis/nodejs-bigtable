@@ -11,50 +11,38 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-'use strict';
 
-const grpc = require('@grpc/grpc-js');
+import * as grpc from '@grpc/grpc-js';
 
-const normalizeCallback = require('./utils/normalize-callback.js');
-const getTableInfo = require('./utils/get-table-info');
+import {normalizeCallback} from './utils';
+import {getRMWRRequestInverse} from './utils/request/readModifyWriteRow';
+import {getTableInfo} from './utils';
 
-const bulkMutateRows = ({clientMap}) =>
+export const readModifyWriteRow = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
-    const {request: mutateRequest} = request;
-    const {entries, tableName} = mutateRequest;
-
-    const {clientId} = request;
+    const {clientId, request: readModifyWriteRow} = request;
+    const {appProfileId, tableName} = readModifyWriteRow;
+    const handWrittenRequest = getRMWRRequestInverse(readModifyWriteRow);
     const bigtable = clientMap.get(clientId);
+    if (appProfileId && appProfileId !== '') {
+      bigtable.appProfileId = appProfileId;
+    }
     const table = getTableInfo(bigtable, tableName);
+    const row = table.row(handWrittenRequest.id);
     try {
-      const mutateOptions = {
-        rawMutation: true,
-      };
-      await table.mutate(entries, mutateOptions);
+      const [result] = await row.createRules(handWrittenRequest.rules);
       return {
         status: {code: grpc.status.OK, details: []},
-        entries: [],
+        row: result.row,
       };
-    } catch (error) {
-      const entries = error.errors
-        ? Array.from(error.errors.entries()).map(([index, entry]) => ({
-            index: index + 1,
-            status: {
-              code: entry.code,
-              message: entry.message,
-            },
-          }))
-        : [];
+    } catch (e) {
       return {
         status: {
-          code: error.code ? error.code : grpc.status.UNKNOWN,
+          code: e.code ? e.code : grpc.status.UNKNOWN,
           details: [],
-          message: error.message,
+          message: e.message,
         },
-        entries,
       };
     }
   });
-
-module.exports = bulkMutateRows;

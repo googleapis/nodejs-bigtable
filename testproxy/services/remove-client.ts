@@ -11,39 +11,21 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-'use strict';
 
-const grpc = require('@grpc/grpc-js');
-
-const normalizeCallback = require('./utils/normalize-callback.js');
+import {normalizeCallback} from './utils';
 
 const v2 = Symbol.for('v2');
 
-const mutateRow = ({clientMap}) =>
+export const removeClient = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
-    const {request} = rawRequest;
-    const {request: mutateRequest} = request;
-    const {mutations, tableName, rowKey} = mutateRequest;
+    const request = rawRequest.request;
     const {clientId} = request;
-    const appProfileId = clientMap.get(clientId).appProfileId;
-    const client = clientMap.get(clientId)[v2];
+    const bigtable = clientMap.get(clientId);
 
-    try {
-      await client.mutateRow({
-        appProfileId,
-        mutations,
-        tableName,
-        rowKey,
-      });
-
-      return {
-        status: {code: grpc.status.OK, details: []},
-      };
-    } catch (e) {
-      return {
-        status: e,
-      };
+    if (bigtable) {
+      await bigtable[v2].close();
+      await bigtable.close();
+      clientMap.delete(clientId);
+      return {};
     }
   });
-
-module.exports = mutateRow;

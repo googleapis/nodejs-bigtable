@@ -11,14 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-'use strict';
 
-const {dirname, resolve} = require('node:path');
+import {dirname, resolve} from 'node:path';
 
-const grpc = require('@grpc/grpc-js');
-const protoLoader = require('@grpc/proto-loader');
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
 
-const services = require('./services/index.js');
+import {getServicesImplementation} from './services';
 
 const GAX_PROTOS_DIR = resolve(
   dirname(require.resolve('google-gax')),
@@ -26,7 +25,7 @@ const GAX_PROTOS_DIR = resolve(
 );
 const PROTOS_DIR = resolve(__dirname, '../protos');
 const PROTO_PATH = resolve(PROTOS_DIR, 'test_proxy.proto');
-const port = parseInt(process.env.PORT, 10) || 9999;
+const port = parseInt(process.env.PORT ?? '9999', 10);
 
 async function loadDescriptor() {
   const packageDefinition = await protoLoader.load(PROTO_PATH, {
@@ -42,7 +41,7 @@ async function loadDescriptor() {
 
 function startServer(service) {
   const server = new grpc.Server();
-  server.addService(service, services.getServicesImplementation());
+  server.addService(service, getServicesImplementation());
 
   return server.bindAsync(
     `0.0.0.0:${port}`,
@@ -60,4 +59,7 @@ async function main() {
   startServer(service);
 }
 
-main();
+main().catch(e => {
+  console.error('error during tests', e);
+  process.exitCode = 1;
+});

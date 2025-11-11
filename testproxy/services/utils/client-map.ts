@@ -11,11 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-'use strict';
 
-const grpc = require('@grpc/grpc-js');
+import * as grpc from '@grpc/grpc-js';
 
-class ClientMap extends Map {
+export class ClientMap extends Map {
   // TODO: we might need to implement a way to lock
   // currently used client instances here
   get(key) {
@@ -39,5 +38,3 @@ class ClientMap extends Map {
     return res;
   }
 }
-
-module.exports = ClientMap;

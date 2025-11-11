@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-'use strict';
-
-const grpc = require('@grpc/grpc-js');
-const {
+import * as grpc from '@grpc/grpc-js';
+import {
   parseMetadata,
   parseRows,
   parseParameters,
-} = require('../../build/testproxy/services/utils/request/createExecuteQueryResponse.js');
-const normalizeCallback = require('./utils/normalize-callback.js');
+} from './utils/request/createExecuteQueryResponse';
+import {normalizeCallback} from './utils';
 
-const executeQuery = ({clientMap}) =>
+export const executeQuery = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request, clientId} = rawRequest.request;
 
@@ -61,5 +59,3 @@ const executeQuery = ({clientMap}) =>
       };
     }
   });
-
-module.exports = executeQuery;
