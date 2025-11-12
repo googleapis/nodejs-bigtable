@@ -151,9 +151,6 @@ export class BigtableTableAdminClient {
       (typeof window !== 'undefined' && typeof window?.fetch === 'function');
     opts = Object.assign({servicePath, port, clientConfig, fallback}, opts);
 
-    // Request numeric enum values if REST transport is used.
-    opts.numericEnums = true;
-
     // If scopes are unset in options and we're connecting to a non-default endpoint, set scopes just in case.
     if (servicePath !== this._servicePath && !('scopes' in opts)) {
       opts['scopes'] = staticMembers.scopes;
@@ -4555,6 +4552,8 @@ export class BigtableTableAdminClient {
     >;
   }
   /**
+   * @internal WARNING: This method is internal to the bigtableadmin_v2 api and should not be used by clients.
+   *
    * Create a new table by restoring from a completed backup.  The
    * returned table {@link protos.google.longrunning.Operation|long-running operation} can
    * be used to track the progress of the operation, and to cancel it.  The
