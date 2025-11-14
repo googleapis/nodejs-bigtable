@@ -597,6 +597,14 @@ export class Bigtable {
     this._metricsConfigManager = new ClientSideMetricsConfigManager(handlers);
   }
 
+  getTableAdminClient() {
+    return new admin.TableAdminClient(this.options.BigtableTableAdminClient);
+  }
+
+  getInstanceAdminClient() {
+    return new admin.TableAdminClient(this.options.BigtableInstanceAdminClient);
+  }
+
   createInstance(
     id: string,
     options: InstanceOptions,
@@ -1366,5 +1374,4 @@ export {
   WaitForReplicationCallback,
   WaitForReplicationResponse,
 } from './table';
-export {GCRuleMaker} from './gc-rule-maker';
 export {SqlTypes};

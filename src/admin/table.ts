@@ -12,7 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * as v2 from './v2';
-export {TableAdminClient} from './table';
-export {InstanceAdminClient} from './instance';
-export {GcRuleBuilder} from './gc-rule-builder';
+import {BigtableTableAdminClient} from './v2';
+
+/**
+ * Service for creating, configuring, and deleting Cloud Bigtable tables.
+ * Provides access to the table schemas only, not the data stored within
+ * the tables.
+ *
+ * While users may create an instance of this class using the standard GAPIC
+ * constructor parameters, it's recommended to obtain one by way of the
+ * Bigtable.getTableAdminClient() method so that authentication and
+ * configuration are all handled uniformly.
+ *
+ * @class
+ * @memberof admin
+ */
+export class TableAdminClient extends BigtableTableAdminClient {}
