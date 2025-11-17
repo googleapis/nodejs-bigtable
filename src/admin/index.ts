@@ -15,4 +15,4 @@
 export * as v2 from './v2';
 export {TableAdminClient} from './table';
 export {InstanceAdminClient} from './instance';
-export {GcRuleBuilder} from './gc-rule-builder';
+export {GcRules} from './gc-rule-builder';
