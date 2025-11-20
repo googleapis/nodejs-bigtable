@@ -39,8 +39,17 @@ function isRuleItem(rule: IGcRule): rule is GcRuleItem {
   return !isUnion(rule) && !isIntersection(rule);
 }
 
-export class GcRules {
-  // Runtime checks for JavaScript code.
+/**
+ * Helper class for building valid garbage collection rules. TypeScript is
+ * recommended here for the maximum help, as types will guide user code at
+ * runtime; however, some correctness checking happens at runtime to help
+ * JavaScript users as well.
+ */
+export class GcRuleBuilder {
+  /**
+   * Runtime checks for JavaScript code.
+   * @private
+   */
   static checkGroupingItem(p: GcGrouping | GcRuleItem): void {
     if (!isGrouping(p) && !isRuleItem(p)) {
       throw new Error(
@@ -59,7 +68,10 @@ export class GcRules {
     }
   }
 
-  // Runtime checks for JavaScript code.
+  /**
+   * Runtime checks for JavaScript code.
+   * @private
+   */
   static checkRuleItem(p: GcRuleItem): void {
     if (!isRuleItem(p)) {
       throw new Error(
@@ -68,9 +80,15 @@ export class GcRules {
     }
   }
 
-  // Unions are formed from groupings and/or rules.
+  /**
+   * Unions are formed from other groupings (union, intersection) and potentially
+   * rules (e.g. maxAge). They will match if any of the items are true.
+   *
+   * @param params Groupings and/or rules to be included
+   * @returns [IGcRule] A newly built group
+   */
   static union(...params: Array<GcGrouping | GcRuleItem>): GcGrouping {
-    params.forEach(GcRules.checkGroupingItem);
+    params.forEach(GcRuleBuilder.checkGroupingItem);
 
     return {
       union: {
@@ -79,9 +97,15 @@ export class GcRules {
     };
   }
 
-  // Intersections are formed from groupings and/or rules.
+  /**
+   * Intersections are formed from other groupings (union, intersection) and potentially
+   * rules (e.g. maxAge). They will match if all of the items are true.
+   *
+   * @param params Groupings and/or rules to be included
+   * @returns [IGcRule] A newly built group
+   */
   static intersection(...params: Array<GcGrouping | GcRuleItem>): GcGrouping {
-    params.forEach(GcRules.checkGroupingItem);
+    params.forEach(GcRuleBuilder.checkGroupingItem);
 
     return {
       intersection: {
@@ -90,38 +114,17 @@ export class GcRules {
     };
   }
 
+  /**
+   * Rules are leaf nodes and contain constraints such as maxAge and maxNumVersions.
+   *
+   * @param params [IGcRule] Filled rule
+   * @returns [IGcRule] A typed/checked rule
+   */
   static rule(rule: GcRuleItem): GcRuleItem {
-    GcRules.checkRuleItem(rule);
+    GcRuleBuilder.checkRuleItem(rule);
     return rule;
   }
 }
-
-function test() {
-  const rule = GcRules.intersection(
-    GcRules.rule({
-      maxAge: {
-        seconds: 1000,
-        nanos: 20000,
-      },
-    }),
-    GcRules.rule({
-      maxNumVersions: 50,
-    }),
-  );
-
-  const rule2 = GcRules.union(
-    rule,
-    GcRules.rule({
-      maxAge: {
-        seconds: 50,
-        nanos: 20,
-      },
-    }),
-  );
-
-  console.dir(rule2, {depth: null});
-}
-// test();
 
 /*
 Do we want to deal with these use cases?

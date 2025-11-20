@@ -13,9 +13,11 @@
 // limitations under the License.
 
 import {BigtableTableAdminClient} from './v2';
-import {LROperation, CallOptions} from 'google-gax';
+import {LROperation, CallOptions, ClientOptions} from 'google-gax';
+import type * as gax from 'google-gax';
 
 import {google} from '../../protos/protos';
+import jsonProtos = require('../../protos/protos.json');
 
 /**
  * Service for creating, configuring, and deleting Cloud Bigtable tables.
@@ -31,63 +33,76 @@ import {google} from '../../protos/protos';
  * @memberof admin
  */
 export class TableAdminClient extends BigtableTableAdminClient {
-  // This is largely copied from the GAPIC doc.
-  /**
-   * Create a new table by restoring from a completed backup.  The
-   * returned table {@link protos.google.longrunning.Operation|long-running operation} can
-   * be used to track the progress of the operation, and to cancel it.  The
-   * {@link protos.google.longrunning.Operation.metadata|metadata} field type is
-   * {@link protos.google.bigtable.admin.v2.RestoreTableMetadata|RestoreTableMetadata}.  The
-   * {@link protos.google.longrunning.Operation.response|response} type is
-   * {@link protos.google.bigtable.admin.v2.Table|Table}, if successful.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.parent
-   *   Required. The name of the instance in which to create the restored
-   *   table. Values are of the form `projects/<project>/instances/<instance>`.
-   * @param {string} request.tableId
-   *   Required. The id of the table to create and restore to. This
-   *   table must not already exist. The `table_id` appended to
-   *   `parent` forms the full table name of the form
-   *   `projects/<project>/instances/<instance>/tables/<table_id>`.
-   * @param {string} request.backup
-   *   Name of the backup from which to restore.  Values are of the form
-   *   `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to a {@link protos.google.bigtable.admin.v2.RestoreTableMetadata|RestoreTableMetadata}.
-   */
-  async restoreAndWait(
-    restoreParameters: google.bigtable.admin.v2.IRestoreTableRequest,
-    options?: CallOptions,
-  ): Promise<google.bigtable.admin.v2.IRestoreTableMetadata> {
-    const [lro] = await this.restoreTable(restoreParameters, options);
+  constructor(
+    opts?: ClientOptions,
+    gaxInstance?: typeof gax | typeof gax.fallback,
+  ) {
+    super(opts, gaxInstance);
 
-    const [, metadata] = await lro.promise();
+    const protoFilesRoot = this.pGaxModule.protobufFromJSON(jsonProtos);
 
-    return metadata;
+    // This one isn't included since it's not a directly callable method on the proto.
+    const optimizeRestoredTableResponse = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.Table',
+    ) as gax.protobuf.Type;
+    const optimizeRestoredTableMetadata = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.OptimizeRestoredTableMetadata',
+    ) as gax.protobuf.Type;
+    this.descriptors.longrunning['optimizeRestoredTable'] =
+      new this.pGaxModule.LongrunningDescriptor(
+        this.operationsClient,
+        optimizeRestoredTableResponse.decode.bind(
+          optimizeRestoredTableResponse,
+        ),
+        optimizeRestoredTableMetadata.decode.bind(
+          optimizeRestoredTableMetadata,
+        ),
+      );
   }
 
-  // This one doesn't get generated in GAPIC, because it's "hidden" in proto
-  // return types rather than being part of a method. This helper does the same
-  // thing as e.g. checkRestoreTableStatus.
-  // TODO? - just call the checkRestoreTableStatus method and shift the type?
-  private async getOptimizeLRO(name: string, options?: CallOptions) {
-    // We want to use the same gax module as the base class, but it's private.
-    const gaxModule = this['_gaxModule'];
+  // We want to use the same gax module as the base class, but it's private.
+  private get pGaxModule() {
+    return this['_gaxModule'];
+  }
+
+  // We want to use the same logger as the base class, but it's private.
+  private get pLog() {
+    return this['_log'];
+  }
+
+  /**
+   * Check the status of the long running operation returned when the `restoreTable()`
+   * LRO has concluded.
+   *
+   * This one doesn't get generated in GAPIC, because it's "hidden" in proto
+   * return types rather than being part of a method. This helper does the same
+   * thing as e.g. checkRestoreTableStatus.
+   *
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+   *   for more details and examples.
+   */
+  async checkOptimizeRestoredTableProgress(
+    name: string,
+  ): Promise<
+    LROperation<
+      google.bigtable.admin.v2.Table,
+      google.bigtable.admin.v2.OptimizeRestoredTableMetadata
+    >
+  > {
+    this.pLog.info('optimizeRestoredTable long-running');
     const request =
-      new gaxModule.operationsProtos.google.longrunning.GetOperationRequest({
-        name,
-      });
-    const [operation] = await this.operationsClient.getOperation(
-      request,
-      options,
-    );
-    const decodeOperation = new gaxModule.Operation(
+      new this.pGaxModule.operationsProtos.google.longrunning.GetOperationRequest(
+        {name},
+      );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new this.pGaxModule.Operation(
       operation,
-      this.descriptors.longrunning.restoreTable,
-      gaxModule.createDefaultBackoffSettings(),
+      this.descriptors.longrunning.optimizeRestoredTable,
+      this.pGaxModule.createDefaultBackoffSettings(),
     );
     return decodeOperation as LROperation<
       google.bigtable.admin.v2.Table,
@@ -95,35 +110,20 @@ export class TableAdminClient extends BigtableTableAdminClient {
     >;
   }
 
-  async checkOptimizeTableProgress(
-    name: string,
-    options?: CallOptions,
-  ): Promise<
-    LROperation<
-      google.bigtable.admin.v2.Table,
-      google.bigtable.admin.v2.OptimizeRestoredTableMetadata
-    >
-  > {
-    return await this.getOptimizeLRO(name, options);
-  }
-
-  async waitForTableOptimization(
-    metadata: google.bigtable.admin.v2.IRestoreTableMetadata,
-    options?: CallOptions,
-  ) {
-    const lro = await this.checkOptimizeTableProgress(
-      metadata.optimizeTableOperationName!,
-      options,
-    );
-    return await lro.promise();
-  }
-
+  /**
+   * Waits for a table to become consistent. This gets a consistency check token
+   * for you, and waits until its status has returned `consistent`.
+   *
+   * @param tableName The name of the table to check
+   * @param options CallOptions, if desired
+   * @returns A Promise that completes when the table is consistent
+   */
   async waitForConsistency(
     tableName: string,
-    timeoutSeconds?: number,
-    checkIntervalSeconds = 5,
     options?: CallOptions,
   ): Promise<void> {
+    const checkIntervalSeconds = 5;
+
     // 1. Generate a consistency token
     const [token] = await this.generateConsistencyToken(
       {
@@ -133,7 +133,7 @@ export class TableAdminClient extends BigtableTableAdminClient {
     );
 
     let isConsistent = false;
-    let totalSeconds = 0;
+    // let totalSeconds = 0;
     while (!isConsistent) {
       // 2. Check for consistency
       const request = {
@@ -152,12 +152,12 @@ export class TableAdminClient extends BigtableTableAdminClient {
         // 3. Wait before retrying
         await new Promise(resolve => {
           setTimeout(resolve, checkIntervalSeconds * 1000);
-          totalSeconds += checkIntervalSeconds;
-          if (timeoutSeconds !== undefined && totalSeconds >= timeoutSeconds) {
+          // totalSeconds += checkIntervalSeconds;
+          /*if (timeoutSeconds !== undefined && totalSeconds >= timeoutSeconds) {
             throw new Error(
               `Timed out waiting for consistency check (${totalSeconds}s)`,
             );
-          }
+          }*/
         });
       }
     }
