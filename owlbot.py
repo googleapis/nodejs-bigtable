@@ -57,7 +57,6 @@ if staging.is_dir():
             'tsconfig.json',
             'tslint.json',
             '.github/sync-repo-settings.yaml',
-            '.github/generated-files-bot.yml',
             '.github/workflows/ci.yaml',
             '.OwlBot.yaml',
         ] + list(admin_files)
@@ -139,7 +138,8 @@ templates = common_templates.node_library(
 )
 s.copy(templates,excludes=[
   '.github/auto-approve.yml',
-  '.github/sync-repo-settings.yaml'
+  '.github/sync-repo-settings.yaml',
+  '.github/workflows/ci.yaml',
 ])
 
 node.postprocess_gapic_library_hermetic()
