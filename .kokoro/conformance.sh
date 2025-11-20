@@ -49,3 +49,4 @@ echo "exiting with ${RETURN_CODE}"
 # Keep running these tests, but don't cause a CI failure for now,
 # until they're fully fixed.
 #exit ${RETURN_CODE}
+exit 0

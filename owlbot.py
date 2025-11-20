@@ -57,7 +57,6 @@ if staging.is_dir():
             'tsconfig.json',
             'tslint.json',
             '.github/sync-repo-settings.yaml',
-            '.github/workflows/ci.yaml',
             '.OwlBot.yaml',
         ] + list(admin_files)
         logging.info(f"excluding files for non-admin: {excludes}")
