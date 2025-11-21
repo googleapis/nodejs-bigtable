@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [6.4.2](https://github.com/googleapis/nodejs-bigtable/compare/v6.4.1...v6.4.2) (2025-11-21)
+
+
+### Bug Fixes
+
+* **deps:** Update dependency arrify to v2.0.1 ([#1588](https://github.com/googleapis/nodejs-bigtable/issues/1588)) ([fccdbbb](https://github.com/googleapis/nodejs-bigtable/commit/fccdbbb0309191a731c23b196a4c19c59e057cd7))
+
 ## [6.4.1](https://github.com/googleapis/nodejs-bigtable/compare/v6.4.0...v6.4.1) (2025-09-09)
 
 
