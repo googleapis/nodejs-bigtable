@@ -88,6 +88,12 @@ export class GcRuleBuilder {
    * @returns [IGcRule] A newly built group
    */
   static union(...params: Array<GcGrouping | GcRuleItem>): GcGrouping {
+    if (params.length < 2) {
+      throw new Error(
+        `Unions should contain at least two items (passed: ${params.length})`,
+      );
+    }
+
     params.forEach(GcRuleBuilder.checkGroupingItem);
 
     return {
@@ -105,6 +111,12 @@ export class GcRuleBuilder {
    * @returns [IGcRule] A newly built group
    */
   static intersection(...params: Array<GcGrouping | GcRuleItem>): GcGrouping {
+    if (params.length < 2) {
+      throw new Error(
+        `Intersections should contain at least two items (passed: ${params.length})`,
+      );
+    }
+
     params.forEach(GcRuleBuilder.checkGroupingItem);
 
     return {
@@ -125,9 +137,3 @@ export class GcRuleBuilder {
     return rule;
   }
 }
-
-/*
-Do we want to deal with these use cases?
-          'A union must have more than one garbage collection rule.',
-          'An intersection must have more than one garbage collection rule.',
-*/
