@@ -133,7 +133,6 @@ export class TableAdminClient extends BigtableTableAdminClient {
     );
 
     let isConsistent = false;
-    // let totalSeconds = 0;
     while (!isConsistent) {
       // 2. Check for consistency
       const request = {
@@ -148,16 +147,8 @@ export class TableAdminClient extends BigtableTableAdminClient {
       if (isConsistent) {
         return;
       } else {
-        // console.log('Data is not yet consistent. Retrying in 5 seconds...');
-        // 3. Wait before retrying
         await new Promise(resolve => {
           setTimeout(resolve, checkIntervalSeconds * 1000);
-          // totalSeconds += checkIntervalSeconds;
-          /*if (timeoutSeconds !== undefined && totalSeconds >= timeoutSeconds) {
-            throw new Error(
-              `Timed out waiting for consistency check (${totalSeconds}s)`,
-            );
-          }*/
         });
       }
     }
