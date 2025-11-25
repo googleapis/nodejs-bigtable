@@ -42,7 +42,7 @@ function isRuleItem(rule: IGcRule): rule is GcRuleItem {
 /**
  * Helper class for building valid garbage collection rules. TypeScript is
  * recommended here for the maximum help, as types will guide user code at
- * runtime; however, some correctness checking happens at runtime to help
+ * compile time; however, some correctness checking happens at runtime to help
  * JavaScript users as well.
  */
 export class GcRuleBuilder {
