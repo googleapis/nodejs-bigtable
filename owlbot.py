@@ -38,7 +38,7 @@ if staging.is_dir():
         src_files[version] = list([fn for fn in src_paths[version].glob('**/*.*')])
 
     # Copy bigtable library.
-    # src/index.ts src/admin/v2/index.ts has added AdminClients manually, we don't wanna override it.
+    # src/index.ts src/admin/v2/index.ts has added AdminClients manually; we don't want to override it.
     # src/*.ts is a added layer for the client libraries, they need extra setting in tsconfig.json & tslint.json
     # Tracking issues: 1. https://github.com/googleapis/nodejs-bigtable/issues/636
     #                  2. https://github.com/googleapis/nodejs-bigtable/issues/635
@@ -58,6 +58,7 @@ if staging.is_dir():
             'tslint.json',
             '.github/sync-repo-settings.yaml',
             '.OwlBot.yaml',
+            'samples/generated/v2/*', # we don't want to encourage non-veneer use here.
         ] + list(admin_files)
         logging.info(f"excluding files for non-admin: {excludes}")
         s.copy([library], excludes = excludes)
