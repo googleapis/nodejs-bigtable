@@ -98,10 +98,23 @@ if staging.is_dir():
         for tfn in tfns:
             logging.info(f"munging test file: {str(tfn)}")
             contents = tfn.read_text()
+
+            # Fix relative paths.
             contents = contents.replace("'../", "'../../../")
+
+            # Use the selective subclasses.
+            contents = contents.replace(".v2.BigtableInstanceAdminClient", ".InstanceAdminClient")
+            contents = contents.replace(".v2.BigtableTableAdminClient", ".TableAdminClient")
+
+            # Statics also.
+            contents = contents.replace("bigtabletableadminModule.v2.BigtableTableAdminClient", \
+                                        "bigtabletableadminModule.TableAdminClient")
+            contents = contents.replace("bigtabletableadminModule.v2.BigtableInstanceAdminClient", \
+                                        "bigtabletableadminModule.InstanceAdminClient")
+
             tfn.write_text(contents)
 
-        # Finally, the samples. .v2 -> .admin.v2
+        # Finally, the samples. Shift to selective subclasses.
         samplesStr = str(samples)
         sfns = [fn
                     for fn
@@ -110,7 +123,12 @@ if staging.is_dir():
         for sfn in sfns:
             logging.info(f"munging sample file: {str(sfn)}")
             contents = sfn.read_text()
-            contents = contents.replace(').v2', ').admin.v2')
+            contents = contents.replace("const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').admin.v2", \
+                                        "const {InstanceAdminClient} = require('@google-cloud/bigtable').admin")
+            contents = contents.replace("const {BigtableTableAdminClient} = require('@google-cloud/bigtable').admin.v2", \
+                                        "const {TableAdminClient} = require('@google-cloud/bigtable').admin")
+            contents = contents.replace("new BigtableInstanceAdminClient", "new InstanceAdminClient")
+            contents = contents.replace("new BigtableTableAdminClient", "new TableAdminClient")
             sfn.write_text(contents)
 
         os.system(f"mkdir -p {inProtoPath}")
