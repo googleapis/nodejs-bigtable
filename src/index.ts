@@ -115,38 +115,6 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
 }
 
 /**
- * Bigtable admin client accessor. These methods let you instantiate the
- * admin client classes more easily, if you already have a `Bigtable` object.
- * You can still create them directly, but this saves you some trouble with
- * figuring out auth and other configuration.
- */
-export class BigtableAdminClients {
-  constructor(private bigtable: Bigtable) {}
-
-  /**
-   * Creates a client for table administration.
-   *
-   * @returns The admin client
-   */
-  getTableAdminClient() {
-    return new admin.TableAdminClient(
-      this.bigtable.options.BigtableTableAdminClient,
-    );
-  }
-
-  /**
-   * Creates a client for instance administration.
-   *
-   * @returns The admin client
-   */
-  getInstanceAdminClient() {
-    return new admin.InstanceAdminClient(
-      this.bigtable.options.BigtableInstanceAdminClient,
-    );
-  }
-}
-
-/**
  * Retrieves the universe domain, if configured.
  *
  * This function checks for a universe domain in the following order:
@@ -518,7 +486,7 @@ export class Bigtable {
   static Instance: Instance;
   static Cluster: Cluster;
   _metricsConfigManager: ClientSideMetricsConfigManager;
-  admin: BigtableAdminClients;
+  admin: admin.BigtableAdmin;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -526,8 +494,8 @@ export class Bigtable {
     const scopes: string[] = [];
     const clientClasses = [
       v2.BigtableClient,
-      v2.BigtableInstanceAdminClient,
-      v2.BigtableTableAdminClient,
+      admin.v2.BigtableInstanceAdminClient,
+      admin.v2.BigtableTableAdminClient,
     ];
     for (const clientClass of clientClasses) {
       for (const scope of clientClass.scopes) {
@@ -616,7 +584,7 @@ export class Bigtable {
       BigtableInstanceAdminClient: instanceAdminOptions,
       BigtableTableAdminClient: adminOptions,
     };
-    this.admin = new BigtableAdminClients(this);
+    this.admin = admin.BigtableAdmin.fromBigtable(this);
 
     this.api = {};
     this.auth = new GoogleAuth(Object.assign({}, baseOptions, options));
