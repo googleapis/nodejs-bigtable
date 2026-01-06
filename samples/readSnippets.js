@@ -14,6 +14,13 @@
 
 'use strict';
 
+const {
+  ClientSideMetricsConfigManager,
+} = require('./../build/src/client-side-metrics/metrics-config-manager');
+const {
+  TestMetricsHandlerKeepName,
+} = require('./../build/test-common/test-metrics-handler.js');
+
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
@@ -155,6 +162,40 @@ async function main(
           // All rows retrieved.
         });
       // [END bigtable_reads_filter]
+      break;
+    }
+
+    case 'readVersionMetrics': {
+      const path = require('path');
+      const fs = require('fs');
+
+      // [START bigtable_reads_version_metrics]
+      const packagePath = path.join(__dirname, '../package.json');
+
+      // Read the file using the absolute path
+      const packageJSON = fs.readFileSync(packagePath);
+      const expectedVersion = JSON.parse(packageJSON.toString()).version;
+
+      const fakeBigtable = new Bigtable();
+      const testMetricsHandler = new TestMetricsHandlerKeepName();
+      fakeBigtable._metricsConfigManager = new ClientSideMetricsConfigManager([
+        testMetricsHandler,
+      ]);
+
+      // TODO(developer): Uncomment these variables before running the sample
+
+      // const instanceId = 'YOUR_INSTANCE_ID';
+      // const tableId = 'YOUR_TABLE_ID';
+      const instance = fakeBigtable.instance(instanceId);
+      const table = instance.table(tableId);
+      await table.getRows();
+      if (
+        testMetricsHandler.requestsHandled[0].client_name !==
+        `nodejs-bigtable/${expectedVersion}`
+      ) {
+        throw Error('The wrong version is being recorded');
+      }
+      // [END bigtable_reads_version_metrics]
       break;
     }
   }
