@@ -14,13 +14,6 @@
 
 'use strict';
 
-const {
-  ClientSideMetricsConfigManager,
-} = require('./../build/src/client-side-metrics/metrics-config-manager');
-const {
-  TestMetricsHandlerKeepName,
-} = require('./../build/test-common/test-metrics-handler.js');
-
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
@@ -168,6 +161,12 @@ async function main(
     case 'readVersionMetrics': {
       const path = require('path');
       const fs = require('fs');
+      const {
+        ClientSideMetricsConfigManager,
+      } = require('./../build/src/client-side-metrics/metrics-config-manager');
+      const {
+        TestMetricsHandlerKeepName,
+      } = require('./../build/test-common/test-metrics-handler.js');
 
       // [START bigtable_reads_version_metrics]
       const packagePath = path.join(__dirname, '../package.json');
