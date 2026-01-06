@@ -180,9 +180,7 @@ async function main(
       fakeBigtable._metricsConfigManager = new ClientSideMetricsConfigManager([
         testMetricsHandler,
       ]);
-
-      // const instanceId = 'YOUR_INSTANCE_ID';
-      // const tableId = 'YOUR_TABLE_ID';
+      
       const instance = fakeBigtable.instance(instanceId);
       const table = instance.table(tableId);
       await table.getRows();
