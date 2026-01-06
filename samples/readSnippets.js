@@ -181,8 +181,6 @@ async function main(
         testMetricsHandler,
       ]);
 
-      // TODO(developer): Uncomment these variables before running the sample
-
       // const instanceId = 'YOUR_INSTANCE_ID';
       // const tableId = 'YOUR_TABLE_ID';
       const instance = fakeBigtable.instance(instanceId);
