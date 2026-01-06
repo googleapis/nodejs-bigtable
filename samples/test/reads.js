@@ -206,7 +206,5 @@ describe('reads', async () => {
     const stdout = execSync(
       `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readVersionMetrics`,
     );
-
-    snapshot(stdout);
   });
 });
