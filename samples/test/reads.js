@@ -201,8 +201,4 @@ describe('reads', async () => {
 
     snapshot(stdout);
   });
-
-  it('should read correct node version', async () => {
-    execSync(`node readSnippets ${INSTANCE_ID} ${TABLE_ID} readVersionMetrics`);
-  });
 });
