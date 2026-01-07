@@ -49,13 +49,7 @@ export interface ITabularApiSurface {
   };
 }
 
-// Construct the absolute path to package.json relative to this file
-// '..' moves up one directory. We need 3 to go from src/client-side-metrics/ to root.
-const packagePath = path.join(__dirname, '../../../package.json');
-
-// Read the file using the absolute path
-const packageJSON = fs.readFileSync(packagePath);
-const version = JSON.parse(packageJSON.toString()).version;
+const {version} = require('../../../package.json');
 
 // MetricsCollectorState is a list of states that the metrics collector can be in.
 // Tracking the OperationMetricsCollector state is done so that the
