@@ -176,7 +176,7 @@ function readRowsAssertionCheck(
   assert.deepStrictEqual(firstRequest, {
     connectivityErrorCount: 0,
     streaming,
-    status: '0',
+    status: 'OK',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
       instanceId: instanceId1,
@@ -198,7 +198,7 @@ function readRowsAssertionCheck(
   delete secondRequest.applicationLatency;
   delete secondRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(secondRequest, {
-    status: '0',
+    status: 'OK',
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
@@ -222,7 +222,7 @@ function readRowsAssertionCheck(
   assert.deepStrictEqual(thirdRequest, {
     connectivityErrorCount: 0,
     streaming,
-    status: '0',
+    status: 'OK',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
       instanceId: instanceId1,
@@ -244,7 +244,7 @@ function readRowsAssertionCheck(
   delete fourthRequest.applicationLatency;
   delete fourthRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(fourthRequest, {
-    status: '0',
+    status: 'OK',
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
