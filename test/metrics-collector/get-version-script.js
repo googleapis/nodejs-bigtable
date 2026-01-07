@@ -38,12 +38,14 @@ async function main() {
   const instance = fakeBigtable.instance('fake-instance-id');
   const table = instance.table('fake-table-id');
   try {
+    console.log('entered getRows');
     await table.getRows();
   } catch (e) {
     // Suppress the error.
     // We just made this call so that the test metrics handler would
     // collect grpc response data.
   }
+  console.log(`requests handled length: ${testMetricsHandler.length}`);
   if (
     testMetricsHandler.requestsHandled[0].client_name !==
     `nodejs-bigtable/${expectedVersion}`
