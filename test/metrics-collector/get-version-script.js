@@ -8,8 +8,6 @@ const {
 } = require('../../build/test-common/test-metrics-handler.js');
 const {Bigtable} = require('../../build/src/index.js');
 
-console.log('print version');
-
 async function main() {
   const packagePath = path.join(__dirname, '../../package.json');
 
