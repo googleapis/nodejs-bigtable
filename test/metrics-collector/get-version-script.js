@@ -16,11 +16,11 @@ const path = require('path');
 const fs = require('fs');
 const {
   ClientSideMetricsConfigManager,
-} = require('../../build/src/client-side-metrics/metrics-config-manager.js');
+} = require('../../build/src/client-side-metrics/metrics-config-manager.js'); // eslint-disable-line
 const {
   TestMetricsHandlerKeepName,
-} = require('../../build/test-common/test-metrics-handler.js');
-const {Bigtable} = require('../../build/src/index.js');
+} = require('../../build/test-common/test-metrics-handler.js'); // eslint-disable-line
+const {Bigtable} = require('../../build/src/index.js'); // eslint-disable-line
 
 async function main() {
   const packagePath = path.join(__dirname, '../../package.json');
