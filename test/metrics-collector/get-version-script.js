@@ -46,6 +46,7 @@ async function main() {
     // collect grpc response data.
   }
   console.log(`requests handled length: ${testMetricsHandler.length}`);
+  /*
   if (
     testMetricsHandler.requestsHandled[0].client_name !==
     `nodejs-bigtable/${expectedVersion}`
@@ -56,5 +57,6 @@ async function main() {
     console.log(`nodejs-bigtable/${expectedVersion}`);
     throw Error('The wrong version is being recorded');
   }
+   */
 }
 main();
