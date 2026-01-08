@@ -35,6 +35,7 @@ class TestMetricsHandlerKeepName {
    * @param {OnOperationCompleteData} data Metrics related to the completed operation.
    */
   onOperationComplete(data) {
+    console.log('Entered onOperationComplete');
     const dataWithProject = Object.assign({projectId: this.projectId}, data);
     this.requestsHandled.push(dataWithProject);
     this.messages.value += 'Recording parameters for onOperationComplete:\n';
@@ -46,6 +47,7 @@ class TestMetricsHandlerKeepName {
    * @param {OnOperationCompleteData} data Metrics related to the completed attempt.
    */
   onAttemptComplete(data) {
+    console.log('Entered onAttemptComplete');
     const dataWithProject = Object.assign({projectId: this.projectId}, data);
     this.requestsHandled.push(dataWithProject);
     this.messages.value += 'Recording parameters for onAttemptComplete:\n';
