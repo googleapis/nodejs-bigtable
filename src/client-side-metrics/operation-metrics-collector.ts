@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const {status} = require('@grpc/grpc-js');
 import * as fs from 'fs';
 import {MethodName, StreamingState} from './client-side-metrics-attributes';
 import {grpc, ServiceError} from 'google-gax';
@@ -221,7 +222,7 @@ export class OperationMetricsCollector {
               serverLatency: this.serverTime ?? undefined,
               connectivityErrorCount: this.connectivityErrorCount,
               streaming: this.streamingOperation,
-              status: attemptStatus.toString(),
+              status: status[attemptStatus],
               client_name: `nodejs-bigtable/${version}`,
               metricsCollectorData: this.getMetricsCollectorData(),
             });
@@ -307,7 +308,7 @@ export class OperationMetricsCollector {
           this.handlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
               metricsHandler.onOperationComplete({
-                status: finalOperationStatus.toString(),
+                status: status[finalOperationStatus],
                 streaming: this.streamingOperation,
                 metricsCollectorData: this.getMetricsCollectorData(),
                 client_name: `nodejs-bigtable/${version}`,
