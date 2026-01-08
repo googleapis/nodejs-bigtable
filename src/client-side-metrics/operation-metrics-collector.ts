@@ -309,6 +309,7 @@ export class OperationMetricsCollector {
           this.handlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
               console.log('Calling onOperationComplete on metrics handler');
+              console.log(metricsHandler);
               metricsHandler.onOperationComplete({
                 status: finalOperationStatus.toString(),
                 streaming: this.streamingOperation,
