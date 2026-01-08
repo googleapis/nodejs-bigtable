@@ -78,7 +78,9 @@ async function main() {
   }
   console.log('TestMetricsHandler:');
   console.log(testMetricsHandler);
-  console.log(`requests handled length: ${testMetricsHandler.requestsHandled.length}`);
+  console.log(
+    `requests handled length: ${testMetricsHandler.requestsHandled.length}`,
+  );
   /*
   if (
     testMetricsHandler.requestsHandled[0].client_name !==
