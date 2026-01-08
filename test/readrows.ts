@@ -59,7 +59,7 @@ interface ServerImplementationInterface {
   (server: ReadRowsWritableStream): PromiseVoid;
 }
 
-describe.skip('Bigtable/ReadRows', () => {
+describe('Bigtable/ReadRows', () => {
   let server: MockServer;
   let service: MockService;
   let bigtable: Bigtable;
