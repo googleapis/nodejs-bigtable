@@ -16,8 +16,8 @@ const path = require('path');
 const fs = require('fs');
 const {
   ClientSideMetricsConfigManager,
-} = require('../../../../build/src/client-side-metrics/metrics-config-manager.js'); // eslint-disable-line
-const {Bigtable} = require('../../../../build/src'); // eslint-disable-line
+} = require('../../../build/src/client-side-metrics/metrics-config-manager.js'); // eslint-disable-line
+const {Bigtable} = require('../../../build/src'); // eslint-disable-line
 
 async function main() {
   /**
