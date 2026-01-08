@@ -330,7 +330,7 @@ async function checkForPublishedMetrics(projectId: string) {
   }
 }
 
-describe.only('Bigtable/ClientSideMetrics', () => {
+describe('Bigtable/ClientSideMetrics', () => {
   let defaultProjectId: string;
 
   before(async () => {
