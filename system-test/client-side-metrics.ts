@@ -176,7 +176,7 @@ function readRowsAssertionCheck(
   assert.deepStrictEqual(firstRequest, {
     connectivityErrorCount: 0,
     streaming,
-    status: '0',
+    status: 'OK',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
       instanceId: instanceId1,
@@ -198,7 +198,7 @@ function readRowsAssertionCheck(
   delete secondRequest.applicationLatency;
   delete secondRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(secondRequest, {
-    status: '0',
+    status: 'OK',
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
@@ -222,7 +222,7 @@ function readRowsAssertionCheck(
   assert.deepStrictEqual(thirdRequest, {
     connectivityErrorCount: 0,
     streaming,
-    status: '0',
+    status: 'OK',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
       instanceId: instanceId1,
@@ -244,7 +244,7 @@ function readRowsAssertionCheck(
   delete fourthRequest.applicationLatency;
   delete fourthRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(fourthRequest, {
-    status: '0',
+    status: 'OK',
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
@@ -723,7 +723,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       assert.deepStrictEqual(firstRequest, {
         connectivityErrorCount: 0,
         streaming: 'true',
-        status: '0',
+        status: 'OK',
         client_name: 'nodejs-bigtable',
         metricsCollectorData: {
           instanceId: instanceId1,
@@ -745,7 +745,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       delete secondRequest.applicationLatency;
       delete secondRequest.metricsCollectorData.appProfileId;
       assert.deepStrictEqual(secondRequest, {
-        status: '0',
+        status: 'OK',
         streaming: 'true',
         client_name: 'nodejs-bigtable',
         metricsCollectorData: {
@@ -769,7 +769,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       assert.deepStrictEqual(thirdRequest, {
         connectivityErrorCount: 0,
         streaming: 'true',
-        status: '0',
+        status: 'OK',
         client_name: 'nodejs-bigtable',
         metricsCollectorData: {
           instanceId: instanceId1,
@@ -791,7 +791,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       delete fourthRequest.applicationLatency;
       delete fourthRequest.metricsCollectorData.appProfileId;
       assert.deepStrictEqual(fourthRequest, {
-        status: '0',
+        status: 'OK',
         streaming: 'true',
         client_name: 'nodejs-bigtable',
         metricsCollectorData: {
@@ -825,7 +825,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           attemptLatency: 23000,
           connectivityErrorCount: 0,
           streaming: 'true',
-          status: '0',
+          status: 'OK',
           client_name: 'nodejs-bigtable',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -837,7 +837,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         },
         {
           projectId,
-          status: '0',
+          status: 'OK',
           streaming: 'true',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -858,7 +858,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           serverLatency: undefined,
           connectivityErrorCount: 0,
           streaming: 'true',
-          status: '0',
+          status: 'OK',
           client_name: 'nodejs-bigtable',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -870,7 +870,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         },
         {
           projectId,
-          status: '0',
+          status: 'OK',
           streaming: 'true',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -908,7 +908,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           attemptLatency: 28000,
           connectivityErrorCount: 0,
           streaming: 'true',
-          status: '0',
+          status: 'OK',
           client_name: 'nodejs-bigtable',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -920,7 +920,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         },
         {
           projectId,
-          status: '0',
+          status: 'OK',
           streaming: 'true',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -941,7 +941,7 @@ describe('Bigtable/ClientSideMetrics', () => {
           serverLatency: undefined,
           connectivityErrorCount: 0,
           streaming: 'true',
-          status: '0',
+          status: 'OK',
           client_name: 'nodejs-bigtable',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -953,7 +953,7 @@ describe('Bigtable/ClientSideMetrics', () => {
         },
         {
           projectId,
-          status: '0',
+          status: 'OK',
           streaming: 'true',
           metricsCollectorData: {
             instanceId: instanceId1,
