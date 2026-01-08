@@ -36,7 +36,6 @@ async function main() {
      * @param {OnOperationCompleteData} data Metrics related to the completed operation.
      */
     onOperationComplete(data) {
-      console.log('Entered onOperationComplete');
       const dataWithProject = Object.assign({projectId: this.projectId}, data);
       this.requestsHandled.push(dataWithProject);
       this.messages.value += 'Recording parameters for onOperationComplete:\n';
@@ -48,7 +47,6 @@ async function main() {
      * @param {OnOperationCompleteData} data Metrics related to the completed attempt.
      */
     onAttemptComplete(data) {
-      console.log('Entered onAttemptComplete');
       const dataWithProject = Object.assign({projectId: this.projectId}, data);
       this.requestsHandled.push(dataWithProject);
       this.messages.value += 'Recording parameters for onAttemptComplete:\n';
@@ -71,29 +69,17 @@ async function main() {
   const instance = fakeBigtable.instance('fake-instance-id');
   const table = instance.table('fake-table-id');
   try {
-    console.log('entered getRows');
     await table.getRows();
   } catch (e) {
     // Suppress the error.
     // We just made this call so that the test metrics handler would
     // collect grpc response data.
   }
-  console.log('TestMetricsHandler:');
-  console.log(testMetricsHandler);
-  console.log(
-    `requests handled length: ${testMetricsHandler.requestsHandled.length}`,
-  );
-  /*
   if (
     testMetricsHandler.requestsHandled[0].client_name !==
     `nodejs-bigtable/${expectedVersion}`
   ) {
-    console.log('Actual:');
-    console.log(testMetricsHandler.requestsHandled[0].client_name);
-    console.log('Expected:');
-    console.log(`nodejs-bigtable/${expectedVersion}`);
     throw Error('The wrong version is being recorded');
   }
-   */
 }
 main();

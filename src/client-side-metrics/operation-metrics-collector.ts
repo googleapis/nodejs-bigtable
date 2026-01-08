@@ -130,8 +130,6 @@ export class OperationMetricsCollector {
     streamingOperation: StreamingState,
     handlers: IMetricsHandler[],
   ) {
-    console.log('OperationMetricsCollector handlers:');
-    console.log(handlers);
     this.state = MetricsCollectorState.OPERATION_NOT_STARTED;
     this.zone = undefined;
     this.cluster = undefined;
@@ -308,8 +306,6 @@ export class OperationMetricsCollector {
         {
           this.handlers.forEach(metricsHandler => {
             if (metricsHandler.onOperationComplete) {
-              console.log('Calling onOperationComplete on metrics handler');
-              console.log(metricsHandler);
               metricsHandler.onOperationComplete({
                 status: finalOperationStatus.toString(),
                 streaming: this.streamingOperation,

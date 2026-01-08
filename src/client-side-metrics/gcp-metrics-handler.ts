@@ -232,7 +232,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    console.log('entered on operation complete');
     const otelInstruments = this.otelInstruments;
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
@@ -279,7 +278,6 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    console.log('entered on attempt complete');
     const otelInstruments = this.otelInstruments;
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
