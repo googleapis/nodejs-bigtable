@@ -17,10 +17,41 @@ const fs = require('fs');
 const {
   ClientSideMetricsConfigManager,
 } = require('../../build/src/client-side-metrics/metrics-config-manager.js'); // eslint-disable-line
-const {
-  TestMetricsHandlerKeepName,
-} = require('../../build/test-common/test-metrics-handler.js'); // eslint-disable-line
 const {Bigtable} = require('../../build/src/index.js'); // eslint-disable-line
+
+/**
+ * A test implementation of the IMetricsHandler interface.  Used for testing purposes.
+ * It logs the metrics and attributes received by the onOperationComplete and onAttemptComplete methods.
+ * Doesn't replace the name of the client like the other testing class.
+ */
+class TestMetricsHandlerKeepName {
+  constructor() {
+    this.messages = {value: ''};
+    this.projectId = 'projectId';
+    this.requestsHandled = [];
+  }
+  /**
+   * Logs the metrics and attributes received for an operation completion.
+   * @param {OnOperationCompleteData} data Metrics related to the completed operation.
+   */
+  onOperationComplete(data) {
+    const dataWithProject = Object.assign({projectId: this.projectId}, data);
+    this.requestsHandled.push(dataWithProject);
+    this.messages.value += 'Recording parameters for onOperationComplete:\n';
+    this.messages.value += `${JSON.stringify(dataWithProject)}\n`;
+  }
+
+  /**
+   * Logs the metrics and attributes received for an attempt completion.
+   * @param {OnOperationCompleteData} data Metrics related to the completed attempt.
+   */
+  onAttemptComplete(data) {
+    const dataWithProject = Object.assign({projectId: this.projectId}, data);
+    this.requestsHandled.push(dataWithProject);
+    this.messages.value += 'Recording parameters for onAttemptComplete:\n';
+    this.messages.value += `${JSON.stringify(dataWithProject)}\n`;
+  }
+}
 
 async function main() {
   const packagePath = path.join(__dirname, '../../package.json');
@@ -45,6 +76,8 @@ async function main() {
     // We just made this call so that the test metrics handler would
     // collect grpc response data.
   }
+  console.log('TestMetricsHandler:');
+  console.log(testMetricsHandler);
   console.log(`requests handled length: ${testMetricsHandler.length}`);
   /*
   if (
