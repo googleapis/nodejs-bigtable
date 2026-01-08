@@ -51,36 +51,3 @@ export class TestMetricsHandler implements IMetricsHandler {
     this.messages.value += `${JSON.stringify(dataWithProject)}\n`;
   }
 }
-
-/**
- * A test implementation of the IMetricsHandler interface.  Used for testing purposes.
- * It logs the metrics and attributes received by the onOperationComplete and onAttemptComplete methods.
- * Doesn't replace the name of the client like the other testing class.
- */
-export class TestMetricsHandlerKeepName implements IMetricsHandler {
-  messages = {value: ''};
-  projectId = 'projectId';
-  requestsHandled: (OnOperationCompleteData | OnAttemptCompleteData)[] = [];
-
-  /**
-   * Logs the metrics and attributes received for an operation completion.
-   * @param {OnOperationCompleteData} data Metrics related to the completed operation.
-   */
-  onOperationComplete(data: OnOperationCompleteData) {
-    const dataWithProject = Object.assign({projectId: this.projectId}, data);
-    this.requestsHandled.push(dataWithProject);
-    this.messages.value += 'Recording parameters for onOperationComplete:\n';
-    this.messages.value += `${JSON.stringify(dataWithProject)}\n`;
-  }
-
-  /**
-   * Logs the metrics and attributes received for an attempt completion.
-   * @param {OnOperationCompleteData} data Metrics related to the completed attempt.
-   */
-  onAttemptComplete(data: OnAttemptCompleteData) {
-    const dataWithProject = Object.assign({projectId: this.projectId}, data);
-    this.requestsHandled.push(dataWithProject);
-    this.messages.value += 'Recording parameters for onAttemptComplete:\n';
-    this.messages.value += `${JSON.stringify(dataWithProject)}\n`;
-  }
-}
