@@ -16,8 +16,8 @@ const path = require('path');
 const fs = require('fs');
 const {
   ClientSideMetricsConfigManager,
-} = require('../../build/src/client-side-metrics/metrics-config-manager.js'); // eslint-disable-line
-const {Bigtable} = require('../../build/src/index.js'); // eslint-disable-line
+} = require('../../../../build/src/client-side-metrics/metrics-config-manager.js'); // eslint-disable-line
+const {Bigtable} = require('../../../../build/src'); // eslint-disable-line
 
 async function main() {
   /**
@@ -54,7 +54,7 @@ async function main() {
     }
   }
 
-  const packagePath = path.join(__dirname, '../../package.json');
+  const packagePath = path.join(__dirname, '../../../package.json');
 
   // Read the file using the absolute path
   const packageJSON = fs.readFileSync(packagePath);

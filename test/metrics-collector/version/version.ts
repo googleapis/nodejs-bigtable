@@ -18,21 +18,6 @@ import {execSync} from 'node:child_process';
 
 describe('Bigtable/CSMVersion', () => {
   it('Fetches the right client side metrics version', async () => {
-    // It is critical to ensure a fixed environment so that the metrics handler
-    // always gets a request when the readRows call is made.
-
-    // 1. Create a clean copy of the current environment
-    const cleanEnv = {...process.env};
-
-    // 2. CRITICAL: Remove emulator variables so the client uses the mock
-    delete cleanEnv.BIGTABLE_EMULATOR_HOST;
-    delete cleanEnv.BIGTABLE_INSTANCE_ADMIN_EMULATOR_HOST;
-    delete cleanEnv.GOOGLE_APPLICATION_CREDENTIALS; // Safe measure
-
-    const stdout = execSync(
-      'cd test/metrics-collector && node get-version-script',
-    );
-    console.log('printing stdout');
-    console.log(stdout.toString());
+    execSync('cd test/metrics-collector && node get-version-script');
   });
 });
