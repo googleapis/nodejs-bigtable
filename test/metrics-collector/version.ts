@@ -18,7 +18,6 @@ import {execSync} from 'node:child_process';
 
 describe('Bigtable/CSMVersion', () => {
   it('Fetches the right client side metrics version', async () => {
-    console.log('starting version test');
     // It is critical to ensure a fixed environment so that the metrics handler
     // always gets a request when the readRows call is made.
 
