@@ -36,6 +36,6 @@ describe('Bigtable/CSMVersion', () => {
       'cd test/metrics-collector && node get-version-script',
     );
     console.log('printing stdout');
-    console.log(stdout);
+    console.log(stdout.toString());
   });
 });
