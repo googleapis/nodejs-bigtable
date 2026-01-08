@@ -35,6 +35,8 @@ const ResponseParams = root.lookupType('ResponseParams');
 
 const projectId = 'my-project';
 
+// Test
+
 /**
  * A fake implementation of the Bigtable client for testing purposes.  Provides a
  * metricsTracerFactory and a stubbed projectId method.
