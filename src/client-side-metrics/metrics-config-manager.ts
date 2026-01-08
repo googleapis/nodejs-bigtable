@@ -27,6 +27,8 @@ export class ClientSideMetricsConfigManager {
 
   constructor(handlers: IMetricsHandler[]) {
     this.metricsHandlers = handlers;
+    console.log('printing handlers');
+    console.log(handlers);
   }
 
   createOperation(
