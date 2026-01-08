@@ -18,7 +18,7 @@ export const expectedRequestsHandled = [
     serverLatency: 101,
     connectivityErrorCount: 0,
     streaming: 'true',
-    status: '4',
+    status: 'DEADLINE_EXCEEDED',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
       instanceId: 'fakeInstanceId',
@@ -34,7 +34,7 @@ export const expectedRequestsHandled = [
     serverLatency: 103,
     connectivityErrorCount: 0,
     streaming: 'true',
-    status: '0',
+    status: 'OK',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
       instanceId: 'fakeInstanceId',
@@ -46,7 +46,7 @@ export const expectedRequestsHandled = [
     projectId: 'my-project',
   },
   {
-    status: '0',
+    status: 'OK',
     streaming: 'true',
     metricsCollectorData: {
       instanceId: 'fakeInstanceId',

@@ -38,7 +38,7 @@ export const expectedOtelExportConvertedValue = {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
           client_name: 'nodejs-bigtable',
-          status: '0',
+          status: 'OK',
           streaming: 'true',
         },
       },
@@ -136,7 +136,7 @@ export const expectedOtelExportConvertedValue = {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
           client_name: 'nodejs-bigtable',
-          status: '4',
+          status: 'DEADLINE_EXCEEDED',
           streaming: 'true',
         },
       },
@@ -234,7 +234,7 @@ export const expectedOtelExportConvertedValue = {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
           client_name: 'nodejs-bigtable',
-          status: '0',
+          status: 'OK',
           streaming: 'true',
         },
       },
@@ -332,7 +332,7 @@ export const expectedOtelExportConvertedValue = {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
           client_name: 'nodejs-bigtable',
-          status: '0',
+          status: 'OK',
         },
       },
       resource: {
@@ -505,7 +505,7 @@ export const expectedOtelExportConvertedValue = {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
           client_name: 'nodejs-bigtable',
-          status: '0',
+          status: 'OK',
         },
       },
       resource: {
@@ -602,7 +602,7 @@ export const expectedOtelExportConvertedValue = {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
           client_name: 'nodejs-bigtable',
-          status: '4',
+          status: 'DEADLINE_EXCEEDED',
           streaming: 'true',
         },
       },
@@ -700,7 +700,7 @@ export const expectedOtelExportConvertedValue = {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
           client_name: 'nodejs-bigtable',
-          status: '0',
+          status: 'OK',
           streaming: 'true',
         },
       },
@@ -798,7 +798,7 @@ export const expectedOtelExportConvertedValue = {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
           client_name: 'nodejs-bigtable',
-          status: '4',
+          status: 'DEADLINE_EXCEEDED',
         },
       },
       resource: {
@@ -837,7 +837,7 @@ export const expectedOtelExportConvertedValue = {
           method: 'Bigtable.ReadRows',
           client_uid: 'fake-uuid',
           client_name: 'nodejs-bigtable',
-          status: '0',
+          status: 'OK',
         },
       },
       resource: {
@@ -935,7 +935,7 @@ export const expectedOtelExportInput = {
             {
               attributes: {
                 streaming: 'true',
-                status: '0',
+                status: 'OK',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
                 client_name: 'nodejs-bigtable',
@@ -993,7 +993,7 @@ export const expectedOtelExportInput = {
                 streaming: 'true',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '4',
+                status: 'DEADLINE_EXCEEDED',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -1027,7 +1027,7 @@ export const expectedOtelExportInput = {
                 streaming: 'true',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '0',
+                status: 'OK',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -1073,7 +1073,7 @@ export const expectedOtelExportInput = {
           dataPoints: [
             {
               attributes: {
-                status: '0',
+                status: 'OK',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
                 client_name: 'nodejs-bigtable',
@@ -1179,7 +1179,7 @@ export const expectedOtelExportInput = {
           dataPoints: [
             {
               attributes: {
-                status: '0',
+                status: 'OK',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
                 client_name: 'nodejs-bigtable',
@@ -1237,7 +1237,7 @@ export const expectedOtelExportInput = {
                 streaming: 'true',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '4',
+                status: 'DEADLINE_EXCEEDED',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -1271,7 +1271,7 @@ export const expectedOtelExportInput = {
                 streaming: 'true',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '0',
+                status: 'OK',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -1319,7 +1319,7 @@ export const expectedOtelExportInput = {
               attributes: {
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '4',
+                status: 'DEADLINE_EXCEEDED',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -1334,7 +1334,7 @@ export const expectedOtelExportInput = {
               attributes: {
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '0',
+                status: 'OK',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -1402,7 +1402,7 @@ export const expectedOtelHundredExportInputs = {
             {
               attributes: {
                 streaming: 'true',
-                status: '0',
+                status: 'OK',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
                 client_name: 'nodejs-bigtable',
@@ -1460,7 +1460,7 @@ export const expectedOtelHundredExportInputs = {
                 streaming: 'true',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '4',
+                status: 'DEADLINE_EXCEEDED',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -1494,7 +1494,7 @@ export const expectedOtelHundredExportInputs = {
                 streaming: 'true',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '0',
+                status: 'OK',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -1540,7 +1540,7 @@ export const expectedOtelHundredExportInputs = {
           dataPoints: [
             {
               attributes: {
-                status: '0',
+                status: 'OK',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
                 client_name: 'nodejs-bigtable',
@@ -1646,7 +1646,7 @@ export const expectedOtelHundredExportInputs = {
           dataPoints: [
             {
               attributes: {
-                status: '0',
+                status: 'OK',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
                 client_name: 'nodejs-bigtable',
@@ -1704,7 +1704,7 @@ export const expectedOtelHundredExportInputs = {
                 streaming: 'true',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '4',
+                status: 'DEADLINE_EXCEEDED',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -1738,7 +1738,7 @@ export const expectedOtelHundredExportInputs = {
                 streaming: 'true',
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '0',
+                status: 'OK',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -1786,7 +1786,7 @@ export const expectedOtelHundredExportInputs = {
               attributes: {
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '4',
+                status: 'DEADLINE_EXCEEDED',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
@@ -1801,7 +1801,7 @@ export const expectedOtelHundredExportInputs = {
               attributes: {
                 method: 'Bigtable.ReadRows',
                 client_uid: 'fake-uuid',
-                status: '0',
+                status: 'OK',
                 client_name: 'nodejs-bigtable',
                 instanceId: 'fakeInstanceId',
                 table: 'fakeTableId',
