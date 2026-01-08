@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Try again.
-
 // eslint-disable-next-line n/no-extraneous-import
 import {describe} from 'mocha';
 import {execSync} from 'node:child_process';
