@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@google-cloud/functions-framework": "^3.0.0",
-    "chai": "^4.2.0",
+    "chai": "^6.0.0",
     "mocha": "^8.0.0",
     "snap-shot-it": "^7.9.1",
     "request": "^2.88.0",
