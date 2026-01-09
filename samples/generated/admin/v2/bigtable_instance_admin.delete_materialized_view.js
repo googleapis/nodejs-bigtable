@@ -43,10 +43,10 @@ function main(name) {
   // const etag = 'abc123'
 
   // Imports the Admin library
-  const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').admin.v2;
+  const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
 
   // Instantiates a client
-  const adminClient = new BigtableInstanceAdminClient();
+  const adminClient = new InstanceAdminClient();
 
   async function callDeleteMaterializedView() {
     // Construct request
