@@ -50,8 +50,7 @@ export interface ITabularApiSurface {
   };
 }
 
-const packageJSON = fs.readFileSync('package.json');
-const version = JSON.parse(packageJSON.toString()).version;
+const {version} = require('../../../package.json');
 
 // MetricsCollectorState is a list of states that the metrics collector can be in.
 // Tracking the OperationMetricsCollector state is done so that the
