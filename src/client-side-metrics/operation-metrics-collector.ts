@@ -199,9 +199,10 @@ export class OperationMetricsCollector {
 
   /**
    * Called when an attempt (e.g., an RPC attempt) completes. Records attempt latencies.
+   * @param {string} projectId The project id for the Bigtable client.
    * @param {grpc.status} attemptStatus The grpc status for the attempt.
    */
-  onAttemptComplete(attemptStatus: grpc.status) {
+  onAttemptComplete(projectId: string, attemptStatus: grpc.status) {
     withMetricsDebug(() => {
       checkState(this.state, [
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_NO_ROWS_YET,
@@ -216,7 +217,7 @@ export class OperationMetricsCollector {
           (endTime - this.attemptStartTime) / BigInt(1000000),
         );
         this.handlers.forEach(metricsHandler => {
-          if (metricsHandler.onAttemptComplete) {
+          if (projectId && metricsHandler.onAttemptComplete) {
             metricsHandler.onAttemptComplete({
               attemptLatency: totalMilliseconds,
               serverLatency: this.serverTime ?? undefined,
@@ -225,6 +226,7 @@ export class OperationMetricsCollector {
               status: status[attemptStatus],
               client_name: `nodejs-bigtable/${version}`,
               metricsCollectorData: this.getMetricsCollectorData(),
+              projectId,
             });
           }
         });
@@ -279,10 +281,12 @@ export class OperationMetricsCollector {
   /**
    * Called when an operation completes (successfully or unsuccessfully).
    * Records operation latencies, retry counts, and connectivity error counts.
+   * @param {string} projectId The id of the project.
    * @param {grpc.status} finalOperationStatus Information about the completed operation.
    * @param {number} applicationLatency The application latency measurement.
    */
   onOperationComplete(
+    projectId: string,
     finalOperationStatus: grpc.status,
     applicationLatency?: number,
   ) {
@@ -293,7 +297,7 @@ export class OperationMetricsCollector {
         this.state ===
           MetricsCollectorState.OPERATION_STARTED_ATTEMPT_IN_PROGRESS_SOME_ROWS_RECEIVED
       ) {
-        this.onAttemptComplete(finalOperationStatus);
+        this.onAttemptComplete(projectId, finalOperationStatus);
       }
       checkState(this.state, [
         MetricsCollectorState.OPERATION_STARTED_ATTEMPT_NOT_IN_PROGRESS,
@@ -316,6 +320,7 @@ export class OperationMetricsCollector {
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? 0,
                 applicationLatency: applicationLatency ?? 0,
+                projectId,
               });
             }
           });

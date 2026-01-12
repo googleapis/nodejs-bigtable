@@ -38,6 +38,7 @@ const COLUMN_FAMILY = 'traits';
 const COLUMN_FAMILIES = [COLUMN_FAMILY];
 const ROW_KEY = 'gwashington';
 const COLUMN = 'teeth';
+const FAKE_PROJECT_ID = 'test-project-id';
 
 /**
  * Creates a Bigtable instance if it does not already exist.
@@ -123,7 +124,7 @@ async function createTable(
  */
 function getTestMetricsHandler() {
   const testMetricsHandler = new TestMetricsHandler();
-  testMetricsHandler.projectId = 'test-project-id';
+  testMetricsHandler.projectId = FAKE_PROJECT_ID;
   return testMetricsHandler;
 }
 
@@ -210,6 +211,7 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
               appProfileId: undefined,
             },
             gaxOpts: createMetricsUnaryInterceptorProvider(
+              table,
               {},
               metricsCollector,
             ),
@@ -224,8 +226,8 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
         );
       });
       // 4. Tell the metrics collector the attempt is over
-      metricsCollector.onAttemptComplete(GrpcStatus.OK);
-      metricsCollector.onOperationComplete(GrpcStatus.OK, 0);
+      metricsCollector.onAttemptComplete(FAKE_PROJECT_ID, GrpcStatus.OK);
+      metricsCollector.onOperationComplete(FAKE_PROJECT_ID, GrpcStatus.OK, 0);
       // 5. Return results of method call to the user
       return responseArray;
     };

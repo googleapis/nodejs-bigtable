@@ -18,6 +18,7 @@ import {OperationMetricsCollector} from './operation-metrics-collector';
 // Mock Server Implementation
 import * as grpcJs from '@grpc/grpc-js';
 import {status as GrpcStatus} from '@grpc/grpc-js';
+import {TabularApiSurface} from '../tabular-api-surface';
 
 export type ServerStatus = {
   metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
@@ -27,6 +28,7 @@ export type ServerStatus = {
 
 // Helper to create interceptor provider for OperationMetricsCollector
 function createMetricsInterceptorProvider(
+  table: TabularApiSurface,
   collector: OperationMetricsCollector,
 ) {
   return (options: grpcJs.InterceptorOptions, nextCall: grpcJs.NextCall) => {
@@ -49,7 +51,7 @@ function createMetricsInterceptorProvider(
             collector.onStatusMetadataReceived(
               status as unknown as ServerStatus,
             );
-            collector.onAttemptComplete(status.code);
+            collector.onAttemptComplete(table.bigtable.projectId, status.code);
             nextStat(status);
           },
         };
@@ -71,17 +73,22 @@ function createMetricsInterceptorProvider(
  * uses the provided `OperationMetricsCollector` to record various metrics
  * related to the call, such as latency, retries, and errors.
  *
+ * @param {TabularApiSurface} table The tabularApiSurface containing the projectId
  * @param {CallOptions} gaxOptions The existing GAX call options to modify.
  * @param {OperationMetricsCollector} metricsCollector The metrics collector
  *   for the operation.
  * @returns {CallOptions} The modified `gaxOptions` with the interceptor attached.
  */
 export function createMetricsUnaryInterceptorProvider(
+  table: TabularApiSurface,
   gaxOptions: CallOptions,
   metricsCollector?: OperationMetricsCollector,
 ) {
   if (metricsCollector) {
-    const interceptor = createMetricsInterceptorProvider(metricsCollector);
+    const interceptor = createMetricsInterceptorProvider(
+      table,
+      metricsCollector,
+    );
     if (!gaxOptions.otherArgs) {
       gaxOptions.otherArgs = {};
     }

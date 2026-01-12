@@ -34,6 +34,7 @@ interface StandardData {
   client_name: string;
   streaming: StreamingState;
   status: string;
+  projectId: string;
 }
 
 export interface OnOperationCompleteData extends StandardData {

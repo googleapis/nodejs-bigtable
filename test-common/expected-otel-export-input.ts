@@ -892,6 +892,7 @@ export const expectedOtelExportInput = {
   resource: {
     _attributes: {
       'service.name': 'Cloud Bigtable Table',
+      'monitored_resource.project_id': 'my-project',
       'telemetry.sdk.language': 'nodejs',
       'telemetry.sdk.name': 'opentelemetry',
       'telemetry.sdk.version': '1.30.1',
@@ -899,6 +900,7 @@ export const expectedOtelExportInput = {
     asyncAttributesPending: false,
     _syncAttributes: {
       'service.name': 'Cloud Bigtable Table',
+      'monitored_resource.project_id': 'my-project',
       'telemetry.sdk.language': 'nodejs',
       'telemetry.sdk.name': 'opentelemetry',
       'telemetry.sdk.version': '1.30.1',

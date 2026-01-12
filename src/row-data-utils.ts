@@ -109,12 +109,16 @@ class RowDataUtils {
         method: 'checkAndMutateRow',
         reqOpts,
         gaxOpts: createMetricsUnaryInterceptorProvider(
+          properties.requestData.table,
           config.gaxOptions ?? {},
           metricsCollector,
         ),
       },
       (err, apiResponse) => {
-        metricsCollector.onOperationComplete(err ? err.code : 0);
+        metricsCollector.onOperationComplete(
+          properties.requestData.table.bigtable.projectId,
+          err ? err.code : 0,
+        );
         if (err) {
           callback(err, null, apiResponse);
           return;
@@ -238,12 +242,16 @@ class RowDataUtils {
         method: 'readModifyWriteRow',
         reqOpts,
         gaxOpts: createMetricsUnaryInterceptorProvider(
+          properties.requestData.table,
           gaxOptions,
           metricsCollector,
         ),
       },
       (err, ...args) => {
-        metricsCollector.onOperationComplete(err ? err.code : 0);
+        metricsCollector.onOperationComplete(
+          properties.requestData.table.bigtable.projectId,
+          err ? err.code : 0,
+        );
         callback(err, ...args);
       },
     );
