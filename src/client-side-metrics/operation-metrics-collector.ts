@@ -155,6 +155,7 @@ export class OperationMetricsCollector {
         cluster: this.cluster || '<unspecified>',
         zone: this.zone || 'global',
         method: this.methodName,
+        projectId: this.tabularApiSurface.bigtable.projectId as string,
       },
       appProfileId ? {app_profile: appProfileId} : {},
     );
@@ -217,7 +218,7 @@ export class OperationMetricsCollector {
           (endTime - this.attemptStartTime) / BigInt(1000000),
         );
         this.handlers.forEach(metricsHandler => {
-          if (projectId && metricsHandler.onAttemptComplete) {
+          if (metricsHandler.onAttemptComplete) {
             metricsHandler.onAttemptComplete({
               attemptLatency: totalMilliseconds,
               serverLatency: this.serverTime ?? undefined,
@@ -226,7 +227,6 @@ export class OperationMetricsCollector {
               status: status[attemptStatus],
               client_name: `nodejs-bigtable/${version}`,
               metricsCollectorData: this.getMetricsCollectorData(),
-              projectId,
             });
           }
         });
@@ -320,7 +320,6 @@ export class OperationMetricsCollector {
                 retryCount: this.attemptCount - 1,
                 firstResponseLatency: this.firstResponseLatency ?? 0,
                 applicationLatency: applicationLatency ?? 0,
-                projectId,
               });
             }
           });

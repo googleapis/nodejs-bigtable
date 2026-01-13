@@ -76,6 +76,7 @@ interface MetricsInstruments {
  * for a particular project.
  *
  * @param exporter The exporter the metrics will be sent to.
+ * @param projectId The projectId that the metrics will get written for.
  */
 function createInstruments(
   exporter: PushMetricExporter,
@@ -243,7 +244,9 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnOperationCompleteData} data Data related to the completed operation.
    */
   onOperationComplete(data: OnOperationCompleteData) {
-    const otelInstruments = this.getMetricInstruments(data.projectId);
+    const otelInstruments = this.getMetricInstruments(
+      data.metricsCollectorData.projectId,
+    );
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,
@@ -289,7 +292,9 @@ export class GCPMetricsHandler implements IMetricsHandler {
    * @param {OnAttemptCompleteData} data Data related to the completed attempt.
    */
   onAttemptComplete(data: OnAttemptCompleteData) {
-    const otelInstruments = this.getMetricInstruments(data.projectId);
+    const otelInstruments = this.getMetricInstruments(
+      data.metricsCollectorData.projectId,
+    );
     const commonAttributes = {
       app_profile: data.metricsCollectorData.app_profile,
       method: data.metricsCollectorData.method,

@@ -27,6 +27,7 @@ type IMetricsCollectorData = {
   zone?: string;
   app_profile?: string;
   method: MethodName;
+  projectId: string;
 };
 
 interface StandardData {
@@ -34,7 +35,6 @@ interface StandardData {
   client_name: string;
   streaming: StreamingState;
   status: string;
-  projectId: string;
 }
 
 export interface OnOperationCompleteData extends StandardData {
