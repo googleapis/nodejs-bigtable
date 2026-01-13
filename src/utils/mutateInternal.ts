@@ -64,7 +64,7 @@ export function mutateInternal(
     // communicate a code to the metrics collector.
     //
     const code = originalError ? originalError.code : 0;
-    metricsCollector.onOperationComplete(table.bigtable.projectId, code);
+    metricsCollector.onOperationComplete(code);
     callback(err, apiResponse);
   };
 
@@ -126,7 +126,6 @@ export function mutateInternal(
         options.gaxOptions?.retry?.backoffSettings || DEFAULT_BACKOFF_SETTINGS;
       const nextDelay = getNextDelay(numRequestsMade, backOffSettings);
       metricsCollector.onAttemptComplete(
-        table.bigtable.projectId,
         err ? err.code : 0,
       );
       setTimeout(makeNextBatchRequest, nextDelay);

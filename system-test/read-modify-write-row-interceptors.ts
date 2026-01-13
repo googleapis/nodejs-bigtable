@@ -226,8 +226,8 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
         );
       });
       // 4. Tell the metrics collector the attempt is over
-      metricsCollector.onAttemptComplete(FAKE_PROJECT_ID, GrpcStatus.OK);
-      metricsCollector.onOperationComplete(FAKE_PROJECT_ID, GrpcStatus.OK, 0);
+      metricsCollector.onAttemptComplete(GrpcStatus.OK);
+      metricsCollector.onOperationComplete(GrpcStatus.OK, 0);
       // 5. Return results of method call to the user
       return responseArray;
     };

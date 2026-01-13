@@ -479,10 +479,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     metricsCollector.wrapRequest(requestStream);
     const stream = pumpify.obj([requestStream, rowKeysStream]);
     stream.on('end', () => {
-      metricsCollector.onOperationComplete(this.bigtable.projectId, 0);
+      metricsCollector.onOperationComplete(0);
     });
     stream.on('error', (err: ServiceError) => {
-      metricsCollector.onOperationComplete(this.bigtable.projectId, err.code);
+      metricsCollector.onOperationComplete(err.code);
     });
     return stream;
   }

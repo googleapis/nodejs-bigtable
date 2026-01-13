@@ -116,7 +116,6 @@ class RowDataUtils {
       },
       (err, apiResponse) => {
         metricsCollector.onOperationComplete(
-          properties.requestData.table.bigtable.projectId,
           err ? err.code : 0,
         );
         if (err) {
@@ -249,7 +248,6 @@ class RowDataUtils {
       },
       (err, ...args) => {
         metricsCollector.onOperationComplete(
-          properties.requestData.table.bigtable.projectId,
           err ? err.code : 0,
         );
         callback(err, ...args);

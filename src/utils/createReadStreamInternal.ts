@@ -372,7 +372,6 @@ export function createReadStreamInternal(
           // it when the user calls `.abort()`.
           userStream.end();
           metricsCollector.onOperationComplete(
-            table.bigtable.projectId,
             error.code,
             userStream.getTotalDurationMs(),
           );
@@ -393,7 +392,6 @@ export function createReadStreamInternal(
             backOffSettings,
           );
           metricsCollector.onAttemptComplete(
-            table.bigtable.projectId,
             error.code,
           );
           retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
@@ -411,7 +409,6 @@ export function createReadStreamInternal(
             error.code = grpc.status.CANCELLED;
           }
           metricsCollector.onOperationComplete(
-            table.bigtable.projectId,
             error.code,
             userStream.getTotalDurationMs(),
           );
@@ -426,7 +423,6 @@ export function createReadStreamInternal(
       .on('end', () => {
         activeRequestStream = null;
         metricsCollector.onOperationComplete(
-          table.bigtable.projectId,
           grpc.status.OK,
           userStream.getTotalDurationMs(),
         );

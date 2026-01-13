@@ -51,7 +51,7 @@ function createMetricsInterceptorProvider(
             collector.onStatusMetadataReceived(
               status as unknown as ServerStatus,
             );
-            collector.onAttemptComplete(table.bigtable.projectId, status.code);
+            collector.onAttemptComplete(status.code);
             nextStat(status);
           },
         };
