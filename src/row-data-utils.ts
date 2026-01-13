@@ -115,9 +115,7 @@ class RowDataUtils {
         ),
       },
       (err, apiResponse) => {
-        metricsCollector.onOperationComplete(
-          err ? err.code : 0,
-        );
+        metricsCollector.onOperationComplete(err ? err.code : 0);
         if (err) {
           callback(err, null, apiResponse);
           return;
@@ -247,9 +245,7 @@ class RowDataUtils {
         ),
       },
       (err, ...args) => {
-        metricsCollector.onOperationComplete(
-          err ? err.code : 0,
-        );
+        metricsCollector.onOperationComplete(err ? err.code : 0);
         callback(err, ...args);
       },
     );
