@@ -146,7 +146,10 @@ describe('Bigtable/MetricsCollector', () => {
           metricsCollector.onResponse(this.bigtable.projectId);
           logger.value += '9. User receives second row.\n';
           logger.value += '10. A transient error occurs.\n';
-          metricsCollector.onAttemptComplete(grpc.status.DEADLINE_EXCEEDED);
+          metricsCollector.onAttemptComplete(
+            projectId,
+            grpc.status.DEADLINE_EXCEEDED,
+          );
           logger.value += '11. After a timeout, the second attempt is made.\n';
           metricsCollector.onAttemptStart();
           logger.value += '12. Client receives status information.\n';
@@ -164,6 +167,7 @@ describe('Bigtable/MetricsCollector', () => {
           logger.value += '19. User reads row 1\n';
           logger.value += '20. Stream ends, operation completes\n';
           metricsCollector.onOperationComplete(
+            projectId,
             grpc.status.OK,
             userStream.getTotalDurationMs(),
           );
