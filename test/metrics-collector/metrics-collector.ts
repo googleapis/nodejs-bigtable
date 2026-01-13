@@ -82,7 +82,7 @@ describe('Bigtable/MetricsCollector', () => {
     stubs,
   ).OperationMetricsCollector;
 
-  it.only('should record the right metrics with a typical method call', async () => {
+  it('should record the right metrics with a typical method call', async () => {
     class FakeTable {
       id = 'fakeTableId';
       instance = new FakeInstance();
