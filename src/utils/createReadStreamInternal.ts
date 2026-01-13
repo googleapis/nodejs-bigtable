@@ -391,9 +391,7 @@ export function createReadStreamInternal(
             numConsecutiveErrors,
             backOffSettings,
           );
-          metricsCollector.onAttemptComplete(
-            error.code,
-          );
+          metricsCollector.onAttemptComplete(error.code);
           retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
         } else {
           if (

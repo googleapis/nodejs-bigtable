@@ -125,9 +125,7 @@ export function mutateInternal(
       const backOffSettings =
         options.gaxOptions?.retry?.backoffSettings || DEFAULT_BACKOFF_SETTINGS;
       const nextDelay = getNextDelay(numRequestsMade, backOffSettings);
-      metricsCollector.onAttemptComplete(
-        err ? err.code : 0,
-      );
+      metricsCollector.onAttemptComplete(err ? err.code : 0);
       setTimeout(makeNextBatchRequest, nextDelay);
       return;
     }
