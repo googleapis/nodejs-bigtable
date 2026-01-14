@@ -70,13 +70,14 @@ export class TableAdminClient extends BigtableTableAdminClient {
     return this['_log'];
   }
 
-  /**
-   * Check the status of the long running operation returned when the `restoreTable()`
-   * LRO has concluded.
-   *
+  /*
    * This one doesn't get generated in GAPIC, because it's "hidden" in proto
    * return types rather than being part of a method. This helper does the same
    * thing as e.g. checkRestoreTableStatus.
+   */
+  /**
+   * Check the status of the long running operation returned when the `restoreTable()`
+   * LRO has concluded.
    *
    * @param {String} name
    *   The operation name that will be passed.
