@@ -37,5 +37,6 @@ describe('Bigtable/metricsToRequest', () => {
         expectedOtelExportConvertedValue.timeSeries[index],
       );
     }
+    assert.strictEqual(convertedValue.name, 'projects/my-project');
   });
 });

@@ -216,7 +216,7 @@ export function metricsToRequest(exportArgs: ResourceMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
       for (const dataPoint of scopeMetric.dataPoints) {
         if (!projectId) {
-          projectId = dataPoint.attributes.instanceId;
+          projectId = dataPoint.attributes.projectId;
         }
         const metric = getMetric(scopeMetric.descriptor.name, dataPoint);
         const resource = getResource(dataPoint);
