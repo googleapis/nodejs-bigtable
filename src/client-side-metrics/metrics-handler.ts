@@ -21,13 +21,13 @@ import {MethodName, StreamingState} from './client-side-metrics-attributes';
  */
 
 type IMetricsCollectorData = {
+  projectId: string;
   instanceId: string;
   table: string;
   cluster?: string;
   zone?: string;
   app_profile?: string;
   method: MethodName;
-  projectId: string;
 };
 
 interface StandardData {

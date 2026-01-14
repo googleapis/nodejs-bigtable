@@ -238,11 +238,11 @@ export class GCPMetricsHandler implements IMetricsHandler {
       method: data.metricsCollectorData.method,
       client_uid: this.clientUid,
       client_name: data.client_name,
+      projectId: data.metricsCollectorData.projectId,
       instanceId: data.metricsCollectorData.instanceId,
       table: data.metricsCollectorData.table,
       cluster: data.metricsCollectorData.cluster,
       zone: data.metricsCollectorData.zone,
-      projectId: data.metricsCollectorData.projectId,
     };
     otelInstruments.operationLatencies.record(data.operationLatency, {
       streaming: data.streaming,
@@ -286,11 +286,11 @@ export class GCPMetricsHandler implements IMetricsHandler {
       client_uid: this.clientUid,
       status: data.status,
       client_name: data.client_name,
+      projectId: data.metricsCollectorData.projectId,
       instanceId: data.metricsCollectorData.instanceId,
       table: data.metricsCollectorData.table,
       cluster: data.metricsCollectorData.cluster,
       zone: data.metricsCollectorData.zone,
-      projectId: data.metricsCollectorData.projectId,
     };
     otelInstruments.attemptLatencies.record(data.attemptLatency, {
       streaming: data.streaming,
