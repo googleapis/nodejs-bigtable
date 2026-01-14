@@ -155,6 +155,7 @@ export class OperationMetricsCollector {
         cluster: this.cluster || '<unspecified>',
         zone: this.zone || 'global',
         method: this.methodName,
+        projectId: this.tabularApiSurface.bigtable.projectId as string,
       },
       appProfileId ? {app_profile: appProfileId} : {},
     );

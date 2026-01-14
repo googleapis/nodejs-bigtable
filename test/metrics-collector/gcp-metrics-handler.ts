@@ -119,10 +119,7 @@ describe('Bigtable/GCPMetricsHandler', () => {
                 JSON.parse(JSON.stringify(metrics)),
                 expectedOtelExportInput,
               );
-              const convertedRequest = metricsToRequest(
-                'my-project',
-                parsedExportInput,
-              );
+              const convertedRequest = metricsToRequest(parsedExportInput);
               assert.deepStrictEqual(
                 convertedRequest.timeSeries.length,
                 expectedOtelExportConvertedValue.timeSeries.length,

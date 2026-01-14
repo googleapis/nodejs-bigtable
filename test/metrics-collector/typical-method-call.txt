@@ -13,7 +13,7 @@ getDate call returns 3000 ms
 10. A transient error occurs.
 getDate call returns 4000 ms
 Recording parameters for onAttemptComplete:
-{"projectId":"my-project","attemptLatency":2000,"serverLatency":101,"connectivityErrorCount":0,"streaming":"true","status":"DEADLINE_EXCEEDED","client_name":"nodejs-bigtable","metricsCollectorData":{"instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","method":"Bigtable.ReadRows"}}
+{"metricsCollectorData":{"instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","method":"Bigtable.ReadRows","projectId":"my-project"},"attemptLatency":2000,"serverLatency":101,"connectivityErrorCount":0,"streaming":"true","status":"DEADLINE_EXCEEDED","client_name":"nodejs-bigtable"}
 11. After a timeout, the second attempt is made.
 getDate call returns 5000 ms
 12. Client receives status information.
@@ -27,7 +27,7 @@ getDate call returns 5000 ms
 20. Stream ends, operation completes
 getDate call returns 6000 ms
 Recording parameters for onAttemptComplete:
-{"projectId":"my-project","attemptLatency":1000,"serverLatency":103,"connectivityErrorCount":0,"streaming":"true","status":"OK","client_name":"nodejs-bigtable","metricsCollectorData":{"instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","method":"Bigtable.ReadRows"}}
+{"metricsCollectorData":{"instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","method":"Bigtable.ReadRows","projectId":"my-project"},"attemptLatency":1000,"serverLatency":103,"connectivityErrorCount":0,"streaming":"true","status":"OK","client_name":"nodejs-bigtable"}
 getDate call returns 7000 ms
 Recording parameters for onOperationComplete:
-{"projectId":"my-project","status":"OK","streaming":"true","metricsCollectorData":{"instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","method":"Bigtable.ReadRows"},"client_name":"nodejs-bigtable","operationLatency":6000,"retryCount":1,"firstResponseLatency":2000,"applicationLatency":1256}
+{"metricsCollectorData":{"instanceId":"fakeInstanceId","table":"fakeTableId","cluster":"fake-cluster3","zone":"us-west1-c","method":"Bigtable.ReadRows","projectId":"my-project"},"status":"OK","streaming":"true","client_name":"nodejs-bigtable","operationLatency":6000,"retryCount":1,"firstResponseLatency":2000,"applicationLatency":1256}
