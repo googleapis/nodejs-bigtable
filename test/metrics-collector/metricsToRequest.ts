@@ -23,9 +23,7 @@ import {ResourceMetrics} from '@opentelemetry/sdk-metrics';
 
 describe('Bigtable/metricsToRequest', () => {
   it('Converts an otel request to a request ready for the metric service client', () => {
-    const projectId = 'my-project';
     const convertedValue = metricsToRequest(
-      projectId,
       expectedOtelExportInput as unknown as ResourceMetrics,
     );
     assert.deepStrictEqual(
