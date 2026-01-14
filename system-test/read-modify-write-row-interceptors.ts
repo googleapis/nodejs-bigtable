@@ -38,7 +38,6 @@ const COLUMN_FAMILY = 'traits';
 const COLUMN_FAMILIES = [COLUMN_FAMILY];
 const ROW_KEY = 'gwashington';
 const COLUMN = 'teeth';
-const FAKE_PROJECT_ID = 'test-project-id';
 
 /**
  * Creates a Bigtable instance if it does not already exist.
@@ -124,7 +123,7 @@ async function createTable(
  */
 function getTestMetricsHandler() {
   const testMetricsHandler = new TestMetricsHandler();
-  testMetricsHandler.projectId = FAKE_PROJECT_ID;
+  testMetricsHandler.projectId = 'test-project-id';
   return testMetricsHandler;
 }
 
