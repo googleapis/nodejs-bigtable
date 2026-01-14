@@ -18,7 +18,6 @@ import {OperationMetricsCollector} from './operation-metrics-collector';
 // Mock Server Implementation
 import * as grpcJs from '@grpc/grpc-js';
 import {status as GrpcStatus} from '@grpc/grpc-js';
-import {TabularApiSurface} from '../tabular-api-surface';
 
 export type ServerStatus = {
   metadata: {internalRepr: Map<string, Uint8Array[]>; options: {}};
