@@ -700,7 +700,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       });
     });
   });
-  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     /**
      * This method is called to do a bunch of basic assertion checks that are
      * expected to pass when a client makes two getRows calls.

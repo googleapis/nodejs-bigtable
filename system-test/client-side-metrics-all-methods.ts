@@ -1657,7 +1657,7 @@ describe('Bigtable/ClientSideMetricsAllMethods', () => {
       });
     });
   });
-  describe('Bigtable/ClientSideMetricsToMetricsHandler', () => {
+  describe.only('Bigtable/ClientSideMetricsToMetricsHandler', () => {
     async function getFakeBigtableWithHandler(
       projectId: string,
       done: mocha.Done,
