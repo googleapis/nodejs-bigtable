@@ -94,6 +94,25 @@ describe('waitForConsistency', () => {
     sandbox.restore();
   });
 
+  it('accepts a token object', async () => {
+    const token = 'test';
+    const client = new TableAdminClient();
+    sandbox.stub(client, 'generateConsistencyToken').callsFake(() => {
+      assert.ok(false, 'should not have been called');
+    });
+
+    sandbox.stub(client, 'checkConsistency').callsFake(req => {
+      assert.strictEqual(req.consistencyToken, token);
+      return [
+        {
+          consistent: true,
+        },
+      ];
+    });
+
+    await client.waitForConsistency('tableName', token);
+  });
+
   it('calls without error', async () => {
     const tableName = 'test';
     const consistencyToken = 'token';

@@ -115,29 +115,35 @@ export class TableAdminClient extends BigtableTableAdminClient {
    * for you, and waits until its status has returned `consistent`.
    *
    * @param tableName The name of the table to check
-   * @param options CallOptions, if desired
+   * @param [token] An existing token string, if one exists
+   * @param [options] CallOptions, if desired
    * @returns A Promise that completes when the table is consistent
    */
   async waitForConsistency(
     tableName: string,
+    token?: string,
     options?: CallOptions,
   ): Promise<void> {
     const checkIntervalSeconds = 5;
 
-    // 1. Generate a consistency token
-    const [token] = await this.generateConsistencyToken(
-      {
-        name: tableName,
-      },
-      options,
-    );
+    // 1. Generate a consistency token (or use the one the user passed)
+    let resolvedToken = token;
+    if (!resolvedToken) {
+      const [generatedToken] = await this.generateConsistencyToken(
+        {
+          name: tableName,
+        },
+        options,
+      );
+      resolvedToken = generatedToken.consistencyToken!;
+    }
 
     let isConsistent = false;
     while (!isConsistent) {
       // 2. Check for consistency
       const request = {
         name: tableName,
-        consistencyToken: token.consistencyToken,
+        consistencyToken: resolvedToken,
       };
       const [consistent] = await this.checkConsistency(request, options);
 
