@@ -118,8 +118,8 @@ function readRowsAssertionCheck(
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
       method,
+      projectId,
     },
-    projectId,
   });
   const secondRequest = requestsHandled[1] as any;
   // We would expect these parameters to be different every time so delete
@@ -140,8 +140,8 @@ function readRowsAssertionCheck(
       zone: 'us-west1-c',
       method,
       table: 'my-table',
+      projectId,
     },
-    projectId,
     retryCount: 0,
   });
   // We would expect these parameters to be different every time so delete
@@ -163,8 +163,8 @@ function readRowsAssertionCheck(
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
       method,
+      projectId,
     },
-    projectId,
   });
   const fourthRequest = requestsHandled[3] as any;
   // We would expect these parameters to be different every time so delete
@@ -185,8 +185,8 @@ function readRowsAssertionCheck(
       zone: 'us-west1-c',
       method,
       table: 'my-table2',
+      projectId,
     },
-    projectId,
     retryCount: 0,
   });
 }
