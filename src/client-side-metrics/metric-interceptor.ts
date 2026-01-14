@@ -28,7 +28,6 @@ export type ServerStatus = {
 
 // Helper to create interceptor provider for OperationMetricsCollector
 function createMetricsInterceptorProvider(
-  table: TabularApiSurface,
   collector: OperationMetricsCollector,
 ) {
   return (options: grpcJs.InterceptorOptions, nextCall: grpcJs.NextCall) => {
@@ -73,22 +72,17 @@ function createMetricsInterceptorProvider(
  * uses the provided `OperationMetricsCollector` to record various metrics
  * related to the call, such as latency, retries, and errors.
  *
- * @param {TabularApiSurface} table The tabularApiSurface containing the projectId
  * @param {CallOptions} gaxOptions The existing GAX call options to modify.
  * @param {OperationMetricsCollector} metricsCollector The metrics collector
  *   for the operation.
  * @returns {CallOptions} The modified `gaxOptions` with the interceptor attached.
  */
 export function createMetricsUnaryInterceptorProvider(
-  table: TabularApiSurface,
   gaxOptions: CallOptions,
   metricsCollector?: OperationMetricsCollector,
 ) {
   if (metricsCollector) {
-    const interceptor = createMetricsInterceptorProvider(
-      table,
-      metricsCollector,
-    );
+    const interceptor = createMetricsInterceptorProvider(metricsCollector);
     if (!gaxOptions.otherArgs) {
       gaxOptions.otherArgs = {};
     }

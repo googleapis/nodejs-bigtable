@@ -109,7 +109,6 @@ class RowDataUtils {
         method: 'checkAndMutateRow',
         reqOpts,
         gaxOpts: createMetricsUnaryInterceptorProvider(
-          properties.requestData.table,
           config.gaxOptions ?? {},
           metricsCollector,
         ),
@@ -239,7 +238,6 @@ class RowDataUtils {
         method: 'readModifyWriteRow',
         reqOpts,
         gaxOpts: createMetricsUnaryInterceptorProvider(
-          properties.requestData.table,
           gaxOptions,
           metricsCollector,
         ),
