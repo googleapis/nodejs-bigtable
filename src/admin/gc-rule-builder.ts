@@ -101,7 +101,7 @@ export class GcRuleBuilder {
       throw new Error(
         GcRuleBuilder.formatErrorParameter(
           p,
-          'does not appear to be a rule or a union/intersection',
+          'is not a rule or a union/intersection',
         ),
       );
     }
@@ -127,7 +127,10 @@ export class GcRuleBuilder {
     }
     if (nonGroupKeys(p).length > 1) {
       throw new Error(
-        GcRuleBuilder.formatErrorParameter(p, 'is an invalid multiple-rule'),
+        GcRuleBuilder.formatErrorParameter(
+          p,
+          'is an invalid multiple-rule; please use a union or intersection',
+        ),
       );
     }
   }
