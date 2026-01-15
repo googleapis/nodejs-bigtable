@@ -610,6 +610,48 @@ export class Filter {
   }
 
   /**
+   * This filter applies a series of filters, in order, to each output row. A chain filter is like using a logical AND.
+   *
+   * @param {object} filters Each filter in the chain sees only the output of the previous filter. For example, if you chain two filters, and the first filter removes half of the cells from the output row, the second filter does not have access to the cells that were removed.
+   *
+   * @example
+   * ```
+   * //-
+   * // In the following example, we're creating a filter that will retrieve
+   * // results for entries that were created between December 17th, 2015
+   * // and March 22nd, 2016 and entries that have data for `follows:tjefferson`.
+   * //-
+   * const filter = [
+   *   {
+   *     chain: [
+   *       [
+   *         {
+   *           time: {
+   *             start: new Date('December 17, 2015'),
+   *             end: new Date('March 22, 2016')
+   *           }
+   *         }
+   *       ],
+   *       [
+   *         {
+   *           family: 'follows'
+   *         },
+   *         {
+   *           column: 'tjefferson'
+   *         }
+   *       ]
+   *     ]
+   *   }
+   * ];
+   * ```
+   */
+  chain(filters: RawFilter[]): void {
+    this.set('chain', {
+      filters: filters.map(Filter.parse),
+    });
+  }
+
+  /**
    * Applies the given label to all cells in the output row. This allows
    * the client to determine which results were produced from which part of
    * the filter.
