@@ -223,6 +223,7 @@ describe('Bigtable', () => {
         params: {cryptoKeyId},
         data: {purpose: 'ENCRYPT_DECRYPT'},
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cryptoKeyVersionName = (resp.data as any).primary.name;
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -860,6 +861,7 @@ describe('Bigtable', () => {
         const [rows] = (await INSTANCE.executeQuery({
           preparedStatement,
           parameters: params,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         })) as any as [Row[]];
         assert(rows[0] instanceof QueryResultRow);
         assert.deepStrictEqual(rows[0].get('strCol'), params.stringParam);
