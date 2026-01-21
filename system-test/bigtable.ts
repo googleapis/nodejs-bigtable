@@ -522,6 +522,22 @@ describe('Bigtable', () => {
     });
   });
 
+  describe('consistency tokens with gapic', () => {
+    // We want to work with the gapic admin class for this version.
+    const tableAdmin = bigtable.admin.getTableAdminClient();
+
+    it('should wait for consistency without an existing token', async () => {
+      await tableAdmin.waitForConsistency(TABLE.name);
+    });
+
+    it('should wait for consistency with an existing token', async () => {
+      const [token] = await tableAdmin.generateConsistencyToken({
+        name: TABLE.name,
+      });
+      await tableAdmin.waitForConsistency(TABLE.name, token.consistencyToken!);
+    });
+  });
+
   describe('replication states', () => {
     it('should get a map of clusterId and state', async () => {
       const [clusterStates] = await TABLE.getReplicationStates();
