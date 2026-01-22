@@ -564,14 +564,19 @@ describe('Bigtable', () => {
     const tableAdmin = bigtable.admin.getTableAdminClient();
 
     it('should wait for consistency without an existing token', async () => {
-      await tableAdmin.waitForConsistency(TABLE.name);
+      await tableAdmin.waitForConsistency(
+        replaceProjectIdToken(TABLE.name, bigtable.projectId),
+      );
     });
 
     it('should wait for consistency with an existing token', async () => {
       const [token] = await tableAdmin.generateConsistencyToken({
-        name: TABLE.name,
+        name: replaceProjectIdToken(TABLE.name, bigtable.projectId),
       });
-      await tableAdmin.waitForConsistency(TABLE.name, token.consistencyToken!);
+      await tableAdmin.waitForConsistency(
+        replaceProjectIdToken(TABLE.name, bigtable.projectId),
+        token.consistencyToken!,
+      );
     });
   });
 
