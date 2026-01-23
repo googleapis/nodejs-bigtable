@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,42 +15,41 @@
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
-  clusterId = 'YOUR_CLUSTER_ID',
-  backupId = 'YOUR_BACKUP_ID',
 ) {
-  // [START bigtable_api_restore_backup_no_optimization]
+  // [START bigtable_api_consistency]
   const {TableAdminClient} = require('@google-cloud/bigtable').admin;
 
-  async function restoreBackup() {
+  async function waitForConsistency() {
     /**
      * TODO(developer): Uncomment these variables before running the sample.
      */
     // const instanceId = 'YOUR_INSTANCE_ID';
     // const tableId = 'YOUR_TABLE_ID';
-    // const clusterId = 'YOUR_CLUSTER_ID';
-    // const backupId = 'YOUR_BACKUP_ID';
 
     const adminClient = new TableAdminClient();
     const projectId = await adminClient.getProjectId();
 
-    // Restore a table to an instance.
-    const [restoreLRO] = await adminClient.restoreTable({
-      parent: adminClient.instancePath(projectId, instanceId),
-      tableId,
-      backup: adminClient.backupPath(
-        projectId,
-        instanceId,
-        clusterId,
-        backupId,
-      ),
+    // Wait for a table within an instance to become consistent.
+    console.log('Waiting for table consistency...');
+    await adminClient.waitForConsistency(
+      `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+    );
+
+    // Wait for a table within an instance to become consistent,
+    // using a pre-existing token.
+    const [token] = await adminClient.generateConsistencyToken({
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
     });
-    console.log('Waiting for restoreTable operation to complete...');
-    const [table] = await restoreLRO.promise();
-    console.log(`Table ${table.name} restored successfully.`);
+
+    console.log('Waiting for table consistency...');
+    await adminClient.waitForConsistency(
+      `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+      token.consistencyToken,
+    );
   }
 
-  await restoreBackup();
-  // [END bigtable_api_restore_backup_no_optimization]
+  await waitForConsistency();
+  // [END bigtable_api_consistency]
 }
 
 const args = process.argv.slice(2);

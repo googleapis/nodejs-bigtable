@@ -452,39 +452,6 @@ const snippets = {
       });
     // [END bigtable_api_del_table]
   },
-  consistency: async (instanceId, tableId) => {
-    // [START bigtable_api_consistency]
-    try {
-      const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-      const adminClient = new BigtableTableAdminClient();
-      const projectId = await adminClient.getProjectId();
-      // 1. Generate a consistency token.
-      const token = (
-        await adminClient.generateConsistencyToken({
-          name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
-        })
-      )[0].consistencyToken;
-      console.log('Generated consistency token:', token);
-      let isConsistent = false;
-      while (!isConsistent) {
-        // 2. Check for consistency
-        const [consistent] = adminClient.checkConsistency({
-          name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
-          consistencyToken: token,
-        });
-        isConsistent = consistent;
-
-        if (isConsistent) {
-          console.log('Data is consistent!');
-        } else {
-          console.log('Data is not yet consistent. Retrying in 5 seconds...');
-        }
-      }
-    } catch (e) {
-      // Handle the error.
-    }
-    // [END bigtable_api_consistency]
-  },
 };
 
 module.exports = snippets;

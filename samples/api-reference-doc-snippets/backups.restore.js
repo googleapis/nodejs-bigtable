@@ -19,9 +19,7 @@ async function main(
   backupId = 'YOUR_BACKUP_ID',
 ) {
   // [START bigtable_api_restore_backup]
-  // eslint-disable-next-line n/no-extraneous-require
-  const gax = require('google-gax');
-  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+  const {TableAdminClient} = require('@google-cloud/bigtable').admin;
 
   async function restoreBackup() {
     /**
@@ -32,7 +30,7 @@ async function main(
     // const clusterId = 'YOUR_CLUSTER_ID';
     // const backupId = 'YOUR_BACKUP_ID';
 
-    const adminClient = new BigtableTableAdminClient();
+    const adminClient = new TableAdminClient();
     const projectId = await adminClient.getProjectId();
 
     // Restore a table to an instance.
@@ -51,17 +49,13 @@ async function main(
       console.log(
         `Waiting for optimize table operation: ${optimizeTableOperationName}`,
       );
-      const [rawOptimizeLRO] = await adminClient.operationsClient.getOperation({
-        name: optimizeTableOperationName,
-      });
-      const optimizeRestoreTableLRO = gax.operation(
-        rawOptimizeLRO,
-        adminClient.descriptors.longrunning.restoreTable,
-        {},
-      );
-      const [, , info] = await optimizeRestoreTableLRO.promise();
+      const [optimizeLRO] =
+        await adminClient.checkOptimizeRestoredTableProgress(
+          optimizeTableOperationName,
+        );
+      const [table] = await optimizeLRO.promise();
 
-      console.log(`Optimized table restored to ${info.name} successfully.`);
+      console.log(`Optimized table restored to ${table.name} successfully.`);
     } else {
       console.log('No optimize table operation name found in metadata.');
     }
