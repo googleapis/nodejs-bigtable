@@ -113,11 +113,6 @@ if staging.is_dir():
             contents = contents.replace("bigtabletableadminModule.v2.BigtableInstanceAdminClient", \
                                         "bigtabletableadminModule.admin.InstanceAdminClient")
 
-            # We need to disable this one so the handwritten sample
-            # can take over for the CUJ.
-            contents = contents.replace("bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async", \
-                                        "bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async_internal")
-
             tfn.write_text(contents)
 
         # Finally, the samples. Shift to selective subclasses, and mark the samples
@@ -136,6 +131,12 @@ if staging.is_dir():
                                         "const {TableAdminClient} = require('@google-cloud/bigtable').admin")
             contents = contents.replace("new BigtableInstanceAdminClient", "new InstanceAdminClient")
             contents = contents.replace("new BigtableTableAdminClient", "new TableAdminClient")
+
+            # We need to disable this one so the handwritten sample
+            # can take over for the CUJ.
+            contents = contents.replace("bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async", \
+                                        "bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async_internal")
+
             sfn.write_text(contents)
 
         os.system(f"mkdir -p {inProtoPath}")
