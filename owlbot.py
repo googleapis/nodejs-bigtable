@@ -113,9 +113,15 @@ if staging.is_dir():
             contents = contents.replace("bigtabletableadminModule.v2.BigtableInstanceAdminClient", \
                                         "bigtabletableadminModule.admin.InstanceAdminClient")
 
+            # We need to disable this one so the handwritten sample
+            # can take over for the CUJ.
+            contents = contents.replace("bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async", \
+                                        "bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async_internal")
+
             tfn.write_text(contents)
 
-        # Finally, the samples. Shift to selective subclasses.
+        # Finally, the samples. Shift to selective subclasses, and mark the samples
+        # with CUJs as internal, in favour of the handwritten ones.
         samplesStr = str(samples)
         sfns = [fn
                     for fn

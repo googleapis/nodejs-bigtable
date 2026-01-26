@@ -18,7 +18,9 @@ async function main(
   clusterId = 'YOUR_CLUSTER_ID',
   backupId = 'YOUR_BACKUP_ID',
 ) {
+  // Redirect the generated sample tag here, to reflect the desired user journey.
   // [START bigtable_api_restore_backup]
+  // [START bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async]
   const {TableAdminClient} = require('@google-cloud/bigtable').admin;
 
   async function restoreBackup() {
@@ -62,6 +64,7 @@ async function main(
   }
 
   await restoreBackup();
+  // [END bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async]
   // [END bigtable_api_restore_backup]
 }
 
