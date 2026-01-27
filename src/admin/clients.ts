@@ -24,12 +24,10 @@ import * as gax from 'google-gax';
  * figuring out auth and other configuration.
  */
 export class BigtableAdmin {
-  private tableAdminOptions: gax.ClientOptions;
-  private instanceAdminOptions: gax.ClientOptions;
+  private clientOptions?: gax.ClientOptions;
 
   constructor(clientOptions?: gax.ClientOptions) {
-    this.tableAdminOptions = clientOptions ?? {};
-    this.instanceAdminOptions = clientOptions ?? {};
+    this.clientOptions = clientOptions;
   }
 
   /**
@@ -50,7 +48,7 @@ export class BigtableAdmin {
    * @returns The admin client
    */
   getTableAdminClient(options?: gax.ClientOptions) {
-    return new TableAdminClient(options ?? this.tableAdminOptions);
+    return new TableAdminClient(options ?? this.clientOptions);
   }
 
   /**
@@ -59,6 +57,6 @@ export class BigtableAdmin {
    * @returns The admin client
    */
   getInstanceAdminClient(options?: gax.ClientOptions) {
-    return new InstanceAdminClient(options ?? this.instanceAdminOptions);
+    return new InstanceAdminClient(options ?? this.clientOptions);
   }
 }
