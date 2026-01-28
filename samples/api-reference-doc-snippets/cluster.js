@@ -15,8 +15,8 @@
 const snippets = {
   create: async (instanceId, clusterId) => {
     // [START bigtable_api_create_cluster]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
@@ -44,8 +44,8 @@ const snippets = {
 
   delete: async (instanceId, clusterId) => {
     // [START bigtable_api_delete_cluster]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
@@ -65,8 +65,8 @@ const snippets = {
 
   exists: async (instanceId, clusterId) => {
     // [START bigtable_api_exists_cluster]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
@@ -89,8 +89,8 @@ const snippets = {
 
   get: async (instanceId, clusterId) => {
     // [START bigtable_api_get_cluster]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
@@ -111,8 +111,8 @@ const snippets = {
 
   getMeta: async (instanceId, clusterId) => {
     // [START bigtable_api_cluster_get_meta]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
@@ -133,8 +133,8 @@ const snippets = {
 
   setMeta: async (instanceId, clusterId) => {
     // [START bigtable_api_cluster_set_meta]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const cluster = {

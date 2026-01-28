@@ -39,25 +39,35 @@ import {generateId, PREFIX} from './common';
 import {BigtableTableAdminClient} from '../src/v2';
 import {ServiceError} from 'google-gax';
 import {BigtableDate, QueryResultRow} from '../src/execute-query/values';
+import {google} from '../protos/protos';
+
+type IBackup = google.bigtable.admin.v2.IBackup;
 
 describe('Bigtable', () => {
   const bigtable = new Bigtable();
   const INSTANCE = bigtable.instance(generateId('instance'));
   const DIFF_INSTANCE = bigtable.instance(generateId('d-inst'));
   const CMEK_INSTANCE = bigtable.instance(generateId('cmek'));
+  const INSTANCE_HDD = bigtable.instance(generateId('inst-hdd'));
   const TABLE = INSTANCE.table(generateId('table'));
+  const TABLE_HDD = INSTANCE_HDD.table(generateId('table-hdd'));
   const APP_PROFILE_ID = generateId('appProfile');
   const APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
   const CLUSTER_ID = generateId('cluster');
+  const CLUSTER_ID_HDD = generateId('cluster');
 
   async function reapBackups(instance: Instance) {
-    const [backups] = await instance.getBackups();
-    for (const backup of backups) {
-      try {
-        await backup.delete({timeout: 50 * 1000});
-      } catch (e) {
-        console.log(`Error deleting backup: ${backup.id}`);
+    try {
+      const [backups] = await instance.getBackups();
+      for (const backup of backups) {
+        try {
+          await backup.delete({timeout: 50 * 1000});
+        } catch (e) {
+          console.log(`Error deleting backup: ${backup.id}: ${e}`);
+        }
       }
+    } catch (e) {
+      console.error(`Error listing backups from ${instance.name}: ${e}`);
     }
   }
 
@@ -89,12 +99,38 @@ describe('Bigtable', () => {
 
   before(async () => {
     await reapInstances();
-    const [, operation] = await INSTANCE.create(
-      createInstanceConfig(CLUSTER_ID, 'us-central1-c', 3, Date.now()),
-    );
+    const [, operation] = await INSTANCE.create({
+      clusters: [
+        {
+          id: CLUSTER_ID,
+          location: 'us-central1-c',
+          nodes: 3,
+          storage: 'ssd',
+        },
+      ],
+      labels: {
+        time_created: Date.now(),
+      },
+    });
+    const [, operationHDD] = await INSTANCE_HDD.create({
+      clusters: [
+        {
+          id: CLUSTER_ID_HDD,
+          location: 'us-central1-c',
+          nodes: 3,
+          storage: 'hdd',
+        },
+      ],
+      labels: {
+        time_created: Date.now(),
+      },
+    });
 
-    await operation.promise();
+    await Promise.all([operation.promise(), operationHDD.promise()]);
     await TABLE.create({
+      families: ['follows', 'traits'],
+    });
+    await TABLE_HDD.create({
       families: ['follows', 'traits'],
     });
     await INSTANCE.createAppProfile(APP_PROFILE_ID, {
@@ -105,7 +141,7 @@ describe('Bigtable', () => {
 
   after(async () => {
     const q = [];
-    const instances = [INSTANCE, DIFF_INSTANCE, CMEK_INSTANCE];
+    const instances = [INSTANCE, DIFF_INSTANCE, CMEK_INSTANCE, INSTANCE_HDD];
 
     // need to delete backups first due to instance deletion precondition
     await Promise.all(instances.map(instance => reapBackups(instance)));
@@ -223,6 +259,7 @@ describe('Bigtable', () => {
         params: {cryptoKeyId},
         data: {purpose: 'ENCRYPT_DECRYPT'},
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cryptoKeyVersionName = (resp.data as any).primary.name;
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -519,6 +556,27 @@ describe('Bigtable', () => {
     it('should return boolean for waitForReplication', async () => {
       const [res] = await TABLE.waitForReplication();
       assert.strictEqual(typeof res, 'boolean');
+    });
+  });
+
+  describe('consistency tokens with gapic', () => {
+    // We want to work with the gapic admin class for this version.
+    const tableAdmin = bigtable.admin.getTableAdminClient();
+
+    it('should wait for consistency without an existing token', async () => {
+      await tableAdmin.waitForConsistency(
+        replaceProjectIdToken(TABLE.name, bigtable.projectId),
+      );
+    });
+
+    it('should wait for consistency with an existing token', async () => {
+      const [token] = await tableAdmin.generateConsistencyToken({
+        name: replaceProjectIdToken(TABLE.name, bigtable.projectId),
+      });
+      await tableAdmin.waitForConsistency(
+        replaceProjectIdToken(TABLE.name, bigtable.projectId),
+        token.consistencyToken!,
+      );
     });
   });
 
@@ -844,6 +902,7 @@ describe('Bigtable', () => {
         const [rows] = (await INSTANCE.executeQuery({
           preparedStatement,
           parameters: params,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         })) as any as [Row[]];
         assert(rows[0] instanceof QueryResultRow);
         assert.deepStrictEqual(rows[0].get('strCol'), params.stringParam);
@@ -1819,6 +1878,120 @@ describe('Bigtable', () => {
       });
     });
   });
+
+  describe('backups with gapic', () => {
+    // This only needs to test the handwritten pieces for optimizing, so a lot
+    // of the above from the veneer tests isn't covered; also I've not converted
+    // everything to gapic, just the pieces to be tested.
+    const tableAdmin = bigtable.admin.getTableAdminClient();
+
+    let backupSSD: IBackup, backupHDD: IBackup;
+
+    const targetTableIdSSD = generateId('ttbl'),
+      targetTableIdHDD = generateId('ttbl');
+
+    // We just test from table here.
+    const backupIdFromTableSSD = generateId('backup'),
+      backupIdFromTableHDD = generateId('backup');
+    let backupNameFromTableSSD: string, backupNameFromTableHDD: string;
+
+    // The minimum backup expiry time is 6 hours. The times here each have a 2
+    // hour padding to tolerate latency and clock drift. Also, while the time
+    // implementation for backups in this client accepts any of a Timestamp
+    // Struct, Date, or PreciseDate, to keep things easy this uses PreciseDate.
+    const expireTime = {
+      seconds: Date.now() / 1000 + 8 * 60 * 60,
+      nanos: 0,
+    };
+
+    before(async () => {
+      const [backupOpSSD] = await tableAdmin.createBackup({
+        parent: replaceProjectIdToken(
+          INSTANCE.cluster(CLUSTER_ID).name,
+          bigtable.projectId,
+        ),
+        backupId: backupIdFromTableSSD,
+        backup: {
+          expireTime,
+          sourceTable: replaceProjectIdToken(TABLE.name, bigtable.projectId),
+        },
+      });
+      const [backupOpHDD] = await tableAdmin.createBackup({
+        parent: replaceProjectIdToken(
+          INSTANCE_HDD.cluster(CLUSTER_ID_HDD).name,
+          bigtable.projectId,
+        ),
+        backupId: backupIdFromTableHDD,
+        backup: {
+          expireTime,
+          sourceTable: replaceProjectIdToken(
+            TABLE_HDD.name,
+            bigtable.projectId,
+          ),
+        },
+      });
+      const [resSSD, resHDD] = await Promise.all([
+        backupOpSSD.promise(),
+        backupOpHDD.promise(),
+      ]);
+
+      backupNameFromTableSSD = replaceProjectIdToken(
+        `${INSTANCE.cluster(CLUSTER_ID).name}/backups/${backupIdFromTableSSD}`,
+        bigtable.projectId,
+      );
+      backupNameFromTableHDD = replaceProjectIdToken(
+        `${INSTANCE_HDD.cluster(CLUSTER_ID_HDD).name}/backups/${backupIdFromTableHDD}`,
+        bigtable.projectId,
+      );
+      console.log(backupNameFromTableSSD, backupNameFromTableHDD);
+
+      backupSSD = resSSD[0];
+      backupHDD = resHDD[0];
+    });
+
+    // This is here just to make sure that we are, in fact, getting a usable backup.
+    it('should create backup of a table (from table)', async () => {
+      assert.strictEqual(backupSSD.name, backupNameFromTableSSD);
+      assert.strictEqual(
+        new Number(backupSSD.expireTime?.seconds).valueOf(),
+        Math.floor(expireTime.seconds),
+      );
+
+      assert.strictEqual(backupHDD.name, backupNameFromTableHDD);
+      assert.strictEqual(
+        new Number(backupHDD.expireTime?.seconds).valueOf(),
+        Math.floor(expireTime.seconds),
+      );
+    });
+
+    it('should not optimize when restoring from the same backing type', async () => {
+      // HDD -> HDD and SSD -> SSD should both not trigger an optimize pass.
+      const [restoreOp] = await tableAdmin.restoreTable({
+        parent: replaceProjectIdToken(INSTANCE_HDD.name, bigtable.projectId),
+        tableId: targetTableIdHDD,
+        backup: backupHDD.name!,
+      });
+      const [, metadata] = await restoreOp.promise();
+      assert.ok(!metadata.optimizeTableOperationName);
+    });
+
+    it('should optimize when restoring from a different backing type', async () => {
+      // HDD -> SSD should trigger an optimize.
+      const [restoreOp] = await tableAdmin.restoreTable({
+        parent: replaceProjectIdToken(INSTANCE.name, bigtable.projectId),
+        tableId: targetTableIdSSD,
+        backup: backupHDD.name!,
+      });
+      const [, metadata] = await restoreOp.promise();
+      assert.ok(metadata.optimizeTableOperationName);
+
+      const optimizeOp = await tableAdmin.checkOptimizeRestoredTableProgress(
+        metadata.optimizeTableOperationName,
+      );
+      await optimizeOp.promise();
+    });
+  });
+
   describe('AuthorizedViews', () => {
     const tableId = generateId('table');
     const familyName = generateId('column-family-name');
@@ -2469,17 +2642,19 @@ function createInstanceConfig(
   location: string,
   nodes: number,
   time_created: number,
+  storage?: 'ssd' | 'hdd',
 ) {
   return {
     clusters: [
       {
         id: clusterId,
-        location: location,
-        nodes: nodes,
+        location,
+        nodes,
+        storage,
       },
     ],
     labels: {
-      time_created: time_created,
+      time_created,
     },
   };
 }

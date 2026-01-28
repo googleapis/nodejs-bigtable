@@ -358,7 +358,7 @@ describe('Bigtable/ReadRows', () => {
     it('with an error at a random position', function (done) {
       this.timeout(200000);
       // Emits an error after a random number of chunks.
-      const errorAfterChunkNo = Math.floor(Math.random() * 1000);
+      const errorAfterChunkNo = Math.floor(500 + Math.random() * 500);
       runTest(done, errorAfterChunkNo);
     });
   });

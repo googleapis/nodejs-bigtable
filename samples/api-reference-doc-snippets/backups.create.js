@@ -19,8 +19,8 @@ async function main(
   backupId = 'YOUR_BACKUP_ID',
 ) {
   // [START bigtable_api_create_backup]
-  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-  const tableAdminClient = new BigtableTableAdminClient();
+  const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+  const tableAdminClient = new TableAdminClient();
 
   async function createBackup() {
     /**

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 'use strict';
 
 function main(parent, tableId) {
-  // [START bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async]
+  // [START bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async_internal]
   /**
    * This snippet has been automatically generated and should be regarded as a code template only.
    * It will require modifications to work.
@@ -47,10 +47,10 @@ function main(parent, tableId) {
   // const backup = 'abc123'
 
   // Imports the Admin library
-  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').admin.v2;
+  const {BigtableTableAdminClient} = require('admin').v2;
 
   // Instantiates a client
-  const adminClient = new BigtableTableAdminClient();
+  const adminClient = new TableAdminClient();
 
   async function callRestoreTable() {
     // Construct request
@@ -66,7 +66,7 @@ function main(parent, tableId) {
   }
 
   callRestoreTable();
-  // [END bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async]
+  // [END bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async_internal]
 }
 
 process.on('unhandledRejection', err => {
