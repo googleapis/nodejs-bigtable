@@ -9,7 +9,7 @@
 
 ### Features
 
-* Modernization part 2 ([#1748](https://github.com/googleapis/nodejs-bigtable/issues/1748)) ([a0f216e](https://github.com/googleapis/nodejs-bigtable/commit/a0f216e68d8e90000d00bba49899e9306dd687f9))
+* Admin function modernization ([#1748](https://github.com/googleapis/nodejs-bigtable/issues/1748)) ([a0f216e](https://github.com/googleapis/nodejs-bigtable/commit/a0f216e68d8e90000d00bba49899e9306dd687f9))
 
 
 ### Bug Fixes
