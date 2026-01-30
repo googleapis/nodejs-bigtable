@@ -123,7 +123,6 @@ function getIntegerPoints(dataPoint: DataPoint<number>) {
  * send to the Google Cloud Monitoring dashboard
  */
 function getResource(
-  projectId: string,
   dataPoint:
     | DataPoint<number>
     | DataPoint<Histogram>
@@ -132,7 +131,7 @@ function getResource(
   const resourceLabels = {
     cluster: dataPoint.attributes.cluster,
     instance: dataPoint.attributes.instanceId,
-    project_id: projectId,
+    project_id: dataPoint.attributes.projectId,
     table: dataPoint.attributes.table,
     zone: dataPoint.attributes.zone,
   };
@@ -183,7 +182,6 @@ function getMetric(
  * metric attributes, data points, and aggregation information, into an object
  * that conforms to the expected request format of the Cloud Monitoring API.
  *
- * @param projectId
  * @param {ResourceMetrics} exportArgs - The OpenTelemetry metrics data to be converted. This
  *   object contains resource attributes, scope information, and a list of
  *   metrics with their associated data points.
@@ -211,16 +209,17 @@ function getMetric(
  *
  *
  */
-export function metricsToRequest(
-  projectId: string,
-  exportArgs: ResourceMetrics,
-) {
+export function metricsToRequest(exportArgs: ResourceMetrics) {
   const timeSeriesArray = [];
+  let projectId;
   for (const scopeMetrics of exportArgs.scopeMetrics) {
     for (const scopeMetric of scopeMetrics.metrics) {
       for (const dataPoint of scopeMetric.dataPoints) {
+        if (!projectId) {
+          projectId = dataPoint.attributes.projectId;
+        }
         const metric = getMetric(scopeMetric.descriptor.name, dataPoint);
-        const resource = getResource(projectId, dataPoint);
+        const resource = getResource(dataPoint);
         if (isCounterValue(dataPoint)) {
           timeSeriesArray.push({
             metric,
@@ -310,8 +309,7 @@ export class CloudMonitoringExporter extends MetricExporter {
   ): Promise<void> {
     (async () => {
       try {
-        const projectId = await this.client.getProjectId();
-        const request = metricsToRequest(projectId, metrics);
+        const request = metricsToRequest(metrics);
         await this.client.createServiceTimeSeries(
           request as ICreateTimeSeriesRequest,
         );

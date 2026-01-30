@@ -4,6 +4,36 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [6.5.0](https://github.com/googleapis/nodejs-bigtable/compare/v6.4.1...v6.5.0) (2026-01-28)
+
+
+### Features
+
+* Admin function modernization ([#1748](https://github.com/googleapis/nodejs-bigtable/issues/1748)) ([a0f216e](https://github.com/googleapis/nodejs-bigtable/commit/a0f216e68d8e90000d00bba49899e9306dd687f9))
+
+
+### Bug Fixes
+
+* Client side metrics should record the version number of @google-cloud/bigtable not the customer package version ([#1752](https://github.com/googleapis/nodejs-bigtable/issues/1752)) ([3e532ab](https://github.com/googleapis/nodejs-bigtable/commit/3e532ab657409c7acd09008c143c41d36d9efd41))
+* Correct project id on client side metrics by avoiding getProjectId calls with the metric service client ([#1757](https://github.com/googleapis/nodejs-bigtable/issues/1757)) ([a719d9f](https://github.com/googleapis/nodejs-bigtable/commit/a719d9f295c91e5b63592e34954059a9fa8fd8b3))
+* **deps:** Update dependency arrify to v2.0.1 ([#1588](https://github.com/googleapis/nodejs-bigtable/issues/1588)) ([fccdbbb](https://github.com/googleapis/nodejs-bigtable/commit/fccdbbb0309191a731c23b196a4c19c59e057cd7))
+* Record grpc code string for client side metrics instead of grpc code number ([#1754](https://github.com/googleapis/nodejs-bigtable/issues/1754)) ([be5b598](https://github.com/googleapis/nodejs-bigtable/commit/be5b598dd3fbb08e6c7bb5960b8c04a7e54da16a))
+
+## [6.4.1](https://github.com/googleapis/nodejs-bigtable/compare/v6.4.0...v6.4.1) (2025-09-09)
+
+
+### Bug Fixes
+
+* Directly import JS-native impl for crc32c on non-x64 platforms to avoid segfault ([#1715](https://github.com/googleapis/nodejs-bigtable/issues/1715)) ([9848963](https://github.com/googleapis/nodejs-bigtable/commit/98489637befe779df0438f466eecb0428222a29a))
+
+## [6.4.0](https://github.com/googleapis/nodejs-bigtable/compare/v6.3.0...v6.4.0) (2025-08-21)
+
+
+### Features
+
+* Enable csm by default ([#1695](https://github.com/googleapis/nodejs-bigtable/issues/1695)) ([9744aa3](https://github.com/googleapis/nodejs-bigtable/commit/9744aa355e87c2170019c52b58d1045160f19e7c))
+* For application latencies timed stream a few cosmetic changes are needed ([#1645](https://github.com/googleapis/nodejs-bigtable/issues/1645)) ([75d1a6f](https://github.com/googleapis/nodejs-bigtable/commit/75d1a6f5bc8d8cd74214bdf3c9db9d06786f9575))
+
 ## [6.3.0](https://github.com/googleapis/nodejs-bigtable/compare/v6.2.0...v6.3.0) (2025-08-11)
 
 

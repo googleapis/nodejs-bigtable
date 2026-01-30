@@ -15,11 +15,13 @@
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
+  clusterId = 'YOUR_CLUSTER_ID',
   backupId = 'YOUR_BACKUP_ID',
 ) {
+  // Redirect the generated sample tag here, to reflect the desired user journey.
   // [START bigtable_api_restore_backup]
-  const {Bigtable} = require('@google-cloud/bigtable');
-  const bigtable = new Bigtable();
+  // [START bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async]
+  const {TableAdminClient} = require('@google-cloud/bigtable').admin;
 
   async function restoreBackup() {
     /**
@@ -27,20 +29,42 @@ async function main(
      */
     // const instanceId = 'YOUR_INSTANCE_ID';
     // const tableId = 'YOUR_TABLE_ID';
+    // const clusterId = 'YOUR_CLUSTER_ID';
     // const backupId = 'YOUR_BACKUP_ID';
-    const instance = bigtable.instance(instanceId);
+
+    const adminClient = new TableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
     // Restore a table to an instance.
-    const [table, operation] = await instance.createTableFromBackup({
-      table: tableId,
-      backup: backupId,
+    const [restoreLRO] = await adminClient.restoreTable({
+      parent: `projects/${projectId}/instances/${instanceId}`,
+      tableId,
+      backup: `projects/${projectId}/instances/${instanceId}/clusters/${clusterId}/backups/${backupId}`,
     });
+    console.log('Waiting for restoreTable operation to complete...');
+    const [table, metadata] = await restoreLRO.promise();
+    console.log(`Table ${table.name} restored successfully.`);
 
-    await operation.promise();
-    console.log(`Table restored to ${table.id} successfully.`);
+    // Await the secondary optimize table operation
+    const optimizeTableOperationName = metadata.optimizeTableOperationName;
+    if (optimizeTableOperationName) {
+      console.log(
+        `Waiting for optimize table operation: ${optimizeTableOperationName}`,
+      );
+      const [optimizeLRO] =
+        await adminClient.checkOptimizeRestoredTableProgress(
+          optimizeTableOperationName,
+        );
+      const [table] = await optimizeLRO.promise();
+
+      console.log(`Optimized table restored to ${table.name} successfully.`);
+    } else {
+      console.log('No optimize table operation name found in metadata.');
+    }
   }
 
   await restoreBackup();
+  // [END bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async]
   // [END bigtable_api_restore_backup]
 }
 

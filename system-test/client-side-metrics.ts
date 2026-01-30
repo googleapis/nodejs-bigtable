@@ -176,7 +176,7 @@ function readRowsAssertionCheck(
   assert.deepStrictEqual(firstRequest, {
     connectivityErrorCount: 0,
     streaming,
-    status: '0',
+    status: 'OK',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
       instanceId: instanceId1,
@@ -184,8 +184,8 @@ function readRowsAssertionCheck(
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
       method,
+      projectId,
     },
-    projectId,
   });
   const secondRequest = requestsHandled[1] as any;
   // We would expect these parameters to be different every time so delete
@@ -198,7 +198,7 @@ function readRowsAssertionCheck(
   delete secondRequest.applicationLatency;
   delete secondRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(secondRequest, {
-    status: '0',
+    status: 'OK',
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
@@ -207,8 +207,8 @@ function readRowsAssertionCheck(
       zone: 'us-west1-c',
       method,
       table: 'my-table',
+      projectId,
     },
-    projectId,
     retryCount: 0,
   });
   // We would expect these parameters to be different every time so delete
@@ -222,7 +222,7 @@ function readRowsAssertionCheck(
   assert.deepStrictEqual(thirdRequest, {
     connectivityErrorCount: 0,
     streaming,
-    status: '0',
+    status: 'OK',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
       instanceId: instanceId1,
@@ -230,8 +230,8 @@ function readRowsAssertionCheck(
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
       method,
+      projectId,
     },
-    projectId,
   });
   const fourthRequest = requestsHandled[3] as any;
   // We would expect these parameters to be different every time so delete
@@ -244,7 +244,7 @@ function readRowsAssertionCheck(
   delete fourthRequest.applicationLatency;
   delete fourthRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(fourthRequest, {
-    status: '0',
+    status: 'OK',
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
@@ -253,8 +253,8 @@ function readRowsAssertionCheck(
       zone: 'us-west1-c',
       method,
       table: 'my-table2',
+      projectId,
     },
-    projectId,
     retryCount: 0,
   });
 }
@@ -723,7 +723,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       assert.deepStrictEqual(firstRequest, {
         connectivityErrorCount: 0,
         streaming: 'true',
-        status: '0',
+        status: 'OK',
         client_name: 'nodejs-bigtable',
         metricsCollectorData: {
           instanceId: instanceId1,
@@ -731,8 +731,8 @@ describe('Bigtable/ClientSideMetrics', () => {
           cluster: 'fake-cluster3',
           zone: 'us-west1-c',
           method: 'Bigtable.ReadRows',
+          projectId,
         },
-        projectId,
       });
       const secondRequest = requestsHandled[1] as any;
       // We would expect these parameters to be different every time so delete
@@ -745,7 +745,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       delete secondRequest.applicationLatency;
       delete secondRequest.metricsCollectorData.appProfileId;
       assert.deepStrictEqual(secondRequest, {
-        status: '0',
+        status: 'OK',
         streaming: 'true',
         client_name: 'nodejs-bigtable',
         metricsCollectorData: {
@@ -754,8 +754,8 @@ describe('Bigtable/ClientSideMetrics', () => {
           zone: 'us-west1-c',
           method: 'Bigtable.ReadRows',
           table: 'my-table',
+          projectId,
         },
-        projectId,
         retryCount: 0,
       });
       // We would expect these parameters to be different every time so delete
@@ -769,7 +769,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       assert.deepStrictEqual(thirdRequest, {
         connectivityErrorCount: 0,
         streaming: 'true',
-        status: '0',
+        status: 'OK',
         client_name: 'nodejs-bigtable',
         metricsCollectorData: {
           instanceId: instanceId1,
@@ -777,8 +777,8 @@ describe('Bigtable/ClientSideMetrics', () => {
           cluster: 'fake-cluster3',
           zone: 'us-west1-c',
           method: 'Bigtable.ReadRows',
+          projectId,
         },
-        projectId,
       });
       const fourthRequest = requestsHandled[3] as any;
       // We would expect these parameters to be different every time so delete
@@ -791,7 +791,7 @@ describe('Bigtable/ClientSideMetrics', () => {
       delete fourthRequest.applicationLatency;
       delete fourthRequest.metricsCollectorData.appProfileId;
       assert.deepStrictEqual(fourthRequest, {
-        status: '0',
+        status: 'OK',
         streaming: 'true',
         client_name: 'nodejs-bigtable',
         metricsCollectorData: {
@@ -800,8 +800,8 @@ describe('Bigtable/ClientSideMetrics', () => {
           zone: 'us-west1-c',
           method: 'Bigtable.ReadRows',
           table: 'my-table2',
+          projectId,
         },
-        projectId,
         retryCount: 0,
       });
     }
@@ -820,12 +820,11 @@ describe('Bigtable/ClientSideMetrics', () => {
     ) {
       const compareValue = [
         {
-          projectId,
           serverLatency: undefined,
           attemptLatency: 23000,
           connectivityErrorCount: 0,
           streaming: 'true',
-          status: '0',
+          status: 'OK',
           client_name: 'nodejs-bigtable',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -833,11 +832,11 @@ describe('Bigtable/ClientSideMetrics', () => {
             cluster: '<unspecified>',
             zone: 'global',
             method: 'Bigtable.ReadRows',
+            projectId,
           },
         },
         {
-          projectId,
-          status: '0',
+          status: 'OK',
           streaming: 'true',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -845,6 +844,7 @@ describe('Bigtable/ClientSideMetrics', () => {
             cluster: '<unspecified>',
             zone: 'global',
             method: 'Bigtable.ReadRows',
+            projectId,
           },
           client_name: 'nodejs-bigtable',
           operationLatency: 25000,
@@ -853,12 +853,11 @@ describe('Bigtable/ClientSideMetrics', () => {
           applicationLatency: 18000, // From the stream for loop
         },
         {
-          projectId,
           attemptLatency: 2000,
           serverLatency: undefined,
           connectivityErrorCount: 0,
           streaming: 'true',
-          status: '0',
+          status: 'OK',
           client_name: 'nodejs-bigtable',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -866,11 +865,11 @@ describe('Bigtable/ClientSideMetrics', () => {
             cluster: '<unspecified>',
             zone: 'global',
             method: 'Bigtable.ReadRows',
+            projectId,
           },
         },
         {
-          projectId,
-          status: '0',
+          status: 'OK',
           streaming: 'true',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -878,6 +877,7 @@ describe('Bigtable/ClientSideMetrics', () => {
             cluster: '<unspecified>',
             zone: 'global',
             method: 'Bigtable.ReadRows',
+            projectId,
           },
           client_name: 'nodejs-bigtable',
           operationLatency: 4000,
@@ -903,12 +903,11 @@ describe('Bigtable/ClientSideMetrics', () => {
     ) {
       const compareValue = [
         {
-          projectId,
           serverLatency: undefined,
           attemptLatency: 28000,
           connectivityErrorCount: 0,
           streaming: 'true',
-          status: '0',
+          status: 'OK',
           client_name: 'nodejs-bigtable',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -916,11 +915,11 @@ describe('Bigtable/ClientSideMetrics', () => {
             cluster: '<unspecified>',
             zone: 'global',
             method: 'Bigtable.ReadRows',
+            projectId,
           },
         },
         {
-          projectId,
-          status: '0',
+          status: 'OK',
           streaming: 'true',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -928,6 +927,7 @@ describe('Bigtable/ClientSideMetrics', () => {
             cluster: '<unspecified>',
             zone: 'global',
             method: 'Bigtable.ReadRows',
+            projectId,
           },
           client_name: 'nodejs-bigtable',
           operationLatency: 30000,
@@ -936,12 +936,11 @@ describe('Bigtable/ClientSideMetrics', () => {
           applicationLatency: 16000, // From the stream for loop
         },
         {
-          projectId,
           attemptLatency: 2000,
           serverLatency: undefined,
           connectivityErrorCount: 0,
           streaming: 'true',
-          status: '0',
+          status: 'OK',
           client_name: 'nodejs-bigtable',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -949,11 +948,11 @@ describe('Bigtable/ClientSideMetrics', () => {
             cluster: '<unspecified>',
             zone: 'global',
             method: 'Bigtable.ReadRows',
+            projectId,
           },
         },
         {
-          projectId,
-          status: '0',
+          status: 'OK',
           streaming: 'true',
           metricsCollectorData: {
             instanceId: instanceId1,
@@ -961,6 +960,7 @@ describe('Bigtable/ClientSideMetrics', () => {
             cluster: '<unspecified>',
             zone: 'global',
             method: 'Bigtable.ReadRows',
+            projectId,
           },
           client_name: 'nodejs-bigtable',
           operationLatency: 4000,

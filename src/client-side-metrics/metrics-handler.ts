@@ -21,6 +21,7 @@ import {MethodName, StreamingState} from './client-side-metrics-attributes';
  */
 
 type IMetricsCollectorData = {
+  projectId: string;
   instanceId: string;
   table: string;
   cluster?: string;

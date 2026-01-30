@@ -12,17 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const {Bigtable} = require('@google-cloud/bigtable');
+const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
 const bigtable = new Bigtable();
 
 const snippets = {
-  createTable: (instanceId, tableId) => {
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-
+  createTable: async (instanceId, tableId) => {
     // [START bigtable_api_create_table]
-    table
-      .create()
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
+    const projectId = await adminClient.getProjectId();
+    const request = {
+      parent: `projects/${projectId}/instances/${instanceId}`,
+      tableId: tableId,
+      table: {
+        columnFamilies: {
+          follows: {},
+        },
+      },
+    };
+    adminClient
+      .createTable(request)
       .then(result => {
         const table = result[0];
         // let apiResponse = result[1];
@@ -33,29 +42,42 @@ const snippets = {
     // [END bigtable_api_create_table]
   },
 
-  existsTable: (instanceId, tableId) => {
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-
+  existsTable: async (instanceId, tableId) => {
     // [START bigtable_api_exists_table]
-    table
-      .exists()
-      .then(result => {
-        const exists = result[0];
-      })
-      .catch(err => {
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
+    const projectId = await adminClient.getProjectId();
+
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+    };
+
+    try {
+      await adminClient.getTable(request);
+      console.log(`Table ${tableId} exists.`);
+    } catch (err) {
+      if (err.code === 5) {
+        console.log(`Table ${tableId} does not exist.`);
+      } else {
         // Handle the error.
-      });
+        console.error(err);
+      }
+    }
     // [END bigtable_api_exists_table]
   },
 
-  getTable: (instanceId, tableId) => {
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-
+  getTable: async (instanceId, tableId) => {
     // [START bigtable_api_get_table]
-    table
-      .get()
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
+    const projectId = await adminClient.getProjectId();
+
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+    };
+
+    adminClient
+      .getTable(request)
       .then(result => {
         const table = result[0];
         // const apiResponse = result[1];
@@ -66,13 +88,19 @@ const snippets = {
     // [END bigtable_api_get_table]
   },
 
-  getMetadata: (instanceId, tableId) => {
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-
+  getMetadata: async (instanceId, tableId) => {
     // [START bigtable_api_get_table_meta]
-    table
-      .getMetadata()
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
+    const projectId = await adminClient.getProjectId();
+
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+      view: 'FULL',
+    };
+
+    adminClient
+      .getTable(request)
       .then(result => {
         const metaData = result[0];
         // const apiResponse = result[1];
@@ -83,23 +111,34 @@ const snippets = {
     // [END bigtable_api_get_table_meta]
   },
 
-  createFamily: (instanceId, tableId, familyId) => {
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-
+  createFamily: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_create_family]
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
+    const projectId = await adminClient.getProjectId();
+    // The request will only work if the projectName doesn't contain the {{projectId}} token.
     const options = {};
-    // options.rule = {
-    //   age: {
-    //     seconds: 0,
-    //     nanos: 5000
-    //   },
-    //   versions: 3,
-    //   union: true
-    // };
+    //  {
+    //    ruleType: 'union',
+    //    maxVersions: 3,
+    //    maxAge: {
+    //      seconds: 1,
+    //      nanos: 5000,
+    //    },
+    //  };
 
-    table
-      .createFamily(familyId, options)
+    adminClient
+      .modifyColumnFamilies({
+        name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+        modifications: [
+          {
+            id: familyId,
+            create: {
+              gcRule: GCRuleMaker.makeRule(options),
+            },
+          },
+        ],
+      })
       .then(result => {
         const family = result[0];
         // const apiResponse = result[1];
@@ -110,15 +149,21 @@ const snippets = {
     // [END bigtable_api_create_family]
   },
 
-  getFamilies: (instanceId, tableId) => {
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-
+  getFamilies: async (instanceId, tableId) => {
     // [START bigtable_api_get_families]
-    table
-      .getFamilies()
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
+    const projectId = await adminClient.getProjectId();
+
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+      view: 'FULL',
+    };
+
+    adminClient
+      .getTable(request)
       .then(result => {
-        const families = result[0];
+        const families = result[0].columnFamilies;
       })
       .catch(err => {
         // Handle the error.
@@ -295,15 +340,18 @@ const snippets = {
     // [END bigtable_api_sample_row_keys]
   },
 
-  getIamPolicy: (instanceId, tableId) => {
+  getIamPolicy: async (instanceId, tableId) => {
     // [START bigtable_api_get_table_Iam_policy]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
-    table
-      .getIamPolicy()
+    const request = {
+      resource: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+    };
+
+    adminClient
+      .getIamPolicy(request)
       .then(result => {
         const policy = result[0];
       })
@@ -313,12 +361,11 @@ const snippets = {
     // [END bigtable_api_get_table_Iam_policy]
   },
 
-  setIamPolicy: (instanceId, tableId) => {
+  setIamPolicy: async (instanceId, tableId) => {
     // [START bigtable_api_set_table_Iam_policy]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
     const policy = {
       bindings: [
@@ -329,8 +376,13 @@ const snippets = {
       ],
     };
 
-    table
-      .setIamPolicy(policy)
+    const request = {
+      resource: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+      policy: policy,
+    };
+
+    adminClient
+      .setIamPolicy(request)
       .then(result => {
         const setPolicy = result[0];
       })
@@ -340,16 +392,21 @@ const snippets = {
     // [END bigtable_api_set_table_Iam_policy]
   },
 
-  testIamPermissions: (instanceId, tableId) => {
+  testIamPermissions: async (instanceId, tableId) => {
     // [START bigtable_api_test_table_Iam_permissions]
-    const {Bigtable} = require('@google-cloud/bigtable');
-    const bigtable = new Bigtable();
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
+    const projectId = await adminClient.getProjectId();
 
     const permissions = ['bigtable.tables.get', 'bigtable.tables.readRows'];
-    table
-      .testIamPermissions(permissions)
+
+    const request = {
+      resource: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+      permissions: permissions,
+    };
+
+    adminClient
+      .testIamPermissions(request)
       .then(result => {
         const grantedPermissions = result[0];
       })
@@ -375,13 +432,18 @@ const snippets = {
     // [END bigtable_api_del_rows]
   },
 
-  delTable: (instanceId, tableId) => {
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-
+  delTable: async (instanceId, tableId) => {
     // [START bigtable_api_del_table]
-    table
-      .delete()
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
+    const projectId = await adminClient.getProjectId();
+
+    const request = {
+      name: `projects/${projectId}/instances/${instanceId}/tables/${tableId}`,
+    };
+
+    adminClient
+      .deleteTable(request)
       .then(result => {
         const apiResponse = result[0];
       })

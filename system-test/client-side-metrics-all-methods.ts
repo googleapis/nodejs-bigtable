@@ -110,7 +110,7 @@ function metricsAssertionCheck(
   assert.deepStrictEqual(firstRequest, {
     connectivityErrorCount: 0,
     streaming,
-    status: '0',
+    status: 'OK',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
       instanceId: instanceId1,
@@ -118,8 +118,8 @@ function metricsAssertionCheck(
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
       method,
+      projectId,
     },
-    projectId,
   });
   const secondRequest = requestsHandled[1] as any;
   // We would expect these parameters to be different every time so delete
@@ -131,7 +131,7 @@ function metricsAssertionCheck(
   delete secondRequest.applicationLatency;
   delete secondRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(secondRequest, {
-    status: '0',
+    status: 'OK',
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
@@ -140,8 +140,8 @@ function metricsAssertionCheck(
       zone: 'us-west1-c',
       method,
       table: 'my-table',
+      projectId,
     },
-    projectId,
     retryCount: 0,
   });
   // We would expect these parameters to be different every time so delete
@@ -155,7 +155,7 @@ function metricsAssertionCheck(
   assert.deepStrictEqual(thirdRequest, {
     connectivityErrorCount: 0,
     streaming,
-    status: '0',
+    status: 'OK',
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
       instanceId: instanceId1,
@@ -163,8 +163,8 @@ function metricsAssertionCheck(
       cluster: 'fake-cluster3',
       zone: 'us-west1-c',
       method,
+      projectId,
     },
-    projectId,
   });
   const fourthRequest = requestsHandled[3] as any;
   // We would expect these parameters to be different every time so delete
@@ -176,7 +176,7 @@ function metricsAssertionCheck(
   delete fourthRequest.applicationLatency;
   delete fourthRequest.metricsCollectorData.appProfileId;
   assert.deepStrictEqual(fourthRequest, {
-    status: '0',
+    status: 'OK',
     streaming,
     client_name: 'nodejs-bigtable',
     metricsCollectorData: {
@@ -185,8 +185,8 @@ function metricsAssertionCheck(
       zone: 'us-west1-c',
       method,
       table: 'my-table2',
+      projectId,
     },
-    projectId,
     retryCount: 0,
   });
 }
