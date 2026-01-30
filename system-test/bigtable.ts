@@ -1904,6 +1904,11 @@ describe('Bigtable', () => {
       nanos: 0,
     };
 
+    beforeEach(async () => {
+      // This is not ideal, but we are running into quota issues for admin API access.
+      await new Promise(r => setTimeout(r, 60 * 1000));
+    });
+
     before(async () => {
       const [backupOpSSD] = await tableAdmin.createBackup({
         parent: replaceProjectIdToken(

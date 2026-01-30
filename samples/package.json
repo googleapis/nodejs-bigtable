@@ -27,7 +27,7 @@
     "requestretry": "^7.0.0"
   },
   "scripts": {
-    "test": "mocha --timeout=600000",
+    "test": "mocha --timeout=600000 --retries 3",
     "test:snap": "SNAPSHOT_UPDATE=1 npm test"
   }
 }
