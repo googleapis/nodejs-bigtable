@@ -14081,6 +14081,9 @@ export namespace google {
                     /** Table automatedBackupPolicy */
                     automatedBackupPolicy?: (google.bigtable.admin.v2.Table.IAutomatedBackupPolicy|null);
 
+                    /** Table tieredStorageConfig */
+                    tieredStorageConfig?: (google.bigtable.admin.v2.ITieredStorageConfig|null);
+
                     /** Table rowKeySchema */
                     rowKeySchema?: (google.bigtable.admin.v2.Type.IStruct|null);
                 }
@@ -14117,6 +14120,9 @@ export namespace google {
 
                     /** Table automatedBackupPolicy. */
                     public automatedBackupPolicy?: (google.bigtable.admin.v2.Table.IAutomatedBackupPolicy|null);
+
+                    /** Table tieredStorageConfig. */
+                    public tieredStorageConfig?: (google.bigtable.admin.v2.ITieredStorageConfig|null);
 
                     /** Table rowKeySchema. */
                     public rowKeySchema?: (google.bigtable.admin.v2.Type.IStruct|null);
@@ -15754,6 +15760,203 @@ export namespace google {
                 enum RestoreSourceType {
                     RESTORE_SOURCE_TYPE_UNSPECIFIED = 0,
                     BACKUP = 1
+                }
+
+                /** Properties of a TieredStorageConfig. */
+                interface ITieredStorageConfig {
+
+                    /** TieredStorageConfig infrequentAccess */
+                    infrequentAccess?: (google.bigtable.admin.v2.ITieredStorageRule|null);
+                }
+
+                /** Represents a TieredStorageConfig. */
+                class TieredStorageConfig implements ITieredStorageConfig {
+
+                    /**
+                     * Constructs a new TieredStorageConfig.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.ITieredStorageConfig);
+
+                    /** TieredStorageConfig infrequentAccess. */
+                    public infrequentAccess?: (google.bigtable.admin.v2.ITieredStorageRule|null);
+
+                    /**
+                     * Creates a new TieredStorageConfig instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns TieredStorageConfig instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.ITieredStorageConfig): google.bigtable.admin.v2.TieredStorageConfig;
+
+                    /**
+                     * Encodes the specified TieredStorageConfig message. Does not implicitly {@link google.bigtable.admin.v2.TieredStorageConfig.verify|verify} messages.
+                     * @param message TieredStorageConfig message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.ITieredStorageConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified TieredStorageConfig message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.TieredStorageConfig.verify|verify} messages.
+                     * @param message TieredStorageConfig message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.ITieredStorageConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a TieredStorageConfig message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns TieredStorageConfig
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.TieredStorageConfig;
+
+                    /**
+                     * Decodes a TieredStorageConfig message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns TieredStorageConfig
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.TieredStorageConfig;
+
+                    /**
+                     * Verifies a TieredStorageConfig message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a TieredStorageConfig message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns TieredStorageConfig
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.TieredStorageConfig;
+
+                    /**
+                     * Creates a plain object from a TieredStorageConfig message. Also converts values to other types if specified.
+                     * @param message TieredStorageConfig
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.TieredStorageConfig, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this TieredStorageConfig to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for TieredStorageConfig
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a TieredStorageRule. */
+                interface ITieredStorageRule {
+
+                    /** TieredStorageRule includeIfOlderThan */
+                    includeIfOlderThan?: (google.protobuf.IDuration|null);
+                }
+
+                /** Represents a TieredStorageRule. */
+                class TieredStorageRule implements ITieredStorageRule {
+
+                    /**
+                     * Constructs a new TieredStorageRule.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.ITieredStorageRule);
+
+                    /** TieredStorageRule includeIfOlderThan. */
+                    public includeIfOlderThan?: (google.protobuf.IDuration|null);
+
+                    /** TieredStorageRule rule. */
+                    public rule?: "includeIfOlderThan";
+
+                    /**
+                     * Creates a new TieredStorageRule instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns TieredStorageRule instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.ITieredStorageRule): google.bigtable.admin.v2.TieredStorageRule;
+
+                    /**
+                     * Encodes the specified TieredStorageRule message. Does not implicitly {@link google.bigtable.admin.v2.TieredStorageRule.verify|verify} messages.
+                     * @param message TieredStorageRule message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.ITieredStorageRule, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified TieredStorageRule message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.TieredStorageRule.verify|verify} messages.
+                     * @param message TieredStorageRule message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.ITieredStorageRule, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a TieredStorageRule message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns TieredStorageRule
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.TieredStorageRule;
+
+                    /**
+                     * Decodes a TieredStorageRule message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns TieredStorageRule
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.TieredStorageRule;
+
+                    /**
+                     * Verifies a TieredStorageRule message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a TieredStorageRule message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns TieredStorageRule
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.TieredStorageRule;
+
+                    /**
+                     * Creates a plain object from a TieredStorageRule message. Also converts values to other types if specified.
+                     * @param message TieredStorageRule
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.TieredStorageRule, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this TieredStorageRule to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for TieredStorageRule
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
                 }
 
                 /** Properties of a ProtoSchema. */

@@ -3991,6 +3991,10 @@
                           "type": "AutomatedBackupPolicy",
                           "id": 13
                         },
+                        "tieredStorageConfig": {
+                          "type": "TieredStorageConfig",
+                          "id": 14
+                        },
                         "rowKeySchema": {
                           "type": "Type.Struct",
                           "id": 15
@@ -4427,6 +4431,29 @@
                       "values": {
                         "RESTORE_SOURCE_TYPE_UNSPECIFIED": 0,
                         "BACKUP": 1
+                      }
+                    },
+                    "TieredStorageConfig": {
+                      "fields": {
+                        "infrequentAccess": {
+                          "type": "TieredStorageRule",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "TieredStorageRule": {
+                      "oneofs": {
+                        "rule": {
+                          "oneof": [
+                            "includeIfOlderThan"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "includeIfOlderThan": {
+                          "type": "google.protobuf.Duration",
+                          "id": 1
+                        }
                       }
                     },
                     "ProtoSchema": {
