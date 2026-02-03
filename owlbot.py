@@ -59,7 +59,9 @@ if staging.is_dir():
             '.github/sync-repo-settings.yaml',
             '.github/workflows/ci.yaml',
             '.OwlBot.yaml',
-            'samples/generated/v2/*', # we don't want to encourage non-veneer use here.
+            'samples/generated/v2/*',   # we don't want to encourage non-veneer use here.
+            '.kokoro/samples-test.sh',  # get to green
+            '.kokoro/system-test.sh',
         ] + list(admin_files)
         logging.info(f"excluding files for non-admin: {excludes}")
         s.copy([library], excludes = excludes)
@@ -163,9 +165,11 @@ templates = common_templates.node_library(
   source_location='build/src'
 )
 s.copy(templates,excludes=[
-  '.github/auto-approve.yml',
-  '.github/sync-repo-settings.yaml',
-  '.github/workflows/ci.yaml',
+    '.github/auto-approve.yml',
+    '.github/sync-repo-settings.yaml',
+    '.github/workflows/ci.yaml',
+    '.kokoro/samples-test.sh',  # get to green
+    '.kokoro/system-test.sh',
 ])
 
 node.postprocess_gapic_library_hermetic()
