@@ -62,6 +62,7 @@ if staging.is_dir():
             'samples/generated/v2/*',   # we don't want to encourage non-veneer use here.
             '.kokoro/samples-test.sh',  # get to green
             '.kokoro/system-test.sh',
+            '.kokoro/test.sh',
         ] + list(admin_files)
         logging.info(f"excluding files for non-admin: {excludes}")
         s.copy([library], excludes = excludes)
@@ -170,6 +171,7 @@ s.copy(templates,excludes=[
     '.github/workflows/ci.yaml',
     '.kokoro/samples-test.sh',  # get to green
     '.kokoro/system-test.sh',
+    '.kokoro/test.sh',
 ])
 
 node.postprocess_gapic_library_hermetic()
