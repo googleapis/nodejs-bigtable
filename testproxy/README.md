@@ -34,3 +34,6 @@ the value use the `PORT` environment variable, e.g:
 $ PORT=1337 npm run testproxy
 ```
 
+## Exclusions
+
+Some tests are testing things that the library doesn't support; these would require feature work, and are in `known_unsupported.txt`. Some of them are simply known failures that need to be fixed, but are not vital to the operation of the library, and are in `known_failures.txt`. Ideally these would all be complete, but until they are, they're listed in those files. Items in both files are excluded during "mandatory conformance", and items unsupported items are excluded during "conformance".

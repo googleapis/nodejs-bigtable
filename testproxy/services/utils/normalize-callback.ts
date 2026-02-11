@@ -15,8 +15,11 @@
 import * as grpc from '@grpc/grpc-js';
 
 import {callbackify} from 'node:util';
+import {ClientImpl} from './client-map';
 
-export const normalizeCallback = (fn: Function) =>
+export const normalizeCallback = <RequestType, ResponseType>(
+  fn: ClientImpl<RequestType, ResponseType>
+): grpc.handleUnaryCall<RequestType, ResponseType> =>
   callbackify(async (...args) => {
     let res;
     try {

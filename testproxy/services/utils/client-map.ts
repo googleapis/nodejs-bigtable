@@ -14,10 +14,25 @@
 
 import * as grpc from '@grpc/grpc-js';
 
-export class ClientMap extends Map {
+export interface ServiceHandlerParams {
+  clientMap: ClientMap;
+}
+
+export type ClientImpl<RequestType = any, ResponseType = any> = (
+  call: grpc.ServerUnaryCall<RequestType, ResponseType>,
+) => Promise<ResponseType>;
+
+export interface ClientImplMaker<RequestType = any, ResponseType = any> {
+  // The maker returns a gRPC handler function
+  (
+    handlerParams: ServiceHandlerParams,
+  ): grpc.handleUnaryCall<RequestType, ResponseType>;
+}
+
+export class ClientMap extends Map<string, ClientImplMaker> {
   // TODO: we might need to implement a way to lock
   // currently used client instances here
-  get(key) {
+  get(key: string) {
     if (!key) {
       const err = {
         code: grpc.status.INVALID_ARGUMENT,

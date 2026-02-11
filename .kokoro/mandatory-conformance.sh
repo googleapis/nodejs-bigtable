@@ -38,7 +38,7 @@ popd
 
 # Run the conformance test skipping known failures
 cd cloud-bigtable-clients-test/tests
-eval "go test -v -proxy_addr=:9999 -skip `tr -d '\n' < ../../testproxy/known_failures.txt`"
+eval "go test -v -proxy_addr=:9999 -skip `tr -d '\n' < ../../testproxy/known_failures.txt``tr -d '\n' < ../../testproxy/known_failures.txt`"
 RETURN_CODE=$?
 
 echo "exiting with ${RETURN_CODE}"

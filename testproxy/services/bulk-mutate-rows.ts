@@ -14,9 +14,35 @@
 
 import * as grpc from '@grpc/grpc-js';
 
-import {normalizeCallback, getTableInfo} from './utils';
+import {normalizeCallback, getTableInfo, ClientImplMaker} from './utils';
 
-export const bulkMutateRows = ({clientMap}) =>
+interface BulkMutateRowsRequest {
+  clientId: string;
+  request: {
+    tableName: string;
+    entries: any[];
+  };
+}
+
+interface BulkMutateRowsResponse {
+  status: {
+    code: grpc.status;
+    details: string[];
+    message?: string;
+  };
+  entries: Array<{
+    index: number;
+    status: {
+      code: grpc.status;
+      message: string;
+    };
+  }>;
+}
+
+export const bulkMutateRows: ClientImplMaker<
+  BulkMutateRowsRequest,
+  BulkMutateRowsResponse
+> = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {request: mutateRequest} = request;
