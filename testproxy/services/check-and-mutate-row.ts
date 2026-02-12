@@ -14,9 +14,16 @@
 
 import * as grpc from '@grpc/grpc-js';
 
-import {normalizeCallback, getTableInfo} from './utils';
+import {ClientImplMaker, normalizeCallback} from './utils';
 import {createFlatMutationsListWithFnInverse} from './utils/request/createFlatMutationsList';
 import {mutationParseInverse} from './utils/request/mutateInverse';
+import {google} from '../../protos/protos';
+import {RawFilter} from '../../src';
+import {GoogleError} from 'google-gax';
+type ICheckAndMutateRowRequest =
+  google.bigtable.testproxy.ICheckAndMutateRowRequest;
+type ICheckAndMutateRowResult =
+  google.bigtable.testproxy.ICheckAndMutateRowResult;
 
 /**
  * Transforms mutations from the gRPC layer format to the handwritten layer format.
@@ -27,7 +34,9 @@ import {mutationParseInverse} from './utils/request/mutateInverse';
  * @param {google.bigtable.v2.IMutation[]} gapicLayerMutations An array of mutations in the gRPC layer format.
  * @returns {FilterConfigOption[]} An array of mutations in the handwritten layer format.
  */
-function handwrittenLayerMutations(gapicLayerMutations) {
+function handwrittenLayerMutations(
+  gapicLayerMutations: google.bigtable.v2.IMutation[],
+) {
   return gapicLayerMutations
     .map(mutation =>
       createFlatMutationsListWithFnInverse(
@@ -50,31 +59,40 @@ function handwrittenLayerMutations(gapicLayerMutations) {
  * @param {Bytes} bytes The byte array or string to convert.
  * @returns {string} The converted string.
  */
-function convertFromBytes(bytes) {
-  if (bytes instanceof Buffer) {
+function convertFromBytes(bytes: Buffer | string | Uint8Array): string {
+  if (Buffer.isBuffer(bytes)) {
     return bytes.toString();
   } else if (typeof bytes === 'string') {
     return bytes;
+  } else if (bytes instanceof Uint8Array) {
+    return Buffer.from(bytes).toString();
   } else {
     throw new Error('Invalid input type. Must be Buffer or string.');
   }
 }
 
-export const checkAndMutateRow = ({clientMap}) =>
+export const checkAndMutateRow: ClientImplMaker<
+  ICheckAndMutateRowRequest,
+  ICheckAndMutateRowResult
+> = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
-    const {clientId, request: checkAndMutateRowRequest} = request;
+    const {request: checkAndMutateRowRequest} = request;
     const {appProfileId, falseMutations, rowKey, tableName, trueMutations} =
-      checkAndMutateRowRequest;
-    const onMatch = handwrittenLayerMutations(trueMutations);
-    const onNoMatch = handwrittenLayerMutations(falseMutations);
-    const id = convertFromBytes(rowKey);
-    const bigtable = clientMap.get(clientId);
+      checkAndMutateRowRequest!;
+    const onMatch = handwrittenLayerMutations(trueMutations!);
+    const onNoMatch = handwrittenLayerMutations(falseMutations!);
+    const id = convertFromBytes(rowKey as string | Buffer | Uint8Array);
+    const bigtable = clientMap.get(request.clientId!);
     bigtable.appProfileId =
-      appProfileId === '' ? clientMap.get(clientId).appProfileId : appProfileId;
-    const table = getTableInfo(bigtable, tableName);
+      appProfileId === ''
+        ? clientMap.get(request.clientId!).appProfileId || ''
+        : appProfileId || '';
+    const table = bigtable
+      .instance(checkAndMutateRowRequest!.appProfileId || '')
+      .table(tableName!);
     const row = table.row(id);
-    const filter = [];
+    const filter: RawFilter[] = [];
     const filterConfig = {onMatch, onNoMatch};
     try {
       const [, result] = await row.filter(filter, filterConfig);
@@ -83,11 +101,12 @@ export const checkAndMutateRow = ({clientMap}) =>
         result,
       };
     } catch (e) {
+      const error = e as GoogleError;
       return {
         status: {
-          code: e.code ? e.code : grpc.status.UNKNOWN,
+          code: error.code ? error.code : grpc.status.UNKNOWN,
           details: [],
-          message: e.message,
+          message: error.message,
         },
       };
     }

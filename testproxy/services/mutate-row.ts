@@ -13,19 +13,26 @@
 // limitations under the License.
 
 import * as grpc from '@grpc/grpc-js';
+import {GoogleError} from 'google-gax';
+import {google} from '../../protos/protos';
+type IMutateRowRequest = google.bigtable.testproxy.IMutateRowRequest;
+type IMutateRowResult = google.bigtable.testproxy.IMutateRowResult;
 
-import {normalizeCallback} from './utils';
+import {ClientImplMaker, normalizeCallback} from './utils';
+import {getBigtableClient} from './utils/bigtable-client';
 
-const v2 = Symbol.for('v2');
-
-export const mutateRow = ({clientMap}) =>
+export const mutateRow: ClientImplMaker<
+  IMutateRowRequest,
+  IMutateRowResult
+> = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {request: mutateRequest} = request;
-    const {mutations, tableName, rowKey} = mutateRequest;
+    const {mutations, tableName, rowKey} = mutateRequest!;
     const {clientId} = request;
-    const appProfileId = clientMap.get(clientId).appProfileId;
-    const client = clientMap.get(clientId)[v2];
+    const bigtable = clientMap.get(clientId!);
+    const appProfileId = bigtable.appProfileId;
+    const client = getBigtableClient(bigtable);
 
     try {
       await client.mutateRow({
@@ -39,8 +46,13 @@ export const mutateRow = ({clientMap}) =>
         status: {code: grpc.status.OK, details: []},
       };
     } catch (e) {
+      const error = e as GoogleError;
       return {
-        status: e,
+        status: {
+          code: error.code ? error.code : grpc.status.UNKNOWN,
+          message: error.message,
+          details: [],
+        },
       };
     }
   });

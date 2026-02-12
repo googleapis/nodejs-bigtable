@@ -13,23 +13,24 @@
 // limitations under the License.
 
 import * as grpc from '@grpc/grpc-js';
+import {Bigtable} from '../../../src';
 
 export interface ServiceHandlerParams {
   clientMap: ClientMap;
 }
 
-export type ClientImpl<RequestType = any, ResponseType = any> = (
+export type ClientImpl<RequestType, ResponseType> = (
   call: grpc.ServerUnaryCall<RequestType, ResponseType>,
 ) => Promise<ResponseType>;
 
-export interface ClientImplMaker<RequestType = any, ResponseType = any> {
+export interface ClientImplMaker<RequestType, ResponseType> {
   // The maker returns a gRPC handler function
   (
     handlerParams: ServiceHandlerParams,
   ): grpc.handleUnaryCall<RequestType, ResponseType>;
 }
 
-export class ClientMap extends Map<string, ClientImplMaker> {
+export class ClientMap extends Map<string, Bigtable> {
   // TODO: we might need to implement a way to lock
   // currently used client instances here
   get(key: string) {

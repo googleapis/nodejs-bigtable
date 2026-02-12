@@ -112,6 +112,8 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
   BigtableTableAdminClient?: gax.ClientOptions;
 
   metricsEnabled?: boolean;
+
+  clientConfig?: gax.ClientConfig;
 }
 
 /**

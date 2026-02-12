@@ -25,13 +25,20 @@ import {removeClient} from './remove-client';
 import {sampleRowKeys} from './sample-row-keys';
 import {executeQuery} from './execute-query';
 
-/*
- * Starts the client pool map and retrieves the object that
- * lists all methods to be passed to grpc.Server.addService.
- *
- * ref: https://grpc.github.io/grpc/node/grpc.Server.html#addService__anchor
- */
-export function getServicesImplementation() {
+import {google} from '../../protos/protos';
+import {handleUnaryCall} from '@grpc/grpc-js';
+type CloudBigtableV2TestProxy =
+  google.bigtable.testproxy.CloudBigtableV2TestProxy;
+
+export {CloudBigtableV2TestProxy};
+
+export interface ServiceImplementations {
+  // We don't really care about the specific return types here.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: handleUnaryCall<any, any>;
+}
+
+export function getServicesImplementation(): ServiceImplementations {
   const clientMap = new ClientMap();
 
   return {

@@ -13,17 +13,30 @@
 // limitations under the License.
 
 import * as grpc from '@grpc/grpc-js';
+import {GoogleError} from 'google-gax';
 
-import {normalizeCallback, getRowResponse, getTableInfo} from './utils';
+import {google} from '../../protos/protos';
+type IReadRowsRequest = google.bigtable.testproxy.IReadRowsRequest;
+type IReadRowsRequestV2 = google.bigtable.v2.IReadRowsRequest;
+type IRowsResult = google.bigtable.testproxy.IRowsResult;
+type IRowRange = google.bigtable.v2.IRowRange;
 
-const getRowsOptions = readRowsRequest => {
-  const getRowsRequest = {};
+import {
+  ClientImplMaker,
+  getRowResponse,
+  getTableInfo,
+  normalizeCallback,
+} from './utils';
+import {GetRowsOptions} from '../../src';
+
+const getRowsOptions = (readRowsRequest: IReadRowsRequestV2) => {
+  const getRowsRequest: GetRowsOptions = {};
 
   if (readRowsRequest.rows) {
     const {rowRanges} = readRowsRequest.rows;
     if (rowRanges) {
       getRowsRequest.ranges = rowRanges.map(
-        ({startKeyClosed, endKeyClosed}) => ({
+        ({startKeyClosed, endKeyClosed}: IRowRange) => ({
           start: {inclusive: true, value: String(startKeyClosed)},
           end: {inclusive: true, value: String(endKeyClosed)},
         }),
@@ -38,12 +51,14 @@ const getRowsOptions = readRowsRequest => {
 
   const {rowsLimit} = readRowsRequest;
   if (rowsLimit && rowsLimit !== '0') {
-    getRowsRequest.limit = parseInt(rowsLimit, 10);
+    // Tricky protobuf numbers.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getRowsRequest.limit = parseInt(rowsLimit as any, 10);
   }
   return getRowsRequest;
 };
 
-const getReadRowsRequest = request => {
+const getReadRowsRequest = (request: IReadRowsRequest) => {
   const readRowsRequest = request ? request.request : undefined;
   if (!readRowsRequest || !readRowsRequest.tableName) {
     throw Object.assign(new Error('table_name must be provided in request.'), {
@@ -53,14 +68,16 @@ const getReadRowsRequest = request => {
   return readRowsRequest;
 };
 
-export const readRows = ({clientMap}) =>
+export const readRows: ClientImplMaker<IReadRowsRequest, IRowsResult> = ({
+  clientMap,
+}) =>
   normalizeCallback(async rawRequest => {
     const request = rawRequest.request;
     const {clientId} = request;
     const readRowsRequest = getReadRowsRequest(request);
     const {tableName} = readRowsRequest;
-    const bigtable = clientMap.get(clientId);
-    const table = getTableInfo(bigtable, tableName);
+    const bigtable = clientMap.get(clientId!);
+    const table = getTableInfo(bigtable, tableName || '');
     const rowsOptions = getRowsOptions(readRowsRequest);
     try {
       const [rows] = await table.getRows(rowsOptions);
@@ -69,12 +86,9 @@ export const readRows = ({clientMap}) =>
         rows: rows.map(getRowResponse),
       };
     } catch (e) {
+      const error = e as GoogleError;
       return {
-        status: {
-          code: e.code,
-          details: [], // e.details must be in an empty array for the test runner to return the status. This is tracked in https://b.corp.google.com/issues/383096533.
-          message: e.message,
-        },
+        status: error,
       };
     }
   });

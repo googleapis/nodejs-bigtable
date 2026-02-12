@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const getRowResponse = ({id, data}) => ({
+export const getRowResponse = ({ id, data }: { id: string; data: any }) => ({
   key: Buffer.from(id),
   families: Object.entries(data).map(([familyKey, familyValue]) => ({
     name: familyKey,
-    columns: Object.entries(familyValue).map(([columnKey, columnValue]) => ({
+    columns: Object.entries(familyValue as any).map(([columnKey, columnValue]) => ({
       qualifier: Buffer.from(columnKey),
-      cells: columnValue.map(({labels, timestamp, value}) => ({
+      cells: (columnValue as any[]).map(({ labels, timestamp, value }) => ({
         timestampMicros: timestamp,
         value: Buffer.from(value),
         labels,

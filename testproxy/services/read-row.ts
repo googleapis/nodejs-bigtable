@@ -13,16 +13,29 @@
 // limitations under the License.
 
 import * as grpc from '@grpc/grpc-js';
+import {GoogleError} from 'google-gax';
 
-import {normalizeCallback, getRowResponse, getTableInfo} from './utils';
+import {google} from '../../protos/protos';
+type IReadRowRequest = google.bigtable.testproxy.IReadRowRequest;
+type IRowResult = google.bigtable.testproxy.IRowResult;
 
-export const readRow = ({clientMap}) =>
+import {
+  ClientImplMaker,
+  normalizeCallback,
+  getRowResponse,
+  getTableInfo,
+} from './utils';
+
+export const readRow: ClientImplMaker<IReadRowRequest, IRowResult> = ({
+  clientMap,
+}) =>
   normalizeCallback(async rawRequest => {
-    const {clientId, columns = {}, rowKey, tableName} = rawRequest.request;
+    const {clientId, rowKey, tableName} = rawRequest.request;
+    const columns = {};
 
-    const bigtable = clientMap.get(clientId);
-    const table = getTableInfo(bigtable, tableName);
-    const row = table.row(rowKey);
+    const bigtable = clientMap.get(clientId!);
+    const table = getTableInfo(bigtable, tableName ?? '');
+    const row = table.row(rowKey ?? '');
 
     try {
       const res = await row.get(columns);
@@ -33,8 +46,9 @@ export const readRow = ({clientMap}) =>
         row: firstRow,
       };
     } catch (e) {
+      const error = e as GoogleError;
       return {
-        status: e,
+        status: error,
       };
     }
   });

@@ -14,43 +14,30 @@
 
 import * as grpc from '@grpc/grpc-js';
 
-import {normalizeCallback, getTableInfo, ClientImplMaker} from './utils';
+import {normalizeCallback, ClientImplMaker} from './utils';
+import {google} from '../../protos/protos';
+import {PartialFailureError} from '../../src';
+type IMutateRowsRequest = google.bigtable.testproxy.IMutateRowsRequest;
+type IMutateRowsResult = google.bigtable.testproxy.IMutateRowsResult;
 
-interface BulkMutateRowsRequest {
-  clientId: string;
-  request: {
-    tableName: string;
-    entries: any[];
-  };
-}
-
-interface BulkMutateRowsResponse {
-  status: {
-    code: grpc.status;
-    details: string[];
-    message?: string;
-  };
-  entries: Array<{
-    index: number;
-    status: {
-      code: grpc.status;
-      message: string;
-    };
-  }>;
+interface ErrorCode {
+  code?: number;
 }
 
 export const bulkMutateRows: ClientImplMaker<
-  BulkMutateRowsRequest,
-  BulkMutateRowsResponse
+  IMutateRowsRequest,
+  IMutateRowsResult
 > = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
-    const {request: mutateRequest} = request;
-    const {entries, tableName} = mutateRequest;
+    const {entries, tableName} = request.request!;
 
     const {clientId} = request;
-    const bigtable = clientMap.get(clientId);
-    const table = getTableInfo(bigtable, tableName);
+    const bigtable = clientMap.get(clientId!);
+    const table = bigtable
+      .instance(request.request!.appProfileId || '')
+      .table(tableName!);
+
     try {
       const mutateOptions = {
         rawMutation: true,
@@ -61,13 +48,13 @@ export const bulkMutateRows: ClientImplMaker<
         entries: [],
       };
     } catch (e) {
-      const error = e as Error;
+      const error = e as PartialFailureError & ErrorCode;
       const entries = error.errors
-        ? Array.from(error.errors.entries()).map(([index, entry]) => ({
-            index: index + 1,
+        ? Array.from(error.errors.entries()).map(entry => ({
+            index: entry[0] + 1,
             status: {
-              code: entry.code,
-              message: entry.message,
+              code: (entry[1] as ErrorCode).code,
+              message: entry[1].message,
             },
           }))
         : [];

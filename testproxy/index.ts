@@ -39,7 +39,9 @@ async function loadDescriptor() {
   return grpc.loadPackageDefinition(packageDefinition);
 }
 
-function startServer(service) {
+function startServer(
+  service: grpc.ServiceDefinition<grpc.UntypedServiceImplementation>,
+) {
   const server = new grpc.Server();
   server.addService(service, getServicesImplementation());
 
@@ -54,8 +56,12 @@ function startServer(service) {
 
 async function main() {
   const descriptor = await loadDescriptor();
-  const {service} =
-    descriptor.google.bigtable.testproxy.CloudBigtableV2TestProxy;
+  const testproxy = (
+    (descriptor.google as grpc.GrpcObject).bigtable as grpc.GrpcObject
+  ).testproxy as grpc.GrpcObject;
+  const service = (
+    testproxy.CloudBigtableV2TestProxy as grpc.ServiceClientConstructor
+  ).service;
   startServer(service);
 }
 

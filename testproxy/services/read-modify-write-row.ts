@@ -13,35 +13,47 @@
 // limitations under the License.
 
 import * as grpc from '@grpc/grpc-js';
+import {GoogleError} from 'google-gax';
 
-import {normalizeCallback} from './utils';
+import {google} from '../../protos/protos';
+type IReadModifyWriteRowRequest =
+  google.bigtable.testproxy.IReadModifyWriteRowRequest;
+type IRowResult = google.bigtable.testproxy.IRowResult;
+
+import {ClientImplMaker, getTableInfo, normalizeCallback} from './utils';
 import {getRMWRRequestInverse} from './utils/request/readModifyWriteRow';
-import {getTableInfo} from './utils';
 
-export const readModifyWriteRow = ({clientMap}) =>
+export const readModifyWriteRow: ClientImplMaker<
+  IReadModifyWriteRowRequest,
+  IRowResult
+> = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {clientId, request: readModifyWriteRow} = request;
+    if (!readModifyWriteRow) {
+      throw new Error('Request is required');
+    }
     const {appProfileId, tableName} = readModifyWriteRow;
     const handWrittenRequest = getRMWRRequestInverse(readModifyWriteRow);
-    const bigtable = clientMap.get(clientId);
+    const bigtable = clientMap.get(clientId!);
     if (appProfileId && appProfileId !== '') {
       bigtable.appProfileId = appProfileId;
     }
-    const table = getTableInfo(bigtable, tableName);
+    const table = getTableInfo(bigtable, tableName || '');
     const row = table.row(handWrittenRequest.id);
     try {
-      const [result] = await row.createRules(handWrittenRequest.rules);
+      const [result] = await row.createRules(handWrittenRequest.rules!);
       return {
         status: {code: grpc.status.OK, details: []},
-        row: result.row,
+        row: result.row ?? undefined,
       };
     } catch (e) {
+      const error = e as GoogleError;
       return {
         status: {
-          code: e.code ? e.code : grpc.status.UNKNOWN,
+          code: error.code ? error.code : grpc.status.UNKNOWN,
           details: [],
-          message: e.message,
+          message: error.message,
         },
       };
     }

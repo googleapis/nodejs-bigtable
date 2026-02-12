@@ -219,5 +219,8 @@ export async function parseParameters(params: {
     parameters[paramName] = value;
     parameterTypes[paramName] = type;
   }
-  return [parameters, parameterTypes];
+  return [parameters, parameterTypes] as [
+    { [param: string]: SqlValue },
+    { [param: string]: SqlTypes.Type },
+  ];
 }

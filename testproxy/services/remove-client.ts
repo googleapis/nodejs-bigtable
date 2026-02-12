@@ -12,20 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {normalizeCallback} from './utils';
+import {ClientImplMaker, normalizeCallback} from './utils';
 
-const v2 = Symbol.for('v2');
+import {google} from '../../protos/protos';
+import {getBigtableClient} from './utils/bigtable-client';
+type IRemoveClientRequest = google.bigtable.testproxy.IRemoveClientRequest;
+type IRemoveClientResponse = google.bigtable.testproxy.IRemoveClientResponse;
 
-export const removeClient = ({clientMap}) =>
+export const removeClient: ClientImplMaker<
+  IRemoveClientRequest,
+  IRemoveClientResponse
+> = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const request = rawRequest.request;
     const {clientId} = request;
-    const bigtable = clientMap.get(clientId);
+    const bigtable = clientMap.get(clientId!);
 
     if (bigtable) {
-      await bigtable[v2].close();
+      getBigtableClient(bigtable).close();
       await bigtable.close();
-      clientMap.delete(clientId);
+      clientMap.delete(clientId!);
       return {};
     }
+    return {};
   });

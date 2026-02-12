@@ -12,49 +12,67 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {GoogleError} from 'google-gax';
 import * as grpc from '@grpc/grpc-js';
 import {
   parseMetadata,
   parseRows,
   parseParameters,
 } from './utils/request/createExecuteQueryResponse';
-import {normalizeCallback} from './utils';
+import {ClientImplMaker, normalizeCallback} from './utils';
+import {ExecuteQueryOptions} from '../../src/instance';
 
-export const executeQuery = ({clientMap}) =>
+import {google} from '../../protos/protos';
+type IExecuteQueryRequest = google.bigtable.testproxy.IExecuteQueryRequest;
+type IExecuteQueryResult = google.bigtable.testproxy.IExecuteQueryResult;
+type ExecuteQueryParameters = ExecuteQueryOptions['parameters'];
+
+export const executeQuery: ClientImplMaker<
+  IExecuteQueryRequest,
+  IExecuteQueryResult
+> = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
-    const {request, clientId} = rawRequest.request;
+    const {request} = rawRequest;
+    const {clientId} = request;
+    const {request: queryRequest} = request;
 
-    const {instanceName} = request;
-    const bigtable = clientMap.get(clientId);
-    const instance = bigtable.instance(instanceName);
+    const {instanceName} = queryRequest!;
+    const bigtable = clientMap.get(clientId!);
+    // TODO: Verify if instanceName is the ID or full name. Assuming ID or name usage is handled by instance()
+    const instance = bigtable.instance(instanceName!.split('/').pop()!);
 
     try {
       const [parameters, parameterTypes] = await parseParameters(
-        request.params,
+        // The empty object here is equivalent to `params` in the proto.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        queryRequest!.params || ({} as any),
       );
       const [preparedStatement] = await instance.prepareStatement({
-        query: request.query,
+        query: queryRequest!.query!,
         parameterTypes: parameterTypes,
       });
       const [rows] = await instance.executeQuery({
         preparedStatement,
-        parameters: parameters,
+        parameters: parameters as ExecuteQueryParameters,
         retryOptions: {},
       });
 
-      const parsedMetadata = await parseMetadata(preparedStatement);
       const parsedRows = await parseRows(preparedStatement, rows);
+      const metadata = await parseMetadata(preparedStatement);
+
       return {
         status: {code: grpc.status.OK, details: []},
-        rows: parsedRows,
-        metadata: {columns: parsedMetadata},
+        metadata: {columns: metadata},
+        results: parsedRows,
       };
     } catch (e) {
+      console.error(e); // Log the error for debugging
+      const error = e as GoogleError;
       return {
         status: {
-          code: e.code || grpc.status.INTERNAL,
-          details: [], // e.details must be in an empty array for the test runner to return the status. This is tracked in https://b.corp.google.com/issues/383096533.
-          message: e.message,
+          code: error.code ? error.code : grpc.status.UNKNOWN,
+          details: [],
+          message: error.message,
         },
       };
     }

@@ -13,30 +13,42 @@
 // limitations under the License.
 
 import * as grpc from '@grpc/grpc-js';
+import {GoogleError} from 'google-gax';
 import {getSRKRequest} from './utils/request/sampleRowKeys';
-import {normalizeCallback} from './utils';
+import {ClientImplMaker, normalizeCallback} from './utils';
 
-export const sampleRowKeys = ({clientMap}) =>
+import {google} from '../../protos/protos';
+type ISampleRowKeysRequest = google.bigtable.testproxy.ISampleRowKeysRequest;
+type ISampleRowKeysResult = google.bigtable.testproxy.ISampleRowKeysResult;
+
+export const sampleRowKeys: ClientImplMaker<
+  ISampleRowKeysRequest,
+  ISampleRowKeysResult
+> = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {clientId, request: sampleRowKeysRequest} = request;
-    const {appProfileId, tableName} = sampleRowKeysRequest;
+    const {appProfileId, tableName} = sampleRowKeysRequest!;
 
-    const bigtable = clientMap.get(clientId);
-    bigtable.appProfileId = appProfileId;
+    const bigtable = clientMap.get(clientId!);
+    bigtable.appProfileId = appProfileId || bigtable.appProfileId;
 
     try {
       const response = await getSRKRequest(bigtable, {appProfileId, tableName});
 
       return {
         status: {code: grpc.status.OK, details: []},
-        response,
+        sampleRowKeys: response,
       };
-    } catch (error) {
+    } catch (e) {
+      const error = e as GoogleError;
       console.error('Error:', error.code);
 
       return {
-        status: {code: error.code, details: []},
+        status: {
+          code: error.code,
+          details: [],
+        },
       };
     }
   });

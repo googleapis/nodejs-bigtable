@@ -12,16 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {normalizeCallback} from './utils';
+import {google} from '../../protos/protos';
+import {ClientImplMaker, normalizeCallback} from './utils';
+type ICloseClientRequest = google.bigtable.testproxy.ICloseClientRequest;
+type ICloseClientResponse = google.bigtable.testproxy.ICloseClientResponse;
 
-export const closeClient = ({clientMap}) =>
+export const closeClient: ClientImplMaker<
+  ICloseClientRequest,
+  ICloseClientResponse
+> = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const request = rawRequest.request;
     const {clientId} = request;
-    const bigtable = clientMap.get(clientId);
+    const bigtable = clientMap.get(clientId!);
 
     if (bigtable) {
       await bigtable.close();
       return {};
     }
+    return {};
   });
