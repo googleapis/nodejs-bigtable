@@ -30,22 +30,19 @@ export const readModifyWriteRow: ClientImplMaker<
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {clientId, request: readModifyWriteRow} = request;
-    if (!readModifyWriteRow) {
-      throw new Error('Request is required');
-    }
-    const {appProfileId, tableName} = readModifyWriteRow;
-    const handWrittenRequest = getRMWRRequestInverse(readModifyWriteRow);
+    const {appProfileId, tableName} = readModifyWriteRow!;
+    const handWrittenRequest = getRMWRRequestInverse(readModifyWriteRow!);
     const bigtable = clientMap.get(clientId!);
     if (appProfileId && appProfileId !== '') {
       bigtable.appProfileId = appProfileId;
     }
-    const table = getTableInfo(bigtable, tableName || '');
+    const table = getTableInfo(bigtable, tableName!);
     const row = table.row(handWrittenRequest.id);
     try {
       const [result] = await row.createRules(handWrittenRequest.rules!);
       return {
         status: {code: grpc.status.OK, details: []},
-        row: result.row ?? undefined,
+        row: result.row,
       };
     } catch (e) {
       const error = e as GoogleError;

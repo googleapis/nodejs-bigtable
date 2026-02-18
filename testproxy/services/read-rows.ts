@@ -51,9 +51,7 @@ const getRowsOptions = (readRowsRequest: IReadRowsRequestV2) => {
 
   const {rowsLimit} = readRowsRequest;
   if (rowsLimit && rowsLimit !== '0') {
-    // Tricky protobuf numbers.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getRowsRequest.limit = parseInt(rowsLimit as any, 10);
+    getRowsRequest.limit = parseInt(rowsLimit as string, 10);
   }
   return getRowsRequest;
 };
@@ -88,7 +86,10 @@ export const readRows: ClientImplMaker<IReadRowsRequest, IRowsResult> = ({
     } catch (e) {
       const error = e as GoogleError;
       return {
-        status: error,
+        code: error.code,
+        // e.details must be in an empty array for the test runner to return the status. This is tracked in b/383096533.
+        details: [],
+        message: error.message,
       };
     }
   });

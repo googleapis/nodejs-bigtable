@@ -34,21 +34,20 @@ export const executeQuery: ClientImplMaker<
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {clientId} = request;
-    const {request: queryRequest} = request;
+    const queryRequest = request.request!;
 
-    const {instanceName} = queryRequest!;
+    const {instanceName} = queryRequest;
     const bigtable = clientMap.get(clientId!);
-    // TODO: Verify if instanceName is the ID or full name. Assuming ID or name usage is handled by instance()
-    const instance = bigtable.instance(instanceName!.split('/').pop()!);
+    const instance = bigtable.instance(instanceName!);
 
     try {
       const [parameters, parameterTypes] = await parseParameters(
         // The empty object here is equivalent to `params` in the proto.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        queryRequest!.params || ({} as any),
+        queryRequest.params || ({} as any),
       );
       const [preparedStatement] = await instance.prepareStatement({
-        query: queryRequest!.query!,
+        query: queryRequest.query!,
         parameterTypes: parameterTypes,
       });
       const [rows] = await instance.executeQuery({
@@ -57,20 +56,21 @@ export const executeQuery: ClientImplMaker<
         retryOptions: {},
       });
 
+      const parsedMetadata = await parseMetadata(preparedStatement);
       const parsedRows = await parseRows(preparedStatement, rows);
-      const metadata = await parseMetadata(preparedStatement);
 
       return {
         status: {code: grpc.status.OK, details: []},
-        metadata: {columns: metadata},
-        results: parsedRows,
+        rows: parsedRows,
+        metadata: {columns: parsedMetadata},
       };
     } catch (e) {
       console.error(e); // Log the error for debugging
       const error = e as GoogleError;
       return {
         status: {
-          code: error.code ? error.code : grpc.status.UNKNOWN,
+          code: error.code || grpc.status.UNKNOWN,
+          // e.details must be in an empty array for the test runner to return the status. This is tracked in b/383096533.
           details: [],
           message: error.message,
         },

@@ -32,7 +32,6 @@ export const removeClient: ClientImplMaker<
       getBigtableClient(bigtable).close();
       await bigtable.close();
       clientMap.delete(clientId!);
-      return {};
     }
     return {};
   });

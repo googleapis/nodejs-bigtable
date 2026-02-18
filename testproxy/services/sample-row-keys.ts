@@ -31,14 +31,14 @@ export const sampleRowKeys: ClientImplMaker<
     const {appProfileId, tableName} = sampleRowKeysRequest!;
 
     const bigtable = clientMap.get(clientId!);
-    bigtable.appProfileId = appProfileId || bigtable.appProfileId;
+    bigtable.appProfileId = appProfileId!;
 
     try {
       const response = await getSRKRequest(bigtable, {appProfileId, tableName});
 
       return {
         status: {code: grpc.status.OK, details: []},
-        sampleRowKeys: response,
+        response,
       };
     } catch (e) {
       const error = e as GoogleError;

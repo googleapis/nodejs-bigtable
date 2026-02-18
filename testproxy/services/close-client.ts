@@ -28,7 +28,6 @@ export const closeClient: ClientImplMaker<
 
     if (bigtable) {
       await bigtable.close();
-      return {};
     }
     return {};
   });

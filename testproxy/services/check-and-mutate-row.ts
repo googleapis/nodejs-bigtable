@@ -14,7 +14,7 @@
 
 import * as grpc from '@grpc/grpc-js';
 
-import {ClientImplMaker, normalizeCallback} from './utils';
+import {ClientImplMaker, getTableInfo, normalizeCallback} from './utils';
 import {createFlatMutationsListWithFnInverse} from './utils/request/createFlatMutationsList';
 import {mutationParseInverse} from './utils/request/mutateInverse';
 import {google} from '../../protos/protos';
@@ -77,20 +77,16 @@ export const checkAndMutateRow: ClientImplMaker<
 > = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
-    const {request: checkAndMutateRowRequest} = request;
+    const {clientId, request: checkAndMutateRowRequest} = request;
     const {appProfileId, falseMutations, rowKey, tableName, trueMutations} =
       checkAndMutateRowRequest!;
     const onMatch = handwrittenLayerMutations(trueMutations!);
     const onNoMatch = handwrittenLayerMutations(falseMutations!);
-    const id = convertFromBytes(rowKey as string | Buffer | Uint8Array);
-    const bigtable = clientMap.get(request.clientId!);
+    const id = convertFromBytes(rowKey!);
+    const bigtable = clientMap.get(clientId!)!;
     bigtable.appProfileId =
-      appProfileId === ''
-        ? clientMap.get(request.clientId!).appProfileId || ''
-        : appProfileId || '';
-    const table = bigtable
-      .instance(checkAndMutateRowRequest!.appProfileId || '')
-      .table(tableName!);
+      appProfileId === '' ? bigtable.appProfileId! : appProfileId!;
+    const table = getTableInfo(bigtable, tableName!);
     const row = table.row(id);
     const filter: RawFilter[] = [];
     const filterConfig = {onMatch, onNoMatch};

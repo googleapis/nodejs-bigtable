@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import * as grpc from '@grpc/grpc-js';
-import {GoogleError} from 'google-gax';
 
 import {google} from '../../protos/protos';
 type IReadRowRequest = google.bigtable.testproxy.IReadRowRequest;
@@ -34,21 +33,14 @@ export const readRow: ClientImplMaker<IReadRowRequest, IRowResult> = ({
     const columns = {};
 
     const bigtable = clientMap.get(clientId!);
-    const table = getTableInfo(bigtable, tableName ?? '');
-    const row = table.row(rowKey ?? '');
+    const table = getTableInfo(bigtable, tableName!);
+    const row = table.row(rowKey!);
 
-    try {
-      const res = await row.get(columns);
-      const firstRow = getRowResponse(res[0]);
+    const res = await row.get(columns);
+    const firstRow = getRowResponse(res[0]);
 
-      return {
-        status: {code: grpc.status.OK, details: []},
-        row: firstRow,
-      };
-    } catch (e) {
-      const error = e as GoogleError;
-      return {
-        status: error,
-      };
-    }
+    return {
+      status: {code: grpc.status.OK, details: []},
+      row: firstRow,
+    };
   });

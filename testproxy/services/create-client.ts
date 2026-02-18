@@ -19,9 +19,9 @@ import * as grpc from '@grpc/grpc-js';
 import {Bigtable} from '../../src';
 import {createBigtableClient} from './utils/bigtable-client';
 
-function durationToMilliseconds(duration: google.protobuf.Duration) {
+function durationToMilliseconds(duration: google.protobuf.Duration | google.protobuf.IDuration) {
   const secondsInMs = parseInt(duration.seconds as string, 10) * 1000;
-  const nanosInMs = duration.nanos / 1000000;
+  const nanosInMs = duration.nanos! / 1000000;
   return secondsInMs + nanosInMs;
 }
 
@@ -86,7 +86,7 @@ export const createClient: ClientImplMaker<
         clientConfig.interfaces['google.bigtable.v2.Bigtable'].methods,
       ).forEach(([, v]) => {
         (v as MethodConfig).timeout_millis = durationToMilliseconds(
-          request.perOperationTimeout as google.protobuf.Duration,
+          request.perOperationTimeout!,
         );
       });
     }
@@ -94,7 +94,7 @@ export const createClient: ClientImplMaker<
       projectId,
       apiEndpoint,
       authClient,
-      appProfileId: appProfileId ?? undefined,
+      appProfileId: appProfileId!,
       clientConfig,
     });
     createBigtableClient(bigtable);

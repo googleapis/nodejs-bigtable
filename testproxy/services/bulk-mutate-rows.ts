@@ -14,7 +14,7 @@
 
 import * as grpc from '@grpc/grpc-js';
 
-import {normalizeCallback, ClientImplMaker} from './utils';
+import {normalizeCallback, ClientImplMaker, getTableInfo} from './utils';
 import {google} from '../../protos/protos';
 import {PartialFailureError} from '../../src';
 type IMutateRowsRequest = google.bigtable.testproxy.IMutateRowsRequest;
@@ -34,9 +34,7 @@ export const bulkMutateRows: ClientImplMaker<
 
     const {clientId} = request;
     const bigtable = clientMap.get(clientId!);
-    const table = bigtable
-      .instance(request.request!.appProfileId || '')
-      .table(tableName!);
+    const table = getTableInfo(bigtable, tableName!);
 
     try {
       const mutateOptions = {
@@ -50,11 +48,11 @@ export const bulkMutateRows: ClientImplMaker<
     } catch (e) {
       const error = e as PartialFailureError & ErrorCode;
       const entries = error.errors
-        ? Array.from(error.errors.entries()).map(entry => ({
-            index: entry[0] + 1,
+        ? Array.from(error.errors.entries()).map(([index, err]) => ({
+            index: index + 1,
             status: {
-              code: (entry[1] as ErrorCode).code,
-              message: entry[1].message,
+              code: (err as ErrorCode).code,
+              message: err.message,
             },
           }))
         : [];
