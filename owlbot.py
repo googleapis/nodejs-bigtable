@@ -38,7 +38,7 @@ if staging.is_dir():
         src_files[version] = list([fn for fn in src_paths[version].glob('**/*.*')])
 
     # Copy bigtable library.
-    # src/index.ts src/admin/v2/index.ts has added AdminClients manually, we don't wanna override it.
+    # src/index.ts src/admin/v2/index.ts has added AdminClients manually; we don't want to override it.
     # src/*.ts is a added layer for the client libraries, they need extra setting in tsconfig.json & tslint.json
     # Tracking issues: 1. https://github.com/googleapis/nodejs-bigtable/issues/636
     #                  2. https://github.com/googleapis/nodejs-bigtable/issues/635
@@ -57,7 +57,12 @@ if staging.is_dir():
             'tsconfig.json',
             'tslint.json',
             '.github/sync-repo-settings.yaml',
+            '.github/workflows/ci.yaml',
             '.OwlBot.yaml',
+            'samples/generated/v2/*',   # we don't want to encourage non-veneer use here.
+            '.kokoro/samples-test.sh',  # get to green
+            '.kokoro/system-test.sh',
+            '.kokoro/test.sh',
         ] + list(admin_files)
         logging.info(f"excluding files for non-admin: {excludes}")
         s.copy([library], excludes = excludes)
@@ -97,10 +102,24 @@ if staging.is_dir():
         for tfn in tfns:
             logging.info(f"munging test file: {str(tfn)}")
             contents = tfn.read_text()
+
+            # Fix relative paths.
             contents = contents.replace("'../", "'../../../")
+
+            # Use the selective subclasses.
+            contents = contents.replace(".v2.BigtableInstanceAdminClient", ".admin.InstanceAdminClient")
+            contents = contents.replace(".v2.BigtableTableAdminClient", ".admin.TableAdminClient")
+
+            # Statics also.
+            contents = contents.replace("bigtabletableadminModule.v2.BigtableTableAdminClient", \
+                                        "bigtabletableadminModule.admin.TableAdminClient")
+            contents = contents.replace("bigtabletableadminModule.v2.BigtableInstanceAdminClient", \
+                                        "bigtabletableadminModule.admin.InstanceAdminClient")
+
             tfn.write_text(contents)
 
-        # Finally, the samples. .v2 -> .admin.v2
+        # Finally, the samples. Shift to selective subclasses, and mark the samples
+        # with CUJs as internal, in favour of the handwritten ones.
         samplesStr = str(samples)
         sfns = [fn
                     for fn
@@ -109,7 +128,18 @@ if staging.is_dir():
         for sfn in sfns:
             logging.info(f"munging sample file: {str(sfn)}")
             contents = sfn.read_text()
-            contents = contents.replace(').v2', ').admin.v2')
+            contents = contents.replace("const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2", \
+                                        "const {InstanceAdminClient} = require('@google-cloud/bigtable').admin")
+            contents = contents.replace("const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2", \
+                                        "const {TableAdminClient} = require('@google-cloud/bigtable').admin")
+            contents = contents.replace("new BigtableInstanceAdminClient", "new InstanceAdminClient")
+            contents = contents.replace("new BigtableTableAdminClient", "new TableAdminClient")
+
+            # We need to disable this one so the handwritten sample
+            # can take over for the CUJ.
+            contents = contents.replace("bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async", \
+                                        "bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async_internal")
+
             sfn.write_text(contents)
 
         os.system(f"mkdir -p {inProtoPath}")
@@ -136,8 +166,12 @@ templates = common_templates.node_library(
   source_location='build/src'
 )
 s.copy(templates,excludes=[
-  '.github/auto-approve.yml',
-  '.github/sync-repo-settings.yaml'
+    '.github/auto-approve.yml',
+    '.github/sync-repo-settings.yaml',
+    '.github/workflows/ci.yaml',
+    '.kokoro/samples-test.sh',  # get to green
+    '.kokoro/system-test.sh',
+    '.kokoro/test.sh',
 ])
 
 node.postprocess_gapic_library_hermetic()

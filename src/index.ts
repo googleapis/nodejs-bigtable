@@ -488,6 +488,7 @@ export class Bigtable {
   static Instance: Instance;
   static Cluster: Cluster;
   _metricsConfigManager: ClientSideMetricsConfigManager;
+  admin: admin.BigtableAdmin;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -495,8 +496,8 @@ export class Bigtable {
     const scopes: string[] = [];
     const clientClasses = [
       v2.BigtableClient,
-      v2.BigtableInstanceAdminClient,
-      v2.BigtableTableAdminClient,
+      admin.v2.BigtableInstanceAdminClient,
+      admin.v2.BigtableTableAdminClient,
     ];
     for (const clientClass of clientClasses) {
       for (const scope of clientClass.scopes) {
@@ -585,6 +586,7 @@ export class Bigtable {
       BigtableInstanceAdminClient: instanceAdminOptions,
       BigtableTableAdminClient: adminOptions,
     };
+    this.admin = admin.BigtableAdmin.fromBigtable(this);
 
     this.api = {};
     this.auth = new GoogleAuth(Object.assign({}, baseOptions, options));
@@ -1368,5 +1370,4 @@ export {
   WaitForReplicationCallback,
   WaitForReplicationResponse,
 } from './table';
-export {GCRuleMaker} from './gc-rule-maker';
 export {SqlTypes};

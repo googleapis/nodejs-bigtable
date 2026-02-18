@@ -7366,6 +7366,48 @@
                     "directAccessRequested": {
                       "type": "bool",
                       "id": 10
+                    },
+                    "peerInfo": {
+                      "type": "bool",
+                      "id": 11
+                    }
+                  }
+                },
+                "PeerInfo": {
+                  "fields": {
+                    "googleFrontendId": {
+                      "type": "int64",
+                      "id": 1
+                    },
+                    "applicationFrontendId": {
+                      "type": "int64",
+                      "id": 2
+                    },
+                    "applicationFrontendZone": {
+                      "type": "string",
+                      "id": 3
+                    },
+                    "applicationFrontendSubzone": {
+                      "type": "string",
+                      "id": 4
+                    },
+                    "transportType": {
+                      "type": "TransportType",
+                      "id": 5
+                    }
+                  },
+                  "nested": {
+                    "TransportType": {
+                      "values": {
+                        "TRANSPORT_TYPE_UNKNOWN": 0,
+                        "TRANSPORT_TYPE_EXTERNAL": 1,
+                        "TRANSPORT_TYPE_CLOUD_PATH": 2,
+                        "TRANSPORT_TYPE_DIRECT_ACCESS": 3,
+                        "TRANSPORT_TYPE_SESSION_UNKNOWN": 4,
+                        "TRANSPORT_TYPE_SESSION_EXTERNAL": 5,
+                        "TRANSPORT_TYPE_SESSION_CLOUD_PATH": 6,
+                        "TRANSPORT_TYPE_SESSION_DIRECT_ACCESS": 7
+                      }
                     }
                   }
                 },
@@ -7380,6 +7422,11 @@
                       "oneof": [
                         "clusterId"
                       ]
+                    },
+                    "_afeId": {
+                      "oneof": [
+                        "afeId"
+                      ]
                     }
                   },
                   "fields": {
@@ -7393,6 +7440,13 @@
                     "clusterId": {
                       "type": "string",
                       "id": 2,
+                      "options": {
+                        "proto3_optional": true
+                      }
+                    },
+                    "afeId": {
+                      "type": "int64",
+                      "id": 3,
                       "options": {
                         "proto3_optional": true
                       }

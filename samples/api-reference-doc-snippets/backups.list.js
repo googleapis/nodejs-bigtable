@@ -17,8 +17,8 @@ async function main(
   clusterId = 'YOUR_CLUSTER_ID',
 ) {
   // [START bigtable_api_list_backups]
-  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-  const tableAdminClient = new BigtableTableAdminClient();
+  const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+  const tableAdminClient = new TableAdminClient();
 
   async function listBackups() {
     /**

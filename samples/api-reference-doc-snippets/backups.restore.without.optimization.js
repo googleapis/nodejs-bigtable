@@ -19,7 +19,7 @@ async function main(
   backupId = 'YOUR_BACKUP_ID',
 ) {
   // [START bigtable_api_restore_backup_no_optimization]
-  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+  const {TableAdminClient} = require('@google-cloud/bigtable').admin;
 
   async function restoreBackup() {
     /**
@@ -30,7 +30,7 @@ async function main(
     // const clusterId = 'YOUR_CLUSTER_ID';
     // const backupId = 'YOUR_BACKUP_ID';
 
-    const adminClient = new BigtableTableAdminClient();
+    const adminClient = new TableAdminClient();
     const projectId = await adminClient.getProjectId();
 
     // Restore a table to an instance.

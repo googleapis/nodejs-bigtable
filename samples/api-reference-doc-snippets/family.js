@@ -15,9 +15,9 @@
 const snippets = {
   createColmFamily: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_create_family]
-    const {BigtableTableAdminClient, GCRuleMaker} =
-      require('@google-cloud/bigtable').v2;
-    const adminClient = new BigtableTableAdminClient();
+    const {TableAdminClient, GCRuleMaker} =
+      require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
     const projectId = await adminClient.getProjectId();
 
     const request = {
@@ -43,8 +43,8 @@ const snippets = {
   },
   existsFamily: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_exists_family]
-    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-    const adminClient = new BigtableTableAdminClient();
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
     const projectId = await adminClient.getProjectId();
 
     const request = {
@@ -67,8 +67,8 @@ const snippets = {
   },
   getFamily: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_get_family]
-    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-    const adminClient = new BigtableTableAdminClient();
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
     const projectId = await adminClient.getProjectId();
 
     const request = {
@@ -90,8 +90,8 @@ const snippets = {
   },
   getMetadata: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_get_family_meta]
-    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-    const adminClient = new BigtableTableAdminClient();
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
     const projectId = await adminClient.getProjectId();
 
     const request = {
@@ -113,9 +113,9 @@ const snippets = {
   },
   setMetadata: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_set_family_meta]
-    const {BigtableTableAdminClient, GCRuleMaker} =
-      require('@google-cloud/bigtable').v2;
-    const adminClient = new BigtableTableAdminClient();
+    const {TableAdminClient, GCRuleMaker} =
+      require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
     const projectId = await adminClient.getProjectId();
 
     const rule = {
@@ -147,8 +147,8 @@ const snippets = {
   },
   delFamily: async (instanceId, tableId, familyId) => {
     // [START bigtable_api_del_family]
-    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-    const adminClient = new BigtableTableAdminClient();
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
     const projectId = await adminClient.getProjectId();
 
     const request = {

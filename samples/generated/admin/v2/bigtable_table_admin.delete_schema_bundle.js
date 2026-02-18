@@ -42,10 +42,10 @@ function main(name) {
   // const etag = 'abc123'
 
   // Imports the Admin library
-  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').admin.v2;
+  const {TableAdminClient} = require('@google-cloud/bigtable').admin;
 
   // Instantiates a client
-  const adminClient = new BigtableTableAdminClient();
+  const adminClient = new TableAdminClient();
 
   async function callDeleteSchemaBundle() {
     // Construct request
