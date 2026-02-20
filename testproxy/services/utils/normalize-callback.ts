@@ -18,7 +18,7 @@ import {callbackify} from 'node:util';
 import {ClientImpl} from './client-map';
 
 export const normalizeCallback = <RequestType, ResponseType>(
-  fn: ClientImpl<RequestType, ResponseType>
+  fn: ClientImpl<RequestType, ResponseType>,
 ): grpc.handleUnaryCall<RequestType, ResponseType> =>
   callbackify(async (call: grpc.ServerUnaryCall<RequestType, ResponseType>) => {
     let res;

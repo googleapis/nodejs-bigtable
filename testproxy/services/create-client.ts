@@ -19,7 +19,9 @@ import * as grpc from '@grpc/grpc-js';
 import {Bigtable} from '../../src';
 import {createBigtableClient} from './utils/bigtable-client';
 
-function durationToMilliseconds(duration: google.protobuf.Duration | google.protobuf.IDuration) {
+function durationToMilliseconds(
+  duration: google.protobuf.Duration | google.protobuf.IDuration,
+) {
   const secondsInMs = parseInt(duration.seconds as string, 10) * 1000;
   const nanosInMs = duration.nanos! / 1000000;
   return secondsInMs + nanosInMs;
