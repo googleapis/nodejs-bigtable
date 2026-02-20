@@ -28,7 +28,8 @@ export type ClientImpl<RequestType, ResponseType> = (
 ) => Promise<ResponseType>;
 
 export type ClientImplCallback<RequestType, ResponseType> = (
-  rawRequest: WrappedRequest<RequestType>, response: (error: Error | null, response: ResponseType | null) => void,
+  rawRequest: WrappedRequest<RequestType>,
+  response: (error: Error | null, response: ResponseType | null) => void,
 ) => void;
 
 export interface ClientImplMaker<RequestType, ResponseType> {
