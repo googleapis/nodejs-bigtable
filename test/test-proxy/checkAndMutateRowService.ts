@@ -17,9 +17,9 @@ import * as assert from 'assert';
 import {describe} from 'mocha';
 import {protos} from '../../src';
 import {BigtableClient} from '../../src/v2';
-import type {Callback, CallOptions, ServiceError} from 'google-gax';
-const checkAndMutateRowService = require('../../../testproxy/services/check-and-mutate-row.js');
-const createClient = require('../../../testproxy/services/create-client.js');
+import type {Callback, CallOptions} from 'google-gax';
+import {checkAndMutateRow} from '../../testproxy/services/check-and-mutate-row';
+import {createClient} from '../../testproxy/services/create-client';
 
 describe('TestProxy/CheckAndMutateRow', () => {
   const testCases: protos.google.bigtable.v2.ICheckAndMutateRowRequest[] = [
@@ -109,7 +109,7 @@ describe('TestProxy/CheckAndMutateRow', () => {
                   appProfileId: '',
                 },
               },
-              (error: ServiceError, response: {}) => {
+              (error: Error | null, response: {} | null) => {
                 if (error) {
                   reject(error);
                 }
@@ -161,14 +161,14 @@ describe('TestProxy/CheckAndMutateRow', () => {
             };
           }
           await new Promise((resolve, reject) => {
-            checkAndMutateRowService({clientMap})(
+            checkAndMutateRow({clientMap})(
               {
                 request: {
                   clientId,
                   request: checkAndMutateRowRequest,
                 },
               },
-              (error: ServiceError, response: {}) => {
+              (error: Error | null, response: {} | null) => {
                 if (error) {
                   reject(error);
                 }

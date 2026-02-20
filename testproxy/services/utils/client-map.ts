@@ -19,15 +19,23 @@ export interface ServiceHandlerParams {
   clientMap: ClientMap;
 }
 
+export interface WrappedRequest<RequestType> {
+  request: RequestType;
+}
+
 export type ClientImpl<RequestType, ResponseType> = (
-  call: grpc.ServerUnaryCall<RequestType, ResponseType>,
+  rawRequest: WrappedRequest<RequestType>,
 ) => Promise<ResponseType>;
+
+export type ClientImplCallback<RequestType, ResponseType> = (
+  rawRequest: WrappedRequest<RequestType>, response: (error: Error | null, response: ResponseType | null) => void,
+) => void;
 
 export interface ClientImplMaker<RequestType, ResponseType> {
   // The maker returns a gRPC handler function
   (
     handlerParams: ServiceHandlerParams,
-  ): grpc.handleUnaryCall<RequestType, ResponseType>;
+  ): ClientImplCallback<RequestType, ResponseType>;
 }
 
 export class ClientMap extends Map<string, Bigtable> {

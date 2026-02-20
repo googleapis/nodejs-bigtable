@@ -18,8 +18,8 @@ import {describe} from 'mocha';
 import {protos} from '../../src';
 import {BigtableClient} from '../../src/v2';
 import type {Callback, CallOptions} from 'google-gax';
-const readModifyWriteRowService = require('../../../testproxy/services/read-modify-write-row.js');
-const createClient = require('../../../testproxy/services/create-client.js');
+import {readModifyWriteRow} from '../../testproxy/services/read-modify-write-row';
+import {createClient} from '../../testproxy/services/create-client';
 
 describe('TestProxy/ReadModifyWriteRow', () => {
   const testCases: protos.google.bigtable.v2.IReadModifyWriteRowRequest[] = [
@@ -109,7 +109,7 @@ describe('TestProxy/ReadModifyWriteRow', () => {
               resolve([response, {}, undefined]);
             });
           };
-          const readModifyWriteRowFunction = readModifyWriteRowService({
+          const readModifyWriteRowFunction = readModifyWriteRow({
             clientMap,
           });
           await new Promise((resolve, reject) => {

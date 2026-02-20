@@ -15,15 +15,15 @@
 import * as grpc from '@grpc/grpc-js';
 
 import {callbackify} from 'node:util';
-import {ClientImpl} from './client-map';
+import {ClientImpl, ClientImplCallback, WrappedRequest} from './client-map';
 
 export const normalizeCallback = <RequestType, ResponseType>(
   fn: ClientImpl<RequestType, ResponseType>,
-): grpc.handleUnaryCall<RequestType, ResponseType> =>
-  callbackify(async (call: grpc.ServerUnaryCall<RequestType, ResponseType>) => {
-    let res;
+): ClientImplCallback<RequestType, ResponseType> =>
+  callbackify(async (rawRequest: WrappedRequest<RequestType>) => {
+    let res: ResponseType;
     try {
-      res = await fn(call);
+      res = await fn(rawRequest);
     } catch (err) {
       const e = err as Error;
 
@@ -41,4 +41,4 @@ export const normalizeCallback = <RequestType, ResponseType>(
       );
     }
     return res;
-  }) as unknown as grpc.handleUnaryCall<RequestType, ResponseType>;
+  });
