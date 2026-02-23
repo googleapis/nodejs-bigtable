@@ -1233,7 +1233,10 @@ describe('Bigtable/Table', () => {
       stream.on('error', (error: ServiceError) => {
         if (!timeoutReceived) {
           assert.strictEqual(error.code, 4);
-          assert.strictEqual(error.message, 'Total timeout of 2000ms exceeded.');
+          assert.strictEqual(
+            error.message,
+            'Total timeout of 2000ms exceeded.',
+          );
           assert.strictEqual(requestSpy.callCount, 1); // Ensures the client has not retried.
           done();
         }
