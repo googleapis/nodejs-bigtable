@@ -1,3 +1,6 @@
+TestMutateRows_Retry_WithRoutingCookie\|
+TestReadRow_Retry_WithRetryInfo\|
+TestReadRow_Retry_WithRoutingCookie\|
 TestReadRow_Retry_WithRetryInfo\|
 TestReadRows_ReverseScans_FeatureFlag_Enabled\|
 TestReadRows_NoRetry_OutOfOrderError_Reverse\|

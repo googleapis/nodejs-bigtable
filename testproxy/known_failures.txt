@@ -1,5 +1,7 @@
 TestMutateRow_Generic_CloseClient\|
-TestMutateRows_Retry_WithRoutingCookie\|
-TestSampleRowKeys_Generic_CloseClient\|
+TestMutateRow_Generic_DeadlineExceeded\|
+TestReadModifyWriteRow_Generic_DeadlineExceeded\|
+TestReadRow_Generic_DeadlineExceeded\|
 TestSampleRowKeys_Generic_Headers\|
 TestSampleRowKeys_NoRetry_NoEmptyKey\|
+TestSampleRowKeys_Generic_CloseClient\|
