@@ -113,6 +113,9 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
 
   metricsEnabled?: boolean;
 
+  /**
+   * Internal only.
+   */
   clientConfig?: gax.ClientConfig;
 }
 
@@ -511,9 +514,9 @@ export class Bigtable {
       options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
     this.customEndpoint = customEndpoint;
 
-    let customEndpointBaseUrl;
-    let customEndpointPort;
-    let sslCreds;
+    let customEndpointBaseUrl: string | undefined;
+    let customEndpointPort = 443;
+    let sslCreds: gaxVendoredGrpc.ChannelCredentials | undefined;
 
     if (customEndpoint) {
       const customEndpointParts = customEndpoint.split(':');
@@ -525,7 +528,7 @@ export class Bigtable {
     const baseOptions = Object.assign({
       libName: 'gccl',
       libVersion: PKG.version,
-      port: customEndpointPort || 443,
+      port: customEndpointPort,
       sslCreds,
       scopes,
       'grpc.keepalive_time_ms': 30000,
