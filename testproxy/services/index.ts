@@ -25,7 +25,7 @@ import {removeClient} from './remove-client';
 import {sampleRowKeys} from './sample-row-keys';
 import {executeQuery} from './execute-query';
 
-import {google} from '../../protos/protos';
+import {google} from '../protos/protos';
 import {handleUnaryCall} from '@grpc/grpc-js';
 type CloudBigtableV2TestProxy =
   google.bigtable.testproxy.CloudBigtableV2TestProxy;

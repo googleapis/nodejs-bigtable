@@ -15,7 +15,7 @@
 import * as grpc from '@grpc/grpc-js';
 import {GoogleError} from 'google-gax';
 
-import {google} from '../../protos/protos';
+import {google} from '../protos/protos';
 type IReadRowsRequest = google.bigtable.testproxy.IReadRowsRequest;
 type IReadRowsRequestV2 = google.bigtable.v2.IReadRowsRequest;
 type IRowsResult = google.bigtable.testproxy.IRowsResult;

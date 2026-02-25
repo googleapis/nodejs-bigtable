@@ -17,7 +17,7 @@ import * as grpc from '@grpc/grpc-js';
 import {ClientImplMaker, getTableInfo, normalizeCallback} from './utils';
 import {createFlatMutationsListWithFnInverse} from './utils/request/createFlatMutationsList';
 import {mutationParseInverse} from './utils/request/mutateInverse';
-import {google} from '../../protos/protos';
+import {google} from '../protos/protos';
 import {RawFilter} from '../../src';
 import {GoogleError} from 'google-gax';
 type ICheckAndMutateRowRequest =

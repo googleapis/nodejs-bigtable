@@ -14,7 +14,7 @@
 
 import * as grpc from '@grpc/grpc-js';
 import {GoogleError} from 'google-gax';
-import {google} from '../../protos/protos';
+import {google} from '../protos/protos';
 type IMutateRowRequest = google.bigtable.testproxy.IMutateRowRequest;
 type IMutateRowResult = google.bigtable.testproxy.IMutateRowResult;
 

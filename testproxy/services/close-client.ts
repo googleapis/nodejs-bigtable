@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {google} from '../../protos/protos';
+import {google} from '../protos/protos';
 import {ClientImplMaker, normalizeCallback} from './utils';
 import {deleteBigtableClient} from './utils/bigtable-client';
 type ICloseClientRequest = google.bigtable.testproxy.ICloseClientRequest;

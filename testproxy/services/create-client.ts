@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {ClientImplMaker, normalizeCallback} from './utils';
-import {google} from '../../protos/protos';
+import {google} from '../protos/protos';
 
 import * as grpc from '@grpc/grpc-js';
 import {Bigtable} from '../../src';

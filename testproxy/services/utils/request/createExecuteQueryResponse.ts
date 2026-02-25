@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as protos from '../../../../protos/protos';
+import * as protos from '../../../protos/protos';
 import {SqlTypes} from '../../../../src';
 import {MetadataConsumer} from '../../../../src/execute-query/metadataconsumer';
 import {

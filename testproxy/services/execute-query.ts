@@ -22,7 +22,7 @@ import {
 import {ClientImplMaker, normalizeCallback} from './utils';
 import {ExecuteQueryOptions} from '../../src/instance';
 
-import {google} from '../../protos/protos';
+import {google} from '../protos/protos';
 type IExecuteQueryRequest = google.bigtable.testproxy.IExecuteQueryRequest;
 type IExecuteQueryResult = google.bigtable.testproxy.IExecuteQueryResult;
 type ExecuteQueryParameters = ExecuteQueryOptions['parameters'];

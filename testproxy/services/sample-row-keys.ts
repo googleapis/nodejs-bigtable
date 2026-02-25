@@ -17,7 +17,7 @@ import {GoogleError} from 'google-gax';
 import {getSRKRequest} from './utils/request/sampleRowKeys';
 import {ClientImplMaker, normalizeCallback} from './utils';
 
-import {google} from '../../protos/protos';
+import {google} from '../protos/protos';
 type ISampleRowKeysRequest = google.bigtable.testproxy.ISampleRowKeysRequest;
 type ISampleRowKeysResult = google.bigtable.testproxy.ISampleRowKeysResult;
 

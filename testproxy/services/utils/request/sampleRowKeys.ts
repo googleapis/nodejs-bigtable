@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as protos from '../../../../protos/protos';
+import * as protos from '../../../protos/protos';
 
 type SRKRequest = protos.google.bigtable.v2.ISampleRowKeysRequest;
 type SRKResponse = protos.google.bigtable.v2.ISampleRowKeysResponse;

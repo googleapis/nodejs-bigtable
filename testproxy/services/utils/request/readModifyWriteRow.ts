@@ -15,7 +15,7 @@
 import {Rule} from '../../../../src/row';
 import {Bytes, Mutation} from '../../../../src/mutation';
 import arrify = require('arrify');
-import * as protos from '../../../../protos/protos';
+import * as protos from '../../../protos/protos';
 
 type RMRWRequest = protos.google.bigtable.v2.IReadModifyWriteRowRequest;
 

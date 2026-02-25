@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {Data, Mutation, Bytes} from '../../../../src/mutation';
-import * as protos from '../../../../protos/protos';
+import * as protos from '../../../protos/protos';
 
 /**
  * Inverts the Mutation.parse function. Reconstructs a Mutation object from its
