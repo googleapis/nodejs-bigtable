@@ -40,6 +40,7 @@ import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
 import {GCRuleMaker} from './gc-rule-maker';
+import * as admin from './admin';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
 import {ClusterUtils} from './utils/cluster';
@@ -486,6 +487,7 @@ export class Bigtable {
   static Instance: Instance;
   static Cluster: Cluster;
   _metricsConfigManager: ClientSideMetricsConfigManager;
+  admin: admin.BigtableAdmin;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -493,8 +495,8 @@ export class Bigtable {
     const scopes: string[] = [];
     const clientClasses = [
       v2.BigtableClient,
-      v2.BigtableInstanceAdminClient,
-      v2.BigtableTableAdminClient,
+      admin.v2.BigtableInstanceAdminClient,
+      admin.v2.BigtableTableAdminClient,
     ];
     for (const clientClass of clientClasses) {
       for (const scope of clientClass.scopes) {
@@ -583,6 +585,7 @@ export class Bigtable {
       BigtableInstanceAdminClient: instanceAdminOptions,
       BigtableTableAdminClient: adminOptions,
     };
+    this.admin = admin.BigtableAdmin.fromBigtable(this);
 
     this.api = {};
     this.auth = new GoogleAuth(Object.assign({}, baseOptions, options));
@@ -1136,12 +1139,14 @@ promisifyAll(Bigtable, {
  */
 
 module.exports = Bigtable;
+module.exports.admin = admin;
 module.exports.v2 = v2;
 module.exports.Bigtable = Bigtable;
 module.exports.SqlTypes = SqlTypes;
 module.exports.GCRuleMaker = GCRuleMaker;
 
 export {v2};
+export {admin};
 export {protos};
 export {
   AppProfile,

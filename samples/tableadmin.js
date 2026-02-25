@@ -13,9 +13,10 @@
 // limitations under the License.
 
 // Imports the Google Cloud client library
-const {Bigtable, GCRuleMaker} = require('@google-cloud/bigtable');
-const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-const adminClient = new BigtableTableAdminClient();
+const {Bigtable} = require('@google-cloud/bigtable');
+const {TableAdminClient, GcRuleBuilder} =
+  require('@google-cloud/bigtable').admin;
+const adminClient = new TableAdminClient();
 
 async function runTableOperations(instanceID, tableID) {
   const bigtable = new Bigtable();
@@ -86,22 +87,20 @@ async function runTableOperations(instanceID, tableID) {
   // where age = current time minus cell timestamp
 
   // Define the GC rule to retain data with max age of 5 days
-  const maxAgeRule = {
-    rule: {
-      maxAge: {
-        // Value must be atleast 1 millisecond
-        seconds: 60 * 60 * 24 * 5,
-        nanos: 0,
-      },
+  const maxAgeRule = GcRuleBuilder.rule({
+    maxAge: {
+      // Value must be atleast 1 millisecond
+      seconds: 60 * 60 * 24 * 5,
+      nanos: 0,
     },
-  };
+  });
   let [family] = await adminClient.modifyColumnFamilies({
     name: table.name,
     modifications: [
       {
         id: 'cf1',
         create: {
-          gcRule: GCRuleMaker.makeRule(maxAgeRule),
+          gcRule: maxAgeRule,
         },
       },
     ],
@@ -116,11 +115,9 @@ async function runTableOperations(instanceID, tableID) {
   // where 1 = most recent version
 
   // Define the GC policy to retain only the most recent 2 versions
-  const maxVersionsRule = {
-    rule: {
-      maxVersions: 2,
-    },
-  };
+  const maxVersionsRule = GcRuleBuilder.rule({
+    maxVersions: 2,
+  });
 
   // Create a column family with given GC rule
   [family] = await adminClient.modifyColumnFamilies({
@@ -129,7 +126,7 @@ async function runTableOperations(instanceID, tableID) {
       {
         id: 'cf2',
         create: {
-          gcRule: GCRuleMaker.makeRule(maxVersionsRule),
+          gcRule: maxVersionsRule,
         },
       },
     ],
@@ -143,14 +140,17 @@ async function runTableOperations(instanceID, tableID) {
   // Create a column family with GC policy to drop data that matches at least one condition.
 
   // Define a GC rule to drop cells older than 5 days or not the most recent version
-  const unionRule = {
-    ruleType: 'union',
-    maxVersions: 1,
-    maxAge: {
-      seconds: 60 * 60 * 24 * 5,
-      nanos: 0,
-    },
-  };
+  const unionRule = GcRuleBuilder.union(
+    GcRuleBuilder.rule({
+      maxVersions: 1,
+    }),
+    GcRuleBuilder.rule({
+      maxAge: {
+        seconds: 60 * 60 * 24 * 5,
+        nanos: 0,
+      },
+    }),
+  );
 
   [family] = await adminClient.modifyColumnFamilies({
     name: table.name,
@@ -158,7 +158,7 @@ async function runTableOperations(instanceID, tableID) {
       {
         id: 'cf3',
         create: {
-          gcRule: GCRuleMaker.makeRule(unionRule),
+          gcRule: unionRule,
         },
       },
     ],
@@ -172,21 +172,24 @@ async function runTableOperations(instanceID, tableID) {
   // Create a column family with GC policy to drop data that matches all conditions
 
   // GC rule: Drop cells older than 5 days AND older than the most recent 2 versions
-  const intersectionRule = {
-    ruleType: 'intersection',
-    maxVersions: 2,
-    maxAge: {
-      seconds: 60 * 60 * 24 * 5,
-      nanos: 0,
-    },
-  };
+  const intersectionRule = GcRuleBuilder.intersection(
+    GcRuleBuilder.rule({
+      maxVersions: 2,
+    }),
+    GcRuleBuilder.rule({
+      maxAge: {
+        seconds: 60 * 60 * 24 * 5,
+        nanos: 0,
+      },
+    }),
+  );
   [family] = await adminClient.modifyColumnFamilies({
     name: table.name,
     modifications: [
       {
         id: 'cf4',
         create: {
-          gcRule: GCRuleMaker.makeRule(intersectionRule),
+          gcRule: intersectionRule,
         },
       },
     ],
@@ -201,19 +204,23 @@ async function runTableOperations(instanceID, tableID) {
   // Drop cells that are either older than the 10 recent versions
   // OR
   // Drop cells that are older than a month AND older than the 2 recent versions
-  const nestedRule = {
-    ruleType: 'union',
-    maxVersions: 10,
-    rule: {
-      ruleType: 'intersection',
-      maxVersions: 2,
-      maxAge: {
-        // one month
-        seconds: 60 * 60 * 24 * 30,
-        nanos: 0,
-      },
-    },
-  };
+  const nestedRule = GcRuleBuilder.union(
+    GcRuleBuilder.rule({
+      maxVersions: 10,
+    }),
+    GcRuleBuilder.intersection(
+      GcRuleBuilder.rule({
+        maxVersions: 2,
+      }),
+      GcRuleBuilder.rule({
+        maxAge: {
+          // one month
+          seconds: 60 * 60 * 24 * 30,
+          nanos: 0,
+        },
+      }),
+    ),
+  );
 
   [family] = await adminClient.modifyColumnFamilies({
     name: table.name,
@@ -221,7 +228,7 @@ async function runTableOperations(instanceID, tableID) {
       {
         id: 'cf5',
         create: {
-          gcRule: GCRuleMaker.makeRule(nestedRule),
+          gcRule: nestedRule,
         },
       },
     ],
@@ -255,11 +262,9 @@ async function runTableOperations(instanceID, tableID) {
   // Update the column family metadata to update the GC rule
 
   // Update a column family GC rule
-  const updatedMetadata = {
-    rule: {
-      versions: 1,
-    },
-  };
+  const updatedMetadata = GcRuleBuilder.rule({
+    maxNumVersions: 1,
+  });
 
   const [apiResponse] = await adminClient.modifyColumnFamilies({
     name: table.name,
@@ -267,7 +272,7 @@ async function runTableOperations(instanceID, tableID) {
       {
         id: 'cf1',
         update: {
-          gcRule: GCRuleMaker.makeRule(updatedMetadata.rule),
+          gcRule: updatedMetadata,
         },
       },
     ],

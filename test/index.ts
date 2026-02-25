@@ -1138,7 +1138,7 @@ describe('Bigtable', () => {
             });
           });
 
-          it('should emit resmonse from GAX stream', done => {
+          it('should emit response from GAX stream', done => {
             const response = {};
             const requestStream = bigtable.request(config);
             requestStream.emit('reading');

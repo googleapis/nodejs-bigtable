@@ -253,7 +253,7 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
       attemptCompleteData.metricsCollectorData.method,
       MethodName.READ_MODIFY_WRITE_ROW,
     );
-    assert.strictEqual(attemptCompleteData.status, '0');
+    assert.strictEqual(attemptCompleteData.status, 'OK');
     assert.strictEqual(
       attemptCompleteData.metricsCollectorData.table,
       TABLE_ID,
@@ -276,7 +276,7 @@ describe('Bigtable/ReadModifyWriteRowInterceptorMetrics', () => {
       operationCompleteData.metricsCollectorData.method,
       MethodName.READ_MODIFY_WRITE_ROW,
     );
-    assert.strictEqual(operationCompleteData.status, '0');
+    assert.strictEqual(operationCompleteData.status, 'OK');
     assert.strictEqual(
       operationCompleteData.metricsCollectorData.table,
       TABLE_ID,

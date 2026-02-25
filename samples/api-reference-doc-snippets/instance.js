@@ -15,8 +15,8 @@
 const snippets = {
   createInstance: async (instanceId, clusterId) => {
     // [START bigtable_api_create_instance]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const options = {
@@ -46,8 +46,8 @@ const snippets = {
 
   createCluster: async (instanceId, clusterId) => {
     // [START bigtable_api_create_cluster]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const options = {
@@ -74,8 +74,8 @@ const snippets = {
 
   createAppProfile: async (instanceId, clusterId, appProfileId, callback) => {
     // [START bigtable_api_create_app_profile]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const appProfile = {
@@ -101,8 +101,8 @@ const snippets = {
 
   createTable: async (instanceId, tableId) => {
     // [START bigtable_api_create_table]
-    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-    const adminClient = new BigtableTableAdminClient();
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const adminClient = new TableAdminClient();
     const projectId = await adminClient.getProjectId();
 
     const request = {
@@ -159,8 +159,8 @@ const snippets = {
 
   existsInstance: async instanceId => {
     // [START bigtable_api_exists_instance]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
@@ -183,8 +183,8 @@ const snippets = {
 
   getInstance: async instanceId => {
     // [START bigtable_api_get_instance]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
@@ -205,8 +205,8 @@ const snippets = {
 
   getClusters: async instanceId => {
     // [START bigtable_api_get_clusters]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
@@ -226,8 +226,8 @@ const snippets = {
 
   getIamPolicy: async instanceId => {
     // [START bigtable_api_get_instance_Iam_policy]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
@@ -247,8 +247,8 @@ const snippets = {
 
   setIamPolicy: async instanceId => {
     // [START bigtable_api_set_instance_Iam_policy]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const policy = {
@@ -278,8 +278,8 @@ const snippets = {
 
   testIamPermissions: async instanceId => {
     // [START bigtable_api_test_instance_Iam_permissions]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
@@ -300,8 +300,8 @@ const snippets = {
 
   getAppProfiles: async instanceId => {
     // [START bigtable_api_get_app_profiles]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
@@ -321,8 +321,8 @@ const snippets = {
 
   getMetadata: async instanceId => {
     // [START bigtable_api_get_instance_metadata]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
@@ -342,8 +342,8 @@ const snippets = {
 
   getTables: async instanceId => {
     // [START bigtable_api_get_tables]
-    const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
-    const tableAdminClient = new BigtableTableAdminClient();
+    const {TableAdminClient} = require('@google-cloud/bigtable').admin;
+    const tableAdminClient = new TableAdminClient();
     const projectId = await tableAdminClient.getProjectId();
 
     // To control how many API requests are made and page through the results
@@ -369,8 +369,8 @@ const snippets = {
 
   updateInstance: async instanceId => {
     // [START bigtable_api_set_meta_data]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {
@@ -396,8 +396,8 @@ const snippets = {
 
   delInstance: async instanceId => {
     // [START bigtable_api_del_instance]
-    const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
-    const instanceAdminClient = new BigtableInstanceAdminClient();
+    const {InstanceAdminClient} = require('@google-cloud/bigtable').admin;
+    const instanceAdminClient = new InstanceAdminClient();
     const projectId = await instanceAdminClient.getProjectId();
 
     const request = {

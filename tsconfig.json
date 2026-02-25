@@ -18,8 +18,8 @@
     "testproxy/*.ts",
     "testproxy/**/*.ts",
     "src/v2/bigtable_client_config.json",
-    "src/v2/bigtable_table_admin_client_config.json",
-    "src/v2/bigtable_instance_admin_client_config.json",
+    "src/admin/v2/bigtable_table_admin_client_config.json",
+    "src/admin/v2/bigtable_instance_admin_client_config.json",
     "test-common/*.ts",
     "test-common/**/*.ts",
     "protos/protos.json"
