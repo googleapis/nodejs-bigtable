@@ -33,3 +33,14 @@ export function getBigtableClient(bigtable: Bigtable) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (bigtable as any)[v2];
 }
+
+export async function deleteBigtableClient(bigtable: Bigtable) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const bigtableAny = bigtable as any;
+
+  const bigtableClient = bigtableAny[v2];
+  if (bigtableClient) {
+    await bigtableClient.close();
+    delete bigtableAny[v2];
+  }
+}
