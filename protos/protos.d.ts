@@ -31021,6 +31021,2752 @@ export namespace google {
                 public static getTypeUrl(typeUrlPrefix?: string): string;
             }
         }
+
+        /** Namespace testproxy. */
+        namespace testproxy {
+
+            /** OptionalFeatureConfig enum. */
+            enum OptionalFeatureConfig {
+                OPTIONAL_FEATURE_CONFIG_DEFAULT = 0,
+                OPTIONAL_FEATURE_CONFIG_ENABLE_ALL = 1
+            }
+
+            /** Properties of a CreateClientRequest. */
+            interface ICreateClientRequest {
+
+                /** CreateClientRequest clientId */
+                clientId?: (string|null);
+
+                /** CreateClientRequest dataTarget */
+                dataTarget?: (string|null);
+
+                /** CreateClientRequest projectId */
+                projectId?: (string|null);
+
+                /** CreateClientRequest instanceId */
+                instanceId?: (string|null);
+
+                /** CreateClientRequest appProfileId */
+                appProfileId?: (string|null);
+
+                /** CreateClientRequest perOperationTimeout */
+                perOperationTimeout?: (google.protobuf.IDuration|null);
+
+                /** CreateClientRequest optionalFeatureConfig */
+                optionalFeatureConfig?: (google.bigtable.testproxy.OptionalFeatureConfig|keyof typeof google.bigtable.testproxy.OptionalFeatureConfig|null);
+
+                /** CreateClientRequest securityOptions */
+                securityOptions?: (google.bigtable.testproxy.CreateClientRequest.ISecurityOptions|null);
+            }
+
+            /** Represents a CreateClientRequest. */
+            class CreateClientRequest implements ICreateClientRequest {
+
+                /**
+                 * Constructs a new CreateClientRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.ICreateClientRequest);
+
+                /** CreateClientRequest clientId. */
+                public clientId: string;
+
+                /** CreateClientRequest dataTarget. */
+                public dataTarget: string;
+
+                /** CreateClientRequest projectId. */
+                public projectId: string;
+
+                /** CreateClientRequest instanceId. */
+                public instanceId: string;
+
+                /** CreateClientRequest appProfileId. */
+                public appProfileId: string;
+
+                /** CreateClientRequest perOperationTimeout. */
+                public perOperationTimeout?: (google.protobuf.IDuration|null);
+
+                /** CreateClientRequest optionalFeatureConfig. */
+                public optionalFeatureConfig: (google.bigtable.testproxy.OptionalFeatureConfig|keyof typeof google.bigtable.testproxy.OptionalFeatureConfig);
+
+                /** CreateClientRequest securityOptions. */
+                public securityOptions?: (google.bigtable.testproxy.CreateClientRequest.ISecurityOptions|null);
+
+                /**
+                 * Creates a new CreateClientRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns CreateClientRequest instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.ICreateClientRequest): google.bigtable.testproxy.CreateClientRequest;
+
+                /**
+                 * Encodes the specified CreateClientRequest message. Does not implicitly {@link google.bigtable.testproxy.CreateClientRequest.verify|verify} messages.
+                 * @param message CreateClientRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.ICreateClientRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified CreateClientRequest message, length delimited. Does not implicitly {@link google.bigtable.testproxy.CreateClientRequest.verify|verify} messages.
+                 * @param message CreateClientRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.ICreateClientRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a CreateClientRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns CreateClientRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.CreateClientRequest;
+
+                /**
+                 * Decodes a CreateClientRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns CreateClientRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.CreateClientRequest;
+
+                /**
+                 * Verifies a CreateClientRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a CreateClientRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns CreateClientRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.CreateClientRequest;
+
+                /**
+                 * Creates a plain object from a CreateClientRequest message. Also converts values to other types if specified.
+                 * @param message CreateClientRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.CreateClientRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this CreateClientRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for CreateClientRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            namespace CreateClientRequest {
+
+                /** Properties of a SecurityOptions. */
+                interface ISecurityOptions {
+
+                    /** SecurityOptions accessToken */
+                    accessToken?: (string|null);
+
+                    /** SecurityOptions useSsl */
+                    useSsl?: (boolean|null);
+
+                    /** SecurityOptions sslEndpointOverride */
+                    sslEndpointOverride?: (string|null);
+
+                    /** SecurityOptions sslRootCertsPem */
+                    sslRootCertsPem?: (string|null);
+                }
+
+                /** Represents a SecurityOptions. */
+                class SecurityOptions implements ISecurityOptions {
+
+                    /**
+                     * Constructs a new SecurityOptions.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.testproxy.CreateClientRequest.ISecurityOptions);
+
+                    /** SecurityOptions accessToken. */
+                    public accessToken: string;
+
+                    /** SecurityOptions useSsl. */
+                    public useSsl: boolean;
+
+                    /** SecurityOptions sslEndpointOverride. */
+                    public sslEndpointOverride: string;
+
+                    /** SecurityOptions sslRootCertsPem. */
+                    public sslRootCertsPem: string;
+
+                    /**
+                     * Creates a new SecurityOptions instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns SecurityOptions instance
+                     */
+                    public static create(properties?: google.bigtable.testproxy.CreateClientRequest.ISecurityOptions): google.bigtable.testproxy.CreateClientRequest.SecurityOptions;
+
+                    /**
+                     * Encodes the specified SecurityOptions message. Does not implicitly {@link google.bigtable.testproxy.CreateClientRequest.SecurityOptions.verify|verify} messages.
+                     * @param message SecurityOptions message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.testproxy.CreateClientRequest.ISecurityOptions, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified SecurityOptions message, length delimited. Does not implicitly {@link google.bigtable.testproxy.CreateClientRequest.SecurityOptions.verify|verify} messages.
+                     * @param message SecurityOptions message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.testproxy.CreateClientRequest.ISecurityOptions, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a SecurityOptions message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns SecurityOptions
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.CreateClientRequest.SecurityOptions;
+
+                    /**
+                     * Decodes a SecurityOptions message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns SecurityOptions
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.CreateClientRequest.SecurityOptions;
+
+                    /**
+                     * Verifies a SecurityOptions message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a SecurityOptions message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns SecurityOptions
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.CreateClientRequest.SecurityOptions;
+
+                    /**
+                     * Creates a plain object from a SecurityOptions message. Also converts values to other types if specified.
+                     * @param message SecurityOptions
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.testproxy.CreateClientRequest.SecurityOptions, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this SecurityOptions to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for SecurityOptions
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+            }
+
+            /** Properties of a CreateClientResponse. */
+            interface ICreateClientResponse {
+            }
+
+            /** Represents a CreateClientResponse. */
+            class CreateClientResponse implements ICreateClientResponse {
+
+                /**
+                 * Constructs a new CreateClientResponse.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.ICreateClientResponse);
+
+                /**
+                 * Creates a new CreateClientResponse instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns CreateClientResponse instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.ICreateClientResponse): google.bigtable.testproxy.CreateClientResponse;
+
+                /**
+                 * Encodes the specified CreateClientResponse message. Does not implicitly {@link google.bigtable.testproxy.CreateClientResponse.verify|verify} messages.
+                 * @param message CreateClientResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.ICreateClientResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified CreateClientResponse message, length delimited. Does not implicitly {@link google.bigtable.testproxy.CreateClientResponse.verify|verify} messages.
+                 * @param message CreateClientResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.ICreateClientResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a CreateClientResponse message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns CreateClientResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.CreateClientResponse;
+
+                /**
+                 * Decodes a CreateClientResponse message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns CreateClientResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.CreateClientResponse;
+
+                /**
+                 * Verifies a CreateClientResponse message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a CreateClientResponse message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns CreateClientResponse
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.CreateClientResponse;
+
+                /**
+                 * Creates a plain object from a CreateClientResponse message. Also converts values to other types if specified.
+                 * @param message CreateClientResponse
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.CreateClientResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this CreateClientResponse to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for CreateClientResponse
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a CloseClientRequest. */
+            interface ICloseClientRequest {
+
+                /** CloseClientRequest clientId */
+                clientId?: (string|null);
+            }
+
+            /** Represents a CloseClientRequest. */
+            class CloseClientRequest implements ICloseClientRequest {
+
+                /**
+                 * Constructs a new CloseClientRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.ICloseClientRequest);
+
+                /** CloseClientRequest clientId. */
+                public clientId: string;
+
+                /**
+                 * Creates a new CloseClientRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns CloseClientRequest instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.ICloseClientRequest): google.bigtable.testproxy.CloseClientRequest;
+
+                /**
+                 * Encodes the specified CloseClientRequest message. Does not implicitly {@link google.bigtable.testproxy.CloseClientRequest.verify|verify} messages.
+                 * @param message CloseClientRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.ICloseClientRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified CloseClientRequest message, length delimited. Does not implicitly {@link google.bigtable.testproxy.CloseClientRequest.verify|verify} messages.
+                 * @param message CloseClientRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.ICloseClientRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a CloseClientRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns CloseClientRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.CloseClientRequest;
+
+                /**
+                 * Decodes a CloseClientRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns CloseClientRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.CloseClientRequest;
+
+                /**
+                 * Verifies a CloseClientRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a CloseClientRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns CloseClientRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.CloseClientRequest;
+
+                /**
+                 * Creates a plain object from a CloseClientRequest message. Also converts values to other types if specified.
+                 * @param message CloseClientRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.CloseClientRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this CloseClientRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for CloseClientRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a CloseClientResponse. */
+            interface ICloseClientResponse {
+            }
+
+            /** Represents a CloseClientResponse. */
+            class CloseClientResponse implements ICloseClientResponse {
+
+                /**
+                 * Constructs a new CloseClientResponse.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.ICloseClientResponse);
+
+                /**
+                 * Creates a new CloseClientResponse instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns CloseClientResponse instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.ICloseClientResponse): google.bigtable.testproxy.CloseClientResponse;
+
+                /**
+                 * Encodes the specified CloseClientResponse message. Does not implicitly {@link google.bigtable.testproxy.CloseClientResponse.verify|verify} messages.
+                 * @param message CloseClientResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.ICloseClientResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified CloseClientResponse message, length delimited. Does not implicitly {@link google.bigtable.testproxy.CloseClientResponse.verify|verify} messages.
+                 * @param message CloseClientResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.ICloseClientResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a CloseClientResponse message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns CloseClientResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.CloseClientResponse;
+
+                /**
+                 * Decodes a CloseClientResponse message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns CloseClientResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.CloseClientResponse;
+
+                /**
+                 * Verifies a CloseClientResponse message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a CloseClientResponse message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns CloseClientResponse
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.CloseClientResponse;
+
+                /**
+                 * Creates a plain object from a CloseClientResponse message. Also converts values to other types if specified.
+                 * @param message CloseClientResponse
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.CloseClientResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this CloseClientResponse to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for CloseClientResponse
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a RemoveClientRequest. */
+            interface IRemoveClientRequest {
+
+                /** RemoveClientRequest clientId */
+                clientId?: (string|null);
+            }
+
+            /** Represents a RemoveClientRequest. */
+            class RemoveClientRequest implements IRemoveClientRequest {
+
+                /**
+                 * Constructs a new RemoveClientRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IRemoveClientRequest);
+
+                /** RemoveClientRequest clientId. */
+                public clientId: string;
+
+                /**
+                 * Creates a new RemoveClientRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns RemoveClientRequest instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IRemoveClientRequest): google.bigtable.testproxy.RemoveClientRequest;
+
+                /**
+                 * Encodes the specified RemoveClientRequest message. Does not implicitly {@link google.bigtable.testproxy.RemoveClientRequest.verify|verify} messages.
+                 * @param message RemoveClientRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IRemoveClientRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified RemoveClientRequest message, length delimited. Does not implicitly {@link google.bigtable.testproxy.RemoveClientRequest.verify|verify} messages.
+                 * @param message RemoveClientRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IRemoveClientRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a RemoveClientRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns RemoveClientRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.RemoveClientRequest;
+
+                /**
+                 * Decodes a RemoveClientRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns RemoveClientRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.RemoveClientRequest;
+
+                /**
+                 * Verifies a RemoveClientRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a RemoveClientRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns RemoveClientRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.RemoveClientRequest;
+
+                /**
+                 * Creates a plain object from a RemoveClientRequest message. Also converts values to other types if specified.
+                 * @param message RemoveClientRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.RemoveClientRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this RemoveClientRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for RemoveClientRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a RemoveClientResponse. */
+            interface IRemoveClientResponse {
+            }
+
+            /** Represents a RemoveClientResponse. */
+            class RemoveClientResponse implements IRemoveClientResponse {
+
+                /**
+                 * Constructs a new RemoveClientResponse.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IRemoveClientResponse);
+
+                /**
+                 * Creates a new RemoveClientResponse instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns RemoveClientResponse instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IRemoveClientResponse): google.bigtable.testproxy.RemoveClientResponse;
+
+                /**
+                 * Encodes the specified RemoveClientResponse message. Does not implicitly {@link google.bigtable.testproxy.RemoveClientResponse.verify|verify} messages.
+                 * @param message RemoveClientResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IRemoveClientResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified RemoveClientResponse message, length delimited. Does not implicitly {@link google.bigtable.testproxy.RemoveClientResponse.verify|verify} messages.
+                 * @param message RemoveClientResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IRemoveClientResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a RemoveClientResponse message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns RemoveClientResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.RemoveClientResponse;
+
+                /**
+                 * Decodes a RemoveClientResponse message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns RemoveClientResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.RemoveClientResponse;
+
+                /**
+                 * Verifies a RemoveClientResponse message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a RemoveClientResponse message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns RemoveClientResponse
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.RemoveClientResponse;
+
+                /**
+                 * Creates a plain object from a RemoveClientResponse message. Also converts values to other types if specified.
+                 * @param message RemoveClientResponse
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.RemoveClientResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this RemoveClientResponse to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for RemoveClientResponse
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a ReadRowRequest. */
+            interface IReadRowRequest {
+
+                /** ReadRowRequest clientId */
+                clientId?: (string|null);
+
+                /** ReadRowRequest tableName */
+                tableName?: (string|null);
+
+                /** ReadRowRequest rowKey */
+                rowKey?: (string|null);
+
+                /** ReadRowRequest filter */
+                filter?: (google.bigtable.v2.IRowFilter|null);
+            }
+
+            /** Represents a ReadRowRequest. */
+            class ReadRowRequest implements IReadRowRequest {
+
+                /**
+                 * Constructs a new ReadRowRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IReadRowRequest);
+
+                /** ReadRowRequest clientId. */
+                public clientId: string;
+
+                /** ReadRowRequest tableName. */
+                public tableName: string;
+
+                /** ReadRowRequest rowKey. */
+                public rowKey: string;
+
+                /** ReadRowRequest filter. */
+                public filter?: (google.bigtable.v2.IRowFilter|null);
+
+                /**
+                 * Creates a new ReadRowRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns ReadRowRequest instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IReadRowRequest): google.bigtable.testproxy.ReadRowRequest;
+
+                /**
+                 * Encodes the specified ReadRowRequest message. Does not implicitly {@link google.bigtable.testproxy.ReadRowRequest.verify|verify} messages.
+                 * @param message ReadRowRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IReadRowRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified ReadRowRequest message, length delimited. Does not implicitly {@link google.bigtable.testproxy.ReadRowRequest.verify|verify} messages.
+                 * @param message ReadRowRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IReadRowRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a ReadRowRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns ReadRowRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.ReadRowRequest;
+
+                /**
+                 * Decodes a ReadRowRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns ReadRowRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.ReadRowRequest;
+
+                /**
+                 * Verifies a ReadRowRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a ReadRowRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns ReadRowRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.ReadRowRequest;
+
+                /**
+                 * Creates a plain object from a ReadRowRequest message. Also converts values to other types if specified.
+                 * @param message ReadRowRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.ReadRowRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this ReadRowRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for ReadRowRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a RowResult. */
+            interface IRowResult {
+
+                /** RowResult status */
+                status?: (google.rpc.IStatus|null);
+
+                /** RowResult row */
+                row?: (google.bigtable.v2.IRow|null);
+            }
+
+            /** Represents a RowResult. */
+            class RowResult implements IRowResult {
+
+                /**
+                 * Constructs a new RowResult.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IRowResult);
+
+                /** RowResult status. */
+                public status?: (google.rpc.IStatus|null);
+
+                /** RowResult row. */
+                public row?: (google.bigtable.v2.IRow|null);
+
+                /**
+                 * Creates a new RowResult instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns RowResult instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IRowResult): google.bigtable.testproxy.RowResult;
+
+                /**
+                 * Encodes the specified RowResult message. Does not implicitly {@link google.bigtable.testproxy.RowResult.verify|verify} messages.
+                 * @param message RowResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IRowResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified RowResult message, length delimited. Does not implicitly {@link google.bigtable.testproxy.RowResult.verify|verify} messages.
+                 * @param message RowResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IRowResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a RowResult message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns RowResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.RowResult;
+
+                /**
+                 * Decodes a RowResult message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns RowResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.RowResult;
+
+                /**
+                 * Verifies a RowResult message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a RowResult message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns RowResult
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.RowResult;
+
+                /**
+                 * Creates a plain object from a RowResult message. Also converts values to other types if specified.
+                 * @param message RowResult
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.RowResult, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this RowResult to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for RowResult
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a ReadRowsRequest. */
+            interface IReadRowsRequest {
+
+                /** ReadRowsRequest clientId */
+                clientId?: (string|null);
+
+                /** ReadRowsRequest request */
+                request?: (google.bigtable.v2.IReadRowsRequest|null);
+
+                /** ReadRowsRequest cancelAfterRows */
+                cancelAfterRows?: (number|null);
+            }
+
+            /** Represents a ReadRowsRequest. */
+            class ReadRowsRequest implements IReadRowsRequest {
+
+                /**
+                 * Constructs a new ReadRowsRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IReadRowsRequest);
+
+                /** ReadRowsRequest clientId. */
+                public clientId: string;
+
+                /** ReadRowsRequest request. */
+                public request?: (google.bigtable.v2.IReadRowsRequest|null);
+
+                /** ReadRowsRequest cancelAfterRows. */
+                public cancelAfterRows: number;
+
+                /**
+                 * Creates a new ReadRowsRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns ReadRowsRequest instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IReadRowsRequest): google.bigtable.testproxy.ReadRowsRequest;
+
+                /**
+                 * Encodes the specified ReadRowsRequest message. Does not implicitly {@link google.bigtable.testproxy.ReadRowsRequest.verify|verify} messages.
+                 * @param message ReadRowsRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IReadRowsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified ReadRowsRequest message, length delimited. Does not implicitly {@link google.bigtable.testproxy.ReadRowsRequest.verify|verify} messages.
+                 * @param message ReadRowsRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IReadRowsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a ReadRowsRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns ReadRowsRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.ReadRowsRequest;
+
+                /**
+                 * Decodes a ReadRowsRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns ReadRowsRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.ReadRowsRequest;
+
+                /**
+                 * Verifies a ReadRowsRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a ReadRowsRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns ReadRowsRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.ReadRowsRequest;
+
+                /**
+                 * Creates a plain object from a ReadRowsRequest message. Also converts values to other types if specified.
+                 * @param message ReadRowsRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.ReadRowsRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this ReadRowsRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for ReadRowsRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a RowsResult. */
+            interface IRowsResult {
+
+                /** RowsResult status */
+                status?: (google.rpc.IStatus|null);
+
+                /** RowsResult rows */
+                rows?: (google.bigtable.v2.IRow[]|null);
+            }
+
+            /** Represents a RowsResult. */
+            class RowsResult implements IRowsResult {
+
+                /**
+                 * Constructs a new RowsResult.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IRowsResult);
+
+                /** RowsResult status. */
+                public status?: (google.rpc.IStatus|null);
+
+                /** RowsResult rows. */
+                public rows: google.bigtable.v2.IRow[];
+
+                /**
+                 * Creates a new RowsResult instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns RowsResult instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IRowsResult): google.bigtable.testproxy.RowsResult;
+
+                /**
+                 * Encodes the specified RowsResult message. Does not implicitly {@link google.bigtable.testproxy.RowsResult.verify|verify} messages.
+                 * @param message RowsResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IRowsResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified RowsResult message, length delimited. Does not implicitly {@link google.bigtable.testproxy.RowsResult.verify|verify} messages.
+                 * @param message RowsResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IRowsResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a RowsResult message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns RowsResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.RowsResult;
+
+                /**
+                 * Decodes a RowsResult message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns RowsResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.RowsResult;
+
+                /**
+                 * Verifies a RowsResult message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a RowsResult message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns RowsResult
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.RowsResult;
+
+                /**
+                 * Creates a plain object from a RowsResult message. Also converts values to other types if specified.
+                 * @param message RowsResult
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.RowsResult, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this RowsResult to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for RowsResult
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a MutateRowRequest. */
+            interface IMutateRowRequest {
+
+                /** MutateRowRequest clientId */
+                clientId?: (string|null);
+
+                /** MutateRowRequest request */
+                request?: (google.bigtable.v2.IMutateRowRequest|null);
+            }
+
+            /** Represents a MutateRowRequest. */
+            class MutateRowRequest implements IMutateRowRequest {
+
+                /**
+                 * Constructs a new MutateRowRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IMutateRowRequest);
+
+                /** MutateRowRequest clientId. */
+                public clientId: string;
+
+                /** MutateRowRequest request. */
+                public request?: (google.bigtable.v2.IMutateRowRequest|null);
+
+                /**
+                 * Creates a new MutateRowRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns MutateRowRequest instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IMutateRowRequest): google.bigtable.testproxy.MutateRowRequest;
+
+                /**
+                 * Encodes the specified MutateRowRequest message. Does not implicitly {@link google.bigtable.testproxy.MutateRowRequest.verify|verify} messages.
+                 * @param message MutateRowRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IMutateRowRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified MutateRowRequest message, length delimited. Does not implicitly {@link google.bigtable.testproxy.MutateRowRequest.verify|verify} messages.
+                 * @param message MutateRowRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IMutateRowRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a MutateRowRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns MutateRowRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.MutateRowRequest;
+
+                /**
+                 * Decodes a MutateRowRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns MutateRowRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.MutateRowRequest;
+
+                /**
+                 * Verifies a MutateRowRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a MutateRowRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns MutateRowRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.MutateRowRequest;
+
+                /**
+                 * Creates a plain object from a MutateRowRequest message. Also converts values to other types if specified.
+                 * @param message MutateRowRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.MutateRowRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this MutateRowRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for MutateRowRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a MutateRowResult. */
+            interface IMutateRowResult {
+
+                /** MutateRowResult status */
+                status?: (google.rpc.IStatus|null);
+            }
+
+            /** Represents a MutateRowResult. */
+            class MutateRowResult implements IMutateRowResult {
+
+                /**
+                 * Constructs a new MutateRowResult.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IMutateRowResult);
+
+                /** MutateRowResult status. */
+                public status?: (google.rpc.IStatus|null);
+
+                /**
+                 * Creates a new MutateRowResult instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns MutateRowResult instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IMutateRowResult): google.bigtable.testproxy.MutateRowResult;
+
+                /**
+                 * Encodes the specified MutateRowResult message. Does not implicitly {@link google.bigtable.testproxy.MutateRowResult.verify|verify} messages.
+                 * @param message MutateRowResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IMutateRowResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified MutateRowResult message, length delimited. Does not implicitly {@link google.bigtable.testproxy.MutateRowResult.verify|verify} messages.
+                 * @param message MutateRowResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IMutateRowResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a MutateRowResult message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns MutateRowResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.MutateRowResult;
+
+                /**
+                 * Decodes a MutateRowResult message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns MutateRowResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.MutateRowResult;
+
+                /**
+                 * Verifies a MutateRowResult message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a MutateRowResult message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns MutateRowResult
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.MutateRowResult;
+
+                /**
+                 * Creates a plain object from a MutateRowResult message. Also converts values to other types if specified.
+                 * @param message MutateRowResult
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.MutateRowResult, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this MutateRowResult to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for MutateRowResult
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a MutateRowsRequest. */
+            interface IMutateRowsRequest {
+
+                /** MutateRowsRequest clientId */
+                clientId?: (string|null);
+
+                /** MutateRowsRequest request */
+                request?: (google.bigtable.v2.IMutateRowsRequest|null);
+            }
+
+            /** Represents a MutateRowsRequest. */
+            class MutateRowsRequest implements IMutateRowsRequest {
+
+                /**
+                 * Constructs a new MutateRowsRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IMutateRowsRequest);
+
+                /** MutateRowsRequest clientId. */
+                public clientId: string;
+
+                /** MutateRowsRequest request. */
+                public request?: (google.bigtable.v2.IMutateRowsRequest|null);
+
+                /**
+                 * Creates a new MutateRowsRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns MutateRowsRequest instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IMutateRowsRequest): google.bigtable.testproxy.MutateRowsRequest;
+
+                /**
+                 * Encodes the specified MutateRowsRequest message. Does not implicitly {@link google.bigtable.testproxy.MutateRowsRequest.verify|verify} messages.
+                 * @param message MutateRowsRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IMutateRowsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified MutateRowsRequest message, length delimited. Does not implicitly {@link google.bigtable.testproxy.MutateRowsRequest.verify|verify} messages.
+                 * @param message MutateRowsRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IMutateRowsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a MutateRowsRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns MutateRowsRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.MutateRowsRequest;
+
+                /**
+                 * Decodes a MutateRowsRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns MutateRowsRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.MutateRowsRequest;
+
+                /**
+                 * Verifies a MutateRowsRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a MutateRowsRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns MutateRowsRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.MutateRowsRequest;
+
+                /**
+                 * Creates a plain object from a MutateRowsRequest message. Also converts values to other types if specified.
+                 * @param message MutateRowsRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.MutateRowsRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this MutateRowsRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for MutateRowsRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a MutateRowsResult. */
+            interface IMutateRowsResult {
+
+                /** MutateRowsResult status */
+                status?: (google.rpc.IStatus|null);
+
+                /** MutateRowsResult entries */
+                entries?: (google.bigtable.v2.MutateRowsResponse.IEntry[]|null);
+            }
+
+            /** Represents a MutateRowsResult. */
+            class MutateRowsResult implements IMutateRowsResult {
+
+                /**
+                 * Constructs a new MutateRowsResult.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IMutateRowsResult);
+
+                /** MutateRowsResult status. */
+                public status?: (google.rpc.IStatus|null);
+
+                /** MutateRowsResult entries. */
+                public entries: google.bigtable.v2.MutateRowsResponse.IEntry[];
+
+                /**
+                 * Creates a new MutateRowsResult instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns MutateRowsResult instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IMutateRowsResult): google.bigtable.testproxy.MutateRowsResult;
+
+                /**
+                 * Encodes the specified MutateRowsResult message. Does not implicitly {@link google.bigtable.testproxy.MutateRowsResult.verify|verify} messages.
+                 * @param message MutateRowsResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IMutateRowsResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified MutateRowsResult message, length delimited. Does not implicitly {@link google.bigtable.testproxy.MutateRowsResult.verify|verify} messages.
+                 * @param message MutateRowsResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IMutateRowsResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a MutateRowsResult message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns MutateRowsResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.MutateRowsResult;
+
+                /**
+                 * Decodes a MutateRowsResult message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns MutateRowsResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.MutateRowsResult;
+
+                /**
+                 * Verifies a MutateRowsResult message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a MutateRowsResult message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns MutateRowsResult
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.MutateRowsResult;
+
+                /**
+                 * Creates a plain object from a MutateRowsResult message. Also converts values to other types if specified.
+                 * @param message MutateRowsResult
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.MutateRowsResult, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this MutateRowsResult to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for MutateRowsResult
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a CheckAndMutateRowRequest. */
+            interface ICheckAndMutateRowRequest {
+
+                /** CheckAndMutateRowRequest clientId */
+                clientId?: (string|null);
+
+                /** CheckAndMutateRowRequest request */
+                request?: (google.bigtable.v2.ICheckAndMutateRowRequest|null);
+            }
+
+            /** Represents a CheckAndMutateRowRequest. */
+            class CheckAndMutateRowRequest implements ICheckAndMutateRowRequest {
+
+                /**
+                 * Constructs a new CheckAndMutateRowRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.ICheckAndMutateRowRequest);
+
+                /** CheckAndMutateRowRequest clientId. */
+                public clientId: string;
+
+                /** CheckAndMutateRowRequest request. */
+                public request?: (google.bigtable.v2.ICheckAndMutateRowRequest|null);
+
+                /**
+                 * Creates a new CheckAndMutateRowRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns CheckAndMutateRowRequest instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.ICheckAndMutateRowRequest): google.bigtable.testproxy.CheckAndMutateRowRequest;
+
+                /**
+                 * Encodes the specified CheckAndMutateRowRequest message. Does not implicitly {@link google.bigtable.testproxy.CheckAndMutateRowRequest.verify|verify} messages.
+                 * @param message CheckAndMutateRowRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.ICheckAndMutateRowRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified CheckAndMutateRowRequest message, length delimited. Does not implicitly {@link google.bigtable.testproxy.CheckAndMutateRowRequest.verify|verify} messages.
+                 * @param message CheckAndMutateRowRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.ICheckAndMutateRowRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a CheckAndMutateRowRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns CheckAndMutateRowRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.CheckAndMutateRowRequest;
+
+                /**
+                 * Decodes a CheckAndMutateRowRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns CheckAndMutateRowRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.CheckAndMutateRowRequest;
+
+                /**
+                 * Verifies a CheckAndMutateRowRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a CheckAndMutateRowRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns CheckAndMutateRowRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.CheckAndMutateRowRequest;
+
+                /**
+                 * Creates a plain object from a CheckAndMutateRowRequest message. Also converts values to other types if specified.
+                 * @param message CheckAndMutateRowRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.CheckAndMutateRowRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this CheckAndMutateRowRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for CheckAndMutateRowRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a CheckAndMutateRowResult. */
+            interface ICheckAndMutateRowResult {
+
+                /** CheckAndMutateRowResult status */
+                status?: (google.rpc.IStatus|null);
+
+                /** CheckAndMutateRowResult result */
+                result?: (google.bigtable.v2.ICheckAndMutateRowResponse|null);
+            }
+
+            /** Represents a CheckAndMutateRowResult. */
+            class CheckAndMutateRowResult implements ICheckAndMutateRowResult {
+
+                /**
+                 * Constructs a new CheckAndMutateRowResult.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.ICheckAndMutateRowResult);
+
+                /** CheckAndMutateRowResult status. */
+                public status?: (google.rpc.IStatus|null);
+
+                /** CheckAndMutateRowResult result. */
+                public result?: (google.bigtable.v2.ICheckAndMutateRowResponse|null);
+
+                /**
+                 * Creates a new CheckAndMutateRowResult instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns CheckAndMutateRowResult instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.ICheckAndMutateRowResult): google.bigtable.testproxy.CheckAndMutateRowResult;
+
+                /**
+                 * Encodes the specified CheckAndMutateRowResult message. Does not implicitly {@link google.bigtable.testproxy.CheckAndMutateRowResult.verify|verify} messages.
+                 * @param message CheckAndMutateRowResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.ICheckAndMutateRowResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified CheckAndMutateRowResult message, length delimited. Does not implicitly {@link google.bigtable.testproxy.CheckAndMutateRowResult.verify|verify} messages.
+                 * @param message CheckAndMutateRowResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.ICheckAndMutateRowResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a CheckAndMutateRowResult message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns CheckAndMutateRowResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.CheckAndMutateRowResult;
+
+                /**
+                 * Decodes a CheckAndMutateRowResult message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns CheckAndMutateRowResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.CheckAndMutateRowResult;
+
+                /**
+                 * Verifies a CheckAndMutateRowResult message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a CheckAndMutateRowResult message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns CheckAndMutateRowResult
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.CheckAndMutateRowResult;
+
+                /**
+                 * Creates a plain object from a CheckAndMutateRowResult message. Also converts values to other types if specified.
+                 * @param message CheckAndMutateRowResult
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.CheckAndMutateRowResult, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this CheckAndMutateRowResult to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for CheckAndMutateRowResult
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a SampleRowKeysRequest. */
+            interface ISampleRowKeysRequest {
+
+                /** SampleRowKeysRequest clientId */
+                clientId?: (string|null);
+
+                /** SampleRowKeysRequest request */
+                request?: (google.bigtable.v2.ISampleRowKeysRequest|null);
+            }
+
+            /** Represents a SampleRowKeysRequest. */
+            class SampleRowKeysRequest implements ISampleRowKeysRequest {
+
+                /**
+                 * Constructs a new SampleRowKeysRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.ISampleRowKeysRequest);
+
+                /** SampleRowKeysRequest clientId. */
+                public clientId: string;
+
+                /** SampleRowKeysRequest request. */
+                public request?: (google.bigtable.v2.ISampleRowKeysRequest|null);
+
+                /**
+                 * Creates a new SampleRowKeysRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns SampleRowKeysRequest instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.ISampleRowKeysRequest): google.bigtable.testproxy.SampleRowKeysRequest;
+
+                /**
+                 * Encodes the specified SampleRowKeysRequest message. Does not implicitly {@link google.bigtable.testproxy.SampleRowKeysRequest.verify|verify} messages.
+                 * @param message SampleRowKeysRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.ISampleRowKeysRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified SampleRowKeysRequest message, length delimited. Does not implicitly {@link google.bigtable.testproxy.SampleRowKeysRequest.verify|verify} messages.
+                 * @param message SampleRowKeysRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.ISampleRowKeysRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a SampleRowKeysRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns SampleRowKeysRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.SampleRowKeysRequest;
+
+                /**
+                 * Decodes a SampleRowKeysRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns SampleRowKeysRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.SampleRowKeysRequest;
+
+                /**
+                 * Verifies a SampleRowKeysRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a SampleRowKeysRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns SampleRowKeysRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.SampleRowKeysRequest;
+
+                /**
+                 * Creates a plain object from a SampleRowKeysRequest message. Also converts values to other types if specified.
+                 * @param message SampleRowKeysRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.SampleRowKeysRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this SampleRowKeysRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for SampleRowKeysRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a SampleRowKeysResult. */
+            interface ISampleRowKeysResult {
+
+                /** SampleRowKeysResult status */
+                status?: (google.rpc.IStatus|null);
+
+                /** SampleRowKeysResult samples */
+                samples?: (google.bigtable.v2.ISampleRowKeysResponse[]|null);
+            }
+
+            /** Represents a SampleRowKeysResult. */
+            class SampleRowKeysResult implements ISampleRowKeysResult {
+
+                /**
+                 * Constructs a new SampleRowKeysResult.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.ISampleRowKeysResult);
+
+                /** SampleRowKeysResult status. */
+                public status?: (google.rpc.IStatus|null);
+
+                /** SampleRowKeysResult samples. */
+                public samples: google.bigtable.v2.ISampleRowKeysResponse[];
+
+                /**
+                 * Creates a new SampleRowKeysResult instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns SampleRowKeysResult instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.ISampleRowKeysResult): google.bigtable.testproxy.SampleRowKeysResult;
+
+                /**
+                 * Encodes the specified SampleRowKeysResult message. Does not implicitly {@link google.bigtable.testproxy.SampleRowKeysResult.verify|verify} messages.
+                 * @param message SampleRowKeysResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.ISampleRowKeysResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified SampleRowKeysResult message, length delimited. Does not implicitly {@link google.bigtable.testproxy.SampleRowKeysResult.verify|verify} messages.
+                 * @param message SampleRowKeysResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.ISampleRowKeysResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a SampleRowKeysResult message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns SampleRowKeysResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.SampleRowKeysResult;
+
+                /**
+                 * Decodes a SampleRowKeysResult message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns SampleRowKeysResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.SampleRowKeysResult;
+
+                /**
+                 * Verifies a SampleRowKeysResult message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a SampleRowKeysResult message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns SampleRowKeysResult
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.SampleRowKeysResult;
+
+                /**
+                 * Creates a plain object from a SampleRowKeysResult message. Also converts values to other types if specified.
+                 * @param message SampleRowKeysResult
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.SampleRowKeysResult, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this SampleRowKeysResult to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for SampleRowKeysResult
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a ReadModifyWriteRowRequest. */
+            interface IReadModifyWriteRowRequest {
+
+                /** ReadModifyWriteRowRequest clientId */
+                clientId?: (string|null);
+
+                /** ReadModifyWriteRowRequest request */
+                request?: (google.bigtable.v2.IReadModifyWriteRowRequest|null);
+            }
+
+            /** Represents a ReadModifyWriteRowRequest. */
+            class ReadModifyWriteRowRequest implements IReadModifyWriteRowRequest {
+
+                /**
+                 * Constructs a new ReadModifyWriteRowRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IReadModifyWriteRowRequest);
+
+                /** ReadModifyWriteRowRequest clientId. */
+                public clientId: string;
+
+                /** ReadModifyWriteRowRequest request. */
+                public request?: (google.bigtable.v2.IReadModifyWriteRowRequest|null);
+
+                /**
+                 * Creates a new ReadModifyWriteRowRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns ReadModifyWriteRowRequest instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IReadModifyWriteRowRequest): google.bigtable.testproxy.ReadModifyWriteRowRequest;
+
+                /**
+                 * Encodes the specified ReadModifyWriteRowRequest message. Does not implicitly {@link google.bigtable.testproxy.ReadModifyWriteRowRequest.verify|verify} messages.
+                 * @param message ReadModifyWriteRowRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IReadModifyWriteRowRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified ReadModifyWriteRowRequest message, length delimited. Does not implicitly {@link google.bigtable.testproxy.ReadModifyWriteRowRequest.verify|verify} messages.
+                 * @param message ReadModifyWriteRowRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IReadModifyWriteRowRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a ReadModifyWriteRowRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns ReadModifyWriteRowRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.ReadModifyWriteRowRequest;
+
+                /**
+                 * Decodes a ReadModifyWriteRowRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns ReadModifyWriteRowRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.ReadModifyWriteRowRequest;
+
+                /**
+                 * Verifies a ReadModifyWriteRowRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a ReadModifyWriteRowRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns ReadModifyWriteRowRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.ReadModifyWriteRowRequest;
+
+                /**
+                 * Creates a plain object from a ReadModifyWriteRowRequest message. Also converts values to other types if specified.
+                 * @param message ReadModifyWriteRowRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.ReadModifyWriteRowRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this ReadModifyWriteRowRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for ReadModifyWriteRowRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of an ExecuteQueryRequest. */
+            interface IExecuteQueryRequest {
+
+                /** ExecuteQueryRequest clientId */
+                clientId?: (string|null);
+
+                /** ExecuteQueryRequest request */
+                request?: (google.bigtable.v2.IExecuteQueryRequest|null);
+            }
+
+            /** Represents an ExecuteQueryRequest. */
+            class ExecuteQueryRequest implements IExecuteQueryRequest {
+
+                /**
+                 * Constructs a new ExecuteQueryRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IExecuteQueryRequest);
+
+                /** ExecuteQueryRequest clientId. */
+                public clientId: string;
+
+                /** ExecuteQueryRequest request. */
+                public request?: (google.bigtable.v2.IExecuteQueryRequest|null);
+
+                /**
+                 * Creates a new ExecuteQueryRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns ExecuteQueryRequest instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IExecuteQueryRequest): google.bigtable.testproxy.ExecuteQueryRequest;
+
+                /**
+                 * Encodes the specified ExecuteQueryRequest message. Does not implicitly {@link google.bigtable.testproxy.ExecuteQueryRequest.verify|verify} messages.
+                 * @param message ExecuteQueryRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IExecuteQueryRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified ExecuteQueryRequest message, length delimited. Does not implicitly {@link google.bigtable.testproxy.ExecuteQueryRequest.verify|verify} messages.
+                 * @param message ExecuteQueryRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IExecuteQueryRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes an ExecuteQueryRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns ExecuteQueryRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.ExecuteQueryRequest;
+
+                /**
+                 * Decodes an ExecuteQueryRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns ExecuteQueryRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.ExecuteQueryRequest;
+
+                /**
+                 * Verifies an ExecuteQueryRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates an ExecuteQueryRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns ExecuteQueryRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.ExecuteQueryRequest;
+
+                /**
+                 * Creates a plain object from an ExecuteQueryRequest message. Also converts values to other types if specified.
+                 * @param message ExecuteQueryRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.ExecuteQueryRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this ExecuteQueryRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for ExecuteQueryRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of an ExecuteQueryResult. */
+            interface IExecuteQueryResult {
+
+                /** ExecuteQueryResult status */
+                status?: (google.rpc.IStatus|null);
+
+                /** ExecuteQueryResult metadata */
+                metadata?: (google.bigtable.testproxy.IResultSetMetadata|null);
+
+                /** ExecuteQueryResult rows */
+                rows?: (google.bigtable.testproxy.ISqlRow[]|null);
+            }
+
+            /** Represents an ExecuteQueryResult. */
+            class ExecuteQueryResult implements IExecuteQueryResult {
+
+                /**
+                 * Constructs a new ExecuteQueryResult.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IExecuteQueryResult);
+
+                /** ExecuteQueryResult status. */
+                public status?: (google.rpc.IStatus|null);
+
+                /** ExecuteQueryResult metadata. */
+                public metadata?: (google.bigtable.testproxy.IResultSetMetadata|null);
+
+                /** ExecuteQueryResult rows. */
+                public rows: google.bigtable.testproxy.ISqlRow[];
+
+                /**
+                 * Creates a new ExecuteQueryResult instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns ExecuteQueryResult instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IExecuteQueryResult): google.bigtable.testproxy.ExecuteQueryResult;
+
+                /**
+                 * Encodes the specified ExecuteQueryResult message. Does not implicitly {@link google.bigtable.testproxy.ExecuteQueryResult.verify|verify} messages.
+                 * @param message ExecuteQueryResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IExecuteQueryResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified ExecuteQueryResult message, length delimited. Does not implicitly {@link google.bigtable.testproxy.ExecuteQueryResult.verify|verify} messages.
+                 * @param message ExecuteQueryResult message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IExecuteQueryResult, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes an ExecuteQueryResult message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns ExecuteQueryResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.ExecuteQueryResult;
+
+                /**
+                 * Decodes an ExecuteQueryResult message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns ExecuteQueryResult
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.ExecuteQueryResult;
+
+                /**
+                 * Verifies an ExecuteQueryResult message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates an ExecuteQueryResult message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns ExecuteQueryResult
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.ExecuteQueryResult;
+
+                /**
+                 * Creates a plain object from an ExecuteQueryResult message. Also converts values to other types if specified.
+                 * @param message ExecuteQueryResult
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.ExecuteQueryResult, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this ExecuteQueryResult to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for ExecuteQueryResult
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a ResultSetMetadata. */
+            interface IResultSetMetadata {
+
+                /** ResultSetMetadata columns */
+                columns?: (google.bigtable.v2.IColumnMetadata[]|null);
+            }
+
+            /** Represents a ResultSetMetadata. */
+            class ResultSetMetadata implements IResultSetMetadata {
+
+                /**
+                 * Constructs a new ResultSetMetadata.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.IResultSetMetadata);
+
+                /** ResultSetMetadata columns. */
+                public columns: google.bigtable.v2.IColumnMetadata[];
+
+                /**
+                 * Creates a new ResultSetMetadata instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns ResultSetMetadata instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.IResultSetMetadata): google.bigtable.testproxy.ResultSetMetadata;
+
+                /**
+                 * Encodes the specified ResultSetMetadata message. Does not implicitly {@link google.bigtable.testproxy.ResultSetMetadata.verify|verify} messages.
+                 * @param message ResultSetMetadata message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.IResultSetMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified ResultSetMetadata message, length delimited. Does not implicitly {@link google.bigtable.testproxy.ResultSetMetadata.verify|verify} messages.
+                 * @param message ResultSetMetadata message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.IResultSetMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a ResultSetMetadata message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns ResultSetMetadata
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.ResultSetMetadata;
+
+                /**
+                 * Decodes a ResultSetMetadata message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns ResultSetMetadata
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.ResultSetMetadata;
+
+                /**
+                 * Verifies a ResultSetMetadata message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a ResultSetMetadata message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns ResultSetMetadata
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.ResultSetMetadata;
+
+                /**
+                 * Creates a plain object from a ResultSetMetadata message. Also converts values to other types if specified.
+                 * @param message ResultSetMetadata
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.ResultSetMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this ResultSetMetadata to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for ResultSetMetadata
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a SqlRow. */
+            interface ISqlRow {
+
+                /** SqlRow values */
+                values?: (google.bigtable.v2.IValue[]|null);
+            }
+
+            /** Represents a SqlRow. */
+            class SqlRow implements ISqlRow {
+
+                /**
+                 * Constructs a new SqlRow.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.testproxy.ISqlRow);
+
+                /** SqlRow values. */
+                public values: google.bigtable.v2.IValue[];
+
+                /**
+                 * Creates a new SqlRow instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns SqlRow instance
+                 */
+                public static create(properties?: google.bigtable.testproxy.ISqlRow): google.bigtable.testproxy.SqlRow;
+
+                /**
+                 * Encodes the specified SqlRow message. Does not implicitly {@link google.bigtable.testproxy.SqlRow.verify|verify} messages.
+                 * @param message SqlRow message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.testproxy.ISqlRow, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified SqlRow message, length delimited. Does not implicitly {@link google.bigtable.testproxy.SqlRow.verify|verify} messages.
+                 * @param message SqlRow message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.testproxy.ISqlRow, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a SqlRow message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns SqlRow
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.testproxy.SqlRow;
+
+                /**
+                 * Decodes a SqlRow message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns SqlRow
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.testproxy.SqlRow;
+
+                /**
+                 * Verifies a SqlRow message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a SqlRow message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns SqlRow
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.testproxy.SqlRow;
+
+                /**
+                 * Creates a plain object from a SqlRow message. Also converts values to other types if specified.
+                 * @param message SqlRow
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.testproxy.SqlRow, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this SqlRow to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for SqlRow
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Represents a CloudBigtableV2TestProxy */
+            class CloudBigtableV2TestProxy extends $protobuf.rpc.Service {
+
+                /**
+                 * Constructs a new CloudBigtableV2TestProxy service.
+                 * @param rpcImpl RPC implementation
+                 * @param [requestDelimited=false] Whether requests are length-delimited
+                 * @param [responseDelimited=false] Whether responses are length-delimited
+                 */
+                constructor(rpcImpl: $protobuf.RPCImpl, requestDelimited?: boolean, responseDelimited?: boolean);
+
+                /**
+                 * Creates new CloudBigtableV2TestProxy service using the specified rpc implementation.
+                 * @param rpcImpl RPC implementation
+                 * @param [requestDelimited=false] Whether requests are length-delimited
+                 * @param [responseDelimited=false] Whether responses are length-delimited
+                 * @returns RPC service. Useful where requests and/or responses are streamed.
+                 */
+                public static create(rpcImpl: $protobuf.RPCImpl, requestDelimited?: boolean, responseDelimited?: boolean): CloudBigtableV2TestProxy;
+
+                /**
+                 * Calls CreateClient.
+                 * @param request CreateClientRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and CreateClientResponse
+                 */
+                public createClient(request: google.bigtable.testproxy.ICreateClientRequest, callback: google.bigtable.testproxy.CloudBigtableV2TestProxy.CreateClientCallback): void;
+
+                /**
+                 * Calls CreateClient.
+                 * @param request CreateClientRequest message or plain object
+                 * @returns Promise
+                 */
+                public createClient(request: google.bigtable.testproxy.ICreateClientRequest): Promise<google.bigtable.testproxy.CreateClientResponse>;
+
+                /**
+                 * Calls CloseClient.
+                 * @param request CloseClientRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and CloseClientResponse
+                 */
+                public closeClient(request: google.bigtable.testproxy.ICloseClientRequest, callback: google.bigtable.testproxy.CloudBigtableV2TestProxy.CloseClientCallback): void;
+
+                /**
+                 * Calls CloseClient.
+                 * @param request CloseClientRequest message or plain object
+                 * @returns Promise
+                 */
+                public closeClient(request: google.bigtable.testproxy.ICloseClientRequest): Promise<google.bigtable.testproxy.CloseClientResponse>;
+
+                /**
+                 * Calls RemoveClient.
+                 * @param request RemoveClientRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and RemoveClientResponse
+                 */
+                public removeClient(request: google.bigtable.testproxy.IRemoveClientRequest, callback: google.bigtable.testproxy.CloudBigtableV2TestProxy.RemoveClientCallback): void;
+
+                /**
+                 * Calls RemoveClient.
+                 * @param request RemoveClientRequest message or plain object
+                 * @returns Promise
+                 */
+                public removeClient(request: google.bigtable.testproxy.IRemoveClientRequest): Promise<google.bigtable.testproxy.RemoveClientResponse>;
+
+                /**
+                 * Calls ReadRow.
+                 * @param request ReadRowRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and RowResult
+                 */
+                public readRow(request: google.bigtable.testproxy.IReadRowRequest, callback: google.bigtable.testproxy.CloudBigtableV2TestProxy.ReadRowCallback): void;
+
+                /**
+                 * Calls ReadRow.
+                 * @param request ReadRowRequest message or plain object
+                 * @returns Promise
+                 */
+                public readRow(request: google.bigtable.testproxy.IReadRowRequest): Promise<google.bigtable.testproxy.RowResult>;
+
+                /**
+                 * Calls ReadRows.
+                 * @param request ReadRowsRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and RowsResult
+                 */
+                public readRows(request: google.bigtable.testproxy.IReadRowsRequest, callback: google.bigtable.testproxy.CloudBigtableV2TestProxy.ReadRowsCallback): void;
+
+                /**
+                 * Calls ReadRows.
+                 * @param request ReadRowsRequest message or plain object
+                 * @returns Promise
+                 */
+                public readRows(request: google.bigtable.testproxy.IReadRowsRequest): Promise<google.bigtable.testproxy.RowsResult>;
+
+                /**
+                 * Calls MutateRow.
+                 * @param request MutateRowRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and MutateRowResult
+                 */
+                public mutateRow(request: google.bigtable.testproxy.IMutateRowRequest, callback: google.bigtable.testproxy.CloudBigtableV2TestProxy.MutateRowCallback): void;
+
+                /**
+                 * Calls MutateRow.
+                 * @param request MutateRowRequest message or plain object
+                 * @returns Promise
+                 */
+                public mutateRow(request: google.bigtable.testproxy.IMutateRowRequest): Promise<google.bigtable.testproxy.MutateRowResult>;
+
+                /**
+                 * Calls BulkMutateRows.
+                 * @param request MutateRowsRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and MutateRowsResult
+                 */
+                public bulkMutateRows(request: google.bigtable.testproxy.IMutateRowsRequest, callback: google.bigtable.testproxy.CloudBigtableV2TestProxy.BulkMutateRowsCallback): void;
+
+                /**
+                 * Calls BulkMutateRows.
+                 * @param request MutateRowsRequest message or plain object
+                 * @returns Promise
+                 */
+                public bulkMutateRows(request: google.bigtable.testproxy.IMutateRowsRequest): Promise<google.bigtable.testproxy.MutateRowsResult>;
+
+                /**
+                 * Calls CheckAndMutateRow.
+                 * @param request CheckAndMutateRowRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and CheckAndMutateRowResult
+                 */
+                public checkAndMutateRow(request: google.bigtable.testproxy.ICheckAndMutateRowRequest, callback: google.bigtable.testproxy.CloudBigtableV2TestProxy.CheckAndMutateRowCallback): void;
+
+                /**
+                 * Calls CheckAndMutateRow.
+                 * @param request CheckAndMutateRowRequest message or plain object
+                 * @returns Promise
+                 */
+                public checkAndMutateRow(request: google.bigtable.testproxy.ICheckAndMutateRowRequest): Promise<google.bigtable.testproxy.CheckAndMutateRowResult>;
+
+                /**
+                 * Calls SampleRowKeys.
+                 * @param request SampleRowKeysRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and SampleRowKeysResult
+                 */
+                public sampleRowKeys(request: google.bigtable.testproxy.ISampleRowKeysRequest, callback: google.bigtable.testproxy.CloudBigtableV2TestProxy.SampleRowKeysCallback): void;
+
+                /**
+                 * Calls SampleRowKeys.
+                 * @param request SampleRowKeysRequest message or plain object
+                 * @returns Promise
+                 */
+                public sampleRowKeys(request: google.bigtable.testproxy.ISampleRowKeysRequest): Promise<google.bigtable.testproxy.SampleRowKeysResult>;
+
+                /**
+                 * Calls ReadModifyWriteRow.
+                 * @param request ReadModifyWriteRowRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and RowResult
+                 */
+                public readModifyWriteRow(request: google.bigtable.testproxy.IReadModifyWriteRowRequest, callback: google.bigtable.testproxy.CloudBigtableV2TestProxy.ReadModifyWriteRowCallback): void;
+
+                /**
+                 * Calls ReadModifyWriteRow.
+                 * @param request ReadModifyWriteRowRequest message or plain object
+                 * @returns Promise
+                 */
+                public readModifyWriteRow(request: google.bigtable.testproxy.IReadModifyWriteRowRequest): Promise<google.bigtable.testproxy.RowResult>;
+
+                /**
+                 * Calls ExecuteQuery.
+                 * @param request ExecuteQueryRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and ExecuteQueryResult
+                 */
+                public executeQuery(request: google.bigtable.testproxy.IExecuteQueryRequest, callback: google.bigtable.testproxy.CloudBigtableV2TestProxy.ExecuteQueryCallback): void;
+
+                /**
+                 * Calls ExecuteQuery.
+                 * @param request ExecuteQueryRequest message or plain object
+                 * @returns Promise
+                 */
+                public executeQuery(request: google.bigtable.testproxy.IExecuteQueryRequest): Promise<google.bigtable.testproxy.ExecuteQueryResult>;
+            }
+
+            namespace CloudBigtableV2TestProxy {
+
+                /**
+                 * Callback as used by {@link google.bigtable.testproxy.CloudBigtableV2TestProxy|createClient}.
+                 * @param error Error, if any
+                 * @param [response] CreateClientResponse
+                 */
+                type CreateClientCallback = (error: (Error|null), response?: google.bigtable.testproxy.CreateClientResponse) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.testproxy.CloudBigtableV2TestProxy|closeClient}.
+                 * @param error Error, if any
+                 * @param [response] CloseClientResponse
+                 */
+                type CloseClientCallback = (error: (Error|null), response?: google.bigtable.testproxy.CloseClientResponse) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.testproxy.CloudBigtableV2TestProxy|removeClient}.
+                 * @param error Error, if any
+                 * @param [response] RemoveClientResponse
+                 */
+                type RemoveClientCallback = (error: (Error|null), response?: google.bigtable.testproxy.RemoveClientResponse) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.testproxy.CloudBigtableV2TestProxy|readRow}.
+                 * @param error Error, if any
+                 * @param [response] RowResult
+                 */
+                type ReadRowCallback = (error: (Error|null), response?: google.bigtable.testproxy.RowResult) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.testproxy.CloudBigtableV2TestProxy|readRows}.
+                 * @param error Error, if any
+                 * @param [response] RowsResult
+                 */
+                type ReadRowsCallback = (error: (Error|null), response?: google.bigtable.testproxy.RowsResult) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.testproxy.CloudBigtableV2TestProxy|mutateRow}.
+                 * @param error Error, if any
+                 * @param [response] MutateRowResult
+                 */
+                type MutateRowCallback = (error: (Error|null), response?: google.bigtable.testproxy.MutateRowResult) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.testproxy.CloudBigtableV2TestProxy|bulkMutateRows}.
+                 * @param error Error, if any
+                 * @param [response] MutateRowsResult
+                 */
+                type BulkMutateRowsCallback = (error: (Error|null), response?: google.bigtable.testproxy.MutateRowsResult) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.testproxy.CloudBigtableV2TestProxy|checkAndMutateRow}.
+                 * @param error Error, if any
+                 * @param [response] CheckAndMutateRowResult
+                 */
+                type CheckAndMutateRowCallback = (error: (Error|null), response?: google.bigtable.testproxy.CheckAndMutateRowResult) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.testproxy.CloudBigtableV2TestProxy|sampleRowKeys}.
+                 * @param error Error, if any
+                 * @param [response] SampleRowKeysResult
+                 */
+                type SampleRowKeysCallback = (error: (Error|null), response?: google.bigtable.testproxy.SampleRowKeysResult) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.testproxy.CloudBigtableV2TestProxy|readModifyWriteRow}.
+                 * @param error Error, if any
+                 * @param [response] RowResult
+                 */
+                type ReadModifyWriteRowCallback = (error: (Error|null), response?: google.bigtable.testproxy.RowResult) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.testproxy.CloudBigtableV2TestProxy|executeQuery}.
+                 * @param error Error, if any
+                 * @param [response] ExecuteQueryResult
+                 */
+                type ExecuteQueryCallback = (error: (Error|null), response?: google.bigtable.testproxy.ExecuteQueryResult) => void;
+            }
+        }
     }
 
     /** Namespace api. */
