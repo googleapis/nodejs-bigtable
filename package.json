@@ -25,7 +25,7 @@
     "!**/*.map"
   ],
   "scripts": {
-    "compile": "tsc -p . && cp -r proto* build/",
+    "compile": "tsc -p . && cp -r proto* build/ && cp -r testproxy/proto* build/testproxy/",
     "compile-protos": "compileProtos src && sh testproxy/compile-protos.sh",
     "predocs": "npm run compile",
     "docs": "jsdoc -c .jsdoc.js",
