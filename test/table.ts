@@ -1213,7 +1213,6 @@ describe('Bigtable/Table', () => {
         done();
       });
     });
-
     it('Should respect the timeout parameter passed in for DEADLINE_EXCEEDED error', done => {
       // The timeout is 2 seconds, but the error is received after 3 seconds
       // so the client doesn't retry because more than 2 seconds have elapsed.

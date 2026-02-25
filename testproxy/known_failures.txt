@@ -18,4 +18,3 @@ TestSampleRowKeys_Retry_WithRoutingCookie\|
 TestSampleRowKeys_Generic_CloseClient\|
 TestSampleRowKeys_Generic_Headers\|
 TestSampleRowKeys_NoRetry_NoEmptyKey\|
-TestSampleRowKeys_Generic_CloseClient\|
