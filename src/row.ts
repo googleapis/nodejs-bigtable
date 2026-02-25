@@ -30,7 +30,7 @@ import {CallOptions} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
 import {RowDataUtils, RowProperties} from './row-data-utils';
-import {GetRowsOptions, TabularApiSurface} from './tabular-api-surface';
+import {TabularApiSurface} from './tabular-api-surface';
 import {getRowsInternal} from './utils/getRowsInternal';
 import {
   MethodName,
@@ -667,10 +667,9 @@ export class Row {
       filter = arrify(filter).concat(options.filter);
     }
 
-    const getRowsOptions: GetRowsOptions = Object.assign({}, options, {
+    const getRowsOptions = Object.assign({}, options, {
       keys: [this.id],
       filter,
-      limit: 1,
     });
 
     const metricsCollector =
