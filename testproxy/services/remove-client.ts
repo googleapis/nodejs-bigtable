@@ -15,7 +15,7 @@
 import {ClientImplMaker, normalizeCallback} from './utils';
 
 import {google} from '../protos/protos';
-import {getBigtableClient} from './utils/bigtable-client';
+import {deleteBigtableClient} from './utils/bigtable-client';
 type IRemoveClientRequest = google.bigtable.testproxy.IRemoveClientRequest;
 type IRemoveClientResponse = google.bigtable.testproxy.IRemoveClientResponse;
 
@@ -29,7 +29,7 @@ export const removeClient: ClientImplMaker<
     const bigtable = clientMap.get(clientId!);
 
     if (bigtable) {
-      getBigtableClient(bigtable).close();
+      await deleteBigtableClient(bigtable);
       await bigtable.close();
       clientMap.delete(clientId!);
     }
