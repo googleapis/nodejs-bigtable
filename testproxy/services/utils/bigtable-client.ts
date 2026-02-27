@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as grpc from '@grpc/grpc-js';
 import {Bigtable} from '../../../src';
 import {ClientSideMetricsConfigManager} from '../../../src/client-side-metrics/metrics-config-manager';
 import {IMetricsHandler} from '../../../src/client-side-metrics/metrics-handler';
@@ -23,10 +24,17 @@ export function createBigtableClient(bigtable: Bigtable) {
   const handlers: IMetricsHandler[] = [];
   bigtable._metricsConfigManager = new ClientSideMetricsConfigManager(handlers);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const bigtableAny = bigtable as any;
+
   // We'll store these in the Bigtable object so that we can access them from the
   // test proxy.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (bigtable as any)[v2] = new BigtableClient(bigtable.options.BigtableClient);
+  if (bigtableAny[v2]) {
+    throw Object.assign(new Error(`should not have a BigtableClient already`), {
+      code: grpc.status.ALREADY_EXISTS,
+    });
+  }
+  bigtableAny[v2] = new BigtableClient(bigtable.options.BigtableClient);
 }
 
 export function getBigtableClient(bigtable: Bigtable) {
@@ -39,8 +47,7 @@ export async function deleteBigtableClient(bigtable: Bigtable) {
   const bigtableAny = bigtable as any;
 
   const bigtableClient = bigtableAny[v2];
-  if (bigtableClient) {
-    await bigtableClient.close();
-    delete bigtableAny[v2];
-  }
+  await bigtableClient.close();
+
+  delete bigtableAny[v2];
 }

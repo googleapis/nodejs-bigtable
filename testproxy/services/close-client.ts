@@ -14,7 +14,6 @@
 
 import {google} from '../protos/protos';
 import {ClientImplMaker, normalizeCallback} from './utils';
-import {deleteBigtableClient} from './utils/bigtable-client';
 type ICloseClientRequest = google.bigtable.testproxy.ICloseClientRequest;
 type ICloseClientResponse = google.bigtable.testproxy.ICloseClientResponse;
 
@@ -28,7 +27,7 @@ export const closeClient: ClientImplMaker<
     const bigtable = clientMap.get(clientId!);
 
     if (bigtable) {
-      await deleteBigtableClient(bigtable);
+      await bigtable.close();
     }
     return {};
   });

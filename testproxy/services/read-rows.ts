@@ -86,10 +86,12 @@ export const readRows: ClientImplMaker<IReadRowsRequest, IRowsResult> = ({
     } catch (e) {
       const error = e as GoogleError;
       return {
-        code: error.code,
-        // e.details must be in an empty array for the test runner to return the status. This is tracked in b/383096533.
-        details: [],
-        message: error.message,
+        status: {
+          code: error.code,
+          // e.details must be in an empty array for the test runner to return the status. This is tracked in b/383096533.
+          details: [],
+          message: error.message,
+        },
       };
     }
   });
