@@ -30,7 +30,7 @@ export function createBigtableClient(bigtable: Bigtable) {
   // We'll store these in the Bigtable object so that we can access them from the
   // test proxy.
   if (bigtableAny[v2]) {
-    throw Object.assign(new Error(`should not have a BigtableClient already`), {
+    throw Object.assign(new Error('should not have a BigtableClient already'), {
       code: grpc.status.ALREADY_EXISTS,
     });
   }
