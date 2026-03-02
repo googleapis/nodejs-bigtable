@@ -20,7 +20,7 @@ exports[
     options: {
       clusters: {
         nodes: 2,
-        location: 'us-central1-b',
+        location: 'us-central2-d',
         id: 'my-cluster',
       },
     },
@@ -37,7 +37,7 @@ exports[
         },
         clusters: {
           'my-cluster': {
-            location: 'projects/test-project/locations/us-central1-b',
+            location: 'projects/test-project/locations/us-central2-d',
             serveNodes: 2,
             defaultStorageType: 0,
           },
@@ -56,7 +56,7 @@ exports[
       clusters: {
         nodes: 2,
         storage: 'ssd',
-        location: 'us-central1-b',
+        location: 'us-central2-d',
         id: 'my-cluster',
       },
     },
@@ -73,7 +73,7 @@ exports[
         },
         clusters: {
           'my-cluster': {
-            location: 'projects/test-project/locations/us-central1-b',
+            location: 'projects/test-project/locations/us-central2-d',
             serveNodes: 2,
             defaultStorageType: 1,
           },
@@ -92,7 +92,7 @@ exports[
       clusters: {
         nodes: 2,
         key: 'kms-key-name',
-        location: 'us-central1-b',
+        location: 'us-central2-d',
         id: 'my-cluster',
       },
     },
@@ -109,7 +109,7 @@ exports[
         },
         clusters: {
           'my-cluster': {
-            location: 'projects/test-project/locations/us-central1-b',
+            location: 'projects/test-project/locations/us-central2-d',
             serveNodes: 2,
             defaultStorageType: 0,
             encryptionConfig: {
@@ -133,7 +133,7 @@ exports[
         encryption: {
           kmsKeyName: 'kms-key-name',
         },
-        location: 'us-central1-b',
+        location: 'us-central2-d',
         id: 'my-cluster',
       },
     },
@@ -150,7 +150,7 @@ exports[
         },
         clusters: {
           'my-cluster': {
-            location: 'projects/test-project/locations/us-central1-b',
+            location: 'projects/test-project/locations/us-central2-d',
             serveNodes: 2,
             defaultStorageType: 0,
             encryptionConfig: {
@@ -173,7 +173,7 @@ exports[
         minServeNodes: 2,
         maxServeNodes: 3,
         cpuUtilizationPercent: 50,
-        location: 'us-central1-b',
+        location: 'us-central2-d',
         id: 'my-cluster',
       },
     },
@@ -190,7 +190,7 @@ exports[
         },
         clusters: {
           'my-cluster': {
-            location: 'projects/test-project/locations/us-central1-b',
+            location: 'projects/test-project/locations/us-central2-d',
             clusterConfig: {
               clusterAutoscalingConfig: {
                 autoscalingTargets: {

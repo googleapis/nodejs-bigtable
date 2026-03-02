@@ -381,7 +381,7 @@ describe('Bigtable', () => {
     const INSTANCE_ID = 'my-instance';
     const CLUSTER = {
       id: 'my-cluster',
-      location: 'us-central1-b',
+      location: 'us-central2-d',
       nodes: 3,
       storage: 'ssd',
     };
@@ -662,7 +662,7 @@ describe('Bigtable', () => {
         clusters: [
           {
             nodes: 3,
-            location: 'us-central1-b',
+            location: 'us-central2-d',
             storage: 'ssd',
           },
         ],

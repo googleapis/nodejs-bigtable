@@ -19,7 +19,7 @@ exports[
     id: 'my-cluster',
     options: {
       nodes: 2,
-      location: 'us-central1-b',
+      location: 'us-central2-d',
     },
   },
   output: {
@@ -30,7 +30,7 @@ exports[
         parent: 'projects/my-project/instances/my-instance',
         clusterId: 'my-cluster',
         cluster: {
-          location: 'projects/my-project/locations/us-central1-b',
+          location: 'projects/my-project/locations/us-central2-d',
           serveNodes: 2,
         },
       },
@@ -46,7 +46,7 @@ exports[
     options: {
       nodes: 2,
       storage: 'ssd',
-      location: 'us-central1-b',
+      location: 'us-central2-d',
     },
   },
   output: {
@@ -57,7 +57,7 @@ exports[
         parent: 'projects/my-project/instances/my-instance',
         clusterId: 'my-cluster',
         cluster: {
-          location: 'projects/my-project/locations/us-central1-b',
+          location: 'projects/my-project/locations/us-central2-d',
           serveNodes: 2,
           defaultStorageType: 1,
         },
@@ -74,7 +74,7 @@ exports[
     options: {
       nodes: 2,
       key: 'kms-key-name',
-      location: 'us-central1-b',
+      location: 'us-central2-d',
     },
   },
   output: {
@@ -85,7 +85,7 @@ exports[
         parent: 'projects/my-project/instances/my-instance',
         clusterId: 'my-cluster',
         cluster: {
-          location: 'projects/my-project/locations/us-central1-b',
+          location: 'projects/my-project/locations/us-central2-d',
           serveNodes: 2,
           encryptionConfig: {
             kmsKeyName: 'kms-key-name',
@@ -106,7 +106,7 @@ exports[
       encryption: {
         kmsKeyName: 'kms-key-name',
       },
-      location: 'us-central1-b',
+      location: 'us-central2-d',
     },
   },
   output: {
@@ -117,7 +117,7 @@ exports[
         parent: 'projects/my-project/instances/my-instance',
         clusterId: 'my-cluster',
         cluster: {
-          location: 'projects/my-project/locations/us-central1-b',
+          location: 'projects/my-project/locations/us-central2-d',
           serveNodes: 2,
           encryptionConfig: {
             kmsKeyName: 'kms-key-name',
@@ -137,7 +137,7 @@ exports[
       minServeNodes: 2,
       maxServeNodes: 3,
       cpuUtilizationPercent: 50,
-      location: 'us-central1-b',
+      location: 'us-central2-d',
     },
   },
   output: {
@@ -148,7 +148,7 @@ exports[
         parent: 'projects/my-project/instances/my-instance',
         clusterId: 'my-cluster',
         cluster: {
-          location: 'projects/my-project/locations/us-central1-b',
+          location: 'projects/my-project/locations/us-central2-d',
           clusterConfig: {
             clusterAutoscalingConfig: {
               autoscalingTargets: {

@@ -299,7 +299,7 @@ describe('Bigtable', () => {
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_, operation] = await cluster.create({
-        location: 'us-central1-b',
+        location: 'us-central2-d',
         nodes: 3,
         key: kmsKeyName,
       });
@@ -315,7 +315,7 @@ describe('Bigtable', () => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [_, operation] = await cluster.create({
-          location: 'us-central1-b',
+          location: 'us-central2-d',
           nodes: 3,
         });
         await operation.promise();
@@ -1759,7 +1759,7 @@ describe('Bigtable', () => {
             const [, operation] = await INSTANCE.cluster(
               destinationClusterId,
             ).create({
-              location: 'us-central1-b',
+              location: 'us-central2-d',
               nodes: 3,
             });
             await operation.promise();

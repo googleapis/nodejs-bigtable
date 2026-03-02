@@ -41,7 +41,7 @@ describe('📦 App Profile', () => {
       // Creates an instance with clusters
       const instanceClusters = [
         'us-east1-c',
-        'us-central1-b',
+        'us-central2-d',
         'us-west1-b',
       ].map(location => {
         return {

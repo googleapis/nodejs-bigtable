@@ -400,14 +400,14 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual(config.reqOpts.clusterId, CLUSTER_ID);
         assert.strictEqual(
           config.reqOpts.cluster.location,
-          'projects/my-project/locations/us-central1-b',
+          'projects/my-project/locations/us-central2-d',
         );
         assert.strictEqual(config.gaxOpts, undefined);
         done();
       };
       instance.createCluster(
         CLUSTER_ID,
-        {nodes: 2, location: 'us-central1-b'},
+        {nodes: 2, location: 'us-central2-d'},
         assert.ifError,
       );
     });
@@ -447,7 +447,7 @@ describe('Bigtable/Instance', () => {
 
     it('should respect the location option', done => {
       const options = {
-        location: 'us-central1-b',
+        location: 'us-central2-d',
         nodes: 2,
       } as CreateClusterOptions;
       const fakeLocation = Cluster.getLocation_(

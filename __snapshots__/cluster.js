@@ -19,7 +19,7 @@ exports[
     id: 'my-cluster',
     options: {
       nodes: 2,
-      location: 'us-central1-b',
+      location: 'us-central2-d',
     },
   },
   output: {
@@ -29,7 +29,7 @@ exports[
       reqOpts: {
         cluster: {
           name: 'projects/grape-spaceship-123/instances/i/clusters/my-cluster',
-          location: 'us-central1-b',
+          location: 'us-central2-d',
           serveNodes: 2,
         },
         updateMask: {
@@ -49,7 +49,7 @@ exports[
     options: {
       nodes: 2,
       storage: 'ssd',
-      location: 'us-central1-b',
+      location: 'us-central2-d',
     },
   },
   output: {
@@ -59,7 +59,7 @@ exports[
       reqOpts: {
         cluster: {
           name: 'projects/grape-spaceship-123/instances/i/clusters/my-cluster',
-          location: 'us-central1-b',
+          location: 'us-central2-d',
           serveNodes: 2,
           storage: 'ssd',
         },
@@ -80,7 +80,7 @@ exports[
     options: {
       nodes: 2,
       key: 'kms-key-name',
-      location: 'us-central1-b',
+      location: 'us-central2-d',
     },
   },
   output: {
@@ -90,7 +90,7 @@ exports[
       reqOpts: {
         cluster: {
           name: 'projects/grape-spaceship-123/instances/i/clusters/my-cluster',
-          location: 'us-central1-b',
+          location: 'us-central2-d',
           serveNodes: 2,
           key: 'kms-key-name',
         },
@@ -113,7 +113,7 @@ exports[
       encryption: {
         kmsKeyName: 'kms-key-name',
       },
-      location: 'us-central1-b',
+      location: 'us-central2-d',
     },
   },
   output: {
@@ -123,7 +123,7 @@ exports[
       reqOpts: {
         cluster: {
           name: 'projects/grape-spaceship-123/instances/i/clusters/my-cluster',
-          location: 'us-central1-b',
+          location: 'us-central2-d',
           serveNodes: 2,
           encryption: {
             kmsKeyName: 'kms-key-name',
@@ -147,7 +147,7 @@ exports[
       minServeNodes: 2,
       maxServeNodes: 3,
       cpuUtilizationPercent: 50,
-      location: 'us-central1-b',
+      location: 'us-central2-d',
     },
   },
   output: {
@@ -157,7 +157,7 @@ exports[
       reqOpts: {
         cluster: {
           name: 'projects/grape-spaceship-123/instances/i/clusters/my-cluster',
-          location: 'us-central1-b',
+          location: 'us-central2-d',
           clusterConfig: {
             clusterAutoscalingConfig: {
               autoscalingTargets: {

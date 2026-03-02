@@ -117,7 +117,7 @@ describe('Bigtable/Cluster', () => {
   });
 
   describe('getLocation_', () => {
-    const LOCATION = 'us-central1-b';
+    const LOCATION = 'us-central2-d';
 
     it('should format the location name', () => {
       const expected = `projects/${PROJECT_ID}/locations/${LOCATION}`;
