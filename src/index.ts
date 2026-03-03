@@ -521,7 +521,7 @@ export class Bigtable {
     if (customEndpoint) {
       const customEndpointParts = customEndpoint.split(':');
       customEndpointBaseUrl = customEndpointParts[0];
-      customEndpointPort = Number(customEndpointParts[1]);
+      customEndpointPort = Number(customEndpointParts[1]) || 443;
       sslCreds = grpc.credentials.createInsecure();
     }
 
