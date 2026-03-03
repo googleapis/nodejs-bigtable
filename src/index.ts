@@ -515,20 +515,20 @@ export class Bigtable {
     this.customEndpoint = customEndpoint;
 
     let customEndpointBaseUrl: string | undefined;
-    let customEndpointPort = 443;
+    let customEndpointPort: number | undefined;
     let sslCreds: gaxVendoredGrpc.ChannelCredentials | undefined;
 
     if (customEndpoint) {
       const customEndpointParts = customEndpoint.split(':');
       customEndpointBaseUrl = customEndpointParts[0];
-      customEndpointPort = Number(customEndpointParts[1]) || 443;
+      customEndpointPort = Number(customEndpointParts[1]);
       sslCreds = grpc.credentials.createInsecure();
     }
 
     const baseOptions = Object.assign({
       libName: 'gccl',
       libVersion: PKG.version,
-      port: customEndpointPort,
+      port: customEndpointPort || 443,
       sslCreds,
       scopes,
       'grpc.keepalive_time_ms': 30000,
