@@ -465,7 +465,7 @@ describe('Bigtable/Instance', () => {
     it('should respect the nodes option', done => {
       const options = {
         nodes: 3,
-        location: 'us-central1-c',
+        location: 'us-central2-c',
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {

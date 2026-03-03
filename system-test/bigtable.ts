@@ -103,7 +103,7 @@ describe('Bigtable', () => {
       clusters: [
         {
           id: CLUSTER_ID,
-          location: 'us-central1-c',
+          location: 'us-central2-d',
           nodes: 3,
           storage: 'ssd',
         },
@@ -116,7 +116,7 @@ describe('Bigtable', () => {
       clusters: [
         {
           id: CLUSTER_ID_HDD,
-          location: 'us-central1-c',
+          location: 'us-central2-d',
           nodes: 3,
           storage: 'hdd',
         },
@@ -214,7 +214,7 @@ describe('Bigtable', () => {
         clusters: [
           {
             id: clusteId,
-            location: 'us-central1-c',
+            location: 'us-central2-d',
             nodes: 3,
           },
         ],
@@ -244,8 +244,8 @@ describe('Bigtable', () => {
 
     before(async () => {
       const projectId = await bigtable.auth.getProjectId();
-      kmsKeyName = `projects/${projectId}/locations/us-central1/keyRings/${keyRingId}/cryptoKeys/${cryptoKeyId}`;
-      keyRingsBaseUrl = `https://cloudkms.googleapis.com/v1/projects/${projectId}/locations/us-central1/keyRings`;
+      kmsKeyName = `projects/${projectId}/locations/us-central2/keyRings/${keyRingId}/cryptoKeys/${cryptoKeyId}`;
+      keyRingsBaseUrl = `https://cloudkms.googleapis.com/v1/projects/${projectId}/locations/us-central2/keyRings`;
 
       await bigtable.auth.request({
         method: 'POST',
@@ -267,7 +267,7 @@ describe('Bigtable', () => {
         clusters: [
           {
             id: CMEK_CLUSTER.id,
-            location: 'us-central1-a',
+            location: 'us-central2-b',
             nodes: 3,
             key: kmsKeyName,
           },
@@ -1717,7 +1717,7 @@ describe('Bigtable', () => {
                 {
                   id: destinationClusterId,
                   nodes: 3,
-                  location: 'us-central1-f',
+                  location: 'us-central2-b',
                   storage: 'ssd',
                 },
               ],
@@ -1806,7 +1806,7 @@ describe('Bigtable', () => {
                 {
                   id: destinationClusterId,
                   nodes: 3,
-                  location: 'us-central1-f',
+                  location: 'us-central2-b',
                   storage: 'ssd',
                 },
               ],

@@ -32,7 +32,7 @@ import {createMetricsUnaryInterceptorProvider} from '../src/client-side-metrics/
 
 const INSTANCE_ID = 'isolated-rmw-instance';
 const TABLE_ID = 'isolated-rmw-table';
-const ZONE = 'us-central1-a';
+const ZONE = 'us-central2-a';
 const CLUSTER = 'fake-cluster';
 const COLUMN_FAMILY = 'traits';
 const COLUMN_FAMILIES = [COLUMN_FAMILY];
