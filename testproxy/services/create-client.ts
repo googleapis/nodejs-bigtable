@@ -92,13 +92,15 @@ export const createClient: ClientImplMaker<
         );
       });
     }
-    const bigtable = new Bigtable({
+
+    const options = {
       projectId,
       apiEndpoint,
       authClient,
       appProfileId: appProfileId!,
       clientConfig,
-    });
+    };
+    const bigtable = new Bigtable(options);
     createBigtableClient(bigtable);
     clientMap.set(clientId!, bigtable);
     return {};
