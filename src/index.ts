@@ -908,9 +908,9 @@ export class Bigtable {
     if (this.closed) {
       callback?.({
         name: 'Closed',
-        message: 'Bigtable internal client is closed',
+        message: 'The client has already been closed.',
         code: grpc.status.ABORTED,
-        details: 'Bigtable internal client is closed',
+        details: 'The client has already been closed.',
         metadata: new grpc.Metadata(),
       });
       return;
