@@ -14,10 +14,10 @@
 
 import * as grpc from '@grpc/grpc-js';
 import {GoogleError} from 'google-gax';
-import {getSRKRequest} from './utils/request/sampleRowKeys';
 import {ClientImplMaker, normalizeCallback} from './utils';
 
 import {google} from '../protos/protos';
+import {log} from './utils/log';
 type ISampleRowKeysRequest = google.bigtable.testproxy.ISampleRowKeysRequest;
 type ISampleRowKeysResult = google.bigtable.testproxy.ISampleRowKeysResult;
 
@@ -28,25 +28,32 @@ export const sampleRowKeys: ClientImplMaker<
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {clientId, request: sampleRowKeysRequest} = request;
-    const {appProfileId, tableName} = sampleRowKeysRequest!;
+    const {tableName} = sampleRowKeysRequest!;
 
     const bigtable = clientMap.get(clientId!);
-    bigtable.appProfileId = appProfileId!;
+
+    const [, , , instanceId, , tableId] = tableName!.split('/');
+    const instance = bigtable.instance(instanceId);
+    const table = instance.table(tableId);
 
     try {
-      const response = await getSRKRequest(bigtable, {appProfileId, tableName});
+      const response = await table.sampleRowKeys();
 
+      log.info('sampleRowKeys response %o', response);
       return {
         status: {code: grpc.status.OK, details: []},
-        response,
+        samples: response[0].map(sample => ({
+          rowKey: sample.key,
+          offsetBytes: sample.offset,
+        })),
       };
     } catch (e) {
       const error = e as GoogleError;
-      console.error('Error:', error.code);
 
       return {
         status: {
-          code: error.code,
+          // This might be zero/undefined if it's a disconnected client error.
+          code: error.code || grpc.status.FAILED_PRECONDITION,
           details: [],
         },
       };

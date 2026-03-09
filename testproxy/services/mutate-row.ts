@@ -34,14 +34,25 @@ export const mutateRow: ClientImplMaker<
     const appProfileId = bigtable.appProfileId;
     const client = getBigtableClient(bigtable);
 
-    await client.mutateRow({
-      appProfileId,
-      mutations,
-      tableName,
-      rowKey,
-    });
+    try {
+      await client.mutateRow({
+        appProfileId,
+        mutations,
+        tableName,
+        rowKey,
+      });
 
-    return {
-      status: {code: grpc.status.OK, details: []},
-    };
+      return {
+        status: {code: grpc.status.OK, details: []},
+      };
+    } catch (e) {
+      const error = e as GoogleError;
+      return {
+        status: {
+          code: error.code ? error.code : grpc.status.UNKNOWN,
+          message: error.message,
+          details: [],
+        },
+      };
+    }
   });

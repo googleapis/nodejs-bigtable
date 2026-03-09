@@ -87,7 +87,8 @@ export const readRows: ClientImplMaker<IReadRowsRequest, IRowsResult> = ({
       const error = e as GoogleError;
       return {
         status: {
-          code: error.code,
+          // This might be zero/undefined if it's a disconnected client error.
+          code: error.code || grpc.status.FAILED_PRECONDITION,
           // e.details must be in an empty array for the test runner to return the status. This is tracked in b/383096533.
           details: [],
           message: error.message,

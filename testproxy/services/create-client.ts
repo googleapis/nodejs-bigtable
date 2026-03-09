@@ -18,6 +18,7 @@ import {google} from '../protos/protos';
 import * as grpc from '@grpc/grpc-js';
 import {Bigtable} from '../../src';
 import {createBigtableClient} from './utils/bigtable-client';
+import {log} from './utils/log';
 
 function durationToMilliseconds(
   duration: google.protobuf.Duration | google.protobuf.IDuration,
@@ -68,6 +69,12 @@ export const createClient: ClientImplMaker<
       );
     }
 
+    log.info(
+      'create client %s (%s)',
+      clientId,
+      clientMap.has(clientId) ? 'exists' : "doesn't exist",
+    );
+
     if (clientMap.has(clientId)) {
       throw Object.assign(new Error(`Client ${clientId} already exists`), {
         code: grpc.status.ALREADY_EXISTS,
@@ -100,6 +107,7 @@ export const createClient: ClientImplMaker<
       appProfileId: appProfileId!,
       clientConfig,
     };
+    log.info('created bigtable client %s', clientId);
     const bigtable = new Bigtable(options);
     createBigtableClient(bigtable);
     clientMap.set(clientId!, bigtable);

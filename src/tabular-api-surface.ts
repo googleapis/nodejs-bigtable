@@ -476,6 +476,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       reqOpts,
       gaxOpts: Object.assign({}, gaxOptions),
     });
+    if (!requestStream) {
+      throw new Error(
+        'Failed to create request stream -- is the client already closed?',
+      );
+    }
     metricsCollector.wrapRequest(requestStream);
     const stream = pumpify.obj([requestStream, rowKeysStream]);
     stream.on('end', () => {

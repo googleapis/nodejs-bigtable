@@ -37,17 +37,24 @@ export function createBigtableClient(bigtable: Bigtable) {
   bigtableAny[v2] = new BigtableClient(bigtable.options.BigtableClient);
 }
 
-export function getBigtableClient(bigtable: Bigtable) {
+export function getBigtableClient(bigtable: Bigtable): BigtableClient {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (bigtable as any)[v2];
+}
+
+export async function closeBigtableClient(bigtable: Bigtable) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const bigtableAny = bigtable as any;
+
+  const bigtableClient = bigtableAny[v2] as BigtableClient;
+  await bigtableClient.close();
 }
 
 export async function deleteBigtableClient(bigtable: Bigtable) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const bigtableAny = bigtable as any;
 
-  const bigtableClient = bigtableAny[v2];
-  await bigtableClient.close();
+  await closeBigtableClient(bigtable);
 
   delete bigtableAny[v2];
 }

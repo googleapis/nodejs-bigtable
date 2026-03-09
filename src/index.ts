@@ -487,6 +487,7 @@ export class Bigtable {
   static Cluster: Cluster;
   _metricsConfigManager: ClientSideMetricsConfigManager;
   admin: admin.BigtableAdmin;
+  closed = false;
 
   constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
@@ -904,6 +905,17 @@ export class Bigtable {
     let gaxStream: gax.CancellableStream;
     let stream: AbortableDuplex;
 
+    if (this.closed) {
+      callback?.({
+        name: 'Closed',
+        message: 'Bigtable internal client is closed',
+        code: grpc.status.ABORTED,
+        details: 'Bigtable internal client is closed',
+        metadata: new grpc.Metadata(),
+      });
+      return;
+    }
+
     const prepareGaxRequest = (
       callback: (err: Error | null, fn?: Function) => void,
     ) => {
@@ -1021,11 +1033,22 @@ export class Bigtable {
    * Close all bigtable clients. New requests will be rejected but it will not
    * kill connections with pending requests.
    */
-  close(): Promise<void[]> {
+  async close(): Promise<void[]> {
+    // Close all of the clients.
     const combined = Object.keys(this.api).map(clientType =>
       this.api[clientType].close(),
     );
-    return Promise.all(combined);
+    const results = await Promise.all(combined);
+
+    // Clear them out of our cache.
+    Object.keys(this.api).forEach(clientType => {
+      delete this.api[clientType];
+    });
+
+    // Mark as closed.
+    this.closed = true;
+
+    return results;
   }
 
   /**

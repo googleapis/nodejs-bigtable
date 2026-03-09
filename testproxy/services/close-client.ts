@@ -14,8 +14,11 @@
 
 import {google} from '../protos/protos';
 import {ClientImplMaker, normalizeCallback} from './utils';
+import {closeBigtableClient} from './utils/bigtable-client';
 type ICloseClientRequest = google.bigtable.testproxy.ICloseClientRequest;
 type ICloseClientResponse = google.bigtable.testproxy.ICloseClientResponse;
+
+import {log} from './utils/log';
 
 export const closeClient: ClientImplMaker<
   ICloseClientRequest,
@@ -26,8 +29,16 @@ export const closeClient: ClientImplMaker<
     const {clientId} = request;
     const bigtable = clientMap.get(clientId!);
 
+    log.info(
+      'close client %s (%s)',
+      clientId,
+      bigtable ? 'exists' : "doesn't exist",
+    );
+
     if (bigtable) {
+      await closeBigtableClient(bigtable);
       await bigtable.close();
+      log.info('client %s closed', clientId);
     }
     return {};
   });

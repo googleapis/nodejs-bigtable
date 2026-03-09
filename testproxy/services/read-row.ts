@@ -24,6 +24,7 @@ import {
   getRowResponse,
   getTableInfo,
 } from './utils';
+import {GoogleError} from 'google-gax';
 
 export const readRow: ClientImplMaker<IReadRowRequest, IRowResult> = ({
   clientMap,
@@ -32,15 +33,27 @@ export const readRow: ClientImplMaker<IReadRowRequest, IRowResult> = ({
     const {clientId, rowKey, tableName} = rawRequest.request;
     const columns = {};
 
-    const bigtable = clientMap.get(clientId!);
-    const table = getTableInfo(bigtable, tableName!);
-    const row = table.row(rowKey!);
+    try {
+      const bigtable = clientMap.get(clientId!);
+      const table = getTableInfo(bigtable, tableName!);
+      const row = table.row(rowKey!);
 
-    const res = await row.get(columns);
-    const firstRow = getRowResponse(res[0]);
+      const res = await row.get(columns);
+      const firstRow = getRowResponse(res[0]);
 
-    return {
-      status: {code: grpc.status.OK, details: []},
-      row: firstRow,
-    };
+      return {
+        status: {code: grpc.status.OK, details: []},
+        row: firstRow,
+      };
+    } catch (e) {
+      const error = e as GoogleError;
+      return {
+        status: {
+          code: error.code || grpc.status.FAILED_PRECONDITION,
+          // e.details must be in an empty array for the test runner to return the status. This is tracked in b/383096533.
+          details: [],
+          message: error.message,
+        },
+      };
+    }
   });
