@@ -906,14 +906,24 @@ export class Bigtable {
     let stream: AbortableDuplex;
 
     if (this.closed) {
-      callback?.({
-        name: 'Closed',
-        message: 'The client has already been closed.',
-        code: grpc.status.ABORTED,
-        details: 'The client has already been closed.',
-        metadata: new grpc.Metadata(),
-      });
-      return;
+      const error = Object.assign(
+        new Error('The client has already been closed.'),
+        {
+          name: 'Closed',
+          code: grpc.status.ABORTED,
+          details: 'The client has already been closed.',
+          metadata: new grpc.Metadata(),
+        }
+      );
+      if (isStreamMode) {
+        stream = streamEvents(new PassThrough({objectMode: true}));
+        stream.abort = () => {};
+        setImmediate(() => stream.destroy(error));
+        return stream;
+      } else {
+        callback?.(error as ServiceError);
+        return;
+      }
     }
 
     const prepareGaxRequest = (
