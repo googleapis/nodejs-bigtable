@@ -36,7 +36,10 @@ export const closeClient: ClientImplMaker<
     );
 
     if (bigtable) {
+      // closeBigtableClient closes the BigtableClient, but not the Bigtable
+      // object itself. We need to close the Bigtable object as well.
       await closeBigtableClient(bigtable);
+      await bigtable.close();
       log.info('client %s closed', clientId);
     }
     return {};
