@@ -37,7 +37,6 @@ export const closeClient: ClientImplMaker<
 
     if (bigtable) {
       await closeBigtableClient(bigtable);
-      await bigtable.close();
       log.info('client %s closed', clientId);
     }
     return {};
