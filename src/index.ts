@@ -913,7 +913,7 @@ export class Bigtable {
           code: grpc.status.ABORTED,
           details: 'The client has already been closed.',
           metadata: new grpc.Metadata(),
-        }
+        },
       );
       if (isStreamMode) {
         stream = streamEvents(new PassThrough({objectMode: true}));
