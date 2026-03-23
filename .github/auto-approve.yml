@@ -1,6 +1,2 @@
-rules:
-- author: "renovate-bot"
-  title: "^(fix|chore)\\(deps\\):"
-  changedFiles: 
-  - "package\\.json$"
-  maxFiles: 2
+processes:
+  - "NodeDependency"
