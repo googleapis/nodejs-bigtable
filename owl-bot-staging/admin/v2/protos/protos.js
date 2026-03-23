@@ -33506,6 +33506,7 @@
                              * @interface IAutomatedBackupPolicy
                              * @property {google.protobuf.IDuration|null} [retentionPeriod] AutomatedBackupPolicy retentionPeriod
                              * @property {google.protobuf.IDuration|null} [frequency] AutomatedBackupPolicy frequency
+                             * @property {Array.<string>|null} [locations] AutomatedBackupPolicy locations
                              */
     
                             /**
@@ -33517,6 +33518,7 @@
                              * @param {google.bigtable.admin.v2.Table.IAutomatedBackupPolicy=} [properties] Properties to set
                              */
                             function AutomatedBackupPolicy(properties) {
+                                this.locations = [];
                                 if (properties)
                                     for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                         if (properties[keys[i]] != null)
@@ -33538,6 +33540,14 @@
                              * @instance
                              */
                             AutomatedBackupPolicy.prototype.frequency = null;
+    
+                            /**
+                             * AutomatedBackupPolicy locations.
+                             * @member {Array.<string>} locations
+                             * @memberof google.bigtable.admin.v2.Table.AutomatedBackupPolicy
+                             * @instance
+                             */
+                            AutomatedBackupPolicy.prototype.locations = $util.emptyArray;
     
                             /**
                              * Creates a new AutomatedBackupPolicy instance using the specified properties.
@@ -33567,6 +33577,9 @@
                                     $root.google.protobuf.Duration.encode(message.retentionPeriod, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
                                 if (message.frequency != null && Object.hasOwnProperty.call(message, "frequency"))
                                     $root.google.protobuf.Duration.encode(message.frequency, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                                if (message.locations != null && message.locations.length)
+                                    for (var i = 0; i < message.locations.length; ++i)
+                                        writer.uint32(/* id 3, wireType 2 =*/26).string(message.locations[i]);
                                 return writer;
                             };
     
@@ -33609,6 +33622,12 @@
                                         }
                                     case 2: {
                                             message.frequency = $root.google.protobuf.Duration.decode(reader, reader.uint32());
+                                            break;
+                                        }
+                                    case 3: {
+                                            if (!(message.locations && message.locations.length))
+                                                message.locations = [];
+                                            message.locations.push(reader.string());
                                             break;
                                         }
                                     default:
@@ -33656,6 +33675,13 @@
                                     if (error)
                                         return "frequency." + error;
                                 }
+                                if (message.locations != null && message.hasOwnProperty("locations")) {
+                                    if (!Array.isArray(message.locations))
+                                        return "locations: array expected";
+                                    for (var i = 0; i < message.locations.length; ++i)
+                                        if (!$util.isString(message.locations[i]))
+                                            return "locations: string[] expected";
+                                }
                                 return null;
                             };
     
@@ -33681,6 +33707,13 @@
                                         throw TypeError(".google.bigtable.admin.v2.Table.AutomatedBackupPolicy.frequency: object expected");
                                     message.frequency = $root.google.protobuf.Duration.fromObject(object.frequency);
                                 }
+                                if (object.locations) {
+                                    if (!Array.isArray(object.locations))
+                                        throw TypeError(".google.bigtable.admin.v2.Table.AutomatedBackupPolicy.locations: array expected");
+                                    message.locations = [];
+                                    for (var i = 0; i < object.locations.length; ++i)
+                                        message.locations[i] = String(object.locations[i]);
+                                }
                                 return message;
                             };
     
@@ -33697,6 +33730,8 @@
                                 if (!options)
                                     options = {};
                                 var object = {};
+                                if (options.arrays || options.defaults)
+                                    object.locations = [];
                                 if (options.defaults) {
                                     object.retentionPeriod = null;
                                     object.frequency = null;
@@ -33705,6 +33740,11 @@
                                     object.retentionPeriod = $root.google.protobuf.Duration.toObject(message.retentionPeriod, options);
                                 if (message.frequency != null && message.hasOwnProperty("frequency"))
                                     object.frequency = $root.google.protobuf.Duration.toObject(message.frequency, options);
+                                if (message.locations && message.locations.length) {
+                                    object.locations = [];
+                                    for (var j = 0; j < message.locations.length; ++j)
+                                        object.locations[j] = message.locations[j];
+                                }
                                 return object;
                             };
     

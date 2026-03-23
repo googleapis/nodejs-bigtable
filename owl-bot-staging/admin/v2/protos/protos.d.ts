@@ -14350,6 +14350,9 @@ export namespace google {
 
                         /** AutomatedBackupPolicy frequency */
                         frequency?: (google.protobuf.IDuration|null);
+
+                        /** AutomatedBackupPolicy locations */
+                        locations?: (string[]|null);
                     }
 
                     /** Represents an AutomatedBackupPolicy. */
@@ -14366,6 +14369,9 @@ export namespace google {
 
                         /** AutomatedBackupPolicy frequency. */
                         public frequency?: (google.protobuf.IDuration|null);
+
+                        /** AutomatedBackupPolicy locations. */
+                        public locations: string[];
 
                         /**
                          * Creates a new AutomatedBackupPolicy instance using the specified properties.

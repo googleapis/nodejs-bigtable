@@ -4059,9 +4059,15 @@
                             },
                             "frequency": {
                               "type": "google.protobuf.Duration",
-                              "id": 2,
+                              "id": 2
+                            },
+                            "locations": {
+                              "rule": "repeated",
+                              "type": "string",
+                              "id": 3,
                               "options": {
-                                "(google.api.field_behavior)": "REQUIRED"
+                                "(google.api.field_behavior)": "OPTIONAL",
+                                "(google.api.resource_reference).type": "locations.googleapis.com/Location"
                               }
                             }
                           }
