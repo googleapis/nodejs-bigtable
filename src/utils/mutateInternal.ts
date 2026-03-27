@@ -32,6 +32,18 @@ import * as is from 'is';
 import {Mutation} from '../mutation';
 import arrify = require('arrify');
 
+/**
+ * Applies a set of changes to be atomically applied to the specified row(s).
+ * Mutations are applied in order, meaning that earlier mutations can be masked
+ * by later ones. This internal function handles the retry logic and metrics collection
+ * for the mutate operation.
+ *
+ * @param {TabularApiSurface} table The table or authorized view to perform the mutation on.
+ * @param {OperationMetricsCollector} metricsCollector The metrics collector for the operation.
+ * @param {Entry | Entry[]} entriesRaw List of entities to be inserted or deleted.
+ * @param {MutateOptions | MutateCallback} [optionsOrCallback] Configuration object or callback function.
+ * @param {MutateCallback} [cb] The callback function.
+ */
 export function mutateInternal(
   table: TabularApiSurface,
   metricsCollector: OperationMetricsCollector,
